@@ -1,0 +1,39 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/ThinkTogether.Host/ThinkTogether.Host.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Gaming/">
+    <Project Path="src/Modules/Gaming/Gaming.Application/Gaming.Application.csproj" />
+    <Project Path="src/Modules/Gaming/Gaming.Domain/Gaming.Domain.csproj" />
+    <Project Path="src/Modules/Gaming/Gaming.Infrastructure/Gaming.Infrastructure.csproj" />
+    <Project Path="src/Modules/Gaming/Gaming.Presentation/Gaming.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Quizzes/">
+    <Project Path="src/Modules/Quizzes/Quizzes.Application/Quizzes.Application.csproj" />
+    <Project Path="src/Modules/Quizzes/Quizzes.Domain/Quizzes.Domain.csproj" />
+    <Project Path="src/Modules/Quizzes/Quizzes.Infrastructure/Quizzes.Infrastructure.csproj" />
+    <Project Path="src/Modules/Quizzes/Quizzes.Presentation/Quizzes.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Reporting/">
+    <Project Path="src/Modules/Reporting/Reporting.Application/Reporting.Application.csproj" />
+    <Project Path="src/Modules/Reporting/Reporting.Domain/Reporting.Domain.csproj" />
+    <Project Path="src/Modules/Reporting/Reporting.Infrastructure/Reporting.Infrastructure.csproj" />
+    <Project Path="src/Modules/Reporting/Reporting.Presentation/Reporting.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Users/">
+    <Project Path="src/Modules/Users/Users.Application/Users.Application.csproj" />
+    <Project Path="src/Modules/Users/Users.Domain/Users.Domain.csproj" />
+    <Project Path="src/Modules/Users/Users.Infrastructure/Users.Infrastructure.csproj" />
+    <Project Path="src/Modules/Users/Users.Presentation/Users.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/Shared.Domain/Shared.Domain.csproj" />
+    <Project Path="src/Shared/Shared.Infrastructure/Shared.Infrastructure.csproj" />
+  </Folder>
+</Solution>
