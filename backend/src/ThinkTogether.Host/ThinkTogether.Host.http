@@ -1,6 +1,0 @@
-@ThinkTogether.Host_HostAddress = http://localhost:5135
-
-GET {{ThinkTogether.Host_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
