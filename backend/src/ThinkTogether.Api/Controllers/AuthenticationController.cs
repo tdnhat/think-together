@@ -3,6 +3,7 @@ using Application.Handlers.User.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.User.Commands.LoginUser;
 using ThinkTogether.Application.Handlers.User.Commands.LogoutUser;
@@ -25,7 +26,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(AuthTokenDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<AuthTokenDto>), StatusCodes.Status201Created)]
     public async Task<IActionResult> Register(
         [FromBody] RegisterUserCommand command,
         CancellationToken cancellationToken)
@@ -42,12 +43,16 @@ public class AuthenticationController : ControllerBase
                 Expires = DateTimeOffset.FromUnixTimeSeconds(result.ExpiresAt),
             });
 
-        return CreatedAtAction(nameof(GetCurrentUser), result.WithoutRefreshToken());
+        return CreatedAtAction(nameof(GetCurrentUser), null, new ApiResponse<AuthTokenDto>
+        {
+            Success = true,
+            Data = result.WithoutRefreshToken()
+        });
     }
 
     [HttpPost("login")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(AuthTokenDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<AuthTokenDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login(
         [FromBody] LoginUserCommand command,
         CancellationToken cancellationToken)
@@ -56,6 +61,7 @@ public class AuthenticationController : ControllerBase
 
         // Set refresh token in cookie
         if (result.RefreshToken != null)
+        {
             Response.Cookies.Append(RefreshTokenCookieName, result.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
@@ -63,14 +69,19 @@ public class AuthenticationController : ControllerBase
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.FromUnixTimeSeconds(result.ExpiresAt)
             });
+        }
 
-        return Ok(result.WithoutRefreshToken());
+        return Ok(new ApiResponse<AuthTokenDto>
+        {
+            Success = true,
+            Data = result.WithoutRefreshToken()
+        });
     }
 
     [HttpPost("refresh-token")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(AuthTokenDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<AuthTokenDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
     {
         string? refreshToken = null;
@@ -103,17 +114,25 @@ public class AuthenticationController : ControllerBase
                 Expires = DateTimeOffset.FromUnixTimeSeconds(response.ExpiresAt)
             });
 
-        return Ok(response);
+        return Ok(new ApiResponse<AuthTokenDto>
+        {
+            Success = true,
+            Data = response
+        });
     }
 
     [HttpGet("me")]
     [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
 
-        return Ok(result);
+        return Ok(new ApiResponse<UserDto>
+        {
+            Success = true,
+            Data = result
+        });
     }
 
     [HttpPost("logout")]

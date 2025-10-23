@@ -1,9 +1,27 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Raleway, Quicksand, Be_Vietnam_Pro } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const raleway = Raleway({ 
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-raleway',
+  display: 'swap',
+})
+
+const beVietnamPro = Be_Vietnam_Pro({ 
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-be-vietnam-pro',
+  display: 'swap',
+})
+
+const quicksand = Quicksand({ 
+  subsets: ['latin', 'vietnamese'],
+  weight: ['500', '600', '700'],
+  variable: '--font-quicksand',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'ThinkTogether - Interactive Quiz Platform',
@@ -12,12 +30,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="vi">
+      <body className={`${raleway.variable} ${beVietnamPro.variable} ${quicksand.variable} font-sans`}>
         {children}
         <Toaster position="top-right" />
       </body>

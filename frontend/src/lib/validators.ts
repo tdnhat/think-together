@@ -2,19 +2,19 @@ import { z } from "zod";
 
 // Auth schemas
 export const loginSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.string().email("Địa chỉ email không hợp lệ"),
+    password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
 });
 
 export const registerSchema = z
     .object({
-        name: z.string().min(2, "Name must be at least 2 characters"),
-        email: z.string().email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
+        email: z.string().email("Địa chỉ email không hợp lệ"),
+        password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
         confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords don't match",
+        message: "Mật khẩu không khớp",
         path: ["confirmPassword"],
     });
 
@@ -22,27 +22,27 @@ export const registerSchema = z
 export const quizSetSchema = z.object({
     title: z
         .string()
-        .min(1, "Title is required")
-        .max(100, "Title must be less than 100 characters"),
+        .min(1, "Tiêu đề là bắt buộc")
+        .max(100, "Tiêu đề phải nhỏ hơn 100 ký tự"),
     description: z
         .string()
-        .max(500, "Description must be less than 500 characters")
+        .max(500, "Mô tả phải nhỏ hơn 500 ký tự")
         .optional(),
-    coverImage: z.string().url("Invalid image URL").optional(),
+    coverImage: z.string().url("URL hình ảnh không hợp lệ").optional(),
 });
 
 // Question schemas
 export const baseQuestionSchema = z.object({
-    content: z.string().min(1, "Question content is required"),
+    content: z.string().min(1, "Nội dung câu hỏi là bắt buộc"),
     timeLimit: z
         .number()
-        .min(5, "Time limit must be at least 5 seconds")
-        .max(300, "Time limit must be less than 5 minutes"),
+        .min(5, "Giới hạn thời gian phải ít nhất 5 giây")
+        .max(300, "Giới hạn thời gian phải nhỏ hơn 5 phút"),
     points: z
         .number()
-        .min(1, "Points must be at least 1")
-        .max(1000, "Points must be less than 1000"),
-    mediaUrl: z.string().url("Invalid media URL").optional(),
+        .min(1, "Điểm phải ít nhất 1")
+        .max(1000, "Điểm phải nhỏ hơn 1000"),
+    mediaUrl: z.string().url("URL phương tiện không hợp lệ").optional(),
     mediaType: z.enum(["image", "video"]).optional(),
 });
 
@@ -52,12 +52,12 @@ export const multipleChoiceSchema = baseQuestionSchema.extend({
         .array(
             z.object({
                 id: z.string(),
-                text: z.string().min(1, "Option text is required"),
+                text: z.string().min(1, "Nội dung lựa chọn là bắt buộc"),
                 isCorrect: z.boolean(),
             })
         )
-        .min(2, "At least 2 options required")
-        .max(6, "Maximum 6 options allowed"),
+        .min(2, "Ít nhất 2 lựa chọn được yêu cầu")
+        .max(6, "Tối đa 6 lựa chọn được cho phép"),
 });
 
 export const trueFalseSchema = baseQuestionSchema.extend({
@@ -71,12 +71,12 @@ export const matchingSchema = baseQuestionSchema.extend({
         .array(
             z.object({
                 id: z.string(),
-                left: z.string().min(1, "Left item is required"),
-                right: z.string().min(1, "Right item is required"),
+                left: z.string().min(1, "Mục bên trái là bắt buộc"),
+                right: z.string().min(1, "Mục bên phải là bắt buộc"),
             })
         )
-        .min(2, "At least 2 pairs required")
-        .max(5, "Maximum 5 pairs allowed"),
+        .min(2, "Ít nhất 2 cặp được yêu cầu")
+        .max(5, "Tối đa 5 cặp được cho phép"),
 });
 
 export const orderingSchema = baseQuestionSchema.extend({
@@ -85,19 +85,19 @@ export const orderingSchema = baseQuestionSchema.extend({
         .array(
             z.object({
                 id: z.string(),
-                text: z.string().min(1, "Item text is required"),
+                text: z.string().min(1, "Nội dung mục là bắt buộc"),
                 correctOrder: z.number(),
             })
         )
-        .min(3, "At least 3 items required")
-        .max(6, "Maximum 6 items allowed"),
+        .min(3, "Ít nhất 3 mục được yêu cầu")
+        .max(6, "Tối đa 6 mục được cho phép"),
 });
 
 export const videoQuestionSchema = baseQuestionSchema.extend({
     type: z.literal("video_question"),
-    videoUrl: z.string().url("Invalid video URL"),
-    questionTimestamp: z.number().min(0, "Timestamp must be positive"),
-    videoDuration: z.number().max(120, "Video must be less than 2 minutes"),
+    videoUrl: z.string().url("URL video không hợp lệ"),
+    questionTimestamp: z.number().min(0, "Dấu thời gian phải dương"),
+    videoDuration: z.number().max(120, "Video phải nhỏ hơn 2 phút"),
 });
 
 export const questionSchema = z.discriminatedUnion("type", [
@@ -110,7 +110,7 @@ export const questionSchema = z.discriminatedUnion("type", [
 
 // Game schemas
 export const gameSettingsSchema = z.object({
-    questionCount: z.number().min(1, "At least 1 question required"),
+    questionCount: z.number().min(1, "Ít nhất 1 câu hỏi được yêu cầu"),
     shuffleQuestions: z.boolean(),
     enableBackgroundMusic: z.boolean(),
     showLeaderboard: z.boolean(),
@@ -120,19 +120,26 @@ export const gameSettingsSchema = z.object({
 export const joinGameSchema = z.object({
     pin: z
         .string()
-        .length(6, "PIN must be 6 digits")
-        .regex(/^\d{6}$/, "PIN must contain only numbers"),
+        .length(6, "PIN phải là 6 chữ số")
+        .regex(/^\d{6}$/, "PIN chỉ được chứa các chữ số"),
     nickname: z
         .string()
-        .min(1, "Nickname is required")
-        .max(20, "Nickname must be less than 20 characters"),
+        .min(1, "Biệt danh là bắt buộc")
+        .max(20, "Biệt danh phải nhỏ hơn 20 ký tự"),
 });
 
 // File upload schemas
 export const imageUploadSchema = z
     .object({
-        file: z.instanceof(File, "Please select a file"),
+        file: z.instanceof(File),
     })
+    .refine(
+        (data) => data.file instanceof File,
+        {
+            message: "Vui lòng chọn một tệp tin",
+            path: ["file"],
+        }
+    )
     .refine(
         (data) => {
             const allowedTypes = [
@@ -144,7 +151,7 @@ export const imageUploadSchema = z
             return allowedTypes.includes(data.file.type);
         },
         {
-            message: "File must be an image (JPEG, PNG, GIF, or WebP)",
+            message: "Tệp tin phải là hình ảnh (JPEG, PNG, GIF hoặc WebP)",
             path: ["file"],
         }
     )
@@ -154,22 +161,29 @@ export const imageUploadSchema = z
             return data.file.size <= maxSize;
         },
         {
-            message: "File size must be less than 5MB",
+            message: "Kích thước tệp phải nhỏ hơn 5MB",
             path: ["file"],
         }
     );
 
 export const videoUploadSchema = z
     .object({
-        file: z.instanceof(File, "Please select a file"),
+        file: z.instanceof(File),
     })
+    .refine(
+        (data) => data.file instanceof File,
+        {
+            message: "Vui lòng chọn một tệp tin",
+            path: ["file"],
+        }
+    )
     .refine(
         (data) => {
             const allowedTypes = ["video/mp4", "video/webm"];
             return allowedTypes.includes(data.file.type);
         },
         {
-            message: "File must be a video (MP4 or WebM)",
+            message: "Tệp tin phải là video (MP4 hoặc WebM)",
             path: ["file"],
         }
     )
@@ -179,7 +193,7 @@ export const videoUploadSchema = z
             return data.file.size <= maxSize;
         },
         {
-            message: "File size must be less than 50MB",
+            message: "Kích thước tệp phải nhỏ hơn 50MB",
             path: ["file"],
         }
     );

@@ -22,7 +22,7 @@ public sealed class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, 
     {
         var user = await _authenticationService.AuthenticateUserAsync(request.Email, request.Password);
 
-        var tokenResult = await _authenticationService.GenerateTokensForUserAsync(user);
+        var tokenResult = await _authenticationService.GenerateTokensForUserAsync(user, request.RememberMe);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new AuthTokenDto

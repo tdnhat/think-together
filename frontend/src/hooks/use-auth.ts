@@ -1,8 +1,16 @@
 import { useCallback } from 'react'
 import { useUserStore } from '@/stores/user-store'
-import { apiClient } from '@/lib/api'
+import { authService } from '@/lib/services/auth.service'
+import apiClient from '@/lib/api'
 import { LoginFormData, RegisterFormData } from '@/lib/validators'
+import type { ApiError } from '@/types/api'
+import type { User } from '@/types'
 
+/**
+ * Custom hook for authentication operations
+ * Provides login, register, logout, and token refresh functionality
+ * @returns Authentication methods and state
+ */
 export function useAuth() {
   const { 
     user, 
@@ -14,24 +22,46 @@ export function useAuth() {
     setLoading 
   } = useUserStore()
 
-  const handleLogin = useCallback(async (data: LoginFormData) => {
+  const handleLogin = useCallback(async (data: LoginFormData & { rememberMe?: boolean }) => {
     try {
       setLoading(true)
-      const response = await apiClient.login(data.email, data.password)
+      const response = await authService.login(data.email, data.password, data.rememberMe || false)
       
       if (response.success && response.data) {
-        login(response.data.user, response.data.token)
-        return { success: true }
-      } else {
-        return { 
-          success: false, 
-          error: response.message || 'Login failed' 
+        const { accessToken } = response.data
+        apiClient.setToken(accessToken)
+
+        const userResponse = await authService.getCurrentUser()
+        
+        if (userResponse.success && userResponse.data) {
+          const userDto = userResponse.data
+          const user: User = {
+            id: userDto.id,
+            email: userDto.email,
+            firstName: userDto.firstName,
+            lastName: userDto.lastName,
+            name: `${userDto.firstName} ${userDto.lastName}`,
+            role: userDto.role,
+            avatarUrl: userDto.avatarUrl,
+            bio: userDto.bio,
+            createdAt: userDto.createdAt,
+          }
+          
+          login(user, accessToken)
+          return { success: true }
         }
       }
-    } catch (error: any) {
+      
       return { 
         success: false, 
-        error: error.response?.data?.message || 'Login failed' 
+        error: response.message || 'Đăng nhập thất bại' 
+      }
+    } catch (error: unknown) {
+      const apiError = error as ApiError
+      return {
+        success: false,
+        error: apiError.detail || 'Đăng nhập thất bại',
+        errors: apiError.errors
       }
     } finally {
       setLoading(false)
@@ -41,28 +71,63 @@ export function useAuth() {
   const handleRegister = useCallback(async (data: RegisterFormData) => {
     try {
       setLoading(true)
-      const response = await apiClient.register(data.email, data.password, data.name)
+      
+      const nameParts = data.name.trim().split(' ')
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || ''
+      
+      const response = await authService.register({
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        firstName,
+        lastName,
+      })
       
       if (response.success && response.data) {
-        login(response.data.user, response.data.token)
-        return { success: true }
-      } else {
-        return { 
-          success: false, 
-          error: response.message || 'Registration failed' 
+        const { accessToken } = response.data
+        apiClient.setToken(accessToken)
+
+        const userResponse = await authService.getCurrentUser()
+        
+        if (userResponse.success && userResponse.data) {
+          const userDto = userResponse.data
+          const user: User = {
+            id: userDto.id,
+            email: userDto.email,
+            firstName: userDto.firstName,
+            lastName: userDto.lastName,
+            name: `${userDto.firstName} ${userDto.lastName}`,
+            role: userDto.role,
+            avatarUrl: userDto.avatarUrl,
+            bio: userDto.bio,
+            createdAt: userDto.createdAt,
+          }
+          
+          login(user, accessToken)
+          return { success: true }
         }
       }
-    } catch (error: any) {
+      
       return { 
         success: false, 
-        error: error.response?.data?.message || 'Registration failed' 
+        error: response.message || 'Đăng ký thất bại' 
+      }
+    } catch (error: unknown) {
+      const apiError = error as ApiError
+      return {
+        success: false,
+        error: apiError.detail || 'Đăng ký thất bại',
+        errors: apiError.errors
       }
     } finally {
       setLoading(false)
     }
   }, [login, setLoading])
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
+    await authService.logout()
+    apiClient.clearToken()
     logout()
   }, [logout])
 
@@ -70,10 +135,17 @@ export function useAuth() {
     if (!token) return false
     
     try {
-      // In a real app, you might call a refresh endpoint here
-      // For now, we'll just check if the token exists
-      return true
+      const response = await authService.refreshToken()
+      
+      if (response.success && response.data) {
+        const { accessToken } = response.data
+        apiClient.setToken(accessToken)
+        return true
+      }
+      
+      return false
     } catch (error) {
+      console.error('Token refresh failed:', error)
       logout()
       return false
     }
