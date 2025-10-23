@@ -31,7 +31,6 @@ public sealed class RefreshToken : Entity
 
         return new RefreshToken
         {
-            Id = Guid.NewGuid(),
             UserId = userId,
             Token = token,
             ExpiresAt = DateTime.UtcNow.Add(lifetime)

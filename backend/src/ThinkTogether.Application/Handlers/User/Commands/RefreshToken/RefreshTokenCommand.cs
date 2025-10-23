@@ -1,6 +1,6 @@
-using Application.DTOs;
 using MediatR;
+using ThinkTogether.Application.DTOs;
 
-namespace Application.Handlers.User.Commands.RefreshToken;
+namespace ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
 
 public sealed record RefreshTokenCommand(string Token) : IRequest<AuthTokenDto>;

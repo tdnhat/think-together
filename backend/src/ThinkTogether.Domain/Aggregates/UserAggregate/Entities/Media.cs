@@ -1,6 +1,6 @@
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public sealed class Media : Entity
 {
@@ -35,19 +35,19 @@ public sealed class Media : Entity
         int? durationSeconds = null)
     {
         if (string.IsNullOrWhiteSpace(filename))
-            throw new Domain.Exceptions.ValidationException("Tên file là bắt buộc");
+            throw new global::Domain.Exceptions.ValidationException("Tên file là bắt buộc");
 
         if (string.IsNullOrWhiteSpace(url))
-            throw new Domain.Exceptions.ValidationException("URL là bắt buộc");
+            throw new global::Domain.Exceptions.ValidationException("URL là bắt buộc");
 
         if (string.IsNullOrWhiteSpace(mimeType))
-            throw new Domain.Exceptions.ValidationException("Loại MIME là bắt buộc");
+            throw new global::Domain.Exceptions.ValidationException("Loại MIME là bắt buộc");
 
         if (fileSizeBytes <= 0)
-            throw new Domain.Exceptions.ValidationException("Kích thước file phải lớn hơn 0");
+            throw new global::Domain.Exceptions.ValidationException("Kích thước file phải lớn hơn 0");
 
         if (durationSeconds.HasValue && durationSeconds.Value <= 0)
-            throw new Domain.Exceptions.ValidationException("Thời lượng video phải lớn hơn 0");
+            throw new global::Domain.Exceptions.ValidationException("Thời lượng video phải lớn hơn 0");
 
         return new Media
         {

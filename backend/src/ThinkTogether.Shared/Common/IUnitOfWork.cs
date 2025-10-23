@@ -1,4 +1,4 @@
-namespace Shared.Common;
+namespace ThinkTogether.Shared.Common;
 
 public interface IUnitOfWork : IDisposable
 {

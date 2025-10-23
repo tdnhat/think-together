@@ -1,4 +1,4 @@
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public enum UserRole
 {

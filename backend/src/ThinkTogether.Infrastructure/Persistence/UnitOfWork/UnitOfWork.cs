@@ -1,59 +1,16 @@
-using Domain.Aggregates.ChallengeAggregate.Repositories;
-using Domain.Aggregates.GameSessionAggregate.Repositories;
-using Domain.Aggregates.QuizSetAggregate.Repositories;
-using Domain.Aggregates.UserAggregate.Repositories;
+using Infrastructure.Persistence;
 using Shared.Common;
-using Infrastructure.Persistence.Repositories;
+using ThinkTogether.Shared.Common;
 
-namespace Infrastructure.Persistence.UnitOfWork;
+namespace ThinkTogether.Infrastructure.Persistence.UnitOfWork;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
-    private IUserRepository? _userRepository;
-    private IQuizSetRepository? _quizSetRepository;
-    private IGameSessionRepository? _gameSessionRepository;
-    private IChallengeRepository? _challengeRepository;
 
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
-    }
-
-    public IUserRepository Users
-    {
-        get
-        {
-            _userRepository ??= new UserRepository(_context);
-            return _userRepository;
-        }
-    }
-
-    public IQuizSetRepository QuizSets
-    {
-        get
-        {
-            _quizSetRepository ??= new QuizSetRepository(_context);
-            return _quizSetRepository;
-        }
-    }
-
-    public IGameSessionRepository GameSessions
-    {
-        get
-        {
-            _gameSessionRepository ??= new GameSessionRepository(_context);
-            return _gameSessionRepository;
-        }
-    }
-
-    public IChallengeRepository Challenges
-    {
-        get
-        {
-            _challengeRepository ??= new ChallengeRepository(_context);
-            return _challengeRepository;
-        }
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -84,10 +41,7 @@ public class UnitOfWork : IUnitOfWork
 
     public async ValueTask DisposeAsync()
     {
-        if (_context != null)
-        {
-            await _context.DisposeAsync();
-        }
+        await _context.DisposeAsync();
 
         GC.SuppressFinalize(this);
     }

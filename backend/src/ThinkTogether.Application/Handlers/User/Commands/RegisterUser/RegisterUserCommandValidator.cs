@@ -1,5 +1,6 @@
 using Application.Handlers.User.Commands.RegisterUser;
 using FluentValidation;
+using ThinkTogether.Application.Handlers.User.Commands.RegisterUser;
 
 namespace Application.Handlers.User.Commands.RegisterUser;
 

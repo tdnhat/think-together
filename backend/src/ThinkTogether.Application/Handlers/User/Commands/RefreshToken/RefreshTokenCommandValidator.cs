@@ -1,4 +1,5 @@
 using FluentValidation;
+using ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
 
 namespace Application.Handlers.User.Commands.RefreshToken;
 

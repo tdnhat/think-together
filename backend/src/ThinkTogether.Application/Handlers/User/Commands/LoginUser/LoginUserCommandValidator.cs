@@ -1,4 +1,5 @@
 using FluentValidation;
+using ThinkTogether.Application.Handlers.User.Commands.LoginUser;
 
 namespace Application.Handlers.User.Commands.LoginUser;
 

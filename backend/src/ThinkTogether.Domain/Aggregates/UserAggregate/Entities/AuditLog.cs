@@ -1,6 +1,6 @@
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public sealed class AuditLog : Entity
 {

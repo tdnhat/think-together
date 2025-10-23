@@ -1,9 +1,11 @@
 using Domain.Aggregates.UserAggregate;
-using Domain.Aggregates.UserAggregate.Repositories;
 using Domain.Aggregates.UserAggregate.ValueObjects;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 
-namespace Infrastructure.Persistence.Repositories;
+namespace ThinkTogether.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : Repository<User, Guid>, IUserRepository
 {
@@ -14,14 +16,8 @@ public class UserRepository : Repository<User, Guid>, IUserRepository
     public override async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null, cancellationToken);
     }
 
-    public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
-    {
-        return await _dbSet
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email && u.DeletedAt == null, cancellationToken);
-    }
+
 }

@@ -3,31 +3,16 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Shared.Primitives;
 
-namespace Infrastructure.Persistence.Interceptors;
+namespace ThinkTogether.Infrastructure.Persistence.Interceptors;
 
-/// <summary>
-/// Audit interceptor for automatically tracking entity changes.
-///
-/// Features:
-/// - Automatically sets CreatedAt for new entities
-/// - Automatically updates UpdatedAt for modified entities
-/// - Handles soft deletes by setting DeletedAt (IsDeleted is computed)
-/// - Supports future user tracking via ICurrentUserProvider
-/// </summary>
 public class AuditInterceptor : SaveChangesInterceptor
 {
-    /// <summary>
-    /// Intercepts SaveChanges operations to apply audit trail.
-    /// </summary>
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         ApplyAuditTrail(eventData.Context);
         return base.SavingChanges(eventData, result);
     }
 
-    /// <summary>
-    /// Intercepts SaveChangesAsync operations to apply audit trail.
-    /// </summary>
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
@@ -37,9 +22,6 @@ public class AuditInterceptor : SaveChangesInterceptor
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
-    /// <summary>
-    /// Applies audit trail to tracked entities.
-    /// </summary>
     private static void ApplyAuditTrail(DbContext? context)
     {
         if (context is null)
@@ -66,9 +48,6 @@ public class AuditInterceptor : SaveChangesInterceptor
         }
     }
 
-    /// <summary>
-    /// Applies audit properties for newly created entities.
-    /// </summary>
     private static void ApplyCreationAudit(EntityEntry<Entity> entry)
     {
         var now = DateTime.UtcNow;
@@ -83,9 +62,6 @@ public class AuditInterceptor : SaveChangesInterceptor
         entry.Property(e => e.DeletedAt).CurrentValue = null;
     }
 
-    /// <summary>
-    /// Applies audit properties for modified entities.
-    /// </summary>
     private static void ApplyModificationAudit(EntityEntry<Entity> entry)
     {
         var now = DateTime.UtcNow;
@@ -100,10 +76,6 @@ public class AuditInterceptor : SaveChangesInterceptor
         entry.Property(e => e.DeletedAt).IsModified = false;
     }
 
-    /// <summary>
-    /// Applies audit properties for soft-deleted entities.
-    /// Converts Delete to Update operation to preserve data.
-    /// </summary>
     private static void ApplySoftDeleteAudit(EntityEntry<Entity> entry)
     {
         var now = DateTime.UtcNow;

@@ -3,7 +3,7 @@ using Domain.Aggregates.GameSessionAggregate;
 using Domain.Aggregates.QuizSetAggregate;
 using Domain.Aggregates.UserAggregate;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure.Persistence.Interceptors;
+using ThinkTogether.Infrastructure.Persistence.Interceptors;
 
 namespace Infrastructure.Persistence;
 

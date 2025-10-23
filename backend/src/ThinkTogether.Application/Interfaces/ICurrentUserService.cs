@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Application.Services;
+namespace ThinkTogether.Application.Interfaces;
 
 public interface ICurrentUserService
 {
@@ -8,4 +8,3 @@ public interface ICurrentUserService
     string? UserId { get; }
     bool IsAuthenticated { get; }
 }
-

@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Application.Services;
 using Domain.Aggregates.UserAggregate;
+using ThinkTogether.Infrastructure.Interfaces;
 
 namespace Infrastructure.Services;
 

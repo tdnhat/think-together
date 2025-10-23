@@ -1,11 +1,12 @@
 using Application.DTOs;
-using Application.Services;
-using Domain.Aggregates.UserAggregate.Repositories;
+using Application.Handlers.User.Queries.GetCurrentUser;
 using Domain.Exceptions;
-using MediatR;
 using Mapster;
+using MediatR;
+using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 
-namespace Application.Handlers.User.Queries.GetCurrentUser;
+namespace ThinkTogether.Application.Handlers.User.Queries.GetCurrentUser;
 
 public sealed class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, UserDto>
 {

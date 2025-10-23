@@ -1,4 +1,4 @@
-namespace Infrastructure.Services;
+namespace ThinkTogether.Infrastructure.Interfaces;
 
 public interface IDbInitializer
 {

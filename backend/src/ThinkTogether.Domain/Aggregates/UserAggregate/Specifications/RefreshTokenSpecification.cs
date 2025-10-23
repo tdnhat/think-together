@@ -1,7 +1,7 @@
 using Domain.Aggregates.UserAggregate;
 using Shared.Primitives;
 
-namespace ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;
+namespace Domain.Aggregates.UserAggregate.Specifications;
 
 public sealed class RefreshTokenSpecification : Specification<User>
 {

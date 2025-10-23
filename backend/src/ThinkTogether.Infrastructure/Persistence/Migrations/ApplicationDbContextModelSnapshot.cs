@@ -1235,7 +1235,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ChallengeId");
 
-                            b1.ToTable("ThachThuc");
+                            b1.ToTable("ThachThuc", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ChallengeId");
@@ -1266,7 +1266,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ChallengeAttemptId");
 
-                            b1.ToTable("LuotChoiThachThuc");
+                            b1.ToTable("LuotChoiThachThuc", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ChallengeAttemptId");
@@ -1297,7 +1297,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("LeaderboardEntryId");
 
-                            b1.ToTable("BangXepHangThachThuc");
+                            b1.ToTable("BangXepHangThachThuc", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("LeaderboardEntryId");
@@ -1328,7 +1328,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GamePlayerId");
 
-                            b1.ToTable("NguoiChoiPhien");
+                            b1.ToTable("NguoiChoiPhien", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("GamePlayerId");
@@ -1347,7 +1347,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GamePlayerId");
 
-                            b1.ToTable("NguoiChoiPhien");
+                            b1.ToTable("NguoiChoiPhien", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("GamePlayerId");
@@ -1391,7 +1391,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GameSessionId");
 
-                            b1.ToTable("PhienChoi");
+                            b1.ToTable("PhienChoi", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("GameSessionId");

@@ -1,6 +1,6 @@
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public sealed class ProfanityFilter : Entity
 {
@@ -22,7 +22,7 @@ public sealed class ProfanityFilter : Entity
         SeverityLevel severity = SeverityLevel.MEDIUM)
     {
         if (string.IsNullOrWhiteSpace(pattern))
-            throw new Domain.Exceptions.ValidationException("Pattern lọc từ tục là bắt buộc");
+            throw new global::Domain.Exceptions.ValidationException("Pattern lọc từ tục là bắt buộc");
 
         return new ProfanityFilter
         {
@@ -37,7 +37,7 @@ public sealed class ProfanityFilter : Entity
     public void UpdatePattern(string newPattern)
     {
         if (string.IsNullOrWhiteSpace(newPattern))
-            throw new Domain.Exceptions.ValidationException("Pattern lọc từ tục là bắt buộc");
+            throw new global::Domain.Exceptions.ValidationException("Pattern lọc từ tục là bắt buộc");
 
         Pattern = newPattern.Trim();
         UpdatedAt = DateTime.UtcNow;

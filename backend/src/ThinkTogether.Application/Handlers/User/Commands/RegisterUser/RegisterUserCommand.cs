@@ -1,7 +1,7 @@
-using Application.DTOs;
 using MediatR;
+using ThinkTogether.Application.DTOs;
 
-namespace Application.Handlers.User.Commands.RegisterUser;
+namespace ThinkTogether.Application.Handlers.User.Commands.RegisterUser;
 
 public sealed record RegisterUserCommand(
     string Email,

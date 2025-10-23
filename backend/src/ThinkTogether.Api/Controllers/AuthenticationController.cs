@@ -1,13 +1,14 @@
 using Application.DTOs;
-using Application.Handlers.User.Commands.LoginUser;
-using Application.Handlers.User.Commands.RegisterUser;
-using Application.Handlers.User.Commands.RefreshToken;
+using Application.Handlers.User.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.Handlers.User.Queries.GetCurrentUser;
+using ThinkTogether.Application.DTOs;
+using ThinkTogether.Application.Handlers.User.Commands.LoginUser;
+using ThinkTogether.Application.Handlers.User.Commands.RegisterUser;
+using ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
 
-namespace Api.Controllers;
+namespace ThinkTogether.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
@@ -29,7 +30,18 @@ public class AuthenticationController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetCurrentUser), result);
+
+        // Set refresh token in cookie
+        if (result.RefreshToken != null)
+            Response.Cookies.Append(RefreshTokenCookieName, result.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.FromUnixTimeSeconds(result.ExpiresAt),
+            });
+
+        return CreatedAtAction(nameof(GetCurrentUser), result.WithoutRefreshToken());
     }
 
     [HttpPost("login")]
@@ -40,7 +52,18 @@ public class AuthenticationController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
-        return Ok(result);
+
+        // Set refresh token in cookie
+        if (result.RefreshToken != null)
+            Response.Cookies.Append(RefreshTokenCookieName, result.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.FromUnixTimeSeconds(result.ExpiresAt)
+            });
+
+        return Ok(result.WithoutRefreshToken());
     }
 
     [HttpPost("refresh-token")]
@@ -68,6 +91,16 @@ public class AuthenticationController : ControllerBase
 
         var command = new RefreshTokenCommand(refreshToken);
         var response = await _mediator.Send(command, cancellationToken);
+
+        // Set new refresh token in cookie
+        if (response.RefreshToken != null)
+            Response.Cookies.Append(RefreshTokenCookieName, response.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.FromUnixTimeSeconds(response.ExpiresAt)
+            });
 
         return Ok(response);
     }

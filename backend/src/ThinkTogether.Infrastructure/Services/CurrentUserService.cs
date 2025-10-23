@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using Application.Services;
 using Microsoft.AspNetCore.Http;
+using ThinkTogether.Application.Interfaces;
 
-namespace Infrastructure.Services;
+namespace ThinkTogether.Infrastructure.Services;
 
 public sealed class CurrentUserService : ICurrentUserService
 {

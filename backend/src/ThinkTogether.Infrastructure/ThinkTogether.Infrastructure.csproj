@@ -27,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ThinkTogether.Domain\ThinkTogether.Domain.csproj" />
-    <ProjectReference Include="..\ThinkTogether.Shared\ThinkTogether.Shared.csproj" />
-    <ProjectReference Include="..\ThinkTogether.Application\ThinkTogether.Application.csproj" />
+  <ProjectReference Include="..\ThinkTogether.Domain\ThinkTogether.Domain.csproj" />
+      <ProjectReference Include="..\ThinkTogether.Shared\ThinkTogether.Shared.csproj" />
+      <ProjectReference Include="..\ThinkTogether.Application\ThinkTogether.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

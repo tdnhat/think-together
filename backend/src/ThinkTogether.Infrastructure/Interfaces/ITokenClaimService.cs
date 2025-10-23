@@ -1,10 +1,9 @@
 using System.Security.Claims;
 using Domain.Aggregates.UserAggregate;
 
-namespace Application.Services;
+namespace ThinkTogether.Infrastructure.Interfaces;
 
 public interface ITokenClaimService
 {
     Task<IEnumerable<Claim>> GetClaimsAsync(User user);
 }
-

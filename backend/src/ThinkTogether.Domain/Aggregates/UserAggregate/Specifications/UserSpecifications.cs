@@ -1,5 +1,6 @@
 using Domain.Aggregates.UserAggregate.Entities;
 using Domain.Aggregates.UserAggregate.ValueObjects;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 namespace Domain.Aggregates.UserAggregate.Specifications;
 

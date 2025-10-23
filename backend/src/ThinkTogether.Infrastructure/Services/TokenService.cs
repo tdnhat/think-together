@@ -1,21 +1,24 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Domain.Aggregates.UserAggregate;
+using Domain.Aggregates.UserAggregate.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Application.Services;
-using Domain.Aggregates.UserAggregate;
 using Infrastructure.Configuration;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Infrastructure.Interfaces;
 
 namespace Infrastructure.Services;
 
-public sealed class JwtTokensGenerator : IJwtTokensGenerator
+public class TokenService : ITokenService
 {
     private readonly JwtOptions _jwtOptions;
     private readonly ITokenClaimService _tokenClaimService;
     private readonly SymmetricSecurityKey _securityKey;
 
-    public JwtTokensGenerator(
+    public TokenService(
         IOptions<JwtOptions> jwtOptions,
         ITokenClaimService tokenClaimService)
     {
@@ -24,7 +27,8 @@ public sealed class JwtTokensGenerator : IJwtTokensGenerator
         _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
     }
 
-    public async Task<(string accessToken, string refreshToken, long accessTokenExpiresAt)> GenerateTokensAsync(User user)
+    public async Task<(string AccessToken, string RefreshToken, long AccessTokenExpiresAt)>
+        GenerateTokensAsync(User user)
     {
         var expirationTime = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenExpirationMinutes);
         var accessToken = await GenerateAccessTokenAsync(user, expirationTime);
@@ -35,11 +39,16 @@ public sealed class JwtTokensGenerator : IJwtTokensGenerator
         return (accessToken, refreshToken, accessTokenExpiresAt);
     }
 
-    public  TimeSpan GetRefreshTokenLifetime(bool rememberMe)
+    public TimeSpan GetRefreshTokenLifetime(bool rememberMe)
     {
         return rememberMe
             ? TimeSpan.FromDays(_jwtOptions.RefreshTokenExpirationDaysRememberMe)
             : TimeSpan.FromDays(_jwtOptions.RefreshTokenExpirationDays);
+    }
+
+    public RefreshToken CreateRefreshToken(Guid userId, string token, TimeSpan lifetime)
+    {
+        return RefreshToken.Create(userId, token, lifetime);
     }
 
     private async Task<string> GenerateAccessTokenAsync(User user, DateTime expirationTime)
@@ -51,7 +60,7 @@ public sealed class JwtTokensGenerator : IJwtTokensGenerator
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new System.Security.Claims.ClaimsIdentity(claims),
+            Subject = new ClaimsIdentity(claims),
             Expires = expirationTime,
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Audience,

@@ -1,6 +1,7 @@
+using Domain.Aggregates.UserAggregate.Entities;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public sealed class ModeratorLog : Entity
 {
@@ -36,7 +37,7 @@ public sealed class ModeratorLog : Entity
         string? notes = null)
     {
         if (string.IsNullOrWhiteSpace(reason))
-            throw new Domain.Exceptions.ValidationException("Lý do là bắt buộc");
+            throw new global::Domain.Exceptions.ValidationException("Lý do là bắt buộc");
 
         return new ModeratorLog
         {

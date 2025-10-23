@@ -1,7 +1,7 @@
-using Application.DTOs;
 using MediatR;
+using ThinkTogether.Application.DTOs;
 
-namespace Application.Handlers.User.Commands.LoginUser;
+namespace ThinkTogether.Application.Handlers.User.Commands.LoginUser;
 
 public sealed record LoginUserCommand(
     string Email,

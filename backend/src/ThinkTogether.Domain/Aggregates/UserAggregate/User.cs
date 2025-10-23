@@ -2,6 +2,8 @@ using Domain.Aggregates.UserAggregate.Entities;
 using Domain.Aggregates.UserAggregate.ValueObjects;
 using Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 
 namespace Domain.Aggregates.UserAggregate;
 
@@ -79,6 +81,11 @@ public sealed class User : AggregateRoot
         PasswordHash = newPasswordHash;
     }
 
+    public bool VerifyPassword(string plainTextPassword, IPasswordService passwordService)
+    {
+        return passwordService.VerifyPassword(plainTextPassword, PasswordHash);
+    }
+
     public void PromoteToAdmin()
     {
         if (IsDeleted)
@@ -118,6 +125,43 @@ public sealed class User : AggregateRoot
             throw new ValidationException("Refresh token does not belong to this user");
 
         _refreshTokens.Add(refreshToken);
+    }
+
+    public RefreshToken? GetValidRefreshToken(string token)
+    {
+        return _refreshTokens.FirstOrDefault(rt => rt.Token == token && rt.IsValid());
+    }
+
+    public void RevokeExpiredRefreshTokens()
+    {
+        var expiredTokens = _refreshTokens.Where(rt => rt.IsExpired()).ToList();
+        foreach (var token in expiredTokens)
+        {
+            token.Revoke();
+        }
+    }
+
+    public void RevokeAllActiveRefreshTokens()
+    {
+        var activeTokens = _refreshTokens.Where(rt => rt.IsValid()).ToList();
+        foreach (var token in activeTokens)
+        {
+            token.Revoke();
+        }
+    }
+
+    public bool CanAuthenticate()
+    {
+        return !IsDeleted;
+    }
+
+    public void ChangePassword(string newPlainTextPassword, IPasswordService passwordService)
+    {
+        if (IsDeleted)
+            throw new ValidationException("Không thể đổi mật khẩu của người dùng đã bị xóa");
+
+        Password.ValidatePlainText(newPlainTextPassword);
+        PasswordHash = passwordService.HashPassword(newPlainTextPassword);
     }
 
     public string GetFullName() => $"{FirstName} {LastName}".Trim();
