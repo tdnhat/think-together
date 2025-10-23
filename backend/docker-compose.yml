@@ -1,0 +1,57 @@
+﻿services:
+  redis:
+    image: redis:7-alpine
+    container_name: thinktogether-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - thinktogether-network
+
+#  api:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: thinktogether-api
+#    ports:
+#      - "5000:8080"
+#      - "5001:8081"
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=Development
+#      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+#      - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=ThinkTogetherDb;Trusted_Connection=True;TrustServerCertificate=True
+#      - RedisSettings__ConnectionString=redis:6379
+#      - RedisSettings__Database=0
+#      - RedisSettings__InstanceName=ThinkTogether:
+#      - JwtSettings__Secret=ThisIsAVeryLongSecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLongForSecurityPurposes1234567890
+#      - JwtSettings__Issuer=ThinkTogether
+#      - JwtSettings__Audience=ThinkTogether-Client
+#      - JwtSettings__AccessTokenExpirationMinutes=15
+#      - JwtSettings__RefreshTokenExpirationDays=7
+#      - JwtSettings__RefreshTokenExpirationDaysRememberMe=30
+#      - AdminSeed__Email=admin@thinktogether.com
+#      - AdminSeed__Password=Admin123!
+#      - AdminSeed__FirstName=Admin
+#      - AdminSeed__LastName=User
+#    depends_on:
+#      redis:
+#        condition: service_healthy
+#    networks:
+#      - thinktogether-network
+#    restart: unless-stopped
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  thinktogether-network:
+    driver: bridge
+

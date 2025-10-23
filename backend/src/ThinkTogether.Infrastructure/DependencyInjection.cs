@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         ConfigureOptions(services, configuration);
+        ConfigureRedis(services, configuration);
         ConfigureDatabase(services, configuration);
         ConfigureRepositories(services);
         ConfigureApplicationServices(services);
@@ -47,6 +49,26 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(AdminSeedOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.AddOptions<RedisOptions>()
+            .Bind(configuration.GetSection(RedisOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    }
+
+    private static void ConfigureRedis(IServiceCollection services, IConfiguration configuration)
+    {
+        var redisOptions = configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>();
+        if (redisOptions == null || string.IsNullOrWhiteSpace(redisOptions.ConnectionString))
+        {
+            throw new InvalidOperationException("Cấu hình Redis không hợp lệ.");
+        }
+
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configurationOptions = ConfigurationOptions.Parse(redisOptions.ConnectionString);
+            return ConnectionMultiplexer.Connect(configurationOptions);
+        });
     }
 
     private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
@@ -75,6 +97,7 @@ public static class DependencyInjection
 
         services.AddScoped<ITokenClaimService, TokenClaimService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IJwtContext, CurrentUserService>();
     }
 
     private static void ConfigureInfrastructureServices(IServiceCollection services)
@@ -85,5 +108,6 @@ public static class DependencyInjection
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
     }
 }

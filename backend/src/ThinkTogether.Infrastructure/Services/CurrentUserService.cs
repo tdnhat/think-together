@@ -4,7 +4,7 @@ using ThinkTogether.Application.Interfaces;
 
 namespace ThinkTogether.Infrastructure.Services;
 
-public sealed class CurrentUserService : ICurrentUserService
+public sealed class CurrentUserService : ICurrentUserService, IJwtContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -36,4 +36,20 @@ public sealed class CurrentUserService : ICurrentUserService
     }
 
     public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
+
+    public string? Jti => _httpContextAccessor.HttpContext?.User?.FindFirst("jti")?.Value;
+
+    public DateTime? TokenExpiry
+    {
+        get
+        {
+            var expClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("exp")?.Value;
+            if (expClaim != null && long.TryParse(expClaim, out var expUnix))
+            {
+                return DateTimeOffset.FromUnixTimeSeconds(expUnix).DateTime;
+            }
+
+            return null;
+        }
+    }
 }

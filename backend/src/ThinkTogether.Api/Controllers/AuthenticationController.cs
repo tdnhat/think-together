@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.User.Commands.LoginUser;
+using ThinkTogether.Application.Handlers.User.Commands.LogoutUser;
 using ThinkTogether.Application.Handlers.User.Commands.RegisterUser;
 using ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
 
@@ -113,5 +114,28 @@ public class AuthenticationController : ControllerBase
         var result = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
 
         return Ok(result);
+    }
+
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    {
+        string? refreshToken = null;
+
+        if (Request.Cookies.TryGetValue(RefreshTokenCookieName, out var cookieToken))
+        {
+            refreshToken = cookieToken;
+        }
+
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            return NoContent();
+
+        var command = new LogoutUserCommand(refreshToken);
+        await _mediator.Send(command, cancellationToken);
+
+        // Clear refresh token cookie
+        Response.Cookies.Delete(RefreshTokenCookieName);
+
+        return NoContent();
     }
 }
