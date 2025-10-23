@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="ThinkTogether.Api\ThinkTogether.Api.csproj" />
+  <Project Path="ThinkTogether.Application\ThinkTogether.Application.csproj" />
+  <Project Path="ThinkTogether.Domain\ThinkTogether.Domain.csproj" />
+  <Project Path="ThinkTogether.Infrastructure\ThinkTogether.Infrastructure.csproj" />
+  <Project Path="ThinkTogether.Shared\ThinkTogether.Shared.csproj" />
+</Solution>
