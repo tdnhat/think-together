@@ -139,14 +139,54 @@ The frontend communicates with the .NET backend through:
 - WebSocket connections for real-time features
 - File upload endpoints for media handling
 
+### API Client Features
+
+The Axios-based API client (`src/lib/api.ts`) includes:
+- **Automatic Token Refresh**: Automatically refreshes expired JWT tokens
+- **Request Interceptors**: Adds authentication headers to all requests
+- **Error Handling**: Parses ProblemDetails format from backend
+- **Retry Logic**: Retries failed requests after token refresh
+- **Request Queuing**: Queues requests during token refresh to avoid race conditions
+
+### Error Handling
+
+Backend errors follow RFC 7807 ProblemDetails format:
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Validation Error",
+  "status": 400,
+  "detail": "Vui lòng kiểm tra lại các trường đã nhập.",
+  "errors": {
+    "Email": ["Email là bắt buộc"],
+    "Password": ["Mật khẩu phải có ít nhất 8 ký tự"]
+  }
+}
+```
+
+Validation errors are automatically mapped to form fields using `mapApiErrorsToForm` helper.
+
 ### Environment Variables
 
+Create a `.env.local` file in the frontend root directory:
+
 ```env
+# API Configuration (Required)
 NEXT_PUBLIC_API_URL=http://localhost:5000
+
+# Socket.io for real-time features (Optional)
 NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+
+# Azure Storage for media uploads (Optional - for production)
 AZURE_STORAGE_CONNECTION_STRING=your_connection_string
 AZURE_STORAGE_CONTAINER_NAME=thinktogether-media
 ```
+
+**Important Notes:**
+- The `NEXT_PUBLIC_API_URL` must point to your backend API server
+- All variables starting with `NEXT_PUBLIC_` are exposed to the browser
+- Never commit `.env.local` to version control
+- Use `.env.example` as a template for other developers
 
 ## 🎨 Styling Guidelines
 

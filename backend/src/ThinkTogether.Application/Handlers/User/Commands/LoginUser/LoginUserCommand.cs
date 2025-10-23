@@ -5,4 +5,5 @@ namespace ThinkTogether.Application.Handlers.User.Commands.LoginUser;
 
 public sealed record LoginUserCommand(
     string Email,
-    string Password) : IRequest<AuthTokenDto>;
+    string Password,
+    bool RememberMe = false) : IRequest<AuthTokenDto>;

@@ -83,18 +83,18 @@ public class AuthenticationService : IAuthenticationService
     }
 
     public async Task<(string AccessToken, string RefreshToken, long AccessTokenExpiresAt)>
-        GenerateTokensForUserAsync(User? user)
+        GenerateTokensForUserAsync(User? user, bool rememberMe = false)
     {
         if (user == null || !user.CanAuthenticate())
             throw new ValidationException("Người dùng không tồn tại hoặc đã bị xóa");
 
         var tokenResult = await _tokenService.GenerateTokensAsync(user);
 
-        // Create and add refresh token to user
+        // Create and add refresh token to user with appropriate lifetime
         var refreshTokenEntity = _tokenService.CreateRefreshToken(
             user.Id,
             tokenResult.RefreshToken,
-            _tokenService.GetRefreshTokenLifetime(false));
+            _tokenService.GetRefreshTokenLifetime(rememberMe));
 
         user.AddRefreshToken(refreshTokenEntity);
 

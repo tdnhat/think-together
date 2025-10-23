@@ -1,12 +1,10 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 import { useTheme } from '@/hooks/use-local-storage'
 
 type ThemeProviderProps = {
   children: React.ReactNode
-  defaultTheme?: string
-  storageKey?: string
 }
 
 type ThemeProviderState = {
@@ -23,8 +21,6 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'vite-ui-theme',
   ...props
 }: ThemeProviderProps) {
   const { theme, setTheme } = useTheme()

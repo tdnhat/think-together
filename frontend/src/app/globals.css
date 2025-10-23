@@ -6,7 +6,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-be-vietnam-pro);
+  --font-heading: var(--font-raleway);
+  --font-highlight: var(--font-quicksand);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -45,6 +47,20 @@
 
 :root {
   --radius: 0.625rem;
+  
+  /* Style Guide Colors */
+  --brand-primary: #00A8E8;
+  --brand-secondary: #FFE066;
+  --brand-secondary-hover: #FFD54D;
+  --bg-page: #FFFFFF;
+  --bg-surface: #F8FAFC;
+  --color-border-main: #00171F;
+  --text-primary: #003459;
+  --text-secondary: #334155;
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-error-hover: #DC2626;
+  
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -117,6 +133,15 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  /* Typography - Raleway for headings, Be Vietnam Pro for body, Quicksand for buttons */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  
+  button, [role="button"] {
+    @apply font-highlight;
   }
 }
