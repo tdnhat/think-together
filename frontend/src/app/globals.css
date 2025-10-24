@@ -145,3 +145,91 @@
     @apply font-highlight;
   }
 }
+
+@layer utilities {
+  /* Neo-brutalist Shadow Utilities */
+  .shadow-brutal-sm {
+    box-shadow: 3px 3px 0 #000;
+  }
+  
+  .shadow-brutal {
+    box-shadow: 6px 6px 0 #000;
+  }
+  
+  .shadow-brutal-lg {
+    box-shadow: 8px 8px 0 #000;
+  }
+  
+  .shadow-brutal-xl {
+    box-shadow: 12px 12px 0 #000;
+  }
+  
+  /* Colored Shadow Utilities */
+  .shadow-brutal-primary {
+    box-shadow: 6px 6px 0 var(--brand-primary);
+  }
+  
+  .shadow-brutal-primary-sm {
+    box-shadow: 3px 3px 0 var(--brand-primary);
+  }
+  
+  .shadow-brutal-primary-lg {
+    box-shadow: 8px 8px 0 var(--brand-primary);
+  }
+  
+  .shadow-brutal-primary-xl {
+    box-shadow: 12px 12px 0 var(--brand-primary);
+  }
+  
+  .shadow-brutal-secondary {
+    box-shadow: 6px 6px 0 var(--brand-secondary);
+  }
+  
+  .shadow-brutal-secondary-sm {
+    box-shadow: 3px 3px 0 var(--brand-secondary);
+  }
+  
+  .shadow-brutal-secondary-lg {
+    box-shadow: 8px 8px 0 var(--brand-secondary);
+  }
+  
+  .shadow-brutal-secondary-xl {
+    box-shadow: 12px 12px 0 var(--brand-secondary);
+  }
+  
+  /* Border Width Utilities */
+  .border-3 {
+    border-width: 3px;
+  }
+  
+  .border-4 {
+    border-width: 4px;
+  }
+  
+  /* Hover Animation Utilities */
+  .hover-lift {
+    @apply transition-transform duration-200 ease-in-out;
+  }
+  
+  .hover-lift:hover {
+    @apply -translate-y-1;
+  }
+  
+  .hover-brutal-push {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .hover-brutal-push:hover {
+    @apply translate-x-1 translate-y-1;
+  }
+  
+  .hover-brutal-push:active {
+    @apply translate-x-2 translate-y-2;
+  }
+  
+  /* Active state for buttons */
+  .active-brutal:active {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+  }
+}

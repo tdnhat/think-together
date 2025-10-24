@@ -49,7 +49,7 @@ export function LoginForm() {
 
       if (result?.success) {
         toast.success('Chào mừng quay trở lại!')
-        router.push('/my-quizzes')
+        router.push('/home')
       } else if (result?.errors) {
         mapApiErrorsToForm(result.errors, setError)
         toast.error('Vui lòng kiểm tra lại thông tin đăng nhập')

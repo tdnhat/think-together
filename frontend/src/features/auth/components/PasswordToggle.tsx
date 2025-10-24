@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes } from "react"
 
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type PasswordToggleProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -14,17 +15,20 @@ export function PasswordToggle({
   ...props
 }: PasswordToggleProps) {
   return (
-    <button
+    <Button
       type="button"
+      size="sm"
+      variant="default"
       onClick={onToggle}
       className={cn(
-        "rounded-lg border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary)] px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-primary)] shadow-[2px_2px_0_var(--color-border-main)] transition-transform hover:-translate-y-0.5",
+        "h-auto rounded-lg border-2 border-[var(--color-border-main)] px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-primary)] shadow-[2px_2px_0_var(--color-border-main)] hover:shadow-[2px_2px_0_var(--color-border-main)]",
+        "transition-transform",
         className
       )}
       {...props}
     >
       {show ? "Ẩn" : "Hiển thị"}
-    </button>
+    </Button>
   )
 }
 

@@ -33,10 +33,10 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           ) : null}
         </div>
         {helperText ? (
-          <span className="block text-xs text-[var(--text-secondary)]/70">{helperText}</span>
+          <span className="block mt-2 text-xs text-[var(--text-secondary)]/70">{helperText}</span>
         ) : null}
         {error ? (
-          <span className="block text-sm font-medium text-[var(--color-error)]">{error}</span>
+          <span className="block mt-2 text-sm font-medium text-[var(--color-error)]">{error}</span>
         ) : null}
       </div>
     )
