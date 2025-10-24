@@ -13,7 +13,7 @@ public class GameScoreConfiguration : IEntityTypeConfiguration<GameScore>
 
         builder.Property(gs => gs.Id)
             .HasColumnName("idDiem")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(gs => gs.PlayerId)
             .HasColumnName("idNguoiChoi")

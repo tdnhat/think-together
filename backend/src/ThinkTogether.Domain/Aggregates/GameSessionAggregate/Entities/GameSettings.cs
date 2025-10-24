@@ -25,6 +25,7 @@ public sealed class GameSettings : Entity
     {
         return new GameSettings
         {
+            Id = Guid.NewGuid(),
             GameSessionId = gameSessionId,
             ShuffleQuestions = shuffleQuestions,
             ShuffleAnswers = shuffleAnswers,

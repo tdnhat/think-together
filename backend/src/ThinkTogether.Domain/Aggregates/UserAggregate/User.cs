@@ -3,6 +3,7 @@ using Domain.Aggregates.UserAggregate.ValueObjects;
 using Domain.Exceptions;
 using Shared.Primitives;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Events;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 
 namespace Domain.Aggregates.UserAggregate;
@@ -43,8 +44,10 @@ public sealed class User : AggregateRoot
     {
         ValidateNames(firstName, lastName);
 
+        var userId = Guid.NewGuid(); // Generate ID in application
         var user = new User
         {
+            Id = userId,
             Email = email,
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
@@ -53,6 +56,11 @@ public sealed class User : AggregateRoot
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        user.AddDomainEvent(new UserRegisteredDomainEvent(
+            user.Id,
+            user.Email.Value,
+            user.GetFullName()));
 
         return user;
     }

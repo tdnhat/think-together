@@ -14,7 +14,7 @@ public class ProfanityFilterConfiguration : IEntityTypeConfiguration<ProfanityFi
 
         builder.Property(pf => pf.Id)
             .HasColumnName("idBoLoc")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(pf => pf.Pattern)
             .HasColumnName("pattern")

@@ -1,7 +1,8 @@
+using MediatR;
+
 namespace Shared.Primitives;
 
-public interface IDomainEvent
+public interface IDomainEvent : INotification
 {
-    DateTime OccurredOn { get; }
 }
 

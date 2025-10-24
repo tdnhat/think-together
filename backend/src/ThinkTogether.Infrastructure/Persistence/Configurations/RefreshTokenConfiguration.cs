@@ -15,7 +15,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 
         builder.Property(rt => rt.Id)
             .HasColumnName("idMaLamMoi")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(rt => rt.UserId)
             .HasColumnName("idNguoiDung")

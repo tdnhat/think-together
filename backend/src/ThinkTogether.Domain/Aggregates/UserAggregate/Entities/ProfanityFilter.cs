@@ -26,6 +26,7 @@ public sealed class ProfanityFilter : Entity
 
         return new ProfanityFilter
         {
+            Id = Guid.NewGuid(),
             Pattern = pattern.Trim(),
             Severity = severity,
             IsActive = true,

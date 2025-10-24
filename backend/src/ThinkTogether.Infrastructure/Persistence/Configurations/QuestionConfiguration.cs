@@ -17,7 +17,7 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         // Properties mapping to Vietnamese column names
         builder.Property(q => q.Id)
         .HasColumnName("idCauHoi")
-        .ValueGeneratedOnAdd();
+        .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(q => q.Content)
             .HasColumnName("noiDung")

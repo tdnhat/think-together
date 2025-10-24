@@ -31,6 +31,7 @@ public sealed class QuestionStatistics : Entity
     {
         return new QuestionStatistics
         {
+            Id = Guid.NewGuid(),
             GameSessionId = gameSessionId,
             QuestionId = questionId,
             CorrectCount = 0,

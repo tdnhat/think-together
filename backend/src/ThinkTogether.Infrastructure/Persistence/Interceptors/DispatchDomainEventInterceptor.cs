@@ -7,19 +7,21 @@ namespace ThinkTogether.Infrastructure.Persistence.Interceptors;
 
 public class DispatchDomainEventInterceptor(IPublisher publisher) : SaveChangesInterceptor
 {
-    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
     {
+        var baseResult = base.SavedChanges(eventData, result);
         DispatchDomainEvents(eventData.Context);
-        return base.SavingChanges(eventData, result);
+        return baseResult;
     }
 
-    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
-        DbContextEventData eventData,
-        InterceptionResult<int> result,
+    public override async ValueTask<int> SavedChangesAsync(
+        SaveChangesCompletedEventData eventData,
+        int result,
         CancellationToken cancellationToken = default)
     {
+        var baseResult = await base.SavedChangesAsync(eventData, result, cancellationToken);
         await DispatchDomainEventsAsync(eventData.Context, cancellationToken);
-        return await base.SavingChangesAsync(eventData, result, cancellationToken);
+        return baseResult;
     }
 
     private void DispatchDomainEvents(DbContext? context)

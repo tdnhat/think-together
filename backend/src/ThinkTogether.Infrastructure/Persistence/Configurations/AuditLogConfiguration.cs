@@ -14,7 +14,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
 
         builder.Property(al => al.Id)
             .HasColumnName("idNhatKy")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(al => al.ChangedById)
             .HasColumnName("idNguoiThayDoi")

@@ -43,6 +43,7 @@ public sealed class QuizSet : AggregateRoot
 
         var quizSet = new QuizSet
         {
+            Id = Guid.NewGuid(),
             UserId = userId,
             Title = title.Trim(),
             Description = description?.Trim(),

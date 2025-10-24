@@ -33,20 +33,16 @@ public sealed class LogoutUserCommandHandler : IRequestHandler<LogoutUserCommand
         var specification = new RefreshTokenSpecification(request.RefreshToken);
         var user = await _userRepository.GetBySpecAsync(specification, cancellationToken);
 
-        if (user == null || !user.CanAuthenticate())
-            throw new UnauthorizedException("Refresh token không hợp lệ hoặc người dùng không tồn tại");
 
-        // Validate that the refresh token is valid
-        var validRefreshToken = user.GetValidRefreshToken(request.RefreshToken);
-        if (validRefreshToken == null)
-            throw new UnauthorizedException("Refresh token không hợp lệ hoặc đã hết hạn");
+        if (user != null)
+        {
+            // Revoke all active refresh tokens
+            user.RevokeAllActiveRefreshTokens();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Revoke all active refresh tokens
-        user.RevokeAllActiveRefreshTokens();
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        // Blacklist the current access token
-        await BlacklistCurrentAccessTokenAsync(cancellationToken);
+            // Blacklist the current access token
+            await BlacklistCurrentAccessTokenAsync(cancellationToken);
+        }
     }
 
     private async Task BlacklistCurrentAccessTokenAsync(CancellationToken cancellationToken)

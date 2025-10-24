@@ -35,6 +35,7 @@ public sealed class LeaderboardEntry : Entity
 
         return new LeaderboardEntry
         {
+            Id = Guid.NewGuid(),
             ChallengeId = challengeId,
             StudentName = studentName.Trim(),
             Score = score,

@@ -39,6 +39,7 @@ public sealed class ChallengeAttempt : Entity
 
         return new ChallengeAttempt
         {
+            Id = Guid.NewGuid(),
             ChallengeId = challengeId,
             StudentName = studentName.Trim(),
             Score = score,

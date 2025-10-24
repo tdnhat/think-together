@@ -55,6 +55,11 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(RedisOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.AddOptions<EmailOptions>()
+            .Bind(configuration.GetSection(EmailOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
     }
 
     private static void ConfigureRedis(IServiceCollection services, IConfiguration configuration)
@@ -118,5 +123,6 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
+        services.AddScoped<IEmailService, EmailService>();
     }
 }

@@ -17,7 +17,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Id)
             .HasColumnName("idNguoiDung")
-            .ValueGeneratedOnAdd(); // Database generates the ID
+            .ValueGeneratedNever(); // Application generates the ID (GUID)
 
         builder.Property(u => u.Email)
             .HasConversion(
