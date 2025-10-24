@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using Infrastructure.Configuration;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Infrastructure.Templates;
 
 namespace ThinkTogether.Infrastructure.Services;
 
@@ -30,7 +31,7 @@ public class EmailService : IEmailService
         {
             _logger.LogInformation("Sending welcome email to {RecipientEmail} for {RecipientName}", recipientEmail, recipientName);
 
-            var htmlBody = GenerateWelcomeEmailHtml(recipientName);
+            var htmlBody = WelcomeEmailTemplate.Build(recipientName);
             const string subject = "Welcome to ThinkTogether!";
 
             await SendAsync(recipientEmail, subject, htmlBody, cancellationToken);
@@ -65,7 +66,7 @@ public class EmailService : IEmailService
         {
             _logger.LogInformation("Sending password reset email to {RecipientEmail} for {RecipientName}", recipientEmail, recipientName);
 
-            var htmlBody = GeneratePasswordResetEmailHtml(recipientName, resetLink);
+            var htmlBody = PasswordResetEmailTemplate.Build(recipientName, resetLink);
             const string subject = "Reset Your ThinkTogether Password";
 
             await SendAsync(recipientEmail, subject, htmlBody, cancellationToken);
@@ -99,7 +100,7 @@ public class EmailService : IEmailService
         {
             _logger.LogInformation("Sending email confirmation to {RecipientEmail} for {RecipientName}", recipientEmail, recipientName);
 
-            var htmlBody = GenerateEmailConfirmationHtml(recipientName, confirmationLink);
+            var htmlBody = EmailConfirmationTemplate.Build(recipientName, confirmationLink);
             const string subject = "Confirm Your Email - ThinkTogether";
 
             await SendAsync(recipientEmail, subject, htmlBody, cancellationToken);
@@ -223,128 +224,6 @@ public class EmailService : IEmailService
             throw new EmailServiceException("Failed to send email via SMTP service.", ex);
         }
     }
-
-    #region Email Template Generation
-
-    private static string GenerateWelcomeEmailHtml(string recipientName)
-    {
-        return $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset=""UTF-8"">
-    <style>
-        body {{ font-family: Arial, sans-serif; color: #333; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 5px; text-align: center; }}
-        .content {{ padding: 20px; background: #f9f9f9; border-radius: 5px; margin-top: 20px; }}
-        .footer {{ text-align: center; color: #999; font-size: 12px; margin-top: 20px; }}
-        .button {{ display: inline-block; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }}
-    </style>
-</head>
-<body>
-    <div class=""container"">
-        <div class=""header"">
-            <h1>Welcome to ThinkTogether!</h1>
-        </div>
-        <div class=""content"">
-            <p>Hi {recipientName},</p>
-            <p>Thank you for registering with ThinkTogether! We're excited to have you on board.</p>
-            <p>ThinkTogether is an interactive quiz platform designed to make learning engaging and fun. Create custom quizzes, challenge friends, and track your progress all in one place.</p>
-            <p><strong>What you can do now:</strong></p>
-            <ul>
-                <li>Create your own quiz sets</li>
-                <li>Host live games and invite others</li>
-                <li>Track your performance and statistics</li>
-                <li>Compete with friends and colleagues</li>
-            </ul>
-            <p>Get started by logging in to your account and creating your first quiz!</p>
-        </div>
-        <div class=""footer"">
-            <p>© 2025 ThinkTogether. All rights reserved.</p>
-            <p>If you have any questions, please don't hesitate to contact us.</p>
-        </div>
-    </div>
-</body>
-</html>";
-    }
-
-    private static string GeneratePasswordResetEmailHtml(string recipientName, string resetLink)
-    {
-        return $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset=""UTF-8"">
-    <style>
-        body {{ font-family: Arial, sans-serif; color: #333; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ background: #ff6b6b; color: white; padding: 20px; border-radius: 5px; text-align: center; }}
-        .content {{ padding: 20px; background: #f9f9f9; border-radius: 5px; margin-top: 20px; }}
-        .footer {{ text-align: center; color: #999; font-size: 12px; margin-top: 20px; }}
-        .button {{ display: inline-block; padding: 10px 20px; background: #ff6b6b; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }}
-        .warning {{ color: #ff6b6b; font-weight: bold; }}
-    </style>
-</head>
-<body>
-    <div class=""container"">
-        <div class=""header"">
-            <h1>Reset Your Password</h1>
-        </div>
-        <div class=""content"">
-            <p>Hi {recipientName},</p>
-            <p>We received a request to reset your ThinkTogether password. If you didn't make this request, you can safely ignore this email.</p>
-            <p>To reset your password, click the button below:</p>
-            <a href=""{resetLink}"" class=""button"">Reset Password</a>
-            <p><span class=""warning"">⚠️ This link will expire in 1 hour.</span></p>
-            <p>If the button above doesn't work, copy and paste this link into your browser:</p>
-            <p><code>{resetLink}</code></p>
-        </div>
-        <div class=""footer"">
-            <p>© 2025 ThinkTogether. All rights reserved.</p>
-        </div>
-    </div>
-</body>
-</html>";
-    }
-
-    private static string GenerateEmailConfirmationHtml(string recipientName, string confirmationLink)
-    {
-        return $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset=""UTF-8"">
-    <style>
-        body {{ font-family: Arial, sans-serif; color: #333; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 5px; text-align: center; }}
-        .content {{ padding: 20px; background: #f9f9f9; border-radius: 5px; margin-top: 20px; }}
-        .footer {{ text-align: center; color: #999; font-size: 12px; margin-top: 20px; }}
-        .button {{ display: inline-block; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }}
-    </style>
-</head>
-<body>
-    <div class=""container"">
-        <div class=""header"">
-            <h1>Confirm Your Email</h1>
-        </div>
-        <div class=""content"">
-            <p>Hi {recipientName},</p>
-            <p>Welcome to ThinkTogether! Please confirm your email address to complete your registration.</p>
-            <p>Click the button below to confirm your email:</p>
-            <a href=""{confirmationLink}"" class=""button"">Confirm Email</a>
-            <p>If the button above doesn't work, copy and paste this link into your browser:</p>
-            <p><code>{confirmationLink}</code></p>
-        </div>
-        <div class=""footer"">
-            <p>© 2025 ThinkTogether. All rights reserved.</p>
-        </div>
-    </div>
-</body>
-</html>";
-    }
-
     private static string ConvertHtmlToPlainText(string html)
     {
         // Remove HTML tags
@@ -353,6 +232,4 @@ public class EmailService : IEmailService
         plainText = System.Net.WebUtility.HtmlDecode(plainText);
         return plainText;
     }
-
-    #endregion
 }
