@@ -5,6 +5,7 @@ using Infrastructure.Configuration;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -74,11 +75,19 @@ public static class DependencyInjection
     private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<AuditInterceptor>();
+        services.AddScoped<DispatchDomainEventInterceptor>();
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
-                sqlServerOptionsAction => sqlServerOptionsAction.MigrationsAssembly("ThinkTogether.Infrastructure")));
+        services.AddDbContext<ApplicationDbContext>(
+            (serviceProvider, options) =>
+            {
+                options.UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    sqlServerOptionsAction => sqlServerOptionsAction.MigrationsAssembly("ThinkTogether.Infrastructure"));
+                
+                // Get the dispatcher interceptor from DI container
+                var dispatchDomainEventInterceptor = serviceProvider.GetRequiredService<DispatchDomainEventInterceptor>();
+                options.AddInterceptors(dispatchDomainEventInterceptor);
+            });
     }
 
     private static void ConfigureRepositories(IServiceCollection services)
