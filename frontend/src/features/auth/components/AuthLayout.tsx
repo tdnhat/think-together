@@ -44,11 +44,11 @@ export function AuthLayout({
     )
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_#f3f4ff_0%,_#f8fbff_55%,_#fffafd_100%)] px-4 py-10 text-[var(--text-secondary)]">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_#f0f9ff_0%,_#f8fbff_55%,_#fffafd_100%)] px-4 py-10 text-[var(--text-secondary)]">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_10%,rgba(109,120,255,0.12),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_15%_75%,rgba(255,180,162,0.18),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(55%_45%_at_85%_80%,rgba(129,212,250,0.18),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_10%,rgba(0,168,232,0.12),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_15%_75%,rgba(255,224,102,0.18),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(55%_45%_at_85%_80%,rgba(0,168,232,0.15),transparent)]" />
       </div>
 
       <FloatingStationery />
@@ -113,7 +113,7 @@ function FloatingStationery() {
       id: "notebook",
       Icon: BookOpen,
       className: "bottom-[18%] left-[12%]",
-      colors: "bg-[#e9f2ff] text-[#4f6cff]",
+      colors: "bg-[#e0f2fe] text-[#00A8E8]",
       size: "h-20 w-20",
       float: { rotate: [4, -6, 6] as number[], x: [0, -16, 10, 0] as number[], y: [0, 12, -14, 0] as number[] },
       delay: 2,
