@@ -1,2 +1,5 @@
 export { Navbar } from './navbar';
 export { Footer } from './footer';
+export { DashboardSidebar } from './dashboard-sidebar';
+export { DashboardNavbar } from './dashboard-navbar';
+export { DashboardLayout } from './dashboard-layout';

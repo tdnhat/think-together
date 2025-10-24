@@ -24,7 +24,7 @@ export function Navbar() {
               Trang chủ
             </Link>
             <Link href="/quiz" className="hover:opacity-70 transition-opacity">
-              Bài kiểm tra
+              Bộ câu hỏi
             </Link>
             <Link href="/leaderboard" className="hover:opacity-70 transition-opacity">
               Bảng xếp hạng
@@ -78,7 +78,7 @@ export function Navbar() {
                 className="hover:opacity-70 transition-opacity"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Bài kiểm tra
+                Bộ câu hỏi
               </Link>
               <Link 
                 href="/leaderboard" 
