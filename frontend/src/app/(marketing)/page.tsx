@@ -1,12 +1,12 @@
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
-import { Hero, Features, Stats, CallToAction } from '@/components/landing';
+import { CallToAction, Features, Hero, Stats } from "@/components/landing";
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="relative flex min-h-screen flex-col">
       <Navbar />
-      <main>
+      <main className="flex-1">
         <Hero />
         <Features />
         <Stats />

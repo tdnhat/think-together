@@ -1,46 +1,44 @@
-import { Button } from '@/components/ui/button';
-import { BrandBadge, SectionContainer } from '@/components/shared';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { ArrowRight, Sparkles } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
+import { BrandBadge, SectionContainer } from "@/components/shared";
+import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
-    <SectionContainer className="py-16 md:py-24">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
+    <SectionContainer className="py-20">
+      <div className="grid items-center gap-12 md:grid-cols-2">
         {/* Left Content */}
         <div className="space-y-6">
           <BrandBadge 
-            icon={<Sparkles className="w-4 h-4 text-[#FFE066] fill-[#FFE066]" />}
+            icon={<Sparkles className="h-4 w-4 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]" />}
             variant="secondary"
           >
             Nền tảng học tập thông minh
           </BrandBadge>
           
-          <h1 className="text-5xl md:text-6xl font-heading font-bold text-text-primary">
+          <h1 className="font-heading text-5xl font-bold text-[var(--text-primary)] md:text-6xl">
             Học cùng nhau,
             <br />
-            <span className="text-[#00A8E8]">vui hơn gấp bội!</span>
+            <span className="text-[var(--brand-primary)]">vui hơn gấp bội!</span>
           </h1>
           
-          <p className="text-lg text-text-secondary max-w-lg">
+          <p className="max-w-lg text-lg text-[var(--text-secondary)]">
             Tham gia cộng đồng học sinh năng động, làm bài kiểm tra thú vị, 
             theo dõi tiến trình và cạnh tranh với bạn bè trên bảng xếp hạng.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <Button 
               asChild
               size="lg"
-              className="border-3 border-black rounded-xl hover-brutal-push text-lg text-white"
-              style={{ 
-                backgroundColor: '#00A8E8',
-                boxShadow: '6px 6px 0 #000'
-              }}
+              variant="secondary"
+              className="rounded-xl text-lg shadow-brutal"
             >
               <Link href="/signup">
                 Bắt đầu học ngay!
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             
@@ -48,28 +46,24 @@ export function Hero() {
               asChild
               size="lg"
               variant="outline"
-              className="border-3 border-black rounded-xl hover-brutal-push text-lg"
-              style={{ 
-                boxShadow: '6px 6px 0 #FFE066',
-                backgroundColor: 'white'
-              }}
+              className="rounded-xl text-lg shadow-brutal-secondary"
             >
               <Link href="/about">Tìm hiểu thêm</Link>
             </Button>
           </div>
           
-          <div className="flex items-center gap-8 pt-4 flex-wrap">
+          <div className="flex flex-wrap items-center gap-8 pt-4">
             <div>
-              <div className="text-3xl font-heading font-bold text-[#00A8E8]">5,000+</div>
-              <div className="text-text-secondary">Học sinh</div>
+              <div className="font-heading text-3xl font-bold text-[var(--brand-primary)]">5,000+</div>
+              <div className="text-[var(--text-secondary)]">Học sinh</div>
             </div>
             <div>
-              <div className="text-3xl font-heading font-bold text-[#00A8E8]">10,000+</div>
-              <div className="text-text-secondary">Câu hỏi</div>
+              <div className="font-heading text-3xl font-bold text-[var(--brand-primary)]">10,000+</div>
+              <div className="text-[var(--text-secondary)]">Câu hỏi</div>
             </div>
             <div>
-              <div className="text-3xl font-heading font-bold text-[#00A8E8]">98%</div>
-              <div className="text-text-secondary">Hài lòng</div>
+              <div className="font-heading text-3xl font-bold text-[var(--brand-primary)]">98%</div>
+              <div className="text-[var(--text-secondary)]">Hài lòng</div>
             </div>
           </div>
         </div>
@@ -77,8 +71,7 @@ export function Hero() {
         {/* Right Image */}
         <div className="relative">
           <div 
-            className="rounded-3xl overflow-hidden border-4 border-black relative h-[400px] md:h-[500px]"
-            style={{ boxShadow: '12px 12px 0 #FFE066' }}
+            className="relative h-[400px] overflow-hidden rounded-3xl border-4 border-[var(--color-border-main)] shadow-brutal-secondary-xl md:h-[500px]"
           >
             <Image
               src="/images/hero-1.png"
@@ -91,8 +84,7 @@ export function Hero() {
           
           {/* Floating decoration */}
           <div 
-            className="absolute -top-4 -right-4 w-24 h-24 rounded-full border-4 border-black hidden md:block"
-            style={{ backgroundColor: '#FFE066' }}
+            className="absolute -right-4 -top-4 hidden h-24 w-24 rounded-full border-4 border-[var(--color-border-main)] bg-[var(--brand-secondary)] md:block"
             aria-hidden="true"
           />
         </div>

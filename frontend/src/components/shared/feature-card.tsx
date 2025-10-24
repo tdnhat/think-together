@@ -1,11 +1,12 @@
-import { type LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { type LucideIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface FeatureCardProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
   className?: string;
 }
 
@@ -13,38 +14,43 @@ interface FeatureCardProps {
  * Feature card with neo-brutalist style and colored shadow
  * Used in Features section of landing page
  */
-export function FeatureCard({ 
-  icon: Icon, 
-  title, 
-  description, 
-  variant = 'primary',
-  className 
-}: FeatureCardProps) {
-  const shadowColor = variant === 'primary' ? '#00A8E8' : '#FFE066';
-  const iconBg = variant === 'primary' ? '#00A8E8' : '#FFE066';
-  const iconColor = variant === 'primary' ? '#fff' : '#000';
-  
+export function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+  variant = "primary",
+  className
+}: Readonly<FeatureCardProps>) {
+  const variantShadowClass = variant === "primary" ? "shadow-brutal-primary" : "shadow-brutal-secondary";
+  const iconThemeClass =
+    variant === "primary"
+      ? "bg-[var(--brand-primary)] text-white"
+      : "bg-[var(--brand-secondary)] text-[var(--text-primary)]";
+
   return (
     <div
       className={cn(
-        "bg-white p-6 rounded-2xl border-3 border-black",
-        "hover-brutal-push cursor-pointer",
+        "rounded-2xl border-3 border-[var(--color-border-main)] bg-white p-6",
+        "transition-transform duration-200 hover:-translate-y-1",
+        variantShadowClass,
         className
       )}
-      style={{ boxShadow: `6px 6px 0 ${shadowColor}` }}
     >
-      <div 
-        className="w-14 h-14 rounded-xl border-2 border-black flex items-center justify-center mb-4"
-        style={{ backgroundColor: iconBg }}
+      <div
+        className={cn(
+          "mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-[var(--color-border-main)]",
+          "shadow-brutal",
+          iconThemeClass
+        )}
       >
-        <Icon className="w-7 h-7" style={{ color: iconColor }} />
+        <Icon className="h-7 w-7" />
       </div>
       
-      <h3 className="font-heading text-xl mb-2 text-text-primary">
+      <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
         {title}
       </h3>
       
-      <p className="text-text-secondary text-base">
+      <p className="text-base text-[var(--text-secondary)]">
         {description}
       </p>
     </div>

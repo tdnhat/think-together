@@ -45,8 +45,8 @@ export function SignupForm() {
       })
 
       if (result?.success) {
-        toast.success('Tài khoản được tạo thành công! 🎉')
-        router.push('/my-quizzes')
+        toast.success('Tài khoản được tạo thành công!')
+        router.push('/home')
       } else if (result?.errors) {
         const mappedErrors: Record<string, string[]> = {}
 
@@ -80,7 +80,7 @@ export function SignupForm() {
           autoComplete="name"
           label="Họ và tên đầy đủ"
           placeholder="Nguyễn Văn A"
-          helperText="Để chúng tôi biết gọi bạn như thế nào trong trường thi trắc nghiệm."
+          helperText="Sử dụng tên thật để bạn bè dễ nhận biết hơn."
           error={errors.name?.message}
         />
 
@@ -116,6 +116,7 @@ export function SignupForm() {
           autoComplete="new-password"
           label="Xác nhận mật khẩu"
           placeholder="Nhập lại mật khẩu của bạn"
+          helperText="Đảm bảo rằng mật khẩu của bạn khớp."
           error={errors.confirmPassword?.message}
           trailingSlot={
             <PasswordToggle

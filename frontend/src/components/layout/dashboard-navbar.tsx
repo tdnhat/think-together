@@ -1,46 +1,91 @@
-'use client';
+"use client";
 
-import { Search, Bell, GraduationCap } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo } from "react";
+
+import { Bell, GraduationCap, Search } from "lucide-react";
+import toast from "react-hot-toast";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ProfileDropdown } from "@/components/ui/profile-dropdown";
+import { useAuth } from "@/hooks/use-auth";
 
 export function DashboardNavbar() {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const initials = useMemo(() => {
+    if (!user) {
+      return 'ND';
+    }
+
+    const fromName = user.name
+      ?.trim()
+      .split(' ')
+      .filter((segment) => segment.length > 0)
+      .map((segment) => segment[0] ?? '')
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+
+    if (fromName && fromName.length > 0) {
+      return fromName;
+    }
+
+    if (user.email) {
+      return user.email.slice(0, 2).toUpperCase();
+    }
+
+    return 'TT';
+  }, [user]);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout();
+      toast.success('Đăng xuất thành công!');
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout request failed', error);
+      toast.error('Không thể đăng xuất. Vui lòng thử lại.');
+    }
+  }, [logout, router]);
+
   return (
-    <header className="fixed left-64 right-0 top-0 z-30 h-16 border-b-4 border-black bg-white">
+    <header className="fixed left-64 right-0 top-0 z-30 h-16 border-b-4 border-[var(--color-border-main)] bg-[var(--bg-page)]/95 backdrop-blur">
       <div className="flex h-full w-full items-center justify-between gap-6 px-6">
-        <Link href="/home" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <GraduationCap className="w-8 h-8 text-[#00A8E8]" />
-            <span className="text-xl font-heading font-semibold">ThinkTogether</span>
+        <Link href="/home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+            <GraduationCap className="h-8 w-8 text-[var(--brand-primary)]" />
+            <span className="text-xl font-heading font-semibold text-[var(--text-primary)]">ThinkTogether</span>
           </Link>
 
         <div className="flex flex-1 justify-center">
           <div className="relative w-full max-w-xl">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-secondary)]/40" />
             <Input
               type="search"
               placeholder="Tìm kiếm bộ câu hỏi..."
-              className="h-10 w-full rounded-xl border-2 border-black pl-12 pr-4 shadow-[3px_3px_0_#FFE066] transition-all focus:shadow-[4px_4px_0_#FFE066] focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="h-10 w-full rounded-xl border-2 border-[var(--color-border-main)] pl-12 pr-4 text-[var(--text-secondary)] shadow-brutal-secondary-sm transition-all focus:shadow-brutal-secondary-sm"
             />
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          <button
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl border-2 border-black bg-white shadow-[3px_3px_0_#000] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#000]"
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="relative h-10 w-10 rounded-xl bg-white text-[var(--text-primary)] shadow-brutal-sm transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-brutal-sm"
             aria-label="Notifications"
           >
             <Bell className="h-5 w-5" />
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-black bg-[#FFE066] text-xs font-bold">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary)] text-xs font-bold">
               3
             </span>
-          </button>
+          </Button>
 
-          <Link
-            href="/profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-[#00A8E8] text-sm font-bold text-white shadow-[3px_3px_0_#000] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#000]"
-          >
-            ND
-          </Link>
+          <ProfileDropdown initials={initials} onSignOut={handleLogout} />
         </div>
       </div>
     </header>

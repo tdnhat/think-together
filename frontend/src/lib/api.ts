@@ -115,7 +115,7 @@ class ApiClient {
 
     return {
       type: 'about:blank',
-      title: 'Network Error',
+      title: 'Lỗi kết nối',
       status: 0,
       detail: error.message || 'Không thể kết nối với máy chủ',
       instance: '',

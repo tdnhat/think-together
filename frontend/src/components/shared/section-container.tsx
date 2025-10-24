@@ -1,5 +1,6 @@
-import { type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { type ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
 
 interface SectionContainerProps {
   children: ReactNode;
@@ -11,18 +12,18 @@ interface SectionContainerProps {
  * Section container with max-width and consistent padding
  * Follows STYLE_GUIDE.md layout rules
  */
-export function SectionContainer({ 
-  children, 
+export function SectionContainer({
+  children,
   className,
-  background = 'white'
-}: SectionContainerProps) {
+  background = "white"
+}: Readonly<SectionContainerProps>) {
   return (
     <section className={cn(
-      "py-16 md:py-20 px-4 sm:px-6 lg:px-8",
-      background === 'gray' && "bg-gray-50",
+      "px-4 py-16 md:py-20 sm:px-6 lg:px-8",
+      background === "gray" && "bg-[var(--bg-surface)]",
       className
     )}>
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl">
         {children}
       </div>
     </section>

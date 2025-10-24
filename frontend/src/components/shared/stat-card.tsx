@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   value: string;
   label: string;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
   className?: string;
 }
 
@@ -11,26 +11,26 @@ interface StatCardProps {
  * Stat card for displaying metrics with neo-brutalist style
  * Used in Stats/Hero sections
  */
-export function StatCard({ 
-  value, 
-  label, 
-  variant = 'secondary',
-  className 
-}: StatCardProps) {
-  const shadowColor = variant === 'primary' ? '#00A8E8' : '#FFE066';
-  
+export function StatCard({
+  value,
+  label,
+  variant = "secondary",
+  className
+}: Readonly<StatCardProps>) {
+  const variantShadowClass = variant === "primary" ? "shadow-brutal-primary" : "shadow-brutal-secondary";
+
   return (
     <div 
       className={cn(
-        "bg-white p-6 rounded-2xl border-3 border-black text-center",
+        "rounded-2xl border-3 border-[var(--color-border-main)] bg-white p-6 text-center",
+        variantShadowClass,
         className
       )}
-      style={{ boxShadow: `6px 6px 0 ${shadowColor}` }}
     >
-      <div className="text-4xl font-heading mb-2 text-[#00A8E8]">
+      <div className="mb-2 text-4xl font-heading text-[var(--brand-primary)]">
         {value}
       </div>
-      <div className="text-text-secondary text-sm">
+      <div className="text-sm text-[var(--text-secondary)]">
         {label}
       </div>
     </div>

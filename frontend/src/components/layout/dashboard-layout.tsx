@@ -1,18 +1,19 @@
-import { DashboardSidebar } from '@/components/layout/dashboard-sidebar';
-import { DashboardNavbar } from '@/components/layout/dashboard-navbar';
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
+
+import { DashboardNavbar } from "@/components/layout/dashboard-navbar";
+import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout({ children }: Readonly<DashboardLayoutProps>) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--bg-page)]">
       <DashboardSidebar />
       <div className="pl-64">
         <DashboardNavbar />
-        <main className="min-h-screen bg-[#F8FAFC] px-10 pb-12 pt-24">
+        <main className="min-h-screen bg-[var(--bg-surface)] px-10 pb-12 pt-24">
           <div className="mx-auto w-full max-w-6xl">
             {children}
           </div>
