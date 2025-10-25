@@ -14,7 +14,7 @@ public class MediaConfiguration : IEntityTypeConfiguration<Media>
 
         builder.Property(m => m.Id)
             .HasColumnName("idMedia")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(m => m.UploadedById)
             .HasColumnName("idNguoiTaiLen")

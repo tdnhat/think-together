@@ -5,10 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
+using ThinkTogether.Application.Handlers.User.Commands.ForgotPassword;
 using ThinkTogether.Application.Handlers.User.Commands.LoginUser;
 using ThinkTogether.Application.Handlers.User.Commands.LogoutUser;
 using ThinkTogether.Application.Handlers.User.Commands.RegisterUser;
 using ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
+using ThinkTogether.Application.Handlers.User.Commands.ResetPassword;
+using ThinkTogether.Application.Handlers.User.Commands.ConfirmEmail;
+using ThinkTogether.Application.Handlers.User.Commands.ResendEmailConfirmation;
 
 namespace ThinkTogether.Api.Controllers;
 
@@ -26,27 +30,18 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<AuthTokenDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
     public async Task<IActionResult> Register(
         [FromBody] RegisterUserCommand command,
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
 
-        // Set refresh token in cookie
-        if (result.RefreshToken != null)
-            Response.Cookies.Append(RefreshTokenCookieName, result.RefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.FromUnixTimeSeconds(result.ExpiresAt),
-            });
-
-        return CreatedAtAction(nameof(GetCurrentUser), null, new ApiResponse<AuthTokenDto>
+        return CreatedAtAction(nameof(GetCurrentUser), null, new ApiResponse<object>
         {
             Success = true,
-            Data = result.WithoutRefreshToken()
+            Message = "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.",
+            Data = new { EmailConfirmed = false }
         });
     }
 
@@ -156,5 +151,72 @@ public class AuthenticationController : ControllerBase
         Response.Cookies.Delete(RefreshTokenCookieName);
 
         return NoContent();
+    }
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ForgotPassword(
+        [FromBody] ForgotPasswordCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được liên kết đặt lại mật khẩu"
+        });
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Mật khẩu đã được đặt lại thành công"
+        });
+    }
+
+    [HttpPost("confirm-email")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail(
+        [FromBody] ConfirmEmailCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Email đã được xác nhận thành công! Chào mừng bạn đến với ThinkTogether."
+        });
+    }
+
+    [HttpPost("resend-email-confirmation")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResendEmailConfirmation(
+        [FromBody] ResendEmailConfirmationCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được email xác nhận"
+        });
     }
 }

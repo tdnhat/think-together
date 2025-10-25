@@ -36,6 +36,7 @@ public sealed class AuditLog : Entity
     {
         return new AuditLog
         {
+            Id = Guid.NewGuid(),
             ChangedById = changedById,
             EntityType = entityType,
             EntityId = entityId,

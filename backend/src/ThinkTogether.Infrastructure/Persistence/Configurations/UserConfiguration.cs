@@ -17,7 +17,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Id)
             .HasColumnName("idNguoiDung")
-            .ValueGeneratedOnAdd(); // Database generates the ID
+            .ValueGeneratedNever(); // Application generates the ID (GUID)
 
         builder.Property(u => u.Email)
             .HasConversion(
@@ -74,5 +74,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Indexes
         builder.HasIndex(u => u.Role);
         builder.HasIndex(u => u.DeletedAt);
+
+        // Configure UserTokens relationship
+        builder.HasMany(u => u.UserTokens)
+            .WithOne()
+            .HasForeignKey(ut => ut.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

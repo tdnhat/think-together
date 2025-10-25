@@ -15,7 +15,7 @@ public class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
         // Properties with Vietnamese column names
         builder.Property(g => g.Id)
         .HasColumnName("idPhienChoi")
-        .ValueGeneratedOnAdd();
+        .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(g => g.HostId)
         .HasColumnName("idChuPhong")

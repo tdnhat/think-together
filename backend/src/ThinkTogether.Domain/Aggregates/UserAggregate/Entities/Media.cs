@@ -51,6 +51,7 @@ public sealed class Media : Entity
 
         return new Media
         {
+            Id = Guid.NewGuid(),
             UploadedById = uploadedById,
             Filename = filename.Trim(),
             Url = url.Trim(),

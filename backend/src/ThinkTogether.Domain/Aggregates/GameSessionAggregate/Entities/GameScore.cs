@@ -52,6 +52,7 @@ public sealed class GameScore : Entity
 
         return new GameScore
         {
+            Id = Guid.NewGuid(),
             PlayerId = playerId,
             GameSessionId = gameSessionId,
             TotalScore = totalScore,

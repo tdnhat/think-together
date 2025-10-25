@@ -41,6 +41,7 @@ public sealed class ModeratorLog : Entity
 
         return new ModeratorLog
         {
+            Id = Guid.NewGuid(),
             AdminId = adminId,
             Action = action,
             EntityType = entityType,

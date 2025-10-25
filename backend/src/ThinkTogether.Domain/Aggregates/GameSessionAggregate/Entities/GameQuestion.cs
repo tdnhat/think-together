@@ -29,10 +29,11 @@ public sealed class GameQuestion : Entity
         int positionInGame)
     {
         if (positionInGame < 1)
-            throw new Domain.Exceptions.ValidationException("Vị trí trong game phải lớn hơn 0");
+            throw new Exceptions.ValidationException("Vị trí trong game phải lớn hơn 0");
 
         return new GameQuestion
         {
+            Id = Guid.NewGuid(),
             GameSessionId = gameSessionId,
             QuestionId = questionId,
             PositionInGame = positionInGame,

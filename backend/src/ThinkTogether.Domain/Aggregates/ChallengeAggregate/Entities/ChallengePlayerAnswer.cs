@@ -39,6 +39,7 @@ public sealed class ChallengePlayerAnswer : Entity
 
         return new ChallengePlayerAnswer
         {
+            Id = Guid.NewGuid(),
             ChallengeSessionId = challengeSessionId,
             QuestionId = questionId,
             SubmittedAnswer = submittedAnswer?.Trim(),

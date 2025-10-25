@@ -17,7 +17,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -25,7 +25,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idThachThuc");
 
@@ -95,7 +94,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idLuotChoi");
 
@@ -155,7 +153,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengePlayerAnswer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauTraLoi");
 
@@ -218,7 +215,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.LeaderboardEntry", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idBangXepHang");
 
@@ -270,7 +266,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GamePlayer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idNguoiChoi");
 
@@ -315,7 +310,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameQuestion", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoiPhien");
 
@@ -379,7 +373,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameScore", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idDiem");
 
@@ -453,7 +446,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameSettings", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCaiDat");
 
@@ -512,7 +504,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.PlayerAnswer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauTraLoi");
 
@@ -575,7 +566,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.GameSession", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
 
@@ -636,7 +626,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.Entities.Question", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoi");
 
@@ -700,7 +689,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.Entities.QuestionStatistics", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idThongKe");
 
@@ -772,7 +760,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.QuizSet", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idBoTrucNghiem");
 
@@ -833,10 +820,192 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("BoTrucNghiem", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.AuditLog", b =>
+            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idMaLamMoi");
+
+                    b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("taoLuc")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("hetHanLuc");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thuHoiLuc");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("maToken");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("capNhatLuc");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("RevokedAt");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MaLamMoi", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.UserToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idMaNguoiDung");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("taoLuc")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("hetHanLuc");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("maToken");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("loaiToken");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("capNhatLuc");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("suDungLuc");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("UsedAt");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Type", "UsedAt");
+
+                    b.ToTable("MaNguoiDung", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.UserAggregate.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("urlAnhDaiDien");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(-1)
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("gioiThieu");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("tenDem");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("tenGoi");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("matKhau");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("vaiTro");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Role");
+
+                    b.ToTable("NguoiDung", (string)null);
+                });
+
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.AuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idNhatKy");
 
@@ -900,10 +1069,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("NhatKyHeThong", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.Media", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Media", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idMedia");
 
@@ -969,10 +1137,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("Media", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.ModeratorLog", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.ModeratorLog", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idNhatKy");
 
@@ -1047,10 +1214,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("NhatKyQuanTri", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.ProfanityFilter", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.ProfanityFilter", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idBoLoc");
 
@@ -1096,130 +1262,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("BoLocTuMieng", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idMaLamMoi");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("taoLuc")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("hetHanLuc");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("thuHoiLuc");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("maToken");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("capNhatLuc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiDung");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExpiresAt");
-
-                    b.HasIndex("RevokedAt");
-
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MaLamMoi", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Aggregates.UserAggregate.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiDung");
-
-                    b.Property<string>("AvatarUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("urlAnhDaiDien");
-
-                    b.Property<string>("Bio")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("gioiThieu");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayTao")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayXoa");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("email");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("tenDem");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("tenGoi");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("matKhau");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("vaiTro");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayCapNhat");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("Role");
-
-                    b.ToTable("NguoiDung", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.OwnsOne("Domain.Aggregates.ChallengeAggregate.ValueObjects.ShareableLink", "ShareLink", b1 =>
@@ -1235,7 +1277,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ChallengeId");
 
-                            b1.ToTable("ThachThuc", (string)null);
+                            b1.ToTable("ThachThuc");
 
                             b1.WithOwner()
                                 .HasForeignKey("ChallengeId");
@@ -1266,7 +1308,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ChallengeAttemptId");
 
-                            b1.ToTable("LuotChoiThachThuc", (string)null);
+                            b1.ToTable("LuotChoiThachThuc");
 
                             b1.WithOwner()
                                 .HasForeignKey("ChallengeAttemptId");
@@ -1297,7 +1339,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("LeaderboardEntryId");
 
-                            b1.ToTable("BangXepHangThachThuc", (string)null);
+                            b1.ToTable("BangXepHangThachThuc");
 
                             b1.WithOwner()
                                 .HasForeignKey("LeaderboardEntryId");
@@ -1328,7 +1370,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GamePlayerId");
 
-                            b1.ToTable("NguoiChoiPhien", (string)null);
+                            b1.ToTable("NguoiChoiPhien");
 
                             b1.WithOwner()
                                 .HasForeignKey("GamePlayerId");
@@ -1347,7 +1389,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GamePlayerId");
 
-                            b1.ToTable("NguoiChoiPhien", (string)null);
+                            b1.ToTable("NguoiChoiPhien");
 
                             b1.WithOwner()
                                 .HasForeignKey("GamePlayerId");
@@ -1391,7 +1433,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GameSessionId");
 
-                            b1.ToTable("PhienChoi", (string)null);
+                            b1.ToTable("PhienChoi");
 
                             b1.WithOwner()
                                 .HasForeignKey("GameSessionId");
@@ -1527,6 +1569,15 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.UserToken", b =>
+                {
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Navigation("Attempts");
@@ -1551,6 +1602,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.UserAggregate.User", b =>
                 {
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("UserTokens");
                 });
 #pragma warning restore 612, 618
         }

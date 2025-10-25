@@ -1,5 +1,4 @@
 using Domain.Aggregates.ChallengeAggregate;
-using Domain.Aggregates.ChallengeAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +14,7 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         // Properties with Vietnamese column names
         builder.Property(c => c.Id)
         .HasColumnName("idThachThuc")
-        .ValueGeneratedOnAdd();
+        .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(c => c.CreatorId)
         .HasColumnName("idNguoiTao")

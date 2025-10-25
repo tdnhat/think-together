@@ -52,6 +52,7 @@ public sealed class Challenge : AggregateRoot
 
         var challenge = new Challenge
         {
+            Id = Guid.NewGuid(),
             CreatorId = creatorId,
             QuizSetId = quizSetId,
             Title = title.Trim(),

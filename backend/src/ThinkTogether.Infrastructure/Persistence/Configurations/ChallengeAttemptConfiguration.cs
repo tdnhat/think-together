@@ -13,7 +13,7 @@ public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeA
 
         builder.Property(a => a.Id)
             .HasColumnName("idLuotChoi")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(a => a.ChallengeId)
             .HasColumnName("idThachThuc")

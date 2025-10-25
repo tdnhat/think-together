@@ -38,6 +38,7 @@ public sealed class PlayerAnswer : Entity
 
         return new PlayerAnswer
         {
+            Id = Guid.NewGuid(),
             GamePlayerId = gamePlayerId,
             QuestionId = questionId,
             Answer = answer?.Trim(),

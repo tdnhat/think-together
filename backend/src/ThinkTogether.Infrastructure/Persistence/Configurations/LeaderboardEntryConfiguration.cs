@@ -13,7 +13,7 @@ public class LeaderboardEntryConfiguration : IEntityTypeConfiguration<Leaderboar
 
         builder.Property(e => e.Id)
             .HasColumnName("idBangXepHang")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(e => e.ChallengeId)
             .HasColumnName("idThachThuc")

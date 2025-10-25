@@ -1,21 +1,32 @@
 using System.Reflection;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Behaviors;
 using MapsterMapper;
 using Mapster;
+using ThinkTogether.Application.Configuration;
 
 namespace Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ConfigureOptions(services, configuration);
         ConfigureMapster(services);
         ConfigureCqrs(services);
         
         return services;
+    }
+
+    private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<ApplicationOptions>()
+            .Bind(configuration.GetSection(ApplicationOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
     }
 
     private static void ConfigureMapster(IServiceCollection services)

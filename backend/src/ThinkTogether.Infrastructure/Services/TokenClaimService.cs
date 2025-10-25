@@ -19,11 +19,6 @@ public sealed class TokenClaimService : ITokenClaimService
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        if (!string.IsNullOrWhiteSpace(user.AvatarUrl))
-        {
-            claims.Add(new Claim("avatar_url", user.AvatarUrl));
-        }
-
         return Task.FromResult<IEnumerable<Claim>>(claims);
     }
 }

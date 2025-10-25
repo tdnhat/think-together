@@ -48,13 +48,14 @@ public sealed class Question : Entity
     string? explanation = null)
     {
         ValidateCommon(content, timeLimit, order);
-        ValidateAnswers(answers, QuestionType.TRACHOI);
+        ValidateAnswers(answers, QuestionType.TRACNGHIEM);
 
         var question = new Question
         {
+            Id = Guid.NewGuid(),
             QuizSetId = quizSetId,
             Content = content.Trim(),
-            Type = QuestionType.TRACHOI,
+            Type = QuestionType.TRACNGHIEM,
             TimeLimit = timeLimit,
             Order = order,
             Explanation = explanation?.Trim()
@@ -82,6 +83,7 @@ public sealed class Question : Entity
 
         var question = new Question
         {
+            Id = Guid.NewGuid(),
             QuizSetId = quizSetId,
             Content = content.Trim(),
             Type = QuestionType.DUNG_SAI,
@@ -107,6 +109,7 @@ public sealed class Question : Entity
 
         var question = new Question
         {
+            Id = Guid.NewGuid(),
             QuizSetId = quizSetId,
             Content = content.Trim(),
             Type = QuestionType.GHEP,
@@ -132,6 +135,7 @@ public sealed class Question : Entity
 
         var question = new Question
         {
+            Id = Guid.NewGuid(),
             QuizSetId = quizSetId,
             Content = content.Trim(),
             Type = QuestionType.SAPXEP,
@@ -164,6 +168,7 @@ public sealed class Question : Entity
 
         var question = new Question
         {
+            Id = Guid.NewGuid(),
             QuizSetId = quizSetId,
             Content = content.Trim(),
             Type = QuestionType.VIDEO,

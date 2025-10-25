@@ -13,7 +13,7 @@ public class ChallengePlayerAnswerConfiguration : IEntityTypeConfiguration<Chall
 
         builder.Property(cpa => cpa.Id)
             .HasColumnName("idCauTraLoi")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(cpa => cpa.ChallengeSessionId)
             .HasColumnName("idLuotChoiThachThuc")

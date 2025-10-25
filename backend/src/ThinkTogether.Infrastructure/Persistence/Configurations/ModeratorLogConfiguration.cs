@@ -14,7 +14,7 @@ public class ModeratorLogConfiguration : IEntityTypeConfiguration<ModeratorLog>
 
         builder.Property(ml => ml.Id)
             .HasColumnName("idNhatKy")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(ml => ml.AdminId)
             .HasColumnName("idQuanTri")

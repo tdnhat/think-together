@@ -13,7 +13,7 @@ public class QuestionStatisticsConfiguration : IEntityTypeConfiguration<Question
 
         builder.Property(qs => qs.Id)
             .HasColumnName("idThongKe")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(qs => qs.GameSessionId)
             .HasColumnName("idPhienChoi")

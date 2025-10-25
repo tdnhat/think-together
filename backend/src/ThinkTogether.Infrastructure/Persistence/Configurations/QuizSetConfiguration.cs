@@ -14,7 +14,7 @@ public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
         // Properties mapping to Vietnamese column names
         builder.Property(q => q.Id)
         .HasColumnName("idBoTrucNghiem")
-        .ValueGeneratedOnAdd();
+        .ValueGeneratedNever(); // Application generates the ID
 
         builder.Property(q => q.UserId)
         .HasColumnName("idNguoiDung")

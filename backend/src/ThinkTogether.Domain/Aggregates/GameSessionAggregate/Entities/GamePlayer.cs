@@ -32,6 +32,7 @@ public sealed class GamePlayer : Entity
     {
         return new GamePlayer
         {
+            Id = Guid.NewGuid(),
             GameSessionId = gameSessionId,
             Nickname = nickname,
             Score = Score.Zero(),

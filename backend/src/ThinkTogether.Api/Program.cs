@@ -6,7 +6,7 @@ using ThinkTogether.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiServices();
 builder.Services.AddSwaggerDocumentation();

@@ -48,6 +48,7 @@ public sealed class GameSession : AggregateRoot
     {
         var gameSession = new GameSession
         {
+            Id = Guid.NewGuid(),
             HostId = hostId,
             QuizSetId = quizSetId,
             PIN = pin,
