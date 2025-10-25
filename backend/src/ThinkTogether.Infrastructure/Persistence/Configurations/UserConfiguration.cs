@@ -74,5 +74,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Indexes
         builder.HasIndex(u => u.Role);
         builder.HasIndex(u => u.DeletedAt);
+
+        // Configure UserTokens relationship
+        builder.HasMany(u => u.UserTokens)
+            .WithOne()
+            .HasForeignKey(ut => ut.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

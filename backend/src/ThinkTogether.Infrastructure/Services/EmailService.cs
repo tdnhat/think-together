@@ -124,6 +124,41 @@ public class EmailService : IEmailService
         }
     }
 
+    public async Task SendEmailConfirmationEmailAsync(
+        string recipientEmail,
+        string recipientName,
+        string confirmationToken,
+        string confirmationLink,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("Sending email confirmation email to {RecipientEmail} for {RecipientName}", recipientEmail, recipientName);
+
+            var htmlBody = EmailConfirmationEmailTemplate.Build(recipientName, confirmationLink);
+            const string subject = "Xác nhận email của bạn - ThinkTogether";
+
+            await SendAsync(recipientEmail, subject, htmlBody, cancellationToken);
+
+            _logger.LogInformation("Email confirmation email sent successfully to {RecipientEmail}", recipientEmail);
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Email confirmation email sending was cancelled for {RecipientEmail}", recipientEmail);
+            throw new EmailServiceException("Email confirmation email sending was cancelled.", ex);
+        }
+        catch (SmtpCommandException ex)
+        {
+            _logger.LogError(ex, "SMTP command error while sending email confirmation email to {RecipientEmail}. StatusCode: {StatusCode}", recipientEmail, ex.StatusCode);
+            throw new EmailServiceException($"SMTP error occurred while sending email confirmation email to {recipientEmail}", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while sending email confirmation email to {RecipientEmail}", recipientEmail);
+            throw new EmailServiceException($"An unexpected error occurred while sending email confirmation email to {recipientEmail}", ex);
+        }
+    }
+
     public async Task SendAsync(
         string recipientEmail,
         string subject,

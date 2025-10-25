@@ -20,6 +20,13 @@ public interface IEmailService
         string confirmationLink,
         CancellationToken cancellationToken = default);
 
+    Task SendEmailConfirmationEmailAsync(
+        string recipientEmail,
+        string recipientName,
+        string confirmationToken,
+        string confirmationLink,
+        CancellationToken cancellationToken = default);
+
     Task SendAsync(
         string recipientEmail,
         string subject,
