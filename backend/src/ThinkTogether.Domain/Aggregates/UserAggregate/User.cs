@@ -34,6 +34,8 @@ public sealed class User : AggregateRoot
 
     public string? Bio { get; private set; }
 
+    public bool IsEmailVerified { get; private set; } = false;
+
     public IReadOnlyList<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
     public IReadOnlyList<UserToken> UserTokens => _userTokens.AsReadOnly();
@@ -43,7 +45,7 @@ public sealed class User : AggregateRoot
         string firstName,
         string lastName,
         Password passwordHash,
-        UserRole role = UserRole.GIAOVIEN)
+        UserRole role = UserRole.NGUOIDUNG)
     {
         ValidateNames(firstName, lastName);
 
@@ -124,6 +126,20 @@ public sealed class User : AggregateRoot
 
         if (Role == UserRole.GIAOVIEN)
             return; // Already a teacher
+
+        Role = UserRole.GIAOVIEN;
+    }
+
+    public void ActivateTeacherRole()
+    {
+        if (IsDeleted)
+            throw new ValidationException("Không thể kích hoạt vai trò giáo viên cho người dùng đã bị xóa");
+
+        if (!IsEmailVerified)
+            throw new ValidationException("Vui lòng xác nhận email trước khi trở thành người sáng tạo");
+
+        if (Role == UserRole.GIAOVIEN)
+            return; // Already has teacher role
 
         Role = UserRole.GIAOVIEN;
     }
@@ -248,6 +264,9 @@ public sealed class User : AggregateRoot
 
         // Mark token as used
         validToken.MarkAsUsed();
+        
+        // Set email as verified
+        IsEmailVerified = true;
         
         // Add domain event for email confirmation
         AddDomainEvent(new EmailConfirmedDomainEvent(Id, Email.Value, GetFullName()));

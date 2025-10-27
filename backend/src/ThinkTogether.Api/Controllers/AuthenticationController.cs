@@ -13,6 +13,7 @@ using ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
 using ThinkTogether.Application.Handlers.User.Commands.ResetPassword;
 using ThinkTogether.Application.Handlers.User.Commands.ConfirmEmail;
 using ThinkTogether.Application.Handlers.User.Commands.ResendEmailConfirmation;
+using ThinkTogether.Application.Handlers.User.Commands.ActivateTeacher;
 
 namespace ThinkTogether.Api.Controllers;
 
@@ -35,7 +36,7 @@ public class AuthenticationController : ControllerBase
         [FromBody] RegisterUserCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(command, cancellationToken);
+        await _mediator.Send(command, cancellationToken);
 
         return CreatedAtAction(nameof(GetCurrentUser), null, new ApiResponse<object>
         {
@@ -217,6 +218,23 @@ public class AuthenticationController : ControllerBase
         {
             Success = true,
             Message = "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được email xác nhận"
+        });
+    }
+
+    [HttpPost("activate-teacher")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ActivateTeacher(CancellationToken cancellationToken)
+    {
+        var command = new ActivateTeacherCommand();
+        await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Bạn đã trở thành Người sáng tạo!"
         });
     }
 }
