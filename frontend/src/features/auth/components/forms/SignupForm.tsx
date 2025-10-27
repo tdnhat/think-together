@@ -1,18 +1,19 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
-import { AuthField } from './AuthField'
-import { PasswordToggle } from './PasswordToggle'
+import { mapApiErrorsToForm } from '@/lib/form-errors'
 import { registerSchema as baseRegisterSchema } from '@/lib/validators'
 import { useAuth } from '@/hooks/use-auth'
-import { mapApiErrorsToForm } from '@/lib/form-errors'
+
+import { AuthField } from '../shared/AuthField'
+import { PasswordToggle } from '../shared/PasswordToggle'
 
 const formSchema = baseRegisterSchema
 
@@ -46,23 +47,28 @@ export function SignupForm() {
 
       if (result?.success) {
         toast.success('Tài khoản được tạo thành công!')
-        router.push('/home')
-      } else if (result?.errors) {
-        const mappedErrors: Record<string, string[]> = {}
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
+        return
+      }
 
-        for (const [key, value] of Object.entries(result.errors)) {
-          if (key === 'FirstName' || key === 'LastName') {
-            mappedErrors['Name'] = value
-          } else {
-            mappedErrors[key] = value
+      if (result?.errors) {
+        const normalizedErrors: Record<string, string[]> = {}
+
+        for (const [fieldName, messages] of Object.entries(result.errors)) {
+          if (fieldName === 'FirstName' || fieldName === 'LastName') {
+            normalizedErrors.Name = messages
+            continue
           }
+
+          normalizedErrors[fieldName] = messages
         }
 
-        mapApiErrorsToForm(mappedErrors, setError)
+        mapApiErrorsToForm(normalizedErrors, setError)
         toast.error('Vui lòng kiểm tra lại thông tin đăng ký')
-      } else {
-        toast.error(result?.error ?? 'Không thể tạo tài khoản. Vui lòng thử lại.')
+        return
       }
+
+      toast.error(result?.error ?? 'Không thể tạo tài khoản. Vui lòng thử lại.')
     } catch (error) {
       console.error('Signup failed', error)
       toast.error('Không thể kết nối với máy chủ')
@@ -103,10 +109,7 @@ export function SignupForm() {
           helperText="Ít nhất 8 ký tự được khuyến nghị để bảo mật các bài kiểm tra."
           error={errors.password?.message}
           trailingSlot={
-            <PasswordToggle
-              show={showPassword}
-              onToggle={() => setShowPassword((prev) => !prev)}
-            />
+            <PasswordToggle show={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
           }
         />
 

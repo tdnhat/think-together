@@ -1,10 +1,10 @@
-import { Separator } from "@/components/ui/separator"
+import { Separator } from '@/components/ui/separator'
 
-type AuthDividerProps = {
+type AuthDividerProps = Readonly<{
   text?: string
-}
+}>
 
-export function AuthDivider({ text = "hoặc" }: AuthDividerProps) {
+export function AuthDivider({ text = 'hoặc' }: AuthDividerProps) {
   return (
     <div className="flex items-center gap-3">
       <Separator className="flex-1" />
@@ -15,4 +15,3 @@ export function AuthDivider({ text = "hoặc" }: AuthDividerProps) {
     </div>
   )
 }
-

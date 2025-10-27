@@ -1,13 +1,14 @@
 'use client'
 
-import { AuthDivider } from './AuthDivider'
-import { AuthSocialButton } from './AuthSocialButton'
-import { LoginForm } from './LoginForm'
-import { DEFAULT_SOCIAL_PROVIDERS } from './SocialProviders'
+import { LoginForm } from "../forms/LoginForm"
+import { AuthDivider } from "../shared/AuthDivider"
+import { AuthSocialButton } from "../shared/AuthSocialButton"
+import { DEFAULT_SOCIAL_PROVIDERS } from "../shared/SocialProviders"
+
 
 export function LoginContent() {
   const handleGoogleLogin = () => {
-    // TODO: Implement Google OAuth login
+    // NOTE: Integrate Google OAuth login when backend support is ready.
   }
 
   return (

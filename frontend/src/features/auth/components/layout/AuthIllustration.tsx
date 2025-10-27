@@ -1,8 +1,8 @@
 import Image from 'next/image'
 
-type AuthIllustrationProps = {
+export type AuthIllustrationProps = Readonly<{
   className?: string
-}
+}>
 
 export function AuthIllustration({ className }: AuthIllustrationProps) {
   return (
@@ -12,7 +12,7 @@ export function AuthIllustration({ className }: AuthIllustrationProps) {
         alt="Authentication illustration"
         width={500}
         height={500}
-        className="w-full h-auto"
+        className="h-auto w-full"
         priority
       />
     </div>

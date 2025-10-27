@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useForm, Controller } from 'react-hook-form'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
@@ -10,11 +11,12 @@ import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { AuthField } from './AuthField'
-import { PasswordToggle } from './PasswordToggle'
+import { mapApiErrorsToForm } from '@/lib/form-errors'
 import { loginSchema as baseLoginSchema } from '@/lib/validators'
 import { useAuth } from '@/hooks/use-auth'
-import { mapApiErrorsToForm } from '@/lib/form-errors'
+
+import { AuthField } from '../shared/AuthField'
+import { PasswordToggle } from '../shared/PasswordToggle'
 
 const formSchema = baseLoginSchema.extend({
   rememberMe: z.boolean().optional(),
@@ -44,18 +46,22 @@ export function LoginForm() {
       const result = await login({
         email: data.email,
         password: data.password,
-        rememberMe: data.rememberMe || false
+        rememberMe: data.rememberMe ?? false,
       })
 
       if (result?.success) {
         toast.success('Chào mừng quay trở lại!')
         router.push('/home')
-      } else if (result?.errors) {
+        return
+      }
+
+      if (result?.errors) {
         mapApiErrorsToForm(result.errors, setError)
         toast.error('Vui lòng kiểm tra lại thông tin đăng nhập')
-      } else {
-        toast.error(result?.error ?? 'Email hoặc mật khẩu không chính xác')
+        return
       }
+
+      toast.error(result?.error ?? 'Email hoặc mật khẩu không chính xác')
     } catch (error) {
       console.error('Login request failed', error)
       toast.error('Không thể kết nối với máy chủ')
@@ -85,10 +91,7 @@ export function LoginForm() {
           placeholder="Nhập mật khẩu của bạn"
           error={errors.password?.message}
           trailingSlot={
-            <PasswordToggle
-              show={showPassword}
-              onToggle={() => setShowPassword((prev) => !prev)}
-            />
+            <PasswordToggle show={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
           }
         />
       </div>
@@ -100,17 +103,10 @@ export function LoginForm() {
               name="rememberMe"
               control={control}
               render={({ field }) => (
-                <Checkbox
-                  id="rememberMe"
-                  checked={field.value || false}
-                  onCheckedChange={field.onChange}
-                />
+                <Checkbox id="rememberMe" checked={field.value ?? false} onCheckedChange={field.onChange} />
               )}
             />
-            <Label
-              htmlFor="rememberMe"
-              className="cursor-pointer font-medium normal-case"
-            >
+            <Label htmlFor="rememberMe" className="cursor-pointer font-medium normal-case">
               Ghi nhớ tôi
             </Label>
           </div>
@@ -119,9 +115,9 @@ export function LoginForm() {
             type="button"
             variant="link"
             className="text-sm font-semibold text-[var(--brand-primary)]"
-            onClick={() => toast.success('Chức năng đặt lại mật khẩu sắp có!')}
+            asChild
           >
-            Quên mật khẩu?
+            <Link href="/forgot-password">Quên mật khẩu?</Link>
           </Button>
         </div>
 
