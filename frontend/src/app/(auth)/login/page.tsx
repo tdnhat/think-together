@@ -1,5 +1,5 @@
-import { AuthLayout } from '@/features/auth/components/AuthLayout'
-import { LoginContent } from '@/features/auth/components/LoginContent'
+import { LoginContent } from "@/features/auth/components/content/LoginContent";
+import { AuthLayout } from "@/features/auth/components/layout/AuthLayout";
 
 export default function LoginPage() {
   return (

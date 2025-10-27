@@ -65,6 +65,64 @@ class AuthService {
     )
     return response.data
   }
+
+  /**
+   * Confirm email with token from email link
+   * @param token Email confirmation token
+   * @returns API response
+   */
+  async confirmEmail(token: string): Promise<ApiResponse<object>> {
+    const response = await axiosInstance.post<ApiResponse<object>>(
+      '/api/auth/confirm-email',
+      { token }
+    )
+    return response.data
+  }
+
+  /**
+   * Resend email confirmation to user's email
+   * @param email User email address
+   * @returns API response
+   */
+  async resendEmailConfirmation(email: string): Promise<ApiResponse<object>> {
+    const response = await axiosInstance.post<ApiResponse<object>>(
+      '/api/auth/resend-email-confirmation',
+      { email }
+    )
+    return response.data
+  }
+
+  /**
+   * Request password reset link to be sent to email
+   * @param email User email address
+   * @returns API response
+   */
+  async forgotPassword(email: string): Promise<ApiResponse<object>> {
+    const response = await axiosInstance.post<ApiResponse<object>>(
+      '/api/auth/forgot-password',
+      { email }
+    )
+    return response.data
+  }
+
+  /**
+   * Reset password using token from email link
+   * @param token Password reset token
+   * @param newPassword New password
+   * @param confirmPassword Password confirmation
+   * @returns API response
+   */
+  async resetPassword(
+    token: string,
+    newPassword: string,
+    confirmPassword: string
+  ): Promise<ApiResponse<object>> {
+    const response = await axiosInstance.post<ApiResponse<object>>(
+      '/api/auth/reset-password',
+      { token, newPassword, confirmPassword }
+    )
+    return response.data
+  }
 }
 
 export const authService = new AuthService()

@@ -1,26 +1,28 @@
 'use client'
 
-import Link from "next/link"
-import type { PropsWithChildren, ReactNode } from "react"
+import Link from 'next/link'
+import type { PropsWithChildren, ReactNode } from 'react'
 
-import { motion } from "framer-motion"
-import { GraduationCap, BookOpen, Palette, PenTool, Star } from "lucide-react"
+import { motion } from 'framer-motion'
+import { BookOpen, GraduationCap, Palette, PenTool, Star } from 'lucide-react'
 
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
-type AuthLayoutProps = PropsWithChildren<{
-  title: string
-  subtitle?: string
-  switchLabel: string
-  switchText: string
-  switchHref: string
-  badge?: ReactNode
-  legalText?: string
-  sideContent?: ReactNode
-  className?: string
-}>
+export type AuthLayoutProps = Readonly<
+  PropsWithChildren<{
+    title: string
+    subtitle?: string
+    switchLabel: string
+    switchText: string
+    switchHref: string
+    badge?: ReactNode
+    legalText?: string
+    sideContent?: ReactNode
+    className?: string
+  }>
+>
 
 export function AuthLayout({
   children,
@@ -29,13 +31,13 @@ export function AuthLayout({
   switchText,
   switchHref,
   badge,
-  legalText = "Bằng việc đăng nhập, bạn đã đồng ý với Điều khoản sử dụng và Quyền riêng tư.",
+  legalText = 'Bằng việc đăng nhập, bạn đã đồng ý với Điều khoản sử dụng và Quyền riêng tư.',
   sideContent,
   className,
 }: AuthLayoutProps) {
   const hasSideContent = Boolean(sideContent)
   const normalizedBadge =
-    typeof badge === "string" ? (
+    typeof badge === 'string' ? (
       <Badge variant="secondary" size="sm">
         {badge}
       </Badge>
@@ -53,12 +55,10 @@ export function AuthLayout({
 
       <FloatingStationery />
 
-      <div
-        className={cn("relative z-10 mx-auto flex w-full flex-col items-center gap-6", hasSideContent ? "max-w-6xl" : "max-w-md")}
-      >
+      <div className={cn('relative z-10 mx-auto flex w-full flex-col items-center gap-6', hasSideContent ? 'max-w-6xl' : 'max-w-md')}>
         <section
           className={cn(
-            "relative w-full overflow-hidden rounded-3xl border border-[var(--color-border-main)]/30 bg-white/95 px-7 py-8 shadow-[0_30px_80px_-35px_rgba(64,71,193,0.55)] backdrop-blur-sm sm:px-10 sm:py-10",
+            'relative w-full overflow-hidden rounded-3xl border border-[var(--color-border-main)]/30 bg-white/95 px-7 py-8 shadow-[0_30px_80px_-35px_rgba(64,71,193,0.55)] backdrop-blur-sm sm:px-10 sm:py-10',
             className,
           )}
         >
@@ -74,13 +74,10 @@ export function AuthLayout({
           {children}
 
           <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
-            {switchLabel}{" "}
+            {switchLabel}{' '}
             <Link
               href={switchHref}
-              className={cn(
-                buttonVariants({ variant: "link" }),
-                "font-semibold text-[var(--brand-primary)]",
-              )}
+              className={cn(buttonVariants({ variant: 'link' }), 'font-semibold text-[var(--brand-primary)]')}
             >
               {switchText}
             </Link>
@@ -100,51 +97,51 @@ export function AuthLayout({
 function FloatingStationery() {
   const items = [
     {
-      id: "pencil",
+      id: 'pencil',
       Icon: PenTool,
-      className: "top-[12%] left-[6%]",
-      colors: "bg-[#ffe3d4] text-[#ff7d66]",
-      size: "h-16 w-16",
+      className: 'top-[12%] left-[6%]',
+      colors: 'bg-[#ffe3d4] text-[#ff7d66]',
+      size: 'h-16 w-16',
       float: { rotate: [-6, 8, -4] as number[], x: [0, 14, -10, 0] as number[], y: [0, -10, 8, 0] as number[] },
       delay: 0,
       duration: 14,
     },
     {
-      id: "notebook",
+      id: 'notebook',
       Icon: BookOpen,
-      className: "bottom-[18%] left-[12%]",
-      colors: "bg-[#e0f2fe] text-[#00A8E8]",
-      size: "h-20 w-20",
+      className: 'bottom-[18%] left-[12%]',
+      colors: 'bg-[#e0f2fe] text-[#00A8E8]',
+      size: 'h-20 w-20',
       float: { rotate: [4, -6, 6] as number[], x: [0, -16, 10, 0] as number[], y: [0, 12, -14, 0] as number[] },
       delay: 2,
       duration: 16,
     },
     {
-      id: "cap",
+      id: 'cap',
       Icon: GraduationCap,
-      className: "top-[20%] right-[12%]",
-      colors: "bg-[#fff2c5] text-[#f8a72b]",
-      size: "h-[4.75rem] w-[4.75rem]",
+      className: 'top-[20%] right-[12%]',
+      colors: 'bg-[#fff2c5] text-[#f8a72b]',
+      size: 'h-[4.75rem] w-[4.75rem]',
       float: { rotate: [-3, 7, -3] as number[], x: [0, -8, 6, 0] as number[], y: [0, 14, -10, 0] as number[] },
       delay: 1.5,
       duration: 18,
     },
     {
-      id: "palette",
+      id: 'palette',
       Icon: Palette,
-      className: "bottom-[22%] right-[8%]",
-      colors: "bg-[#fbe5ff] text-[#c35bff]",
-      size: "h-16 w-16",
+      className: 'bottom-[22%] right-[8%]',
+      colors: 'bg-[#fbe5ff] text-[#c35bff]',
+      size: 'h-16 w-16',
       float: { rotate: [2, -4, 4] as number[], x: [0, 12, -12, 0] as number[], y: [0, -8, 12, 0] as number[] },
       delay: 0.5,
       duration: 15,
     },
     {
-      id: "sparkles",
+      id: 'sparkles',
       Icon: Star,
-      className: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-      colors: "bg-white/70 text-[var(--brand-primary)] backdrop-blur",
-      size: "h-14 w-14",
+      className: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+      colors: 'bg-white/70 text-[var(--brand-primary)] backdrop-blur',
+      size: 'h-14 w-14',
       float: { rotate: [-8, 8, -6] as number[], x: [0, 10, -10, 0] as number[], y: [0, -12, 12, 0] as number[] },
       delay: 3,
       duration: 20,
@@ -158,7 +155,7 @@ function FloatingStationery() {
           <motion.div
             key={id}
             className={cn(
-              "pointer-events-none absolute flex items-center justify-center rounded-3xl border border-white/40 shadow-md shadow-black/5 backdrop-blur-sm",
+              'pointer-events-none absolute flex items-center justify-center rounded-3xl border border-white/40 shadow-md shadow-black/5 backdrop-blur-sm',
               className,
               colors,
               size,
@@ -172,8 +169,8 @@ function FloatingStationery() {
               duration,
               delay,
               repeat: Infinity,
-              repeatType: "mirror",
-              ease: "easeInOut",
+              repeatType: 'mirror',
+              ease: 'easeInOut',
             }}
           >
             <Icon className="h-7 w-7" strokeWidth={1.6} />

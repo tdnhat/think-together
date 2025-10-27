@@ -84,28 +84,11 @@ export function useAuth() {
         lastName,
       })
       
-      if (response.success && response.data) {
-        const { accessToken } = response.data
-        apiClient.setToken(accessToken)
-
-        const userResponse = await authService.getCurrentUser()
-        
-        if (userResponse.success && userResponse.data) {
-          const userDto = userResponse.data
-          const user: User = {
-            id: userDto.id,
-            email: userDto.email,
-            firstName: userDto.firstName,
-            lastName: userDto.lastName,
-            name: `${userDto.firstName} ${userDto.lastName}`,
-            role: userDto.role,
-            avatarUrl: userDto.avatarUrl,
-            bio: userDto.bio,
-            createdAt: userDto.createdAt,
-          }
-          
-          login(user, accessToken)
-          return { success: true }
+      // Registration doesn't return a token - user must verify email first
+      if (response.success) {
+        return { 
+          success: true,
+          message: response.message || 'Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.'
         }
       }
       
@@ -123,7 +106,7 @@ export function useAuth() {
     } finally {
       setLoading(false)
     }
-  }, [login, setLoading])
+  }, [setLoading])
 
   const handleLogout = useCallback(async () => {
     await authService.logout()
