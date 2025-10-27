@@ -135,7 +135,7 @@ public class EmailService : IEmailService
         {
             _logger.LogInformation("Sending email confirmation email to {RecipientEmail} for {RecipientName}", recipientEmail, recipientName);
 
-            var htmlBody = EmailConfirmationEmailTemplate.Build(recipientName, confirmationLink);
+            var htmlBody = EmailConfirmationTemplate.Build(recipientName, confirmationLink);
             const string subject = "Xác nhận email của bạn - ThinkTogether";
 
             await SendAsync(recipientEmail, subject, htmlBody, cancellationToken);
