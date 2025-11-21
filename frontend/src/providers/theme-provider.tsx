@@ -1,19 +1,24 @@
 'use client'
 
 import { createContext, useContext, useEffect } from 'react'
-import { useTheme } from '@/hooks/use-local-storage'
+import { useLocalStorage } from '@/shared/hooks/use-local-storage'
+
+// Renamed hook for theme context
+function useTheme() {
+  return useLocalStorage<'light' | 'dark'>('theme', 'light')
+}
 
 type ThemeProviderProps = {
   children: React.ReactNode
 }
 
 type ThemeProviderState = {
-  theme: string
-  setTheme: (theme: string) => void
+  theme: 'light' | 'dark'
+  setTheme: (theme: 'light' | 'dark') => void
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'light',
   setTheme: () => null,
 }
 
@@ -23,29 +28,18 @@ export function ThemeProvider({
   children,
   ...props
 }: ThemeProviderProps) {
-  const { theme, setTheme } = useTheme()
+  const [theme, setTheme] = useTheme()
 
   useEffect(() => {
     const root = window.document.documentElement
 
     root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-
-      root.classList.add(systemTheme)
-      return
-    }
-
     root.classList.add(theme)
   }, [theme])
 
   const value = {
     theme,
-    setTheme: (theme: string) => setTheme(theme),
+    setTheme: (theme: 'light' | 'dark') => setTheme(theme),
   }
 
   return (

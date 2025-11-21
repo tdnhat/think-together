@@ -13,7 +13,7 @@ using ThinkTogether.Application.Handlers.User.Commands.RefreshToken;
 using ThinkTogether.Application.Handlers.User.Commands.ResetPassword;
 using ThinkTogether.Application.Handlers.User.Commands.ConfirmEmail;
 using ThinkTogether.Application.Handlers.User.Commands.ResendEmailConfirmation;
-using ThinkTogether.Application.Handlers.User.Commands.ActivateTeacher;
+using ThinkTogether.Application.Handlers.User.Commands.ActivateCreator;
 
 namespace ThinkTogether.Api.Controllers;
 
@@ -221,14 +221,14 @@ public class AuthenticationController : ControllerBase
         });
     }
 
-    [HttpPost("activate-teacher")]
+    [HttpPost("become-creator")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ActivateTeacher(CancellationToken cancellationToken)
+    public async Task<IActionResult> BecomeCreator(CancellationToken cancellationToken)
     {
-        var command = new ActivateTeacherCommand();
+        var command = new ActivateCreatorCommand();
         await _mediator.Send(command, cancellationToken);
 
         return Ok(new ApiResponse<object>

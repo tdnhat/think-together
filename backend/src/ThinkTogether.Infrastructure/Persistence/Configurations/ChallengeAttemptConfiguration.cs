@@ -1,62 +1,102 @@
 using Domain.Aggregates.ChallengeAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeAttempt>
 {
     public void Configure(EntityTypeBuilder<ChallengeAttempt> builder)
     {
         builder.ToTable("LuotChoiThachThuc");
-        builder.HasKey(a => a.Id);
 
-        builder.Property(a => a.Id)
+        builder.HasKey(ca => ca.Id);
+
+        builder.Property(ca => ca.Id)
             .HasColumnName("idLuotChoi")
-            .ValueGeneratedNever(); // Application generates the ID
+            .ValueGeneratedNever();
 
-        builder.Property(a => a.ChallengeId)
+        builder.Property(ca => ca.ChallengeId)
             .HasColumnName("idThachThuc")
             .IsRequired();
 
-        builder.Property(a => a.StudentName)
-            .HasColumnName("tenHocSinh")
+        builder.Property(ca => ca.UserId)
+            .HasColumnName("idNguoiDung");
+
+        builder.Property(ca => ca.Nickname)
+            .HasColumnName("bietDanh")
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(100);
 
-        builder.OwnsOne(a => a.Score, score =>
-        {
-            score.Property(s => s.Value)
-                .HasColumnName("diemDat")
-                .HasDefaultValue(0);
-        });
-
-        builder.Property(a => a.CompletionTime)
-            .HasColumnName("thoiGianHoanThanh");
-
-        builder.Property(a => a.CorrectAnswers)
-            .HasColumnName("soCauDung")
+        builder.Property(ca => ca.ScoreAchieved)
+            .HasColumnName("diemDat")
+            .IsRequired()
             .HasDefaultValue(0);
 
-        builder.Property(a => a.CompletedAt)
+        builder.Property(ca => ca.CorrectAnswers)
+            .HasColumnName("soCauDung")
+            .IsRequired()
+            .HasDefaultValue(0);
+
+        builder.Property(ca => ca.TotalQuestions)
+            .HasColumnName("tongSoCau")
+            .IsRequired()
+            .HasDefaultValue(0);
+
+        builder.Property(ca => ca.CompletionTimeMs)
+            .HasColumnName("thoiGianHoanThanhMs");
+
+        builder.Property(ca => ca.CompletedAt)
             .HasColumnName("thoiGianHoanTatLuot")
+            .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(a => a.CreatedAt)
+        builder.Property(ca => ca.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(a => a.UpdatedAt)
+        builder.Property(ca => ca.UpdatedAt)
             .HasColumnName("ngayCapNhat");
 
-        builder.Property(a => a.DeletedAt)
+        builder.Property(ca => ca.DeletedAt)
             .HasColumnName("ngayXoa");
 
+        // Add check constraints
+        builder.ToTable(tb =>
+        {
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_diemDat", "diemDat >= 0");
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_soCauDung",
+                "soCauDung >= 0 AND soCauDung <= tongSoCau");
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_tongSoCau", "tongSoCau >= 0");
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_thoiGian",
+                "thoiGianHoanThanhMs IS NULL OR thoiGianHoanThanhMs > 0");
+        });
+
+        // Foreign keys - explicitly configure without navigation properties
+        builder.HasOne<global::Domain.Aggregates.ChallengeAggregate.Challenge>()
+            .WithMany()
+            .HasForeignKey("ChallengeId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey("UserId")
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany<ChallengeAnswer>()
+            .WithOne()
+            .HasForeignKey("ChallengeAttemptId")
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Indexes
-        builder.HasIndex(a => a.ChallengeId);
-        builder.HasIndex(a => a.StudentName);
-        builder.HasIndex(a => a.CompletedAt);
-        builder.HasIndex(a => a.DeletedAt);
+        builder.HasIndex(ca => ca.ChallengeId);
+        builder.HasIndex(ca => ca.UserId);
+        builder.HasIndex(ca => ca.Nickname);
+        builder.HasIndex(ca => ca.CompletedAt);
+        builder.HasIndex(ca => new { ca.ChallengeId, ca.ScoreAchieved, ca.CompletedAt });
+        builder.HasIndex(ca => ca.DeletedAt);
     }
 }
+

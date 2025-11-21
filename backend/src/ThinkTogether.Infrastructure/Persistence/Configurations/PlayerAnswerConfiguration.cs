@@ -1,4 +1,4 @@
-using Domain.Aggregates.GameSessionAggregate.Entities;
+using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,46 +8,69 @@ public class PlayerAnswerConfiguration : IEntityTypeConfiguration<PlayerAnswer>
 {
     public void Configure(EntityTypeBuilder<PlayerAnswer> builder)
     {
-        builder.ToTable("CauTraLoiNguoiChoi");
-        builder.HasKey(a => a.Id);
+        builder.ToTable("TraLoiNguoiChoi");
 
-        builder.Property(a => a.Id)
-            .HasColumnName("idCauTraLoi")
-            .ValueGeneratedNever(); // Application generates the ID
+        builder.HasKey(pa => pa.Id);
 
-        builder.Property(a => a.GamePlayerId)
+        builder.Property(pa => pa.Id)
+            .HasColumnName("idTraLoi")
+            .ValueGeneratedNever();
+
+        builder.Property(pa => pa.GamePlayerId)
             .HasColumnName("idNguoiChoi")
             .IsRequired();
 
-        builder.Property(a => a.QuestionId)
-            .HasColumnName("idCauHoi")
+        builder.Property(pa => pa.GameQuestionId)
+            .HasColumnName("idCauHoiPhien")
             .IsRequired();
 
-        builder.Property(a => a.Answer)
-            .HasColumnName("noiDungTraLoi")
-            .HasMaxLength(-1);
+        builder.Property(pa => pa.IsCorrect)
+            .HasColumnName("laDapAnDung")
+            .IsRequired();
 
-        builder.Property(a => a.IsCorrect)
-            .HasColumnName("dung");
+        builder.Property(pa => pa.ResponseTimeMs)
+            .HasColumnName("thoiGianMs")
+            .IsRequired();
 
-        builder.Property(a => a.PointsEarned)
-            .HasColumnName("diemDat")
+        builder.Property(pa => pa.PointsEarned)
+            .HasColumnName("diemNhan")
+            .IsRequired()
             .HasDefaultValue(0);
 
-        builder.Property(a => a.CreatedAt)
+        builder.Property(pa => pa.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(a => a.UpdatedAt)
+        builder.Property(pa => pa.UpdatedAt)
             .HasColumnName("ngayCapNhat");
 
-        builder.Property(a => a.DeletedAt)
+        builder.Property(pa => pa.DeletedAt)
             .HasColumnName("ngayXoa");
 
+        // Add check constraints
+        builder.ToTable(tb =>
+        {
+            tb.HasCheckConstraint("CK_TraLoiNguoiChoi_thoiGianMs", "thoiGianMs > 0");
+            tb.HasCheckConstraint("CK_TraLoiNguoiChoi_diemNhan", "diemNhan >= 0");
+        });
+
+        // Foreign keys
+        builder.HasOne<Domain.Aggregates.GamingAggregate.Entities.GamePlayer>()
+            .WithMany()
+            .HasForeignKey(pa => pa.GamePlayerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Domain.Aggregates.GamingAggregate.Entities.GameQuestion>()
+            .WithMany()
+            .HasForeignKey(pa => pa.GameQuestionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Indexes
-        builder.HasIndex(a => a.GamePlayerId);
-        builder.HasIndex(a => a.QuestionId);
-        builder.HasIndex(a => a.DeletedAt);
+        builder.HasIndex(pa => pa.GamePlayerId);
+        builder.HasIndex(pa => pa.GameQuestionId);
+        builder.HasIndex(pa => new { pa.GamePlayerId, pa.GameQuestionId }).IsUnique();
+        builder.HasIndex(pa => pa.DeletedAt);
     }
 }
+

@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Raleway, Quicksand, Be_Vietnam_Pro } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import './globals.css'
-import { GraduationCap } from 'lucide-react'
 
 const raleway = Raleway({ 
   subsets: ['latin', 'vietnamese'],

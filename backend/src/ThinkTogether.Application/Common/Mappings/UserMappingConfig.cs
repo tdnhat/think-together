@@ -1,8 +1,8 @@
 using Application.DTOs;
-using Domain.Aggregates.UserAggregate;
 using Mapster;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 
-namespace Application.Common.Mappings;
+namespace ThinkTogether.Application.Common.Mappings;
 
 public sealed class UserMappingConfig : IRegister
 {
@@ -13,7 +13,7 @@ public sealed class UserMappingConfig : IRegister
             .Map(dest => dest.Email, src => src.Email.Value)
             .Map(dest => dest.FirstName, src => src.FirstName)
             .Map(dest => dest.LastName, src => src.LastName)
-            .Map(dest => dest.Role, src => src.Role.ToString())
+            .Map(dest => dest.Role, src => src.RoleId.ToString())
             .Map(dest => dest.AvatarUrl, src => src.AvatarUrl)
             .Map(dest => dest.Bio, src => src.Bio)
             .Map(dest => dest.CreatedAt, src => src.CreatedAt);

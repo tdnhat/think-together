@@ -1,4 +1,4 @@
-using Domain.Aggregates.QuizSetAggregate.Entities;
+using Domain.Aggregates.QuizAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,33 +8,37 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
 {
     public void Configure(EntityTypeBuilder<Question> builder)
     {
-        // Table name
         builder.ToTable("CauHoi");
 
-        // Primary key
         builder.HasKey(q => q.Id);
 
-        // Properties mapping to Vietnamese column names
         builder.Property(q => q.Id)
-        .HasColumnName("idCauHoi")
-        .ValueGeneratedNever(); // Application generates the ID
+            .HasColumnName("idCauHoi")
+            .ValueGeneratedNever();
+
+        builder.Property(q => q.QuizSetId)
+            .HasColumnName("idBoTracNghiem")
+            .IsRequired();
 
         builder.Property(q => q.Content)
             .HasColumnName("noiDung")
             .IsRequired()
-            .HasMaxLength(-1); // nvarchar(max)
+            .HasMaxLength(2000);
 
         builder.Property(q => q.Type)
             .HasColumnName("loaiCauHoi")
             .IsRequired()
-            .HasConversion<string>();
+            .HasConversion<string>()
+            .HasMaxLength(50);
 
         builder.Property(q => q.TimeLimit)
             .HasColumnName("giuiHanThoiGian")
+            .IsRequired()
             .HasDefaultValue(30);
 
-        builder.Property(q => q.Order)
+        builder.Property(q => q.DisplayOrder)
             .HasColumnName("thuTu")
+            .IsRequired()
             .HasDefaultValue(0);
 
         builder.Property(q => q.CreatedAt)
@@ -46,38 +50,34 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
             .HasColumnName("ngayCapNhat");
 
         builder.Property(q => q.DeletedAt)
-        .HasColumnName("ngayXoa");
+            .HasColumnName("ngayXoa");
 
-        // Owned types
-        builder.OwnsMany(q => q.Answers, answers =>
-        {
-            answers.ToTable("CauTraLoi");
-            answers.WithOwner().HasForeignKey("idCauHoi");
-            answers.Property(a => a.Content).HasColumnName("noiDung").IsRequired().HasMaxLength(-1);
-            answers.Property(a => a.IsCorrect).HasColumnName("laDapAnDung").IsRequired();
-            answers.Property(a => a.Order).HasColumnName("thuTu").IsRequired();
-            answers.Property(a => a.ImageUrl).HasColumnName("urlAnh").HasMaxLength(500);
-        });
+        // Add check constraint for enum values
+        builder.ToTable(tb => tb.HasCheckConstraint(
+            "CK_CauHoi_loaiCauHoi",
+            "loaiCauHoi IN ('SingleChoice', 'TrueFalse', 'MultipleChoice', 'Matching', 'Ordering', 'Video')"));
 
-        builder.OwnsMany(q => q.MatchPairs, matchPairs =>
-        {
-            matchPairs.ToTable("CapGhep");
-            matchPairs.WithOwner().HasForeignKey("idCauHoi");
-            matchPairs.Property(mp => mp.LeftContent).HasColumnName("noiDungTrai").IsRequired().HasMaxLength(-1);
-            matchPairs.Property(mp => mp.RightContent).HasColumnName("noiDungPhai").IsRequired().HasMaxLength(-1);
-            matchPairs.Property(mp => mp.Order).HasColumnName("thuTu").IsRequired();
-        });
+        // Add check constraint for time limit
+        builder.ToTable(tb => tb.HasCheckConstraint(
+            "CK_CauHoi_giuiHanThoiGian",
+            "giuiHanThoiGian > 0 AND giuiHanThoiGian <= 300"));
 
-        builder.OwnsMany(q => q.OrderItems, orderItems =>
-        {
-            orderItems.ToTable("MucSapXep");
-            orderItems.WithOwner().HasForeignKey("idCauHoi");
-            orderItems.Property(oi => oi.Content).HasColumnName("noiDung").IsRequired().HasMaxLength(-1);
-            orderItems.Property(oi => oi.CorrectPosition).HasColumnName("viTriDung").IsRequired();
-        });
+        // Add check constraint for display order
+        builder.ToTable(tb => tb.HasCheckConstraint(
+            "CK_CauHoi_thuTu",
+            "thuTu >= 0"));
+
+        // Foreign key to QuizSet - explicitly configure without navigation properties
+        builder.HasOne<Domain.Aggregates.QuizAggregate.QuizSet>()
+            .WithMany()
+            .HasForeignKey("QuizSetId")
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes
-        builder.HasIndex(q => q.Order);
+        builder.HasIndex(q => q.QuizSetId);
+        builder.HasIndex(q => q.DisplayOrder);
         builder.HasIndex(q => q.DeletedAt);
+        builder.HasIndex(q => new { q.QuizSetId, q.DisplayOrder }).HasFilter("ngayXoa IS NULL");
     }
 }
+

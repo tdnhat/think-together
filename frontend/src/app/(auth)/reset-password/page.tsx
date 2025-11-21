@@ -1,5 +1,5 @@
-import { ResetPasswordContent } from "@/features/auth/components/content/ResetPasswordContent";
-import { AuthLayout } from "@/features/auth/components/layout/AuthLayout";
+import { ResetPasswordForm, AuthLayout } from '@/features/auth'
+import { AUTH_BRAND_NAME } from '@/features/auth/constants'
 
 export default function ResetPasswordPage() {
   return (
@@ -8,9 +8,9 @@ export default function ResetPasswordPage() {
       switchLabel="Đã nhớ mật khẩu?"
       switchText="Đăng nhập"
       switchHref="/login"
-      badge="Think Together"
+      badge={AUTH_BRAND_NAME}
     >
-      <ResetPasswordContent />
+      <ResetPasswordForm />
     </AuthLayout>
   )
 }

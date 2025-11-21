@@ -1,234 +1,110 @@
 # ThinkTogether Frontend
 
-A modern Next.js frontend for the ThinkTogether interactive quiz platform.
+Production-ready Next.js application for collaborative learning through quizzes and games.
 
 ## 🚀 Quick Start
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **Set up environment variables:**
-   ```bash
-   cp env.example .env.local
-   # Edit .env.local with your configuration
-   ```
+# Set up environment
+cp env.example .env.local
 
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+# Run development server
+npm run dev
+```
 
-4. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📚 Documentation
+
+**New to the project?** Start here:
+
+1. **[Getting Started Guide](./docs/GETTING_STARTED.md)** ⭐ - Complete setup and onboarding guide
+2. **[Development Guide](./docs/DEVELOPMENT.md)** - Coding standards and patterns
+3. **[Architecture](./docs/ARCHITECTURE.md)** - System design and structure
+4. **[Design System](./docs/DESIGN_SYSTEM.md)** - UI components and styling
+5. **[Style Guide](./docs/STYLE_GUIDE.md)** - Quick styling reference
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS + Shadcn UI
+- **State**: Zustand
+- **Forms**: React Hook Form + Zod
+- **API**: Axios
+- **Real-time**: SignalR
 
 ## 📁 Project Structure
 
 ```
-frontend/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── (auth)/            # Auth route group
-│   │   │   ├── login/
-│   │   │   └── signup/
-│   │   ├── (dashboard)/       # Dashboard route group
-│   │   │   └── my-quizzes/
-│   │   ├── challenge/[id]/    # Challenge pages
-│   │   ├── play/[pin]/        # Live game pages
-│   │   ├── layout.tsx         # Root layout
-│   │   └── page.tsx           # Homepage
-│   ├── components/            # Reusable UI components
-│   │   └── ui/               # shadcn/ui components
-│   ├── features/             # Feature-specific components
-│   │   ├── auth/             # Authentication features
-│   │   ├── quiz-builder/     # Quiz creation features
-│   │   ├── game-host/        # Host interface features
-│   │   └── game-player/      # Player interface features
-│   ├── lib/                  # Core utilities
-│   │   ├── api.ts            # API client
-│   │   ├── utils.ts          # Utility functions
-│   │   └── validators.ts     # Form validation schemas
-│   ├── hooks/                # Custom React hooks
-│   ├── stores/               # Zustand state management
-│   ├── providers/            # React context providers
-│   ├── styles/               # Global styles
-│   └── types/                # TypeScript type definitions
-├── next.config.mjs           # Next.js configuration
-├── tailwind.config.js        # Tailwind CSS configuration
-└── tsconfig.json             # TypeScript configuration
+src/
+├── app/           # Next.js routes (pages)
+├── config/        # Configuration & constants
+├── lib/           # Core utilities (API, errors, utils)
+├── features/      # Feature modules (auth, quiz, game)
+├── shared/        # Reusable components & hooks
+├── stores/        # Global state (Zustand)
+├── widgets/       # Composite UI components
+└── types/         # Global TypeScript types
 ```
 
-## 🛠️ Tech Stack
+## 🎯 Core Principles
 
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **State Management:** Zustand
-- **Forms:** React Hook Form + Zod
-- **HTTP Client:** Axios
-- **Real-time:** Socket.io Client
-- **UI Components:** shadcn/ui (planned)
-- **Icons:** Lucide React
-- **Notifications:** React Hot Toast
+1. **No Magic Strings** - Use `@/config/constants`
+2. **Proper Error Handling** - Use `@/lib/errors/error-handler`
+3. **Type Safety** - Strict TypeScript throughout
+4. **Vietnamese Localization** - All user-facing text
+5. **Centralized API** - Use `@/lib/api/services`
+6. **Global State** - Zustand for auth, UI, quiz state
 
-## 🎯 Key Features
-
-### Authentication
-- User registration and login
-- Persistent authentication state
-- Protected routes
-
-### Quiz Management
-- Create and edit quiz sets
-- Multiple question types (text, multiple choice, true/false, video)
-- Media upload support
-- Question ordering and validation
-
-### Live Games
-- Real-time game hosting
-- PIN-based player joining
-- Live score tracking
-- Socket.io integration
-
-### Video Questions
-- Video upload and preview
-- Timestamp-based question display
-- 15-second loop functionality
-- Progress tracking
-
-## 🔧 Development Scripts
+## 🚦 Available Scripts
 
 ```bash
-# Development
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
-npm run type-check   # Run TypeScript type checking
+npm run type-check   # Run TypeScript check
 ```
 
-## 📦 Package Management
+## ⚙️ Environment Variables
 
-### Core Dependencies
-- `next` - React framework
-- `react` & `react-dom` - React library
-- `typescript` - Type safety
-- `tailwindcss` - Utility-first CSS
+See `env.example` for all required environment variables.
 
-### State & Data
-- `zustand` - State management
-- `axios` - HTTP client
-- `socket.io-client` - Real-time communication
+**Required:**
+- `NEXT_PUBLIC_API_URL` - Backend API URL
 
-### Forms & Validation
-- `react-hook-form` - Form handling
-- `@hookform/resolvers` - Form validation resolvers
-- `zod` - Schema validation
+**Optional:**
+- `NEXT_PUBLIC_SENTRY_DSN` - Sentry error tracking
+- `NEXT_PUBLIC_GA_TRACKING_ID` - Google Analytics
 
-### UI & UX
-- `react-hot-toast` - Notifications
-- `lucide-react` - Icons
-- `framer-motion` - Animations
-- `react-player` - Video playback
+## 🏗️ Architecture Highlights
 
-## 🔌 API Integration
+✅ **Configuration** - No magic strings, type-safe env  
+✅ **Error Handling** - Comprehensive error system  
+✅ **API Layer** - Type-safe client with auto-retry  
+✅ **State Management** - Zustand with persistence  
+✅ **Custom Hooks** - Reusable utilities  
+✅ **Vietnamese** - Full localization
 
-The frontend communicates with the .NET backend through:
-- RESTful API endpoints (`/api/*`)
-- WebSocket connections for real-time features
-- File upload endpoints for media handling
+## 📖 Quick Links
 
-### API Client Features
+- **[Getting Started](./docs/GETTING_STARTED.md)** - Setup and onboarding
+- **[Development Guide](./docs/DEVELOPMENT.md)** - Coding standards
+- **[Architecture](./docs/ARCHITECTURE.md)** - System design
+- **[Design System](./docs/DESIGN_SYSTEM.md)** - UI components
+- **[Style Guide](./docs/STYLE_GUIDE.md)** - Styling reference
 
-The Axios-based API client (`src/lib/api.ts`) includes:
-- **Automatic Token Refresh**: Automatically refreshes expired JWT tokens
-- **Request Interceptors**: Adds authentication headers to all requests
-- **Error Handling**: Parses ProblemDetails format from backend
-- **Retry Logic**: Retries failed requests after token refresh
-- **Request Queuing**: Queues requests during token refresh to avoid race conditions
+## 🤝 Contributing
 
-### Error Handling
+1. Read the [Getting Started Guide](./docs/GETTING_STARTED.md)
+2. Follow the [Development Guide](./docs/DEVELOPMENT.md)
+3. Use the checklist for new features
+4. Ensure all user text is in Vietnamese
 
-Backend errors follow RFC 7807 ProblemDetails format:
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-  "title": "Validation Error",
-  "status": 400,
-  "detail": "Vui lòng kiểm tra lại các trường đã nhập.",
-  "errors": {
-    "Email": ["Email là bắt buộc"],
-    "Password": ["Mật khẩu phải có ít nhất 8 ký tự"]
-  }
-}
-```
+---
 
-Validation errors are automatically mapped to form fields using `mapApiErrorsToForm` helper.
-
-### Environment Variables
-
-Create a `.env.local` file in the frontend root directory:
-
-```env
-# API Configuration (Required)
-NEXT_PUBLIC_API_URL=http://localhost:5000
-
-# Socket.io for real-time features (Optional)
-NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
-
-# Azure Storage for media uploads (Optional - for production)
-AZURE_STORAGE_CONNECTION_STRING=your_connection_string
-AZURE_STORAGE_CONTAINER_NAME=thinktogether-media
-```
-
-**Important Notes:**
-- The `NEXT_PUBLIC_API_URL` must point to your backend API server
-- All variables starting with `NEXT_PUBLIC_` are exposed to the browser
-- Never commit `.env.local` to version control
-- Use `.env.example` as a template for other developers
-
-## 🎨 Styling Guidelines
-
-- Use Tailwind CSS utility classes
-- Follow the design system defined in `tailwind.config.js`
-- Use CSS variables for theming
-- Maintain consistent spacing and typography
-
-## 🔒 Security Considerations
-
-- JWT tokens stored in localStorage
-- Automatic token refresh
-- Protected API routes
-- Input validation on all forms
-- XSS protection through React's built-in escaping
-
-## 📱 Responsive Design
-
-- Mobile-first approach
-- Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px), 2xl (1400px)
-- Touch-friendly interfaces
-- Progressive enhancement
-
-## 🚀 Deployment
-
-The application is ready for deployment on:
-- Vercel (recommended for Next.js)
-- Netlify
-- AWS Amplify
-- Any Node.js hosting platform
-
-Build command: `npm run build`
-Output directory: `.next/`
-
-## 🔄 Next Steps
-
-1. Install shadcn/ui components
-2. Implement remaining features
-3. Add comprehensive testing
-4. Set up CI/CD pipeline
-5. Deploy to production
-
-## 📞 Support
-
-For questions or issues, please refer to the project documentation or create an issue in the repository.
+**Last Updated**: December 2024

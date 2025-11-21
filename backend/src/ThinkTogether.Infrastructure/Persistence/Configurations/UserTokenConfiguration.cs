@@ -2,6 +2,7 @@ using Domain.Aggregates.UserAggregate;
 using Domain.Aggregates.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
@@ -22,6 +23,11 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(50);
+
+        // Add check constraint for enum values
+        builder.ToTable(tb => tb.HasCheckConstraint(
+            "CK_MaNguoiDung_loaiToken",
+            "loaiToken IN ('PASSWORD_RESET', 'EMAIL_CONFIRMATION')"));
 
         builder.Property(ut => ut.UserId)
             .HasColumnName("idNguoiDung")

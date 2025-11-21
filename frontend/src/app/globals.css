@@ -46,21 +46,71 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   
-  /* Style Guide Colors */
-  --brand-primary: #00A8E8;
-  --brand-secondary: #FFE066;
-  --brand-secondary-hover: #FFD54D;
-  --bg-page: #FFFFFF;
-  --bg-surface: #F8FAFC;
-  --color-border-main: #00171F;
-  --text-primary: #003459;
-  --text-secondary: #334155;
-  --color-success: #22C55E;
-  --color-error: #EF4444;
-  --color-error-hover: #DC2626;
+  /* ========================================
+     NEO-BRUTALISM COLOR PALETTE
+     Vibrant, student-friendly colors inspired by Neo-Brutalism design
+     ======================================== */
   
+  /* Primary Brand Colors - Vibrant and Bold */
+  --brand-primary: #6366F1;        /* Indigo - Primary actions, links */
+  --brand-primary-hover: #4F46E5;  /* Darker indigo for hover */
+  --brand-primary-light: #A5B4FC;  /* Light indigo for backgrounds */
+  
+  --brand-secondary: #FBBF24;      /* Amber - Secondary actions, highlights */
+  --brand-secondary-hover: #F59E0B; /* Darker amber for hover */
+  --brand-secondary-light: #FDE68A; /* Light amber for backgrounds */
+  
+  /* Accent Colors - Fun and Energetic */
+  --accent-pink: #EC4899;          /* Pink - Special highlights */
+  --accent-pink-hover: #DB2777;    /* Darker pink */
+  --accent-pink-light: #FBCFE8;    /* Light pink */
+  
+  --accent-cyan: #06B6D4;          /* Cyan - Info, cool accents */
+  --accent-cyan-hover: #0891B2;    /* Darker cyan */
+  --accent-cyan-light: #A5F3FC;    /* Light cyan */
+  
+  --accent-green: #10B981;         /* Emerald - Success states */
+  --accent-green-hover: #059669;   /* Darker emerald */
+  --accent-green-light: #A7F3D0;   /* Light emerald */
+  
+  --accent-purple: #A855F7;        /* Purple - Creative elements */
+  --accent-purple-hover: #9333EA;  /* Darker purple */
+  --accent-purple-light: #E9D5FF;  /* Light purple */
+  
+  --accent-orange: #F97316;        /* Orange - Warm accents */
+  --accent-orange-hover: #EA580C;  /* Darker orange */
+  --accent-orange-light: #FED7AA;  /* Light orange */
+  
+  /* Background Colors */
+  --bg-page: #FAFAFA;              /* Off-white page background */
+  --bg-surface: #FFFFFF;           /* Pure white for cards/surfaces */
+  --bg-surface-secondary: #F3F4F6; /* Light gray for secondary surfaces */
+  
+  /* Border & Text Colors */
+  --color-border-main: #18181B;    /* Nearly black - bold borders */
+  --color-border-light: #71717A;   /* Gray for subtle borders */
+  
+  --text-primary: #18181B;         /* Nearly black - headings */
+  --text-secondary: #52525B;       /* Dark gray - body text */
+  --text-tertiary: #A1A1AA;        /* Medium gray - muted text */
+  
+  /* Status Colors */
+  --color-success: #10B981;        /* Success feedback */
+  --color-success-hover: #059669;  /* Darker success */
+  --color-error: #EF4444;          /* Error feedback */
+  --color-error-hover: #DC2626;    /* Darker error */
+  --color-warning: #F59E0B;        /* Warning feedback */
+  --color-info: #06B6D4;           /* Info feedback */
+  
+  /* Toast Colors */
+  --toast-bg: #363636;             /* Toast background */
+  --toast-text: #FFFFFF;           /* Toast text color */
+  --toast-success-icon: #10B981;   /* Success icon color */
+  --toast-error-icon: #EF4444;      /* Error icon color */
+  
+  /* OklCH Colors for Component Library */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -133,44 +183,86 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-[var(--bg-page)] text-[var(--text-secondary)] font-sans antialiased;
   }
   
   /* Typography - Raleway for headings, Be Vietnam Pro for body, Quicksand for buttons */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-heading font-bold text-[var(--text-primary)];
+  }
+  
+  h1 {
+    @apply text-5xl md:text-6xl;
+  }
+  
+  h2 {
+    @apply text-4xl md:text-5xl;
+  }
+  
+  h3 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h4 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h5 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  h6 {
+    @apply text-lg md:text-xl;
   }
   
   button, [role="button"] {
     @apply font-highlight;
   }
+  
+  /* Links */
+  a {
+    @apply text-[var(--brand-primary)] transition-colors hover:text-[var(--brand-primary-hover)];
+  }
 }
 
 @layer utilities {
-  /* Neo-brutalist Shadow Utilities */
+  /* ========================================
+     NEO-BRUTALIST SHADOW UTILITIES
+     Bold, offset shadows for Neo-Brutalism style
+     ======================================== */
+  
+  /* Black Shadows - Classic Neo-Brutalism */
+  .shadow-brutal-xs {
+    box-shadow: 2px 2px 0 var(--color-border-main);
+  }
+  
   .shadow-brutal-sm {
-    box-shadow: 3px 3px 0 #000;
+    box-shadow: 4px 4px 0 var(--color-border-main);
   }
   
   .shadow-brutal {
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--color-border-main);
   }
   
   .shadow-brutal-lg {
-    box-shadow: 8px 8px 0 #000;
+    box-shadow: 8px 8px 0 var(--color-border-main);
   }
   
   .shadow-brutal-xl {
-    box-shadow: 12px 12px 0 #000;
+    box-shadow: 12px 12px 0 var(--color-border-main);
   }
   
-  /* Colored Shadow Utilities */
-  .shadow-brutal-primary {
-    box-shadow: 6px 6px 0 var(--brand-primary);
+  /* Primary (Indigo) Colored Shadows */
+  .shadow-brutal-primary-xs {
+    box-shadow: 2px 2px 0 var(--brand-primary);
   }
   
   .shadow-brutal-primary-sm {
-    box-shadow: 3px 3px 0 var(--brand-primary);
+    box-shadow: 4px 4px 0 var(--brand-primary);
+  }
+  
+  .shadow-brutal-primary {
+    box-shadow: 6px 6px 0 var(--brand-primary);
   }
   
   .shadow-brutal-primary-lg {
@@ -181,12 +273,17 @@
     box-shadow: 12px 12px 0 var(--brand-primary);
   }
   
-  .shadow-brutal-secondary {
-    box-shadow: 6px 6px 0 var(--brand-secondary);
+  /* Secondary (Amber) Colored Shadows */
+  .shadow-brutal-secondary-xs {
+    box-shadow: 2px 2px 0 var(--brand-secondary);
   }
   
   .shadow-brutal-secondary-sm {
-    box-shadow: 3px 3px 0 var(--brand-secondary);
+    box-shadow: 4px 4px 0 var(--brand-secondary);
+  }
+  
+  .shadow-brutal-secondary {
+    box-shadow: 6px 6px 0 var(--brand-secondary);
   }
   
   .shadow-brutal-secondary-lg {
@@ -197,39 +294,134 @@
     box-shadow: 12px 12px 0 var(--brand-secondary);
   }
   
-  /* Border Width Utilities */
-  .border-3 {
-    border-width: 3px;
+  /* Accent Color Shadows */
+  .shadow-brutal-pink {
+    box-shadow: 6px 6px 0 var(--accent-pink);
+  }
+  
+  .shadow-brutal-cyan {
+    box-shadow: 6px 6px 0 var(--accent-cyan);
+  }
+  
+  .shadow-brutal-green {
+    box-shadow: 6px 6px 0 var(--accent-green);
+  }
+  
+  .shadow-brutal-purple {
+    box-shadow: 6px 6px 0 var(--accent-purple);
+  }
+  
+  .shadow-brutal-orange {
+    box-shadow: 6px 6px 0 var(--accent-orange);
+  }
+  
+  /* ========================================
+     BORDER WIDTH UTILITIES
+     ======================================== */
+  .border-2 {
+    border-width: 2px;
   }
   
   .border-4 {
     border-width: 4px;
   }
   
-  /* Hover Animation Utilities */
+  .border-5 {
+    border-width: 5px;
+  }
+  
+  /* ========================================
+     HOVER ANIMATION UTILITIES
+     Smooth, playful interactions
+     ======================================== */
+  
+  /* Hover Lift - subtle upward movement */
   .hover-lift {
-    @apply transition-transform duration-200 ease-in-out;
+    @apply transition-transform duration-200 ease-out;
   }
   
   .hover-lift:hover {
     @apply -translate-y-1;
   }
   
+  /* Brutal Push - inward/downward "pressed" effect */
   .hover-brutal-push {
-    @apply transition-all duration-200 ease-in-out;
+    @apply transition-all duration-150 ease-out;
   }
   
   .hover-brutal-push:hover {
-    @apply translate-x-1 translate-y-1;
+    @apply translate-x-[2px] translate-y-[2px];
   }
   
   .hover-brutal-push:active {
-    @apply translate-x-2 translate-y-2;
+    @apply translate-x-[4px] translate-y-[4px];
   }
   
-  /* Active state for buttons */
-  .active-brutal:active {
+  /* Button Press Effect - Shadow stays fixed, button moves */
+  .btn-press-effect {
+    box-shadow: 4px 4px 0 var(--color-border-main);
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translate(0, 0);
+  }
+  
+  .btn-press-effect:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--color-border-main);
+  }
+  
+  .btn-press-effect:active {
     transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--color-border-main);
+  }
+  
+  /* Active state for buttons - press effect with no shadow */
+  .active-brutal:active {
+    transform: translate(6px, 6px);
     box-shadow: none;
+  }
+  
+  /* Rotate on hover - playful effect */
+  .hover-rotate {
+    @apply transition-transform duration-300 ease-out;
+  }
+  
+  .hover-rotate:hover {
+    @apply rotate-2;
+  }
+  
+  /* Scale on hover - emphasis effect */
+  .hover-scale {
+    @apply transition-transform duration-200 ease-out;
+  }
+  
+  .hover-scale:hover {
+    @apply scale-105;
+  }
+  
+  /* ========================================
+     BACKGROUND PATTERNS
+     Fun decorative elements
+     ======================================== */
+  .bg-dots {
+    background-image: radial-gradient(circle, var(--color-border-main) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .bg-grid {
+    background-image: 
+      linear-gradient(var(--color-border-light) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border-light) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* ========================================
+     TEXT UTILITIES
+     ======================================== */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-[var(--brand-primary)] to-[var(--accent-purple)] bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-fun {
+    @apply bg-gradient-to-r from-[var(--accent-pink)] via-[var(--accent-purple)] to-[var(--brand-primary)] bg-clip-text text-transparent;
   }
 }

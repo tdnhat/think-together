@@ -43,8 +43,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnName("ngayXoa");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
                         .HasColumnName("moTa");
 
                     b.Property<int>("PlayCount")
@@ -55,7 +55,13 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("QuizSetId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idBoTrucNghiem");
+                        .HasColumnName("idBoTracNghiem");
+
+                    b.Property<string>("ShareLink")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("urlChiaSe");
 
                     b.Property<bool>("ShowLeaderboard")
                         .ValueGeneratedOnAdd()
@@ -65,7 +71,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trangThai");
 
                     b.Property<string>("Title")
@@ -86,79 +93,33 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("QuizSetId");
 
+                    b.HasIndex("ShareLink")
+                        .IsUnique();
+
                     b.HasIndex("Status");
 
-                    b.ToTable("ThachThuc", (string)null);
+                    b.HasIndex("Status", "DeletedAt", "PlayCount");
+
+                    b.ToTable("ThachThuc", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ThachThuc_luotChoi", "luotChoi >= 0");
+
+                            t.HasCheckConstraint("CK_ThachThuc_trangThai", "trangThai IN ('Active', 'Archived')");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idLuotChoi");
-
-                    b.Property<Guid>("ChallengeId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idThachThuc");
-
-                    b.Property<DateTime>("CompletedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("thoiGianHoanTatLuot")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("CompletionTime")
-                        .HasColumnType("int")
-                        .HasColumnName("thoiGianHoanThanh");
-
-                    b.Property<int>("CorrectAnswers")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("soCauDung");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayTao")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayXoa");
-
-                    b.Property<string>("StudentName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("tenHocSinh");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayCapNhat");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.HasIndex("CompletedAt");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("StudentName");
-
-                    b.ToTable("LuotChoiThachThuc", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengePlayerAnswer", b =>
+            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauTraLoi");
 
-                    b.Property<Guid>("ChallengeSessionId")
+                    b.Property<Guid>("ChallengeAttemptId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idLuotChoiThachThuc");
+
+                    b.Property<Guid?>("ChallengeAttemptId1")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -184,16 +145,11 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoi");
 
-                    b.Property<int>("SubmissionTimeSeconds")
+                    b.Property<int>("SubmissionTimeMs")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
-                        .HasColumnName("thoiGianNop");
-
-                    b.Property<string>("SubmittedAnswer")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("cauTraLoi");
+                        .HasColumnName("thoiGianNopMs");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -201,32 +157,53 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeSessionId");
+                    b.HasIndex("ChallengeAttemptId");
+
+                    b.HasIndex("ChallengeAttemptId1");
 
                     b.HasIndex("DeletedAt");
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("ChallengeSessionId", "QuestionId");
+                    b.HasIndex("ChallengeAttemptId", "QuestionId")
+                        .IsUnique();
 
-                    b.ToTable("CauTraLoiThachThuc", (string)null);
+                    b.ToTable("CauTraLoiThachThuc", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CauTraLoiThachThuc_diemDat", "diemDat >= 0");
+
+                            t.HasCheckConstraint("CK_CauTraLoiThachThuc_thoiGianNopMs", "thoiGianNopMs >= 0");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.LeaderboardEntry", b =>
+            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idBangXepHang");
-
-                    b.Property<DateTime>("AchievedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("thoiGianDatDiem")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                        .HasColumnName("idLuotChoi");
 
                     b.Property<Guid>("ChallengeId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idThachThuc");
+
+                    b.Property<Guid?>("ChallengeId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thoiGianHoanTatLuot")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int?>("CompletionTimeMs")
+                        .HasColumnType("int")
+                        .HasColumnName("thoiGianHoanThanhMs");
+
+                    b.Property<int>("CorrectAnswers")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("soCauDung");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -238,15 +215,101 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayXoa");
 
-                    b.Property<int>("Rank")
-                        .HasColumnType("int")
-                        .HasColumnName("xepHang");
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("bietDanh");
 
-                    b.Property<string>("StudentName")
+                    b.Property<int>("ScoreAchieved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("diemDat");
+
+                    b.Property<int>("TotalQuestions")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("tongSoCau");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.HasIndex("ChallengeId1");
+
+                    b.HasIndex("CompletedAt");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("Nickname");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ChallengeId", "ScoreAchieved", "CompletedAt");
+
+                    b.ToTable("LuotChoiThachThuc", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_diemDat", "diemDat >= 0");
+
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_soCauDung", "soCauDung >= 0 AND soCauDung <= tongSoCau");
+
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_thoiGian", "thoiGianHoanThanhMs IS NULL OR thoiGianHoanThanhMs > 0");
+
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_tongSoCau", "tongSoCau >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Class", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idLopHoc");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("urlAnhBia");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("moTa");
+
+                    b.Property<string>("JoinCode")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)")
+                        .HasColumnName("maLop");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("tenHocSinh");
+                        .HasColumnName("tenLop");
+
+                    b.Property<Guid>("TeacherId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idGiaoVien");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -254,16 +317,217 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeId");
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("JoinCode")
+                        .IsUnique();
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("LopHoc", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_LopHoc_maLop", "LEN(maLop) = 8");
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idThanhVien");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idLopHoc");
+
+                    b.Property<Guid?>("ClassId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayThamGia")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("LeftAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayRoi");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ClassId1");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ClassId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("ThanhVienLop", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idBaiTapVeNha");
+
+                    b.Property<DateTime>("AssignedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayGiao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idLopHoc");
+
+                    b.Property<Guid?>("ClassId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("hanChot");
+
+                    b.Property<Guid>("QuizSetId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idBoTracNghiem");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("tieuDe");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ClassId1");
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("ChallengeId", "Rank");
+                    b.HasIndex("DueDate");
 
-                    b.ToTable("BangXepHangThachThuc", (string)null);
+                    b.HasIndex("QuizSetId");
+
+                    b.HasIndex("ClassId", "DueDate");
+
+                    b.ToTable("BaiTapVeNha", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BaiTapVeNha_hanChot", "hanChot IS NULL OR hanChot >= ngayGiao");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GamePlayer", b =>
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.HomeworkSubmission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idBaiNop");
+
+                    b.Property<Guid>("ChallengeAttemptId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idLuotChoiThachThuc");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<Guid>("HomeworkId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idBaiTapVeNha");
+
+                    b.Property<Guid?>("HomeworkId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Score")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("diem");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("trangThai");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thoiGianNop")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeAttemptId")
+                        .IsUnique();
+
+                    b.HasIndex("HomeworkId1");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("HomeworkId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("BaiNop", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BaiNop_diem", "diem >= 0");
+
+                            t.HasCheckConstraint("CK_BaiNop_trangThai", "trangThai IN ('Submitted', 'Late', 'NotSubmitted')");
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -271,7 +535,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("ConnectionStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trangThaiKetNoi");
 
                     b.Property<DateTime>("CreatedAt")
@@ -288,9 +553,14 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
 
-                    b.Property<int>("Rank")
-                        .HasColumnType("int")
-                        .HasColumnName("xepHang");
+                    b.Property<Guid?>("GameSessionId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("bietDanh");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -302,21 +572,29 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("GameSessionId");
 
-                    b.HasIndex("Rank");
+                    b.HasIndex("GameSessionId1");
 
-                    b.ToTable("NguoiChoiPhien", (string)null);
+                    b.HasIndex("GameSessionId", "CreatedAt");
+
+                    b.ToTable("NguoiChoiPhien", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_NguoiChoiPhien_bietDanh", "LEN(bietDanh) >= 2 AND LEN(bietDanh) <= 100");
+
+                            t.HasCheckConstraint("CK_NguoiChoiPhien_trangThaiKetNoi", "trangThaiKetNoi IN ('Connected', 'Disconnected')");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameQuestion", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoiPhien");
 
-                    b.Property<double>("AverageResponseTimeSeconds")
+                    b.Property<decimal>("AverageResponseTimeMs")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0)
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(0m)
                         .HasColumnName("thoiGianTraLoiTrungBinh");
 
                     b.Property<int>("CorrectAnswerCount")
@@ -339,11 +617,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
 
-                    b.Property<int>("IncorrectAnswerCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("soTraLoiSai");
+                    b.Property<Guid?>("GameSessionId1")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("PositionInGame")
                         .HasColumnType("int")
@@ -357,29 +632,48 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayCapNhat");
 
+                    b.Property<int>("WrongAnswerCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("soTraLoiSai");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
 
                     b.HasIndex("GameSessionId");
 
+                    b.HasIndex("GameSessionId1");
+
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("GameSessionId", "PositionInGame");
+                    b.HasIndex("GameSessionId", "PositionInGame")
+                        .IsUnique();
 
-                    b.ToTable("CauHoiPhienChoi", (string)null);
+                    b.ToTable("CauHoiPhienChoi", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CauHoiPhienChoi_soTraLoiDung", "soTraLoiDung >= 0");
+
+                            t.HasCheckConstraint("CK_CauHoiPhienChoi_soTraLoiSai", "soTraLoiSai >= 0");
+
+                            t.HasCheckConstraint("CK_CauHoiPhienChoi_thoiGian", "thoiGianTraLoiTrungBinh >= 0");
+
+                            t.HasCheckConstraint("CK_CauHoiPhienChoi_viTriTrongPhien", "viTriTrongPhien >= 0");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameScore", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameScore", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idDiem");
 
-                    b.Property<double>("AccuracyPercentage")
+                    b.Property<decimal>("AccuracyPercentage")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0)
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m)
                         .HasColumnName("tiLeChinhXac");
 
                     b.Property<int>("CorrectAnswers")
@@ -398,29 +692,32 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayXoa");
 
-                    b.Property<int>("FinalRank")
+                    b.Property<int?>("FinalRank")
                         .HasColumnType("int")
                         .HasColumnName("xepHangCuoi");
+
+                    b.Property<Guid>("GamePlayerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiChoi");
 
                     b.Property<Guid>("GameSessionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
 
-                    b.Property<Guid>("PlayerId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiChoi");
+                    b.Property<Guid?>("GameSessionId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TotalPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("tongDiem");
 
                     b.Property<int>("TotalQuestions")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
                         .HasColumnName("tongSoCau");
-
-                    b.Property<int>("TotalScore")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("tongDiem");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -430,20 +727,32 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("GameSessionId");
-
-                    b.HasIndex("PlayerId")
+                    b.HasIndex("GamePlayerId")
                         .IsUnique();
 
-                    b.HasIndex("TotalScore")
-                        .IsDescending();
+                    b.HasIndex("GameSessionId");
+
+                    b.HasIndex("GameSessionId1");
 
                     b.HasIndex("GameSessionId", "FinalRank");
 
-                    b.ToTable("DiemPhienChoi", (string)null);
+                    b.HasIndex("GameSessionId", "TotalPoints");
+
+                    b.ToTable("DiemPhienChoi", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_DiemPhienChoi_soCauDung", "soCauDung >= 0 AND soCauDung <= tongSoCau");
+
+                            t.HasCheckConstraint("CK_DiemPhienChoi_tiLeChinhXac", "tiLeChinhXac >= 0 AND tiLeChinhXac <= 100");
+
+                            t.HasCheckConstraint("CK_DiemPhienChoi_tongDiem", "tongDiem >= 0");
+
+                            t.HasCheckConstraint("CK_DiemPhienChoi_tongSoCau", "tongSoCau >= 0");
+
+                            t.HasCheckConstraint("CK_DiemPhienChoi_xepHangCuoi", "xepHangCuoi IS NULL OR xepHangCuoi > 0");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameSettings", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -501,16 +810,11 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("CaiDatPhienChoi", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.PlayerAnswer", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idCauTraLoi");
-
-                    b.Property<string>("Answer")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("noiDungTraLoi");
+                        .HasColumnName("idTraLoi");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -526,25 +830,23 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idNguoiChoi");
 
-                    b.Property<Guid?>("GameSessionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("GameQuestionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idCauHoiPhien");
 
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit")
-                        .HasColumnName("dung");
+                        .HasColumnName("laDapAnDung");
 
                     b.Property<int>("PointsEarned")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
-                        .HasColumnName("diemDat");
+                        .HasColumnName("diemNhan");
 
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idCauHoi");
-
-                    b.Property<int>("TimeToAnswer")
-                        .HasColumnType("int");
+                    b.Property<int>("ResponseTimeMs")
+                        .HasColumnType("int")
+                        .HasColumnName("thoiGianMs");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -556,14 +858,20 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("GamePlayerId");
 
-                    b.HasIndex("GameSessionId");
+                    b.HasIndex("GameQuestionId");
 
-                    b.HasIndex("QuestionId");
+                    b.HasIndex("GamePlayerId", "GameQuestionId")
+                        .IsUnique();
 
-                    b.ToTable("CauTraLoiNguoiChoi", (string)null);
+                    b.ToTable("TraLoiNguoiChoi", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TraLoiNguoiChoi_diemNhan", "diemNhan >= 0");
+
+                            t.HasCheckConstraint("CK_TraLoiNguoiChoi_thoiGianMs", "thoiGianMs > 0");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.GameSession", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -589,13 +897,19 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("thoiGianKetThuc");
 
-                    b.Property<Guid>("HostId")
+                    b.Property<Guid>("HostUserId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idChuPhong");
 
+                    b.Property<string>("PIN")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)")
+                        .HasColumnName("maPIN");
+
                     b.Property<Guid>("QuizSetId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idBoTrucNghiem");
+                        .HasColumnName("idBoTracNghiem");
 
                     b.Property<DateTime?>("StartedAt")
                         .HasColumnType("datetime2")
@@ -603,7 +917,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trangThai");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -614,16 +929,27 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("HostId");
+                    b.HasIndex("HostUserId");
 
                     b.HasIndex("QuizSetId");
 
                     b.HasIndex("Status");
 
-                    b.ToTable("PhienChoi", (string)null);
+                    b.HasIndex("PIN", "Status");
+
+                    b.ToTable("PhienChoi", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PhienChoi_cauHoiHienTai", "cauHoiHienTai >= 0");
+
+                            t.HasCheckConstraint("CK_PhienChoi_maPIN", "LEN(maPIN) = 6 AND maPIN LIKE '[0-9][0-9][0-9][0-9][0-9][0-9]'");
+
+                            t.HasCheckConstraint("CK_PhienChoi_thoiGian", "thoiGianKetThuc IS NULL OR thoiGianKetThuc >= thoiGianBatDau");
+
+                            t.HasCheckConstraint("CK_PhienChoi_trangThai", "trangThai IN ('Waiting', 'Started', 'Ended')");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.Entities.Question", b =>
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.Entities.Question", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -631,8 +957,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
                         .HasColumnName("noiDung");
 
                     b.Property<DateTime>("CreatedAt")
@@ -645,16 +971,17 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayXoa");
 
-                    b.Property<string>("Explanation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
+                    b.Property<int>("DisplayOrder")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
                         .HasColumnName("thuTu");
 
                     b.Property<Guid>("QuizSetId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idBoTracNghiem");
+
+                    b.Property<Guid?>("QuizSetId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("TimeLimit")
@@ -665,44 +992,54 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("loaiCauHoi");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayCapNhat");
 
-                    b.Property<string>("VideoUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("Order");
+                    b.HasIndex("DisplayOrder");
 
                     b.HasIndex("QuizSetId");
 
-                    b.ToTable("CauHoi", (string)null);
+                    b.HasIndex("QuizSetId1");
+
+                    b.HasIndex("QuizSetId", "DisplayOrder")
+                        .HasFilter("ngayXoa IS NULL");
+
+                    b.ToTable("CauHoi", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CauHoi_giuiHanThoiGian", "giuiHanThoiGian > 0 AND giuiHanThoiGian <= 300");
+
+                            t.HasCheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN ('SingleChoice', 'TrueFalse', 'MultipleChoice', 'Matching', 'Ordering', 'Video')");
+
+                            t.HasCheckConstraint("CK_CauHoi_thuTu", "thuTu >= 0");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.Entities.QuestionStatistics", b =>
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.Entities.QuestionStatistic", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idThongKe");
 
-                    b.Property<double>("AverageResponseTimeSeconds")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0)
-                        .HasColumnName("thoiGianTraLoiTrungBinh");
-
-                    b.Property<int>("CorrectCount")
+                    b.Property<int>("AverageResponseTimeMs")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
-                        .HasColumnName("soTraLoiDung");
+                        .HasColumnName("thoiGianTrungBinhMs");
+
+                    b.Property<int>("CorrectAnswers")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("soLanTraLoiDung");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -711,57 +1048,61 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayXoa");
+                        .HasColumnType("datetime2");
 
-                    b.Property<double>("DifficultyPercentage")
+                    b.Property<decimal>("Difficulty")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0)
-                        .HasColumnName("tiLeKho");
-
-                    b.Property<Guid>("GameSessionId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idPhienChoi");
-
-                    b.Property<int>("IncorrectCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("soTraLoiSai");
-
-                    b.Property<string>("MostSelectedAnswer")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("cauTraLoiDuocChonNhieu");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("doDung");
 
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoi");
 
+                    b.Property<int>("TimesAsked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("soLanHoi");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayCapNhat");
 
+                    b.Property<int>("WrongAnswers")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("soLanTraLoiSai");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DeletedAt");
+                    b.HasIndex("Difficulty");
 
-                    b.HasIndex("GameSessionId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("GameSessionId", "QuestionId")
+                    b.HasIndex("QuestionId")
                         .IsUnique();
 
-                    b.ToTable("ThongKeCauHoi", (string)null);
+                    b.ToTable("ThongKeCauHoi", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ThongKeCauHoi_doDung", "doDung >= 0 AND doDung <= 100");
+
+                            t.HasCheckConstraint("CK_ThongKeCauHoi_soLanHoi", "soLanHoi >= 0");
+
+                            t.HasCheckConstraint("CK_ThongKeCauHoi_soLanTraLoiDung", "soLanTraLoiDung >= 0");
+
+                            t.HasCheckConstraint("CK_ThongKeCauHoi_soLanTraLoiSai", "soLanTraLoiSai >= 0");
+
+                            t.HasCheckConstraint("CK_ThongKeCauHoi_thoiGianTrungBinhMs", "thoiGianTrungBinhMs >= 0");
+                        });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.QuizSet", b =>
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.QuizSet", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idBoTrucNghiem");
+                        .HasColumnName("idBoTracNghiem");
 
                     b.Property<string>("CoverImageUrl")
                         .HasMaxLength(500)
@@ -774,13 +1115,17 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnName("ngayTao")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idNguoiDung");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayXoa");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
                         .HasColumnName("moTa");
 
                     b.Property<int>("DisplayOrder")
@@ -805,19 +1150,50 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayCapNhat");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiDung");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("DeletedAt");
 
                     b.HasIndex("IsPublished");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("IsPublished", "DeletedAt", "CreatedAt");
 
-                    b.ToTable("BoTrucNghiem", (string)null);
+                    b.ToTable("BoTracNghiem", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.ValueObjects.QuestionOption", b =>
+                {
+                    b.Property<string>("Content")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("noiDung");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("thuTu");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("urlAnh");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit")
+                        .HasColumnName("laDapAnDung");
+
+                    b.Property<Guid?>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Content", "DisplayOrder");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("CauHoi_TracNghiem", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CauHoi_TracNghiem_thuTu", "thuTu >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.RefreshToken", b =>
@@ -929,7 +1305,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId", "Type", "UsedAt");
 
-                    b.ToTable("MaNguoiDung", (string)null);
+                    b.ToTable("MaNguoiDung", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_MaNguoiDung_loaiToken", "loaiToken IN ('PASSWORD_RESET', 'EMAIL_CONFIRMATION')");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Aggregates.UserAggregate.User", b =>
@@ -988,10 +1367,12 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("matKhau");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("vaiTro");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idVaiTro");
+
+                    b.Property<Guid?>("RoleId1")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -1004,159 +1385,18 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("Role");
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("RoleId1");
 
                     b.ToTable("NguoiDung", (string)null);
                 });
 
-            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.AuditLog", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNhatKy");
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("hanhDong");
-
-                    b.Property<Guid>("ChangedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiThayDoi");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("thoiGianThayDoi")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idThucThe");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("loaiThucThe");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)")
-                        .HasColumnName("diaChiIP");
-
-                    b.Property<string>("NewValues")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("giaTriMoi");
-
-                    b.Property<string>("OldValues")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("giaTriCu");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Action");
-
-                    b.HasIndex("ChangedById");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("EntityId");
-
-                    b.HasIndex("EntityType");
-
-                    b.ToTable("NhatKyHeThong", (string)null);
-                });
-
-            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Media", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idMedia");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayTaiLen")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayXoa");
-
-                    b.Property<int?>("DurationSeconds")
-                        .HasColumnType("int")
-                        .HasColumnName("thoiLuongGiay");
-
-                    b.Property<int>("FileSizeBytes")
-                        .HasColumnType("int")
-                        .HasColumnName("kichThuocByte");
-
-                    b.Property<string>("Filename")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("tenFile");
-
-                    b.Property<string>("MimeType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("loaiMime");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("loai");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayCapNhat");
-
-                    b.Property<Guid>("UploadedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiTaiLen");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("url");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("Type");
-
-                    b.HasIndex("UploadedById");
-
-                    b.ToTable("Media", (string)null);
-                });
-
-            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.ModeratorLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNhatKy");
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("hanhDong");
-
-                    b.Property<Guid>("AdminId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idQuanTri");
+                        .HasColumnName("idVaiTro");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -1167,90 +1407,16 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idThucThe");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("loaiThucThe");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ghiChu");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(-1)
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("lyDo");
-
-                    b.Property<bool>("Resolved")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("daGiaiQuyet");
-
-                    b.Property<DateTime?>("ResolvedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayGiaiQuyet");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayCapNhat");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Action");
-
-                    b.HasIndex("AdminId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("EntityId");
-
-                    b.HasIndex("EntityType");
-
-                    b.HasIndex("Resolved");
-
-                    b.HasIndex("ResolvedAt");
-
-                    b.ToTable("NhatKyQuanTri", (string)null);
-                });
-
-            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.ProfanityFilter", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idBoLoc");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayTao")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasColumnName("dangHoatDong");
-
-                    b.Property<string>("Pattern")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("pattern");
+                        .HasColumnName("moTa");
 
-                    b.Property<string>("Severity")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("mucDoNghiemTrong");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("tenVaiTro");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -1258,312 +1424,253 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("Pattern")
+                    b.HasIndex("Name")
                         .IsUnique();
 
-                    b.HasIndex("Severity");
-
-                    b.ToTable("BoLocTuMieng", (string)null);
+                    b.ToTable("VaiTro", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
-                    b.OwnsOne("Domain.Aggregates.ChallengeAggregate.ValueObjects.ShareableLink", "ShareLink", b1 =>
-                        {
-                            b1.Property<Guid>("ChallengeId")
-                                .HasColumnType("uniqueidentifier");
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(500)
-                                .HasColumnType("nvarchar(500)")
-                                .HasColumnName("urlChiaSeLink");
+                    b.HasOne("Domain.Aggregates.QuizAggregate.QuizSet", null)
+                        .WithMany()
+                        .HasForeignKey("QuizSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
 
-                            b1.HasKey("ChallengeId");
+            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
+                {
+                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
+                        .WithMany()
+                        .HasForeignKey("ChallengeAttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                            b1.ToTable("ThachThuc");
+                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
+                        .WithMany("Answers")
+                        .HasForeignKey("ChallengeAttemptId1");
 
-                            b1.WithOwner()
-                                .HasForeignKey("ChallengeId");
-                        });
-
-                    b.Navigation("ShareLink")
+                    b.HasOne("Domain.Aggregates.QuizAggregate.Entities.Question", null)
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.HasOne("Domain.Aggregates.ChallengeAggregate.Challenge", null)
-                        .WithMany("Attempts")
+                        .WithMany()
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Aggregates.ChallengeAggregate.ValueObjects.ChallengeScore", "Score", b1 =>
-                        {
-                            b1.Property<Guid>("ChallengeAttemptId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Value")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasDefaultValue(0)
-                                .HasColumnName("diemDat");
-
-                            b1.HasKey("ChallengeAttemptId");
-
-                            b1.ToTable("LuotChoiThachThuc");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ChallengeAttemptId");
-                        });
-
-                    b.Navigation("Score")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.LeaderboardEntry", b =>
-                {
                     b.HasOne("Domain.Aggregates.ChallengeAggregate.Challenge", null)
-                        .WithMany("Leaderboard")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Attempts")
+                        .HasForeignKey("ChallengeId1");
 
-                    b.OwnsOne("Domain.Aggregates.ChallengeAggregate.ValueObjects.ChallengeScore", "Score", b1 =>
-                        {
-                            b1.Property<Guid>("LeaderboardEntryId")
-                                .HasColumnType("uniqueidentifier");
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
 
-                            b1.Property<int>("Value")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasDefaultValue(0)
-                                .HasColumnName("diemCaoNhat");
-
-                            b1.HasKey("LeaderboardEntryId");
-
-                            b1.ToTable("BangXepHangThachThuc");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LeaderboardEntryId");
-                        });
-
-                    b.Navigation("Score")
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Class", b =>
+                {
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GamePlayer", b =>
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GameSessionAggregate.GameSession", null)
-                        .WithMany("Players")
+                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
+                        .WithMany("Members")
+                        .HasForeignKey("ClassId1");
+
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
+                {
+                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
+                        .WithMany("Homeworks")
+                        .HasForeignKey("ClassId1");
+
+                    b.HasOne("Domain.Aggregates.QuizAggregate.QuizSet", null)
+                        .WithMany()
+                        .HasForeignKey("QuizSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.HomeworkSubmission", b =>
+                {
+                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
+                        .WithMany()
+                        .HasForeignKey("ChallengeAttemptId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.ClassAggregate.Entities.Homework", null)
+                        .WithMany()
+                        .HasForeignKey("HomeworkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.ClassAggregate.Entities.Homework", null)
+                        .WithMany("Submissions")
+                        .HasForeignKey("HomeworkId1");
+
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
+                {
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany()
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Aggregates.GameSessionAggregate.ValueObjects.PlayerNickname", "Nickname", b1 =>
-                        {
-                            b1.Property<Guid>("GamePlayerId")
-                                .HasColumnType("uniqueidentifier");
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany("Players")
+                        .HasForeignKey("GameSessionId1");
+                });
 
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("thamDuOi");
-
-                            b1.HasKey("GamePlayerId");
-
-                            b1.ToTable("NguoiChoiPhien");
-
-                            b1.WithOwner()
-                                .HasForeignKey("GamePlayerId");
-                        });
-
-                    b.OwnsOne("Domain.Aggregates.GameSessionAggregate.ValueObjects.Score", "Score", b1 =>
-                        {
-                            b1.Property<Guid>("GamePlayerId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Value")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasDefaultValue(0)
-                                .HasColumnName("diem");
-
-                            b1.HasKey("GamePlayerId");
-
-                            b1.ToTable("NguoiChoiPhien");
-
-                            b1.WithOwner()
-                                .HasForeignKey("GamePlayerId");
-                        });
-
-                    b.Navigation("Nickname")
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
+                {
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany()
+                        .HasForeignKey("GameSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Score")
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany("GameQuestions")
+                        .HasForeignKey("GameSessionId1");
+
+                    b.HasOne("Domain.Aggregates.QuizAggregate.Entities.Question", null)
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.GameSettings", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameScore", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GameSessionAggregate.GameSession", null)
-                        .WithOne("Settings")
-                        .HasForeignKey("Domain.Aggregates.GameSessionAggregate.Entities.GameSettings", "GameSessionId")
+                    b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
+                        .WithMany()
+                        .HasForeignKey("GamePlayerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany()
+                        .HasForeignKey("GameSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany("Scores")
+                        .HasForeignKey("GameSessionId1");
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
+                {
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.Aggregates.GamingAggregate.Entities.GameSettings", "GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.Entities.PlayerAnswer", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GameSessionAggregate.GameSession", null)
-                        .WithMany("Answers")
-                        .HasForeignKey("GameSessionId");
-                });
+                    b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
+                        .WithMany()
+                        .HasForeignKey("GamePlayerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.GameSession", b =>
-                {
-                    b.OwnsOne("Domain.Aggregates.GameSessionAggregate.ValueObjects.GamePin", "PIN", b1 =>
-                        {
-                            b1.Property<Guid>("GameSessionId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(6)
-                                .HasColumnType("nvarchar(6)")
-                                .HasColumnName("maPIN");
-
-                            b1.HasKey("GameSessionId");
-
-                            b1.ToTable("PhienChoi");
-
-                            b1.WithOwner()
-                                .HasForeignKey("GameSessionId");
-                        });
-
-                    b.Navigation("PIN")
+                    b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", null)
+                        .WithMany()
+                        .HasForeignKey("GameQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.Entities.Question", b =>
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
                 {
-                    b.HasOne("Domain.Aggregates.QuizSetAggregate.QuizSet", null)
-                        .WithMany("Questions")
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("HostUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.QuizAggregate.QuizSet", null)
+                        .WithMany()
+                        .HasForeignKey("QuizSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.Entities.Question", b =>
+                {
+                    b.HasOne("Domain.Aggregates.QuizAggregate.QuizSet", null)
+                        .WithMany()
                         .HasForeignKey("QuizSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Domain.Aggregates.QuizSetAggregate.ValueObjects.Answer", "Answers", b1 =>
-                        {
-                            b1.Property<Guid>("idCauHoi")
-                                .HasColumnType("uniqueidentifier");
+                    b.HasOne("Domain.Aggregates.QuizAggregate.QuizSet", null)
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizSetId1");
+                });
 
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.QuizSet", b =>
+                {
+                    b.HasOne("Domain.Aggregates.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
 
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("Content")
-                                .IsRequired()
-                                .HasMaxLength(-1)
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("noiDung");
-
-                            b1.Property<string>("ImageUrl")
-                                .HasMaxLength(500)
-                                .HasColumnType("nvarchar(500)")
-                                .HasColumnName("urlAnh");
-
-                            b1.Property<bool>("IsCorrect")
-                                .HasColumnType("bit")
-                                .HasColumnName("laDapAnDung");
-
-                            b1.Property<int>("Order")
-                                .HasColumnType("int")
-                                .HasColumnName("thuTu");
-
-                            b1.HasKey("idCauHoi", "Id");
-
-                            b1.ToTable("CauTraLoi", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("idCauHoi");
-                        });
-
-                    b.OwnsMany("Domain.Aggregates.QuizSetAggregate.ValueObjects.MatchPair", "MatchPairs", b1 =>
-                        {
-                            b1.Property<Guid>("idCauHoi")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("LeftContent")
-                                .IsRequired()
-                                .HasMaxLength(-1)
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("noiDungTrai");
-
-                            b1.Property<int>("Order")
-                                .HasColumnType("int")
-                                .HasColumnName("thuTu");
-
-                            b1.Property<string>("RightContent")
-                                .IsRequired()
-                                .HasMaxLength(-1)
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("noiDungPhai");
-
-                            b1.HasKey("idCauHoi", "Id");
-
-                            b1.ToTable("CapGhep", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("idCauHoi");
-                        });
-
-                    b.OwnsMany("Domain.Aggregates.QuizSetAggregate.ValueObjects.OrderItem", "OrderItems", b1 =>
-                        {
-                            b1.Property<Guid>("idCauHoi")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("Content")
-                                .IsRequired()
-                                .HasMaxLength(-1)
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("noiDung");
-
-                            b1.Property<int>("CorrectPosition")
-                                .HasColumnType("int")
-                                .HasColumnName("viTriDung");
-
-                            b1.HasKey("idCauHoi", "Id");
-
-                            b1.ToTable("MucSapXep", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("idCauHoi");
-                        });
-
-                    b.Navigation("Answers");
-
-                    b.Navigation("MatchPairs");
-
-                    b.Navigation("OrderItems");
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.ValueObjects.QuestionOption", b =>
+                {
+                    b.HasOne("Domain.Aggregates.QuizAggregate.Entities.Question", null)
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionId");
                 });
 
             modelBuilder.Entity("Domain.Aggregates.UserAggregate.Entities.RefreshToken", b =>
@@ -1584,23 +1691,58 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Aggregates.UserAggregate.User", b =>
+                {
+                    b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId1");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Navigation("Attempts");
-
-                    b.Navigation("Leaderboard");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GameSessionAggregate.GameSession", b =>
+            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Class", b =>
+                {
+                    b.Navigation("Homeworks");
+
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
+                {
+                    b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
+                {
+                    b.Navigation("GameQuestions");
 
                     b.Navigation("Players");
 
-                    b.Navigation("Settings");
+                    b.Navigation("Scores");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.QuizSetAggregate.QuizSet", b =>
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.Entities.Question", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("Domain.Aggregates.QuizAggregate.QuizSet", b =>
                 {
                     b.Navigation("Questions");
                 });

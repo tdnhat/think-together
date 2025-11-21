@@ -1,9 +1,9 @@
-﻿using Domain.Aggregates.UserAggregate.Specifications;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using MediatR;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;
 using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.User.Commands.LogoutUser;

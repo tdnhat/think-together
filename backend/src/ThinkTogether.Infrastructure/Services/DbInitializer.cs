@@ -1,15 +1,14 @@
-using Domain.Aggregates.UserAggregate;
-using Domain.Aggregates.UserAggregate.Entities;
 using Domain.Aggregates.UserAggregate.ValueObjects;
 using Infrastructure.Configuration;
-using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Infrastructure.Interfaces;
+using ThinkTogether.Infrastructure.Persistence;
+using ThinkTogether.Infrastructure.Persistence.Seeders;
 
-namespace Infrastructure.Services;
+namespace ThinkTogether.Infrastructure.Services;
 
 public class DbInitializer : IDbInitializer
 {
@@ -31,6 +30,9 @@ public class DbInitializer : IDbInitializer
     {
         // Apply migrations
         await _context.Database.MigrateAsync();
+
+        // Seed roles first (required for admin user)
+        await RoleSeeder.SeedRolesAsync(_context);
 
         // Seed admin user
         await SeedAdminUserAsync();
@@ -64,7 +66,7 @@ public class DbInitializer : IDbInitializer
             adminOptions.FirstName,
             adminOptions.LastName,
             passwordHash,
-            UserRole.QUANTRI
+            User.AdminRoleId
         );
 
         _context.Users.Add(adminUser);

@@ -1,3 +1,6 @@
+// User Role enum
+export type UserRole = 'Student' | 'Teacher' | 'Admin'
+
 // User types
 export interface User {
   id: string
@@ -5,7 +8,8 @@ export interface User {
   firstName: string
   lastName: string
   name: string
-  role: string
+  role: UserRole
+  isEmailVerified: boolean
   avatarUrl?: string | null
   bio?: string | null
   createdAt?: string | null

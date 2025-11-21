@@ -4,10 +4,8 @@ namespace Domain.Aggregates.UserAggregate.Entities;
 
 public enum TokenType
 {
-    PasswordReset,
-    EmailConfirmation,
-    AccountActivation,
-    TwoFactorAuth
+    PASSWORD_RESET,
+    EMAIL_CONFIRMATION
 }
 
 public sealed class UserToken : Entity
@@ -64,6 +62,6 @@ public sealed class UserToken : Entity
     }
 
     // Helper methods for specific token types
-    public bool IsPasswordResetToken() => Type == TokenType.PasswordReset;
-    public bool IsEmailConfirmationToken() => Type == TokenType.EmailConfirmation;
+    public bool IsPasswordResetToken() => Type == TokenType.PASSWORD_RESET;
+    public bool IsEmailConfirmationToken() => Type == TokenType.EMAIL_CONFIRMATION;
 }

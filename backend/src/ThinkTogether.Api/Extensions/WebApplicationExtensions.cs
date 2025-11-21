@@ -1,4 +1,3 @@
-using Infrastructure.Services;
 using ThinkTogether.Infrastructure.Interfaces;
 
 namespace Api.Extensions;

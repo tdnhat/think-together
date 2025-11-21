@@ -1,13 +1,11 @@
-using Domain.Aggregates.ChallengeAggregate.ValueObjects;
-using Domain.Exceptions;
-
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ChallengeAggregate.Entities;
 
 public sealed class ChallengeAttempt : Entity
 {
-    // Private constructor for EF Core
+    private readonly List<ChallengeAnswer> _answers = new();
+
     private ChallengeAttempt()
     {
     }
@@ -16,60 +14,80 @@ public sealed class ChallengeAttempt : Entity
 
     public Guid ChallengeId { get; private set; }
 
-    public string StudentName { get; private set; } = string.Empty;
+    public Guid? UserId { get; private set; }
 
-    public ChallengeScore Score { get; private set; } = ChallengeScore.Zero();
+    public string Nickname { get; private set; } = string.Empty;
 
-    public int CompletionTime { get; private set; }
+    public int ScoreAchieved { get; private set; }
 
     public int CorrectAnswers { get; private set; }
 
+    public int TotalQuestions { get; private set; }
+
+    public int? CompletionTimeMs { get; private set; }
+
     public DateTime CompletedAt { get; private set; }
+
+    public IReadOnlyList<ChallengeAnswer> Answers => _answers.AsReadOnly();
 
     public static ChallengeAttempt Create(
         Guid challengeId,
-        string studentName,
-        ChallengeScore score,
-        int completionTime,
-        int correctAnswers)
+        Guid? userId,
+        string nickname,
+        int totalQuestions)
     {
-        ValidateStudentName(studentName);
-        ValidateCompletionTime(completionTime);
-        ValidateCorrectAnswers(correctAnswers);
+        if (challengeId == Guid.Empty)
+            throw new ArgumentException("Challenge ID cannot be empty", nameof(challengeId));
+
+        if (string.IsNullOrWhiteSpace(nickname))
+            throw new ArgumentException("Nickname cannot be empty", nameof(nickname));
+
+        if (nickname.Length > 100)
+            throw new ArgumentException("Nickname cannot exceed 100 characters", nameof(nickname));
+
+        if (totalQuestions < 0)
+            throw new ArgumentException("Total questions cannot be negative", nameof(totalQuestions));
 
         return new ChallengeAttempt
         {
             Id = Guid.NewGuid(),
             ChallengeId = challengeId,
-            StudentName = studentName.Trim(),
-            Score = score,
-            CompletionTime = completionTime,
-            CorrectAnswers = correctAnswers,
+            UserId = userId,
+            Nickname = nickname.Trim(),
+            ScoreAchieved = 0,
+            CorrectAnswers = 0,
+            TotalQuestions = totalQuestions,
+            CompletionTimeMs = null,
             CompletedAt = DateTime.UtcNow,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
     }
 
-    private static void ValidateStudentName(string studentName)
+    public void AddAnswer(ChallengeAnswer answer)
     {
-        if (string.IsNullOrWhiteSpace(studentName))
-            throw new ValidationException("Tên học sinh là bắt buộc");
+        if (answer == null)
+            throw new ArgumentNullException(nameof(answer));
 
-        if (studentName.Length > 100)
-            throw new ValidationException("Tên học sinh quá dài");
+        _answers.Add(answer);
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    private static void ValidateCompletionTime(int completionTime)
+    public void UpdateScore(int score, int correctAnswers, int? completionTimeMs = null)
     {
-        if (completionTime < 0)
-            throw new ValidationException("Thời gian hoàn thành không được âm");
-    }
+        if (score < 0)
+            throw new ArgumentException("Score cannot be negative", nameof(score));
 
-    private static void ValidateCorrectAnswers(int correctAnswers)
-    {
-        if (correctAnswers < 0)
-            throw new ValidationException("Số câu trả lời đúng không được âm");
+        if (correctAnswers < 0 || correctAnswers > TotalQuestions)
+            throw new ArgumentException("Correct answers must be between 0 and total questions", nameof(correctAnswers));
+
+        if (completionTimeMs.HasValue && completionTimeMs.Value < 0)
+            throw new ArgumentException("Completion time cannot be negative", nameof(completionTimeMs));
+
+        ScoreAchieved = score;
+        CorrectAnswers = correctAnswers;
+        CompletionTimeMs = completionTimeMs;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
 

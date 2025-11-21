@@ -21,6 +21,9 @@ export interface ValidationErrorResponse {
   errors: Record<string, string[]>
 }
 
+// User Role enum
+export type UserRole = 'Student' | 'Teacher' | 'Admin'
+
 // Backend DTOs
 export interface AuthTokenDto {
   accessToken: string
@@ -33,7 +36,8 @@ export interface UserDto {
   email: string
   firstName: string
   lastName: string
-  role: string
+  role: UserRole
+  isEmailVerified: boolean
   avatarUrl?: string | null
   bio?: string | null
   createdAt?: string | null
@@ -52,5 +56,23 @@ export interface RegisterRequest {
   confirmPassword: string
   firstName: string
   lastName: string
+}
+
+export interface ConfirmEmailRequest {
+  token: string
+}
+
+export interface ResendEmailConfirmationRequest {
+  email: string
+}
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface ResetPasswordRequest {
+  token: string
+  newPassword: string
+  confirmPassword: string
 }
 

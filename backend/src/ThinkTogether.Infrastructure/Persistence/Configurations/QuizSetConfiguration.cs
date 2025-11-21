@@ -1,62 +1,78 @@
-using Domain.Aggregates.QuizSetAggregate;
+using Domain.Aggregates.QuizAggregate;
+using Domain.Aggregates.QuizAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
 {
     public void Configure(EntityTypeBuilder<QuizSet> builder)
     {
-        builder.ToTable("BoTrucNghiem");
-        builder.HasKey(q => q.Id);
-        
-        // Properties mapping to Vietnamese column names
-        builder.Property(q => q.Id)
-        .HasColumnName("idBoTrucNghiem")
-        .ValueGeneratedNever(); // Application generates the ID
+        builder.ToTable("BoTracNghiem");
 
-        builder.Property(q => q.UserId)
-        .HasColumnName("idNguoiDung")
-        .IsRequired();
+        builder.HasKey(qs => qs.Id);
 
-        builder.Property(q => q.Title)
+        builder.Property(qs => qs.Id)
+            .HasColumnName("idBoTracNghiem")
+            .ValueGeneratedNever();
+
+        builder.Property(qs => qs.CreatorId)
+            .HasColumnName("idNguoiDung")
+            .IsRequired();
+
+        builder.Property(qs => qs.Title)
             .HasColumnName("tieuDe")
             .IsRequired()
             .HasMaxLength(255);
 
-        builder.Property(q => q.Description)
+        builder.Property(qs => qs.Description)
             .HasColumnName("moTa")
-            .HasMaxLength(-1);
+            .HasMaxLength(2000);
 
-        builder.Property(q => q.CoverImageUrl)
+        builder.Property(qs => qs.CoverImageUrl)
             .HasColumnName("urlAnhBia")
             .HasMaxLength(500);
 
-        builder.Property(q => q.IsPublished)
+        builder.Property(qs => qs.IsPublished)
             .HasColumnName("daDangTai")
+            .IsRequired()
             .HasDefaultValue(false);
 
-        builder.Property(q => q.DisplayOrder)
+        builder.Property(qs => qs.DisplayOrder)
             .HasColumnName("thuTu")
+            .IsRequired()
             .HasDefaultValue(0);
 
-        builder.Property(q => q.CreatedAt)
+        builder.Property(qs => qs.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(q => q.UpdatedAt)
+        builder.Property(qs => qs.UpdatedAt)
             .HasColumnName("ngayCapNhat");
 
-        builder.Property(q => q.DeletedAt)
-        .HasColumnName("ngayXoa");
+        builder.Property(qs => qs.DeletedAt)
+            .HasColumnName("ngayXoa");
+
+        // Foreign key to User
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(qs => qs.CreatorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Relationship to Questions
+        builder.HasMany<Question>()
+            .WithOne()
+            .HasForeignKey(q => q.QuizSetId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes
-        builder.HasIndex(q => q.UserId);
-        builder.HasIndex(q => q.IsPublished);
-        builder.HasIndex(q => q.DeletedAt);
+        builder.HasIndex(qs => qs.CreatorId);
+        builder.HasIndex(qs => qs.IsPublished);
+        builder.HasIndex(qs => qs.DeletedAt);
+        builder.HasIndex(qs => new { qs.IsPublished, qs.DeletedAt, qs.CreatedAt });
     }
 }
-
 

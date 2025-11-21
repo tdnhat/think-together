@@ -1,4 +1,4 @@
-using Domain.Aggregates.GameSessionAggregate.Entities;
+using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,52 +9,58 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
     public void Configure(EntityTypeBuilder<GamePlayer> builder)
     {
         builder.ToTable("NguoiChoiPhien");
-        builder.HasKey(p => p.Id);
 
-        builder.Property(p => p.Id)
+        builder.HasKey(gp => gp.Id);
+
+        builder.Property(gp => gp.Id)
             .HasColumnName("idNguoiChoi")
-            .ValueGeneratedNever(); // Application generates the ID
+            .ValueGeneratedNever();
 
-        builder.Property(p => p.GameSessionId)
+        builder.Property(gp => gp.GameSessionId)
             .HasColumnName("idPhienChoi")
             .IsRequired();
 
-        builder.OwnsOne(p => p.Nickname, nn =>
-        {
-            nn.Property(n => n.Value)
-                .HasColumnName("thamDuOi")
-                .IsRequired()
-                .HasMaxLength(100);
-        });
+        builder.Property(gp => gp.Nickname)
+            .HasColumnName("bietDanh")
+            .IsRequired()
+            .HasMaxLength(100);
 
-        builder.OwnsOne(p => p.Score, score =>
-        {
-            score.Property(s => s.Value)
-                .HasColumnName("diem")
-                .HasDefaultValue(0);
-        });
-
-        builder.Property(p => p.Rank)
-            .HasColumnName("xepHang");
-
-        builder.Property(p => p.ConnectionStatus)
+        builder.Property(gp => gp.ConnectionStatus)
             .HasColumnName("trangThaiKetNoi")
-            .HasConversion<string>();
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(20);
 
-        builder.Property(p => p.CreatedAt)
+        builder.Property(gp => gp.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(p => p.UpdatedAt)
+        builder.Property(gp => gp.UpdatedAt)
             .HasColumnName("ngayCapNhat");
 
-        builder.Property(p => p.DeletedAt)
+        builder.Property(gp => gp.DeletedAt)
             .HasColumnName("ngayXoa");
 
+        // Add check constraints
+        builder.ToTable(tb =>
+        {
+            tb.HasCheckConstraint("CK_NguoiChoiPhien_trangThaiKetNoi",
+                "trangThaiKetNoi IN ('Connected', 'Disconnected')");
+            tb.HasCheckConstraint("CK_NguoiChoiPhien_bietDanh",
+                "LEN(bietDanh) >= 2 AND LEN(bietDanh) <= 100");
+        });
+
+        // Foreign key - explicitly configure without navigation properties
+        builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
+            .WithMany()
+            .HasForeignKey("GameSessionId")
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Indexes
-        builder.HasIndex(p => p.GameSessionId);
-        builder.HasIndex(p => p.Rank);
-        builder.HasIndex(p => p.DeletedAt);
+        builder.HasIndex(gp => gp.GameSessionId);
+        builder.HasIndex(gp => gp.DeletedAt);
+        builder.HasIndex(gp => new { gp.GameSessionId, gp.CreatedAt });
     }
 }
+

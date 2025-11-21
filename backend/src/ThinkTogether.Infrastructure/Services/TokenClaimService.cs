@@ -1,9 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 using ThinkTogether.Infrastructure.Interfaces;
 
-namespace Infrastructure.Services;
+namespace ThinkTogether.Infrastructure.Services;
 
 public sealed class TokenClaimService : ITokenClaimService
 {
@@ -15,7 +15,7 @@ public sealed class TokenClaimService : ITokenClaimService
             new(JwtRegisteredClaimNames.Email, user.Email.Value),
             new(JwtRegisteredClaimNames.GivenName, user.FirstName),
             new(JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new("role", user.Role.ToString()),
+            new("role", user.Role?.Name ?? string.Empty),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

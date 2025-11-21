@@ -1,9 +1,10 @@
-using Domain.Aggregates.UserAggregate;
 using Domain.Aggregates.UserAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -47,10 +48,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(u => u.Role)
-            .HasColumnName("vaiTro")
-            .IsRequired()
-            .HasConversion<string>();
+        builder.Property(u => u.RoleId)
+            .HasColumnName("idVaiTro")
+            .IsRequired();
 
         builder.Property(u => u.AvatarUrl)
             .HasColumnName("urlAnhDaiDien")
@@ -76,8 +76,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.DeletedAt)
             .HasColumnName("ngayXoa");
 
+        // Foreign key relationship to VaiTro - explicitly configure without navigation properties
+        builder.HasOne<Role>()
+            .WithMany()
+            .HasForeignKey("RoleId")
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Indexes
-        builder.HasIndex(u => u.Role);
+        builder.HasIndex(u => u.RoleId);
         builder.HasIndex(u => u.DeletedAt);
 
         // Configure UserTokens relationship

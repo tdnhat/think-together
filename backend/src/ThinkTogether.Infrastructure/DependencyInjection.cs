@@ -1,11 +1,5 @@
-using Domain.Aggregates.ChallengeAggregate.Repositories;
-using Domain.Aggregates.GameSessionAggregate.Repositories;
-using Domain.Aggregates.QuizSetAggregate.Repositories;
 using Infrastructure.Configuration;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Repositories;
-using Infrastructure.Services;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +9,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Infrastructure.Interfaces;
+using ThinkTogether.Infrastructure.Persistence;
 using ThinkTogether.Infrastructure.Persistence.Interceptors;
 using ThinkTogether.Infrastructure.Persistence.Repositories;
 using ThinkTogether.Infrastructure.Persistence.UnitOfWork;
@@ -103,9 +98,6 @@ public static class DependencyInjection
     private static void ConfigureRepositories(IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IQuizSetRepository, QuizSetRepository>();
-        services.AddScoped<IGameSessionRepository, GameSessionRepository>();
-        services.AddScoped<IChallengeRepository, ChallengeRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

@@ -1,5 +1,7 @@
-import { VerifyEmailContent } from "@/features/auth/components/content/VerifyEmailContent";
-import { AuthLayout } from "@/features/auth/components/layout/AuthLayout";
+'use client'
+
+import { VerifyEmailForm, AuthLayout } from '@/features/auth'
+import { AUTH_BRAND_NAME } from '@/features/auth/constants'
 
 export default function VerifyEmailPage() {
   return (
@@ -8,9 +10,9 @@ export default function VerifyEmailPage() {
       switchLabel="Đã xác nhận email?"
       switchText="Đăng nhập"
       switchHref="/login"
-      badge="Think Together"
+      badge={AUTH_BRAND_NAME}
     >
-      <VerifyEmailContent />
+      <VerifyEmailForm />
     </AuthLayout>
   )
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Primitives;
+using ThinkTogether.Infrastructure.Persistence;
 
 namespace Infrastructure.Persistence.Repositories;
 

@@ -1,0 +1,60 @@
+import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
+
+import { BrandBadge } from "@/shared/components";
+import { Button } from "@/shared";
+import { MOCK_HIGHLIGHT_CARDS } from "./constants";
+
+export function HomeHero() {
+  return (
+    <div className="relative overflow-hidden rounded-3xl border border-[var(--color-border-main)] bg-[var(--bg-surface)] p-8 shadow-brutal">
+      <div className="pointer-events-none absolute -left-10 top-10 h-48 w-48 rounded-full bg-[var(--brand-secondary)]/40 blur-3xl" />
+      <div className="pointer-events-none absolute -right-6 -top-8 h-52 w-52 rounded-full bg-[var(--brand-primary)]/35 blur-3xl" />
+
+      <div className="relative z-10 space-y-6">
+        <BrandBadge icon={<Sparkles className="h-4 w-4" />} variant="primary">
+          Chào mừng quay trở lại
+        </BrandBadge>
+
+        <div className="space-y-4">
+          <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
+            Cùng cộng đồng chinh phục thử thách mới hôm nay!
+          </h1>
+          <p className="max-w-xl text-lg text-[var(--text-secondary)]">
+            Theo dõi tiến trình, tiếp tục học và khám phá các thử thách hấp dẫn được tạo bởi giáo viên, bạn bè và chính bạn.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4">
+          <Button asChild size="lg" variant="secondary" className="rounded-xl text-lg shadow-brutal">
+            <Link href="/play">
+              Bắt đầu học ngay
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="rounded-xl text-lg shadow-brutal-secondary">
+            <Link href="/reports">Xem báo cáo</Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          {MOCK_HIGHLIGHT_CARDS.map((card) => (
+            <div
+              key={card.title}
+              className="rounded-2xl border border-[var(--color-border-main)] bg-[var(--bg-surface)]/80 p-4 text-[var(--text-secondary)] shadow-brutal-sm"
+            >
+              <p className="text-sm font-medium uppercase tracking-wide text-[var(--text-secondary)]/70">
+                {card.title}
+              </p>
+              <p className="font-heading text-2xl font-bold text-[var(--brand-primary)]">
+                {card.value}
+              </p>
+              <p className="text-sm">{card.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+

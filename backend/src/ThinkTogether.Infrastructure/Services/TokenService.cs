@@ -2,15 +2,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Domain.Aggregates.UserAggregate;
 using Domain.Aggregates.UserAggregate.Entities;
+using Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Infrastructure.Configuration;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Infrastructure.Interfaces;
 
-namespace Infrastructure.Services;
+namespace ThinkTogether.Infrastructure.Services;
 
 public class TokenService : ITokenService
 {

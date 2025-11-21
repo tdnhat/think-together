@@ -1,5 +1,7 @@
-import { ForgotPasswordContent } from "@/features/auth/components/content/ForgotPasswordContent";
-import { AuthLayout } from "@/features/auth/components/layout/AuthLayout";
+'use client'
+
+import { ForgotPasswordForm, AuthLayout } from '@/features/auth'
+import { AUTH_BRAND_NAME } from '@/features/auth/constants'
 
 export default function ForgotPasswordPage() {
   return (
@@ -8,9 +10,9 @@ export default function ForgotPasswordPage() {
       switchLabel="Đã nhớ mật khẩu?"
       switchText="Đăng nhập"
       switchHref="/login"
-      badge="Think Together"
+      badge={AUTH_BRAND_NAME}
     >
-      <ForgotPasswordContent />
+      <ForgotPasswordForm />
     </AuthLayout>
   )
 }

@@ -9,21 +9,21 @@ export function ToastProvider() {
       toastOptions={{
         duration: 4000,
         style: {
-          background: '#363636',
-          color: '#fff',
+          background: 'var(--toast-bg)',
+          color: 'var(--toast-text)',
         },
         success: {
           duration: 3000,
           iconTheme: {
-            primary: '#4ade80',
-            secondary: '#fff',
+            primary: 'var(--toast-success-icon)',
+            secondary: 'var(--toast-text)',
           },
         },
         error: {
           duration: 5000,
           iconTheme: {
-            primary: '#ef4444',
-            secondary: '#fff',
+            primary: 'var(--toast-error-icon)',
+            secondary: 'var(--toast-text)',
           },
         },
       }}

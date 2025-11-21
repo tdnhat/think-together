@@ -1,6 +1,6 @@
-import { CallToAction, Features, Hero, Stats } from "@/components/landing";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { CallToAction, Features, Hero, Stats } from "@/widgets/landing";
+import { Footer } from "@/widgets/footer";
+import { Navbar } from "@/widgets/navbar";
 
 export default function LandingPage() {
   return (

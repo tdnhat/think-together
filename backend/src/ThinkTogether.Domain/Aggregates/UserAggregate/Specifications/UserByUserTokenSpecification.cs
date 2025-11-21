@@ -1,8 +1,7 @@
-using Domain.Aggregates.UserAggregate;
 using Domain.Aggregates.UserAggregate.Entities;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Specifications;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;
 
 public sealed class UserByUserTokenSpecification : Specification<User>
 {

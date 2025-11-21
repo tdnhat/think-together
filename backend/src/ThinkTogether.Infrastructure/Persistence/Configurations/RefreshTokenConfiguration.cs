@@ -2,6 +2,7 @@ using Domain.Aggregates.UserAggregate;
 using Domain.Aggregates.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 

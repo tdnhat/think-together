@@ -1,5 +1,7 @@
-import { ConfirmEmailContent } from "@/features/auth/components/content/ConfirmEmailContent";
-import { AuthLayout } from "@/features/auth/components/layout/AuthLayout";
+'use client'
+
+import { ConfirmEmailForm, AuthLayout } from '@/features/auth'
+import { AUTH_BRAND_NAME } from '@/features/auth/constants'
 
 export default function ConfirmEmailPage() {
   return (
@@ -8,9 +10,9 @@ export default function ConfirmEmailPage() {
       switchLabel="Không nhận được email?"
       switchText="Gửi lại email xác nhận"
       switchHref="/verify-email"
-      badge="Think Together"
+      badge={AUTH_BRAND_NAME}
     >
-      <ConfirmEmailContent />
+      <ConfirmEmailForm />
     </AuthLayout>
   )
 }
