@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ChallengeAggregate.Entities;
@@ -37,16 +38,16 @@ public sealed class ChallengeAttempt : Entity
         int totalQuestions)
     {
         if (challengeId == Guid.Empty)
-            throw new ArgumentException("Challenge ID cannot be empty", nameof(challengeId));
+            throw new ValidationException("ID thử thách không được trống");
 
         if (string.IsNullOrWhiteSpace(nickname))
-            throw new ArgumentException("Nickname cannot be empty", nameof(nickname));
+            throw new ValidationException("Biệt danh không được trống");
 
         if (nickname.Length > 100)
-            throw new ArgumentException("Nickname cannot exceed 100 characters", nameof(nickname));
+            throw new ValidationException("Biệt danh không được vượt quá 100 ký tự");
 
         if (totalQuestions < 0)
-            throw new ArgumentException("Total questions cannot be negative", nameof(totalQuestions));
+            throw new ValidationException("Tổng số câu hỏi không được âm");
 
         return new ChallengeAttempt
         {
@@ -67,7 +68,7 @@ public sealed class ChallengeAttempt : Entity
     public void AddAnswer(ChallengeAnswer answer)
     {
         if (answer == null)
-            throw new ArgumentNullException(nameof(answer));
+            throw new ValidationException("Câu trả lời không được null");
 
         _answers.Add(answer);
         UpdatedAt = DateTime.UtcNow;
@@ -76,13 +77,13 @@ public sealed class ChallengeAttempt : Entity
     public void UpdateScore(int score, int correctAnswers, int? completionTimeMs = null)
     {
         if (score < 0)
-            throw new ArgumentException("Score cannot be negative", nameof(score));
+            throw new ValidationException("Điểm không được âm");
 
         if (correctAnswers < 0 || correctAnswers > TotalQuestions)
-            throw new ArgumentException("Correct answers must be between 0 and total questions", nameof(correctAnswers));
+            throw new ValidationException("Số câu trả lời đúng phải từ 0 đến tổng số câu hỏi");
 
         if (completionTimeMs.HasValue && completionTimeMs.Value < 0)
-            throw new ArgumentException("Completion time cannot be negative", nameof(completionTimeMs));
+            throw new ValidationException("Thời gian hoàn thành không được âm");
 
         ScoreAchieved = score;
         CorrectAnswers = correctAnswers;

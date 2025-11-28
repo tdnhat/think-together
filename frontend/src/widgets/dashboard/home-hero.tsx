@@ -3,16 +3,18 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 import { BrandBadge } from "@/shared/components";
 import { Button } from "@/shared";
+import { Card } from "@/shared/ui/card";
+import { ROUTES } from "@/config/routes";
 import { MOCK_HIGHLIGHT_CARDS } from "./constants";
 
 export function HomeHero() {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[var(--color-border-main)] bg-[var(--bg-surface)] p-8 shadow-brutal">
+    <Card className="relative overflow-hidden p-8">
       <div className="pointer-events-none absolute -left-10 top-10 h-48 w-48 rounded-full bg-[var(--brand-secondary)]/40 blur-3xl" />
       <div className="pointer-events-none absolute -right-6 -top-8 h-52 w-52 rounded-full bg-[var(--brand-primary)]/35 blur-3xl" />
 
       <div className="relative z-10 space-y-6">
-        <BrandBadge icon={<Sparkles className="h-4 w-4" />} variant="primary">
+        <BrandBadge icon={<Sparkles className="h-4 w-4" />}>
           Chào mừng quay trở lại
         </BrandBadge>
 
@@ -26,14 +28,14 @@ export function HomeHero() {
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <Button asChild size="lg" variant="secondary" className="rounded-xl text-lg shadow-brutal">
-            <Link href="/play">
+          <Button asChild size="lg" variant="default" className="rounded-xl text-lg">
+            <Link href={ROUTES.game.play}>
               Bắt đầu học ngay
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="rounded-xl text-lg shadow-brutal-secondary">
-            <Link href="/reports">Xem báo cáo</Link>
+          <Button asChild size="lg" variant="neutral" className="rounded-xl text-lg">
+            <Link href={ROUTES.reports.list}>Xem báo cáo</Link>
           </Button>
         </div>
 
@@ -41,7 +43,7 @@ export function HomeHero() {
           {MOCK_HIGHLIGHT_CARDS.map((card) => (
             <div
               key={card.title}
-              className="rounded-2xl border border-[var(--color-border-main)] bg-[var(--bg-surface)]/80 p-4 text-[var(--text-secondary)] shadow-brutal-sm"
+              className="rounded-2xl border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)]/80 p-4 text-[var(--text-secondary)] shadow-brutal-primary-xs"
             >
               <p className="text-sm font-medium uppercase tracking-wide text-[var(--text-secondary)]/70">
                 {card.title}
@@ -54,7 +56,7 @@ export function HomeHero() {
           ))}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 

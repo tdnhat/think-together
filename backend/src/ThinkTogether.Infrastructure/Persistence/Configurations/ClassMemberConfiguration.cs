@@ -44,15 +44,15 @@ public class ClassMemberConfiguration : IEntityTypeConfiguration<ClassMember>
         builder.Property(cm => cm.DeletedAt)
             .HasColumnName("ngayXoa");
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<global::Domain.Aggregates.ClassAggregate.Class>()
             .WithMany()
-            .HasForeignKey("ClassId")
+            .HasForeignKey(cm => cm.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<User>()
             .WithMany()
-            .HasForeignKey("UserId")
+            .HasForeignKey(cm => cm.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Unique constraint: one user per class

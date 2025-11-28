@@ -54,3 +54,29 @@ export type ConfirmEmailFormData = z.infer<typeof confirmEmailSchema>;
 export type ResendEmailConfirmationFormData = z.infer<typeof resendEmailConfirmationSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
+// Quiz schemas
+export const createQuizSetSchema = z.object({
+    title: z.string()
+        .min(1, "Tiêu đề là bắt buộc")
+        .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
+    description: z.string()
+        .max(2000, "Mô tả không được vượt quá 2000 ký tự")
+        .optional(),
+    coverImageUrl: z.string().url("URL ảnh bìa không hợp lệ").optional().or(z.literal("")),
+});
+
+export const updateQuizSetSchema = z.object({
+    id: z.string().uuid("ID không hợp lệ"),
+    title: z.string()
+        .min(1, "Tiêu đề là bắt buộc")
+        .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
+    description: z.string()
+        .max(2000, "Mô tả không được vượt quá 2000 ký tự")
+        .optional(),
+    coverImageUrl: z.string().url("URL ảnh bìa không hợp lệ").optional().or(z.literal("")),
+});
+
+// Type exports
+export type CreateQuizSetFormData = z.infer<typeof createQuizSetSchema>;
+export type UpdateQuizSetFormData = z.infer<typeof updateQuizSetSchema>;

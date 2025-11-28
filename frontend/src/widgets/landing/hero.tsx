@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { Button } from "@/shared";
 import { BrandBadge, SectionContainer } from "@/shared/components";
+import { ROUTES } from "@/config/routes";
 import { HERO_STATS } from "./constants";
 
 export function Hero() {
@@ -12,7 +13,7 @@ export function Hero() {
       <div className="grid items-center gap-12 md:grid-cols-2">
         {/* Left Content */}
         <div className="space-y-6">
-          <BrandBadge 
+          <BrandBadge
             icon={<Sparkles className="h-4 w-4 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]" />}
             variant="secondary"
           >
@@ -33,21 +34,21 @@ export function Hero() {
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button 
               asChild
-              size="xl"
-              variant="primary"
+              size="lg"
+              variant="default"
             >
-              <Link href="/signup">
+              <Link href={ROUTES.auth.signup}>
                 Bắt đầu học ngay!
                 <ArrowRight className="h-6 w-6" />
               </Link>
             </Button>
             
-            <Button 
+            <Button
               asChild
-              size="xl"
-              variant="outline"
+              size="lg"
+              variant="neutral"
             >
-              <Link href="/about">Tìm hiểu thêm</Link>
+              <Link href={ROUTES.public.about}>Tìm hiểu thêm</Link>
             </Button>
           </div>
           
@@ -66,7 +67,7 @@ export function Hero() {
         {/* Right Image */}
         <div className="relative">
           <div 
-            className="relative h-[400px] overflow-hidden rounded-3xl border-4 border-[var(--color-border-main)] shadow-brutal-lg md:h-[500px]"
+            className="relative h-[400px] overflow-hidden rounded-3xl border border-[var(--brand-primary-shadow)] shadow-brutal-primary-lg md:h-[500px]"
           >
             <Image
               src="/images/hero-1.png"
@@ -79,11 +80,11 @@ export function Hero() {
           
           {/* Floating decorations */}
           <div 
-            className="absolute -right-6 -top-6 hidden h-28 w-28 rounded-full border-4 border-[var(--color-border-main)] bg-[var(--brand-secondary)] shadow-brutal-sm md:block"
+            className="absolute -right-6 -top-6 hidden h-28 w-28 rounded-full border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] shadow-brutal-secondary-sm md:block"
             aria-hidden="true"
           />
           <div 
-            className="absolute -left-4 bottom-8 hidden h-20 w-20 rotate-12 rounded-2xl border-4 border-[var(--color-border-main)] bg-[var(--accent-pink)] shadow-brutal-xs md:block"
+            className="absolute -left-4 bottom-8 hidden h-20 w-20 rotate-12 rounded-2xl border border-[var(--accent-pink-hover)] bg-[var(--accent-pink)] shadow-brutal-pink-xs md:block"
             aria-hidden="true"
           />
         </div>

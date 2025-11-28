@@ -101,6 +101,7 @@ export const ROUTES = {
   
   // Game routes (nested structure)
   GAME: {
+    HOST: '/host',
     HOST_QUIZ: (quizId: string) => `/host/quizzes/${quizId}`,
     JOIN: '/join',
     PLAY: (pin: string) => `/play/${pin}`,

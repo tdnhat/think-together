@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-import { Button, buttonVariants } from '@/shared/ui/button'
+import { Button } from '@/shared/ui/button'
 import { cn } from '@/lib/utils'
 
 type AuthSocialButtonProps = Readonly<
@@ -24,21 +24,21 @@ export function AuthSocialButton({
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="neutral"
+      size="lg"
       className={cn(
-        buttonVariants({ size: 'lg' }),
-        'w-full justify-start gap-4 bg-[var(--bg-surface)] text-left text-[var(--text-primary)] shadow-brutal',
+        'w-full justify-start gap-4',
         className,
       )}
       {...props}
     >
-      <span className="flex size-10 items-center justify-center rounded-lg border-2 border-[var(--color-border-main)] bg-[var(--bg-surface-secondary)] shadow-brutal-xs">
+      <span className="flex size-10 items-center justify-center rounded-base base-border bg-secondary-background shadow-brutal-primary-xs">
         {iconSrc ? <Image src={iconSrc} alt={label} width={22} height={22} /> : icon}
       </span>
       <span className="flex flex-1 flex-col text-left">
-        <span className="text-base font-semibold">{label}</span>
+        <span className="text-base font-base">{label}</span>
         {description ? (
-          <span className="text-xs text-[var(--text-secondary)]">{description}</span>
+          <span className="text-xs text-foreground/70">{description}</span>
         ) : null}
       </span>
     </Button>

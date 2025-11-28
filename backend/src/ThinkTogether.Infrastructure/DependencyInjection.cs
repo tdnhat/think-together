@@ -98,6 +98,7 @@ public static class DependencyInjection
     private static void ConfigureRepositories(IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IQuizSetRepository, QuizSetRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

@@ -6,7 +6,7 @@
  */
 
 import { AxiosError } from 'axios';
-import { toast } from 'react-hot-toast';
+import { toastError, toastInfo } from '@/lib/utils/toast';
 import { ERROR_MESSAGES } from '@/config/constants';
 import { env } from '@/config/env';
 import type { ApiError } from '@/types/api';
@@ -233,17 +233,18 @@ export function handleError(error: unknown, options: ErrorHandlerOptions = {}): 
   // Show toast notification
   if (opts.showToast) {
     const message = opts.customMessage || appError.message;
+    const toastId = `error-${appError.type}-${message}`;
     
     switch (appError.severity) {
       case ErrorSeverity.CRITICAL:
       case ErrorSeverity.HIGH:
-        toast.error(message);
+        toastError(message, { id: toastId });
         break;
       case ErrorSeverity.MEDIUM:
-        toast.error(message);
+        toastError(message, { id: toastId });
         break;
       case ErrorSeverity.LOW:
-        toast(message);
+        toastInfo(message, { id: toastId });
         break;
     }
   }
@@ -378,5 +379,7 @@ export async function withRetry<T>(
 // EXPORTS
 // ============================================================================
 
-export { toast };
+// Re-export toast utilities
+export { toastError, toastInfo, toastSuccess } from '@/lib/utils/toast';
+export { toast } from 'react-hot-toast';
 

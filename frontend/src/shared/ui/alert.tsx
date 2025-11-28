@@ -1,80 +1,66 @@
-import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { AlertCircle, CheckCircle2, Info, XCircle } from "lucide-react"
+
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
-  "relative w-full rounded-xl border-2 border-[var(--color-border-main)] p-5 transition-all",
+  "relative w-full rounded-base border-2 border-border px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current shadow-shadow",
   {
     variants: {
       variant: {
-        default:
-          "bg-[var(--bg-surface-secondary)] text-[var(--text-primary)] shadow-brutal-xs",
-        info: "bg-[var(--accent-cyan-light)] text-[var(--text-primary)] shadow-brutal-cyan",
-        success:
-          "bg-[var(--accent-green-light)] text-[var(--text-primary)] shadow-brutal-green",
-        warning:
-          "bg-[var(--brand-secondary-light)] text-[var(--text-primary)] shadow-brutal-secondary",
-        destructive:
-          "bg-red-50 text-[var(--color-error)] shadow-[6px_6px_0_var(--color-error)]",
+        default: "bg-main text-main-foreground",
+        destructive: "bg-black text-white",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 )
 
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => {
-  const Icon = {
-    default: Info,
-    info: Info,
-    success: CheckCircle2,
-    warning: AlertCircle,
-    destructive: XCircle,
-  }[variant || "default"]
-
+function Alert({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
   return (
     <div
-      ref={ref}
+      data-slot="alert"
       role="alert"
       className={cn(alertVariants({ variant }), className)}
       {...props}
-    >
-      <Icon className="absolute left-5 top-5 h-5 w-5" strokeWidth={3} />
-      <div className="pl-8">{props.children}</div>
-    </div>
+    />
   )
-})
-Alert.displayName = "Alert"
+}
 
-const AlertTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h5
-    ref={ref}
-    className={cn("mb-2 font-bold text-lg tracking-tight", className)}
-    {...props}
-  />
-))
-AlertTitle.displayName = "AlertTitle"
+function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-title"
+      className={cn(
+        "col-start-2 line-clamp-1 min-h-4 font-heading tracking-tight",
+        className,
+      )}
+      {...props}
+    />
+  )
+}
 
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("text-sm font-medium leading-relaxed", className)}
-    {...props}
-  />
-))
-AlertDescription.displayName = "AlertDescription"
+function AlertDescription({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-description"
+      className={cn(
+        "col-start-2 grid justify-items-start gap-1 text-sm font-base [&_p]:leading-relaxed",
+        className,
+      )}
+      {...props}
+    />
+  )
+}
 
 export { Alert, AlertTitle, AlertDescription }
-

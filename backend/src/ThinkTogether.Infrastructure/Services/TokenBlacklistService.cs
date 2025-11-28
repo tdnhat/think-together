@@ -1,4 +1,4 @@
-﻿using StackExchange.Redis;
+using StackExchange.Redis;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 
 namespace ThinkTogether.Infrastructure.Services;

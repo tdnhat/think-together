@@ -1,5 +1,5 @@
-using Domain.Aggregates.QuizAggregate;
-using Domain.Aggregates.QuizAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThinkTogether.Domain.Aggregates.UserAggregate;

@@ -57,15 +57,15 @@ public class ChallengeAnswerConfiguration : IEntityTypeConfiguration<ChallengeAn
             tb.HasCheckConstraint("CK_CauTraLoiThachThuc_diemDat", "diemDat >= 0");
         });
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt>()
             .WithMany()
-            .HasForeignKey("ChallengeAttemptId")
+            .HasForeignKey(ca => ca.ChallengeAttemptId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<Domain.Aggregates.QuizAggregate.Entities.Question>()
+        builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question>()
             .WithMany()
-            .HasForeignKey("QuestionId")
+            .HasForeignKey(ca => ca.QuestionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes

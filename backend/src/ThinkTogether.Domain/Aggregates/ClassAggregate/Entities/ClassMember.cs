@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ClassAggregate.Entities;
@@ -21,10 +22,10 @@ public sealed class ClassMember : Entity
     public static ClassMember Create(Guid classId, Guid userId)
     {
         if (classId == Guid.Empty)
-            throw new ArgumentException("Class ID cannot be empty", nameof(classId));
+            throw new ValidationException("ID lớp không được trống");
 
         if (userId == Guid.Empty)
-            throw new ArgumentException("User ID cannot be empty", nameof(userId));
+            throw new ValidationException("ID người dùng không được trống");
 
         return new ClassMember
         {

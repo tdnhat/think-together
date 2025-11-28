@@ -20,15 +20,12 @@ export function BecomeCreatorButton({ className, onSuccess }: Readonly<BecomeCre
       <Button
         type="button"
         onClick={() => setIsModalOpen(true)}
-        variant="primary"
+        variant="default"
         size="lg"
-        className={cn(
-          "group relative gap-2 bg-gradient-to-r from-[var(--brand-primary)] to-[var(--accent-purple)]",
-          className
-        )}
+        className={cn("group gap-2 w-full justify-center h-auto py-3 whitespace-normal text-center", className)}
       >
-        <Sparkles className="h-5 w-5 transition-transform group-hover:rotate-12" strokeWidth={3} />
-        <span>Trở thành Người sáng tạo</span>
+        <Sparkles className="h-5 w-5 shrink-0 transition-transform group-hover:rotate-12" strokeWidth={2.5} />
+        <span className="font-bold text-sm">Trở thành<br /> Người sáng tạo</span>
       </Button>
 
       <BecomeCreatorModal

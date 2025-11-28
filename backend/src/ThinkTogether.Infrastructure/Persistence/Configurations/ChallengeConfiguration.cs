@@ -83,7 +83,7 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             .HasForeignKey(c => c.CreatorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<global::Domain.Aggregates.QuizAggregate.QuizSet>()
+        builder.HasOne<global::ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet>()
             .WithMany()
             .HasForeignKey(c => c.QuizSetId)
             .OnDelete(DeleteBehavior.Restrict);

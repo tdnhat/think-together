@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.GamingAggregate.Entities;
@@ -28,16 +29,16 @@ public sealed class PlayerAnswer : Entity
         int pointsEarned)
     {
         if (gamePlayerId == Guid.Empty)
-            throw new ArgumentException("Game player ID cannot be empty", nameof(gamePlayerId));
+            throw new ValidationException("ID người chơi trò chơi không được trống");
 
         if (gameQuestionId == Guid.Empty)
-            throw new ArgumentException("Game question ID cannot be empty", nameof(gameQuestionId));
+            throw new ValidationException("ID câu hỏi trò chơi không được trống");
 
         if (responseTimeMs < 0)
-            throw new ArgumentException("Response time cannot be negative", nameof(responseTimeMs));
+            throw new ValidationException("Thời gian phản hồi không được âm");
 
         if (pointsEarned < 0)
-            throw new ArgumentException("Points cannot be negative", nameof(pointsEarned));
+            throw new ValidationException("Điểm kiếm được không được âm");
 
         return new PlayerAnswer
         {

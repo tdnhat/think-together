@@ -1,427 +1,50 @@
-@import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-be-vietnam-pro);
-  --font-heading: var(--font-raleway);
-  --font-highlight: var(--font-quicksand);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
-
 :root {
-  --radius: 0.5rem;
-  
-  /* ========================================
-     NEO-BRUTALISM COLOR PALETTE
-     Vibrant, student-friendly colors inspired by Neo-Brutalism design
-     ======================================== */
-  
-  /* Primary Brand Colors - Vibrant and Bold */
-  --brand-primary: #6366F1;        /* Indigo - Primary actions, links */
-  --brand-primary-hover: #4F46E5;  /* Darker indigo for hover */
-  --brand-primary-light: #A5B4FC;  /* Light indigo for backgrounds */
-  
-  --brand-secondary: #FBBF24;      /* Amber - Secondary actions, highlights */
-  --brand-secondary-hover: #F59E0B; /* Darker amber for hover */
-  --brand-secondary-light: #FDE68A; /* Light amber for backgrounds */
-  
-  /* Accent Colors - Fun and Energetic */
-  --accent-pink: #EC4899;          /* Pink - Special highlights */
-  --accent-pink-hover: #DB2777;    /* Darker pink */
-  --accent-pink-light: #FBCFE8;    /* Light pink */
-  
-  --accent-cyan: #06B6D4;          /* Cyan - Info, cool accents */
-  --accent-cyan-hover: #0891B2;    /* Darker cyan */
-  --accent-cyan-light: #A5F3FC;    /* Light cyan */
-  
-  --accent-green: #10B981;         /* Emerald - Success states */
-  --accent-green-hover: #059669;   /* Darker emerald */
-  --accent-green-light: #A7F3D0;   /* Light emerald */
-  
-  --accent-purple: #A855F7;        /* Purple - Creative elements */
-  --accent-purple-hover: #9333EA;  /* Darker purple */
-  --accent-purple-light: #E9D5FF;  /* Light purple */
-  
-  --accent-orange: #F97316;        /* Orange - Warm accents */
-  --accent-orange-hover: #EA580C;  /* Darker orange */
-  --accent-orange-light: #FED7AA;  /* Light orange */
-  
-  /* Background Colors */
-  --bg-page: #FAFAFA;              /* Off-white page background */
-  --bg-surface: #FFFFFF;           /* Pure white for cards/surfaces */
-  --bg-surface-secondary: #F3F4F6; /* Light gray for secondary surfaces */
-  
-  /* Border & Text Colors */
-  --color-border-main: #18181B;    /* Nearly black - bold borders */
-  --color-border-light: #71717A;   /* Gray for subtle borders */
-  
-  --text-primary: #18181B;         /* Nearly black - headings */
-  --text-secondary: #52525B;       /* Dark gray - body text */
-  --text-tertiary: #A1A1AA;        /* Medium gray - muted text */
-  
-  /* Status Colors */
-  --color-success: #10B981;        /* Success feedback */
-  --color-success-hover: #059669;  /* Darker success */
-  --color-error: #EF4444;          /* Error feedback */
-  --color-error-hover: #DC2626;    /* Darker error */
-  --color-warning: #F59E0B;        /* Warning feedback */
-  --color-info: #06B6D4;           /* Info feedback */
-  
-  /* Toast Colors */
-  --toast-bg: #363636;             /* Toast background */
-  --toast-text: #FFFFFF;           /* Toast text color */
-  --toast-success-icon: #10B981;   /* Success icon color */
-  --toast-error-icon: #EF4444;      /* Error icon color */
-  
-  /* OklCH Colors for Component Library */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(94.61% 0.043 211.12);
+  --secondary-background: oklch(100% 0 0);
+  --foreground: oklch(0% 0 0);
+  --main-foreground: oklch(0% 0 0);
+  --main: oklch(76.89% 0.139164 219.13);
+  --border: oklch(0% 0 0);
+  --ring: oklch(0% 0 0);
+  --overlay: oklch(0% 0 0 / 0.8);
+  --shadow: 2px 2px 0px 0px var(--border);
+  --chart-1: #00C8F0;
+  --chart-2: #FF7A05;
+  --chart-3: #7A83FF;
+  --chart-4: #FF4D50;
+  --chart-5: #FACC00;
+  --chart-active-dot: #000;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(27.11% 0.0303 225.38);
+  --secondary-background: oklch(23.93% 0 0);
+  --foreground: oklch(92.49% 0 0);
+  --main-foreground: oklch(0% 0 0);
+  --main: oklch(64.37% 0.1162 218.75);
+  --border: oklch(0% 0 0);
+  --ring: oklch(100% 0 0);
+  --shadow: 2px 2px 0px 0px var(--border);
+  --chart-1: #009DBD;
+  --chart-2: #EB6D00;
+  --chart-3: #7A83FF;
+  --chart-4: #FF6669;
+  --chart-5: #E0B700;
+  --chart-active-dot: #fff;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
-    @apply bg-[var(--bg-page)] text-[var(--text-secondary)] font-sans antialiased;
+    @apply text-foreground font-base bg-background;
   }
-  
-  /* Typography - Raleway for headings, Be Vietnam Pro for body, Quicksand for buttons */
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold text-[var(--text-primary)];
-  }
-  
-  h1 {
-    @apply text-5xl md:text-6xl;
-  }
-  
-  h2 {
-    @apply text-4xl md:text-5xl;
-  }
-  
-  h3 {
-    @apply text-3xl md:text-4xl;
-  }
-  
-  h4 {
-    @apply text-2xl md:text-3xl;
-  }
-  
-  h5 {
-    @apply text-xl md:text-2xl;
-  }
-  
-  h6 {
-    @apply text-lg md:text-xl;
-  }
-  
-  button, [role="button"] {
-    @apply font-highlight;
-  }
-  
-  /* Links */
-  a {
-    @apply text-[var(--brand-primary)] transition-colors hover:text-[var(--brand-primary-hover)];
-  }
-}
 
-@layer utilities {
-  /* ========================================
-     NEO-BRUTALIST SHADOW UTILITIES
-     Bold, offset shadows for Neo-Brutalism style
-     ======================================== */
-  
-  /* Black Shadows - Classic Neo-Brutalism */
-  .shadow-brutal-xs {
-    box-shadow: 2px 2px 0 var(--color-border-main);
-  }
-  
-  .shadow-brutal-sm {
-    box-shadow: 4px 4px 0 var(--color-border-main);
-  }
-  
-  .shadow-brutal {
-    box-shadow: 6px 6px 0 var(--color-border-main);
-  }
-  
-  .shadow-brutal-lg {
-    box-shadow: 8px 8px 0 var(--color-border-main);
-  }
-  
-  .shadow-brutal-xl {
-    box-shadow: 12px 12px 0 var(--color-border-main);
-  }
-  
-  /* Primary (Indigo) Colored Shadows */
-  .shadow-brutal-primary-xs {
-    box-shadow: 2px 2px 0 var(--brand-primary);
-  }
-  
-  .shadow-brutal-primary-sm {
-    box-shadow: 4px 4px 0 var(--brand-primary);
-  }
-  
-  .shadow-brutal-primary {
-    box-shadow: 6px 6px 0 var(--brand-primary);
-  }
-  
-  .shadow-brutal-primary-lg {
-    box-shadow: 8px 8px 0 var(--brand-primary);
-  }
-  
-  .shadow-brutal-primary-xl {
-    box-shadow: 12px 12px 0 var(--brand-primary);
-  }
-  
-  /* Secondary (Amber) Colored Shadows */
-  .shadow-brutal-secondary-xs {
-    box-shadow: 2px 2px 0 var(--brand-secondary);
-  }
-  
-  .shadow-brutal-secondary-sm {
-    box-shadow: 4px 4px 0 var(--brand-secondary);
-  }
-  
-  .shadow-brutal-secondary {
-    box-shadow: 6px 6px 0 var(--brand-secondary);
-  }
-  
-  .shadow-brutal-secondary-lg {
-    box-shadow: 8px 8px 0 var(--brand-secondary);
-  }
-  
-  .shadow-brutal-secondary-xl {
-    box-shadow: 12px 12px 0 var(--brand-secondary);
-  }
-  
-  /* Accent Color Shadows */
-  .shadow-brutal-pink {
-    box-shadow: 6px 6px 0 var(--accent-pink);
-  }
-  
-  .shadow-brutal-cyan {
-    box-shadow: 6px 6px 0 var(--accent-cyan);
-  }
-  
-  .shadow-brutal-green {
-    box-shadow: 6px 6px 0 var(--accent-green);
-  }
-  
-  .shadow-brutal-purple {
-    box-shadow: 6px 6px 0 var(--accent-purple);
-  }
-  
-  .shadow-brutal-orange {
-    box-shadow: 6px 6px 0 var(--accent-orange);
-  }
-  
-  /* ========================================
-     BORDER WIDTH UTILITIES
-     ======================================== */
-  .border-2 {
-    border-width: 2px;
-  }
-  
-  .border-4 {
-    border-width: 4px;
-  }
-  
-  .border-5 {
-    border-width: 5px;
-  }
-  
-  /* ========================================
-     HOVER ANIMATION UTILITIES
-     Smooth, playful interactions
-     ======================================== */
-  
-  /* Hover Lift - subtle upward movement */
-  .hover-lift {
-    @apply transition-transform duration-200 ease-out;
-  }
-  
-  .hover-lift:hover {
-    @apply -translate-y-1;
-  }
-  
-  /* Brutal Push - inward/downward "pressed" effect */
-  .hover-brutal-push {
-    @apply transition-all duration-150 ease-out;
-  }
-  
-  .hover-brutal-push:hover {
-    @apply translate-x-[2px] translate-y-[2px];
-  }
-  
-  .hover-brutal-push:active {
-    @apply translate-x-[4px] translate-y-[4px];
-  }
-  
-  /* Button Press Effect - Shadow stays fixed, button moves */
-  .btn-press-effect {
-    box-shadow: 4px 4px 0 var(--color-border-main);
-    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translate(0, 0);
-  }
-  
-  .btn-press-effect:hover {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--color-border-main);
-  }
-  
-  .btn-press-effect:active {
-    transform: translate(4px, 4px);
-    box-shadow: 0 0 0 var(--color-border-main);
-  }
-  
-  /* Active state for buttons - press effect with no shadow */
-  .active-brutal:active {
-    transform: translate(6px, 6px);
-    box-shadow: none;
-  }
-  
-  /* Rotate on hover - playful effect */
-  .hover-rotate {
-    @apply transition-transform duration-300 ease-out;
-  }
-  
-  .hover-rotate:hover {
-    @apply rotate-2;
-  }
-  
-  /* Scale on hover - emphasis effect */
-  .hover-scale {
-    @apply transition-transform duration-200 ease-out;
-  }
-  
-  .hover-scale:hover {
-    @apply scale-105;
-  }
-  
-  /* ========================================
-     BACKGROUND PATTERNS
-     Fun decorative elements
-     ======================================== */
-  .bg-dots {
-    background-image: radial-gradient(circle, var(--color-border-main) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-  
-  .bg-grid {
-    background-image: 
-      linear-gradient(var(--color-border-light) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-border-light) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-  
-  /* ========================================
-     TEXT UTILITIES
-     ======================================== */
-  .text-gradient-primary {
-    @apply bg-gradient-to-r from-[var(--brand-primary)] to-[var(--accent-purple)] bg-clip-text text-transparent;
-  }
-  
-  .text-gradient-fun {
-    @apply bg-gradient-to-r from-[var(--accent-pink)] via-[var(--accent-purple)] to-[var(--brand-primary)] bg-clip-text text-transparent;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
   }
 }

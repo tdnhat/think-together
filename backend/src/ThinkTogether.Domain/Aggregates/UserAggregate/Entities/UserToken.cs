@@ -1,6 +1,7 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public enum TokenType
 {
@@ -8,7 +9,7 @@ public enum TokenType
     EMAIL_CONFIRMATION
 }
 
-public sealed class UserToken : Entity
+public sealed partial class UserToken : Entity
 {
     private UserToken()
     {
@@ -29,13 +30,13 @@ public sealed class UserToken : Entity
     public static UserToken Create(TokenType type, Guid userId, string token, TimeSpan lifetime)
     {
         if (userId == Guid.Empty)
-            throw new ArgumentException("User ID cannot be empty", nameof(userId));
+            throw new ValidationException("User ID cannot be empty");
 
         if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Token cannot be empty", nameof(token));
+            throw new ValidationException("Token cannot be empty");
 
         if (lifetime <= TimeSpan.Zero)
-            throw new ArgumentException("Lifetime must be positive", nameof(lifetime));
+            throw new ValidationException("Lifetime must be positive");
 
         return new UserToken
         {
@@ -46,22 +47,4 @@ public sealed class UserToken : Entity
             ExpiresAt = DateTime.UtcNow.Add(lifetime)
         };
     }
-
-    public bool IsExpired() => DateTime.UtcNow >= ExpiresAt;
-
-    public bool IsUsed() => UsedAt.HasValue;
-
-    public bool IsValid() => !IsExpired() && !IsUsed();
-
-    public void MarkAsUsed()
-    {
-        if (IsUsed())
-            return;
-
-        UsedAt = DateTime.UtcNow;
-    }
-
-    // Helper methods for specific token types
-    public bool IsPasswordResetToken() => Type == TokenType.PASSWORD_RESET;
-    public bool IsEmailConfirmationToken() => Type == TokenType.EMAIL_CONFIRMATION;
 }

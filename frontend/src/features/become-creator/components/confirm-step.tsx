@@ -14,22 +14,24 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--color-border-main)] bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--brand-primary)] shadow-brutal">
+        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--color-border-main)] bg-[var(--brand-secondary)] shadow-brutal">
           <Sparkles className="h-10 w-10 text-[var(--text-primary)]" strokeWidth={2} />
         </div>
-        <h2 className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: 'Raleway' }}>
+        <h2 className="text-3xl font-bold text-[var(--text-primary)] font-heading">
           Sẵn sàng trở thành Người sáng tạo?
         </h2>
-        <p className="mt-3 text-lg text-[var(--text-secondary)]" style={{ fontFamily: 'Be Vietnam Pro' }}>
+        <p className="mt-3 text-lg text-[var(--text-secondary)] font-sans">
           Bạn sẽ có quyền truy cập đầy đủ vào tất cả các tính năng tạo nội dung
         </p>
       </div>
 
-      <div className="space-y-3 rounded-xl border-2 border-[var(--color-border-main)] bg-gradient-to-br from-[var(--brand-secondary)]/10 to-[var(--brand-primary)]/10 p-4 shadow-brutal-sm">
+      <div className="space-y-3 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary-light)] p-5 shadow-brutal-sm">
         {CREATOR_BENEFITS.map((benefit) => (
           <div key={benefit} className="flex items-start gap-3">
-            <Check className="mt-1 h-6 w-6 shrink-0 text-[var(--brand-primary)]" strokeWidth={3} />
-            <span className="text-base text-[var(--text-primary)]" style={{ fontFamily: 'Be Vietnam Pro' }}>
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-border-main)] bg-[var(--brand-primary)] text-white">
+              <Check className="h-3.5 w-3.5" strokeWidth={4} />
+            </div>
+            <span className="text-base font-medium text-[var(--text-primary)] font-sans">
               {benefit}
             </span>
           </div>
@@ -39,20 +41,18 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
       <div className="flex justify-between gap-3 pt-4">
         <Button
           type="button"
-          variant="outline"
+          variant="neutral"
           onClick={onBack}
           disabled={isActivating}
-          className="border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] text-[var(--text-primary)] font-semibold shadow-brutal-sm hover:-translate-y-1 hover:shadow-brutal transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 h-5 w-5" strokeWidth={3} />
           Quay lại
         </Button>
         <Button
           type="button"
+          variant="default"
           onClick={onActivate}
           disabled={isActivating}
-          className="border-2 border-[var(--color-border-main)] bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] text-[var(--text-primary)] font-semibold shadow-brutal-sm hover:-translate-y-1 hover:shadow-brutal transition-all active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ fontFamily: 'Quicksand' }}
         >
           {isActivating ? (
             <>
@@ -61,7 +61,7 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
             </>
           ) : (
             <>
-              <Sparkles className="mr-2 h-5 w-5" strokeWidth={2} />
+              <Sparkles className="mr-2 h-5 w-5" strokeWidth={2.5} />
               Trở thành Người sáng tạo ngay!
             </>
           )}

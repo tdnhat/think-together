@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/utils/toast";
 
 import { useBecomeCreator } from "../hooks/use-become-creator";
 import { BECOME_CREATOR_STEPS } from "../constants";
+import { useAuthStore } from "@/features/auth/stores/auth.store";
 import { ProgressIndicator } from "./progress-indicator";
 import { IntroStep } from "./intro-step";
 import { FeaturesStep } from "./features-step";
@@ -23,8 +24,9 @@ export function BecomeCreatorModal({
   onSuccess,
 }: Readonly<BecomeCreatorModalProps>) {
   const [mounted, setMounted] = useState(false)
-  const { currentStep, isActivating, error, nextStep, prevStep, activateTeacher, resetState } =
+  const { currentStep, isActivating, error, nextStep, prevStep, becomeCreator, resetState } =
     useBecomeCreator()
+  const { updateUser } = useAuthStore((state) => state.actions)
 
   useEffect(() => {
     setMounted(true)
@@ -44,20 +46,19 @@ export function BecomeCreatorModal({
   }
 
   const handleActivate = async () => {
-    const success = await activateTeacher()
+  const success = await becomeCreator()
 
-    if (success) {
-      toast.success("Bạn đã trở thành Người sáng tạo!")
+  if (success) {
+  toastSuccess("Bạn đã trở thành Người sáng tạo!")
 
-      setTimeout(() => {
-        globalThis.location.reload()
-      }, 1000)
+  // Update the user role in the store instead of reloading
+  updateUser({ role: 'Creator' })
 
       onSuccess?.()
-      handleClose()
-    } else {
-      toast.error(error || "Đã xảy ra lỗi khi kích hoạt vai trò Người sáng tạo")
-    }
+  handleClose()
+  } else {
+    toastError(error || "Đã xảy ra lỗi khi kích hoạt vai trò Người sáng tạo")
+  }
   }
 
   const currentStepIndex = BECOME_CREATOR_STEPS.indexOf(currentStep as typeof BECOME_CREATOR_STEPS[number]);
@@ -87,7 +88,7 @@ export function BecomeCreatorModal({
           style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
         />
         <div
-          className="pointer-events-auto relative w-full max-w-2xl rounded-2xl border-4 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-6 shadow-brutal-lg mx-4 my-4 max-h-[90vh] overflow-y-auto"
+          className="pointer-events-auto relative w-full max-w-2xl rounded-2xl border-4 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-6 mx-4 my-4 max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <ProgressIndicator steps={[...BECOME_CREATOR_STEPS]} currentStepIndex={currentStepIndex} />

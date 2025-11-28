@@ -1,0 +1,41 @@
+using Domain.Exceptions;
+using MediatR;
+using ThinkTogether.Application.Interfaces;
+
+using ThinkTogether.Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
+
+namespace ThinkTogether.Application.Handlers.User.Queries.GetUserCreatorStatus;
+
+public sealed class GetUserCreatorStatusQueryHandler : IRequestHandler<GetUserCreatorStatusQuery, UserCreatorStatusDto>
+{
+    private readonly IUserRepository _userRepository;
+    private readonly ICurrentUserService _currentUserService;
+
+    public GetUserCreatorStatusQueryHandler(
+        IUserRepository userRepository,
+        ICurrentUserService currentUserService)
+    {
+        _userRepository = userRepository;
+        _currentUserService = currentUserService;
+    }
+
+    public async Task<UserCreatorStatusDto> Handle(
+        GetUserCreatorStatusQuery request,
+        CancellationToken cancellationToken)
+    {
+        var userId = Guid.Parse(_currentUserService.UserId!);
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+
+        if (user == null)
+        {
+            throw new EntityNotFoundException("User", userId);
+        }
+
+        return new UserCreatorStatusDto
+        {
+            IsCreator = user.RoleId == ThinkTogether.Domain.Aggregates.UserAggregate.User.CreatorRoleId || user.RoleId == ThinkTogether.Domain.Aggregates.UserAggregate.User.AdminRoleId,
+            IsAdmin = user.RoleId == ThinkTogether.Domain.Aggregates.UserAggregate.User.AdminRoleId
+        };
+    }
+}

@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.GamingAggregate.Entities;
@@ -25,13 +26,13 @@ public sealed class GameQuestion : Entity
     public static GameQuestion Create(Guid gameSessionId, Guid questionId, int positionInGame)
     {
         if (gameSessionId == Guid.Empty)
-            throw new ArgumentException("Game session ID cannot be empty", nameof(gameSessionId));
+            throw new ValidationException("ID phiên trò chơi không được trống");
 
         if (questionId == Guid.Empty)
-            throw new ArgumentException("Question ID cannot be empty", nameof(questionId));
+            throw new ValidationException("ID câu hỏi không được trống");
 
         if (positionInGame < 0)
-            throw new ArgumentException("Position cannot be negative", nameof(positionInGame));
+            throw new ValidationException("Vị trí không được âm");
 
         return new GameQuestion
         {
@@ -50,7 +51,7 @@ public sealed class GameQuestion : Entity
     public void RecordAnswer(bool isCorrect, int responseTimeMs)
     {
         if (responseTimeMs < 0)
-            throw new ArgumentException("Response time cannot be negative", nameof(responseTimeMs));
+            throw new ValidationException("Thời gian phản hồi không được âm");
 
         if (isCorrect)
             CorrectAnswerCount++;

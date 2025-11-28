@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ClassAggregate.Entities;
@@ -37,16 +38,16 @@ public sealed class HomeworkSubmission : Entity
         DateTime? dueDate = null)
     {
         if (homeworkId == Guid.Empty)
-            throw new ArgumentException("Homework ID cannot be empty", nameof(homeworkId));
+            throw new ValidationException("ID bài tập về nhà không được trống");
 
         if (studentId == Guid.Empty)
-            throw new ArgumentException("Student ID cannot be empty", nameof(studentId));
+            throw new ValidationException("ID học sinh không được trống");
 
         if (challengeAttemptId == Guid.Empty)
-            throw new ArgumentException("Challenge attempt ID cannot be empty", nameof(challengeAttemptId));
+            throw new ValidationException("ID nỗ lực thử thách không được trống");
 
         if (score < 0)
-            throw new ArgumentException("Score cannot be negative", nameof(score));
+            throw new ValidationException("Điểm không được âm");
 
         var submittedAt = DateTime.UtcNow;
         var status = SubmissionStatus.Submitted;
@@ -71,7 +72,7 @@ public sealed class HomeworkSubmission : Entity
     public void UpdateScore(int score)
     {
         if (score < 0)
-            throw new ArgumentException("Score cannot be negative", nameof(score));
+            throw new ValidationException("Điểm không được âm");
 
         Score = score;
         UpdatedAt = DateTime.UtcNow;

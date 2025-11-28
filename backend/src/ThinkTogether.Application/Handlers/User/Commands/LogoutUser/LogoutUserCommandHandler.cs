@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+using Domain.Exceptions;
 using MediatR;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;

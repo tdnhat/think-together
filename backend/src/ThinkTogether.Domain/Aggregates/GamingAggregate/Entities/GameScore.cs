@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.GamingAggregate.Entities;
@@ -30,13 +31,13 @@ public sealed class GameScore : Entity
         int totalQuestions)
     {
         if (gameSessionId == Guid.Empty)
-            throw new ArgumentException("Game session ID cannot be empty", nameof(gameSessionId));
+            throw new ValidationException("ID phiên trò chơi không được trống");
 
         if (gamePlayerId == Guid.Empty)
-            throw new ArgumentException("Game player ID cannot be empty", nameof(gamePlayerId));
+            throw new ValidationException("ID người chơi trò chơi không được trống");
 
         if (totalQuestions < 0)
-            throw new ArgumentException("Total questions cannot be negative", nameof(totalQuestions));
+            throw new ValidationException("Tổng số câu hỏi không được âm");
 
         return new GameScore
         {
@@ -56,7 +57,7 @@ public sealed class GameScore : Entity
     public void AddPoints(int points)
     {
         if (points < 0)
-            throw new ArgumentException("Points cannot be negative", nameof(points));
+            throw new ValidationException("Điểm không được âm");
 
         TotalPoints += points;
         UpdatedAt = DateTime.UtcNow;
@@ -65,7 +66,7 @@ public sealed class GameScore : Entity
     public void RecordCorrectAnswer()
     {
         if (CorrectAnswers >= TotalQuestions)
-            throw new InvalidOperationException("Cannot exceed total questions");
+            throw new ConflictException("Không thể vượt quá tổng số câu hỏi");
 
         CorrectAnswers++;
         CalculateAccuracy();
@@ -75,7 +76,7 @@ public sealed class GameScore : Entity
     public void SetFinalRank(int rank)
     {
         if (rank <= 0)
-            throw new ArgumentException("Rank must be positive", nameof(rank));
+            throw new ValidationException("Xếp hạng phải dương");
 
         FinalRank = rank;
         UpdatedAt = DateTime.UtcNow;

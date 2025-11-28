@@ -2,7 +2,8 @@
 
 import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { handleError, toast } from '@/lib/errors/error-handler'
+import { handleError } from '@/lib/errors/error-handler'
+import { toastSuccess } from '@/lib/utils/toast'
 import { AUTH, ROUTES } from '@/config/constants'
 import { passwordService } from '../lib/password-service'
 
@@ -19,7 +20,7 @@ export function usePasswordRecovery() {
       const response = await passwordService.forgotPassword(email)
 
       if (response.success) {
-        toast.success(AUTH.MESSAGES.EMAIL_SENT)
+        toastSuccess(AUTH.MESSAGES.EMAIL_SENT)
         router.push(ROUTES.AUTH.LOGIN)
         return { success: true }
       }
@@ -53,7 +54,7 @@ export function usePasswordRecovery() {
       )
 
       if (response.success) {
-        toast.success('Đặt lại mật khẩu thành công')
+        toastSuccess('Đặt lại mật khẩu thành công')
         router.push(ROUTES.AUTH.LOGIN)
         return { success: true }
       }

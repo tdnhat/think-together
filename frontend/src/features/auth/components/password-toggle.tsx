@@ -18,7 +18,7 @@ export function PasswordToggle({ show, onToggle, className, ...props }: Password
       variant="default"
       onClick={onToggle}
       className={cn(
-        'h-auto rounded-lg border-2 border-[var(--color-border-main)] px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-primary)] shadow-brutal-sm hover:shadow-brutal-sm',
+        'h-auto rounded-base px-2 py-1 text-xs font-base uppercase tracking-wide text-main-foreground',
         'transition-transform',
         className,
       )}

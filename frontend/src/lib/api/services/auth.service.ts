@@ -186,6 +186,19 @@ export class AuthService {
   }
   
   /**
+   * Activate creator role
+   */
+  async becomeCreator(): Promise<void> {
+    const response = await api.post<ApiResponse>(
+      AUTH_ENDPOINTS.BECOME_CREATOR
+    );
+    
+    if (!response.success) {
+      throw new Error(response.message || 'Kích hoạt vai trò người sáng tạo thất bại');
+    }
+  }
+  
+  /**
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {

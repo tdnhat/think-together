@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 
 import { Bell, GraduationCap, Search } from "lucide-react";
-import toast from "react-hot-toast";
+import { toastSuccess } from "@/lib/utils/toast";
 
 import { Input, Button } from "@/shared";
 import { ProfileDropdown } from "@/widgets/dashboard";
-import { BecomeCreatorButton } from "@/features/become-creator"
 import { useAuth } from "@/features/auth";
 import { handleError } from "@/lib/errors/error-handler";
-import { ROUTES } from "@/config/constants";
+import { ROUTES } from "@/config/routes";
 
 export function DashboardNavbar() {
   const router = useRouter();
@@ -46,25 +45,19 @@ export function DashboardNavbar() {
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      toast.success('Đăng xuất thành công!');
-      router.push(ROUTES.AUTH.LOGIN);
+      toastSuccess('Đăng xuất thành công!');
+      router.push(ROUTES.auth.login);
     } catch (error) {
-      handleError(error, { 
-        showToast: true, 
+      handleError(error, {
+        showToast: true,
         customMessage: 'Không thể đăng xuất. Vui lòng thử lại.'
       });
     }
   }, [logout, router]);
-
-  // Check if user should see the "Become a Creator" button
-  const shouldShowBecomeCreator = useMemo(() => {
-    return user?.isEmailVerified === true && user?.role === 'Student';
-  }, [user]);
-
-  return (
-    <header className="fixed left-64 right-0 top-0 z-30 h-16 border-b-4 border-[var(--color-border-main)] bg-[var(--bg-page)]/95 backdrop-blur">
+    return (
+    <header className="fixed left-64 right-0 top-0 z-30 h-16 border-b border-[var(--brand-primary-shadow)] bg-[var(--bg-page)]/95 backdrop-blur">
       <div className="flex h-full w-full items-center justify-between gap-6 px-6">
-        <Link href="/home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+        <Link href={ROUTES.dashboard.home} className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <GraduationCap className="h-8 w-8 text-[var(--brand-primary)]" />
             <span className="text-xl font-heading font-semibold text-[var(--text-primary)]">ThinkTogether</span>
           </Link>
@@ -75,24 +68,21 @@ export function DashboardNavbar() {
             <Input
               type="search"
               placeholder="Tìm kiếm bộ câu hỏi..."
-              className="h-10 w-full rounded-xl border-2 border-[var(--color-border-main)] pl-12 pr-4 text-[var(--text-secondary)] shadow-brutal-secondary-sm transition-all focus:shadow-brutal-secondary-sm"
+              className="h-10 w-full rounded-xl pl-12 pr-4 text-[var(--text-secondary)] transition-all"
             />
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          {/* Show "Become a Creator" button for verified users with NGUOIDUNG role */}
-          {shouldShowBecomeCreator && <BecomeCreatorButton />}
-
           <Button
             type="button"
-            variant="outline"
+            variant="neutral"
             size="icon"
-            className="relative h-10 w-10 rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-brutal-sm transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-brutal-sm"
+            className="relative h-10 w-10 rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5"
             aria-label="Notifications"
           >
             <Bell className="h-5 w-5" />
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary)] text-xs font-bold">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] text-xs font-bold shadow-brutal-secondary-xs">
               3
             </span>
           </Button>

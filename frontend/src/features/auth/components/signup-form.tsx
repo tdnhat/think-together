@@ -1,14 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import toast from 'react-hot-toast'
 
 import { Button } from '@/shared/ui/button'
 import { registerSchema, type RegisterFormData } from '@/lib/validators'
-import { handleError } from '@/lib/errors/error-handler'
 import { useAuth } from '../hooks/use-auth'
 import { AuthField } from './auth-field'
 import { PasswordToggle } from './password-toggle'
@@ -19,7 +16,6 @@ export function SignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const router = useRouter()
   const { register: registerUser } = useAuth()
 
   const {
@@ -33,24 +29,11 @@ export function SignupForm() {
   const onSubmit = async (data: SignupFormValues) => {
     setIsSubmitting(true)
     try {
-      const result = await registerUser({
+      await registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
-      })
-
-      if (result?.success) {
-        toast.success('Tài khoản được tạo thành công!')
-        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
-        return
-      }
-
-      toast.error(result?.error ?? 'Không thể tạo tài khoản. Vui lòng thử lại.')
-    } catch (error) {
-      handleError(error, { 
-        showToast: true, 
-        customMessage: 'Không thể kết nối với máy chủ'
       })
     } finally {
       setIsSubmitting(false)
@@ -110,7 +93,7 @@ export function SignupForm() {
         />
       </div>
 
-      <Button type="submit" variant="primary" size="lg" disabled={isSubmitting} className="w-full">
+      <Button type="submit" variant="default" size="lg" disabled={isSubmitting} className="w-full">
         {isSubmitting ? 'Đang tạo không gian của bạn…' : 'Tạo tài khoản'}
       </Button>
     </form>

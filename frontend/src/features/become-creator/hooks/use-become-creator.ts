@@ -15,7 +15,7 @@ interface BecomeCreatorActions {
   error: string | null;
   nextStep: () => void;
   prevStep: () => void;
-  activateTeacher: () => Promise<boolean>;
+  becomeCreator: () => Promise<boolean>;
   resetState: () => void;
 }
 
@@ -54,7 +54,7 @@ export function useBecomeCreator(): BecomeCreatorActions {
     }
   }, [getCurrentStepIndex]);
 
-  const activateTeacher = useCallback(async (): Promise<boolean> => {
+  const becomeCreator = useCallback(async (): Promise<boolean> => {
     try {
       setState((prev) => ({
         ...prev,
@@ -66,7 +66,7 @@ export function useBecomeCreator(): BecomeCreatorActions {
       const simulatedDelay = 2000 + Math.random() * 1000
       await new Promise(resolve => setTimeout(resolve, simulatedDelay))
 
-      const response = await authService.activateTeacher()
+      const response = await authService.becomeCreator()
 
       if (!response.success) {
         const errorMessage = response.message || 'Không thể kích hoạt vai trò Người sáng tạo'
@@ -110,7 +110,7 @@ export function useBecomeCreator(): BecomeCreatorActions {
     error: state.error,
     nextStep,
     prevStep,
-    activateTeacher,
+    becomeCreator,
     resetState,
   }
 }

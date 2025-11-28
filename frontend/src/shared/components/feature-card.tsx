@@ -1,5 +1,6 @@
 import { type LucideIcon } from "lucide-react";
 
+import { Card } from "@/shared/ui/card";
 import { cn } from "@/lib/utils";
 
 interface FeatureCardProps {
@@ -21,25 +22,21 @@ export function FeatureCard({
   variant = "primary",
   className
 }: Readonly<FeatureCardProps>) {
-  const variantShadowClass = variant === "primary" ? "shadow-brutal-primary-sm" : "shadow-brutal-secondary-sm";
   const iconThemeClass =
     variant === "primary"
       ? "bg-gradient-to-br from-[var(--brand-primary)] to-[var(--accent-purple)] text-white"
       : "bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--accent-orange)] text-[var(--text-primary)]";
 
   return (
-    <div
-      className={cn(
-        "rounded-2xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-7",
-        "transition-all duration-200 hover:-translate-y-2 hover:shadow-brutal",
-        variantShadowClass,
-        className
-      )}
+    <Card
+      className={cn("p-7", className)}
     >
       <div
         className={cn(
-          "mb-5 flex h-16 w-16 items-center justify-center rounded-xl border-2 border-[var(--color-border-main)]",
-          "shadow-brutal-xs",
+          "mb-5 flex h-16 w-16 items-center justify-center rounded-xl border",
+          variant === "primary" 
+            ? "border-[var(--brand-primary-hover)] shadow-brutal-primary-xs"
+            : "border-[var(--brand-secondary-hover)] shadow-brutal-secondary-xs",
           iconThemeClass
         )}
       >
@@ -53,6 +50,6 @@ export function FeatureCard({
       <p className="text-base leading-relaxed text-[var(--text-secondary)]">
         {description}
       </p>
-    </div>
+    </Card>
   );
 }

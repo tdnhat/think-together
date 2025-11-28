@@ -15,6 +15,8 @@ const routes = {
     home: '/',
     about: '/about',
     contact: '/contact',
+    privacy: '/privacy',
+    terms: '/terms',
     designSystem: '/design-system',
     pricing: '/pricing',
     features: '/features',
@@ -36,10 +38,12 @@ const routes = {
     home: '/home',
     profile: '/profile',
     settings: '/settings',
+    support: '/support',
   },
   
   // ========== QUIZ ROUTES ==========
   quiz: {
+    browse: '/quiz',
     list: '/my-quizzes',
     create: '/quiz/create',
     edit: (id: string) => `/quiz/${id}/edit` as const,
@@ -49,9 +53,12 @@ const routes = {
   
   // ========== GAME ROUTES ==========
   game: {
-    host: (quizId: string) => `/host/quizzes/${quizId}` as const,
+    host: '/host',
+    hostWithQuiz: (quizId: string) => `/host?quizId=${quizId}` as const,
+    hostQuiz: (quizId: string) => `/host/quizzes/${quizId}` as const,
     join: '/join',
-    play: (pin: string) => `/play/${pin}` as const,
+    play: '/play',
+    playWithPin: (pin: string) => `/play/${pin}` as const,
     challenge: (id: string) => `/challenge/${id}` as const,
     results: (sessionId: string) => `/game/${sessionId}/results` as const,
   },
@@ -62,6 +69,9 @@ const routes = {
     view: (sessionId: string) => `/reports/${sessionId}` as const,
     export: (sessionId: string) => `/reports/${sessionId}/export` as const,
   },
+  
+  // ========== LEADERBOARD ROUTES ==========
+  leaderboard: '/leaderboard',
   
   // ========== CREATOR ROUTES ==========
   creator: {

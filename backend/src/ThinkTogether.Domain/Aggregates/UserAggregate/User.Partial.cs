@@ -1,4 +1,4 @@
-﻿using Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using Domain.Aggregates.UserAggregate.ValueObjects;
 using Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Events;
@@ -18,7 +18,7 @@ public sealed partial class User
         ValidateNames(firstName, lastName);
 
         if (roleId == Guid.Empty)
-            throw new ValidationException("Vai trò không hợp lệ");
+            throw new ValidationException("Vai tr� kh�ng h?p l?");
 
         var userId = Guid.NewGuid();
         var user = new User
@@ -44,12 +44,12 @@ public sealed partial class User
     public void UpdateProfile(string firstName, string lastName, string? avatarUrl, string? bio)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể cập nhật hồ sơ của người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? c?p nh?t h? so c?a ngu?i d�ng d� b? x�a");
 
         ValidateNames(firstName, lastName);
 
         if (avatarUrl != null && avatarUrl.Length > 500)
-            throw new ValidationException("URL ảnh đại diện quá dài");
+            throw new ValidationException("URL ?nh d?i di?n qu� d�i");
 
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
@@ -61,7 +61,7 @@ public sealed partial class User
     public void ChangePassword(Password newPasswordHash)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể đổi mật khẩu của người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? d?i m?t kh?u c?a ngu?i d�ng d� b? x�a");
 
         PasswordHash = newPasswordHash;
         UpdatedAt = DateTime.UtcNow;
@@ -70,7 +70,7 @@ public sealed partial class User
     public void ChangePassword(string newPlainTextPassword, IPasswordService passwordService)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể đổi mật khẩu của người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? d?i m?t kh?u c?a ngu?i d�ng d� b? x�a");
 
         Password.ValidatePlainText(newPlainTextPassword);
         PasswordHash = passwordService.HashPassword(newPlainTextPassword);
@@ -85,10 +85,10 @@ public sealed partial class User
     public void ChangeRole(Guid newRoleId)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể thay đổi vai trò của người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? thay d?i vai tr� c?a ngu?i d�ng d� b? x�a");
 
         if (newRoleId == Guid.Empty)
-            throw new ValidationException("Vai trò không hợp lệ");
+            throw new ValidationException("Vai tr� kh�ng h?p l?");
 
         RoleId = newRoleId;
         UpdatedAt = DateTime.UtcNow;
@@ -97,10 +97,10 @@ public sealed partial class User
     public void ActivateCreatorRole()
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể kích hoạt vai trò người sáng tạo cho người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? k�ch ho?t vai tr� ngu?i s�ng t?o cho ngu?i d�ng d� b? x�a");
 
         if (!IsEmailVerified)
-            throw new ValidationException("Vui lòng xác nhận email trước khi trở thành người sáng tạo");
+            throw new ValidationException("Vui l�ng x�c nh?n email tru?c khi tr? th�nh ngu?i s�ng t?o");
 
         if (RoleId == CreatorRoleId)
             return;
@@ -204,11 +204,11 @@ public sealed partial class User
     public void ResetPasswordWithToken(string resetToken, string newPlainTextPassword, IPasswordService passwordService)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể đặt lại mật khẩu của người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? d?t l?i m?t kh?u c?a ngu?i d�ng d� b? x�a");
 
         var validToken = GetValidPasswordResetToken(resetToken);
         if (validToken == null)
-            throw new ValidationException("Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn");
+            throw new ValidationException("Token d?t l?i m?t kh?u kh�ng h?p l? ho?c d� h?t h?n");
 
         Password.ValidatePlainText(newPlainTextPassword);
         PasswordHash = passwordService.HashPassword(newPlainTextPassword);
@@ -221,11 +221,11 @@ public sealed partial class User
     public void ConfirmEmailWithToken(string confirmationToken)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể xác nhận email của người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? x�c nh?n email c?a ngu?i d�ng d� b? x�a");
 
         var validToken = GetValidEmailConfirmationToken(confirmationToken);
         if (validToken == null)
-            throw new ValidationException("Token xác nhận email không hợp lệ hoặc đã hết hạn");
+            throw new ValidationException("Token x�c nh?n email kh�ng h?p l? ho?c d� h?t h?n");
 
         validToken.MarkAsUsed();
         IsEmailVerified = true;
@@ -237,7 +237,7 @@ public sealed partial class User
     public void RequestEmailConfirmation(string confirmationToken, string confirmationLink)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể gửi email xác nhận cho người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? g?i email x�c nh?n cho ngu?i d�ng d� b? x�a");
 
         AddDomainEvent(new EmailConfirmationRequestedDomainEvent(
             Id, 
@@ -250,7 +250,7 @@ public sealed partial class User
     public void RequestPasswordReset(string resetToken, string resetLink)
     {
         if (IsDeleted)
-            throw new ValidationException("Không thể gửi email đặt lại mật khẩu cho người dùng đã bị xóa");
+            throw new ValidationException("Kh�ng th? g?i email d?t l?i m?t kh?u cho ngu?i d�ng d� b? x�a");
 
         AddDomainEvent(new PasswordResetRequestedDomainEvent(
             Id, 
@@ -263,16 +263,16 @@ public sealed partial class User
     private static void ValidateNames(string firstName, string lastName)
     {
         if (string.IsNullOrWhiteSpace(firstName))
-            throw new ValidationException("Tên đệm là bắt buộc");
+            throw new ValidationException("T�n d?m l� b?t bu?c");
 
         if (string.IsNullOrWhiteSpace(lastName))
-            throw new ValidationException("Tên gọi là bắt buộc");
+            throw new ValidationException("T�n g?i l� b?t bu?c");
 
         if (firstName.Length > 100)
-            throw new ValidationException("Tên đệm quá dài");
+            throw new ValidationException("T�n d?m qu� d�i");
 
         if (lastName.Length > 100)
-            throw new ValidationException("Tên gọi quá dài");
+            throw new ValidationException("T�n g?i qu� d�i");
     }
 }
 

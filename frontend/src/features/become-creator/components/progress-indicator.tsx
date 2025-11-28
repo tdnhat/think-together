@@ -1,3 +1,4 @@
+import { Fragment } from "react"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -8,14 +9,14 @@ interface ProgressIndicatorProps {
 
 export function ProgressIndicator({ steps, currentStepIndex }: Readonly<ProgressIndicatorProps>) {
   return (
-    <div className="mb-8 flex items-center justify-between gap-2">
+    <div className="mb-8 flex w-full items-center justify-between">
       {steps.map((step, index) => {
         const isCompleted = currentStepIndex > index
         const isCurrent = currentStepIndex === index
         const isActive = isCompleted || isCurrent
 
         return (
-          <div key={step} className="flex items-center flex-1">
+          <Fragment key={step}>
             {/* Step Circle */}
             <div
               className={cn(
@@ -34,18 +35,18 @@ export function ProgressIndicator({ steps, currentStepIndex }: Readonly<Progress
 
             {/* Connecting Line */}
             {index < steps.length - 1 && (
-              <div className="flex-1 flex items-center mx-2 h-1">
+              <div className="flex-1 mx-4 h-1">
                 <div
                   className={cn(
-                    "w-full h-[3px] transition-all duration-300",
+                    "w-full h-[4px] transition-all duration-300 border-y border-[var(--color-border-main)]",
                     isCompleted
                       ? "bg-[var(--brand-primary)]"
-                      : "bg-[var(--color-border-main)]"
+                      : "bg-[var(--bg-surface-secondary)]"
                   )}
                 />
               </div>
             )}
-          </div>
+          </Fragment>
         )
       })}
     </div>

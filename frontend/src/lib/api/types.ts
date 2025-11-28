@@ -26,7 +26,7 @@ export interface PaginatedResponse<T> {
   hasPrevious: boolean;
 }
 
-export interface PaginationParams {
+export interface PaginationParams extends Record<string, unknown> {
   page?: number;
   pageSize?: number;
   sortBy?: string;

@@ -1,4 +1,4 @@
-﻿namespace ThinkTogether.Application.Interfaces;
+namespace ThinkTogether.Application.Interfaces;
 
 public interface IJwtContext
 {

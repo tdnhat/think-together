@@ -1,4 +1,5 @@
 using Domain.Aggregates.ChallengeAggregate.Entities;
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ChallengeAggregate;
@@ -9,7 +10,7 @@ public enum ChallengeStatus
     Archived
 }
 
-public sealed class Challenge : AggregateRoot
+public sealed partial class Challenge : AggregateRoot
 {
     private readonly List<ChallengeAttempt> _attempts = new();
 
@@ -45,22 +46,22 @@ public sealed class Challenge : AggregateRoot
         string shareLink)
     {
         if (creatorId == Guid.Empty)
-            throw new ArgumentException("Creator ID cannot be empty", nameof(creatorId));
+            throw new ValidationException("ID người tạo không được trống");
 
         if (quizSetId == Guid.Empty)
-            throw new ArgumentException("Quiz set ID cannot be empty", nameof(quizSetId));
+            throw new ValidationException("ID bộ câu hỏi không được trống");
 
         if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be empty", nameof(title));
+            throw new ValidationException("Tiêu đề không được trống");
 
         if (title.Length > 255)
-            throw new ArgumentException("Title cannot exceed 255 characters", nameof(title));
+            throw new ValidationException("Tiêu đề không được vượt quá 255 ký tự");
 
         if (string.IsNullOrWhiteSpace(shareLink))
-            throw new ArgumentException("Share link cannot be empty", nameof(shareLink));
+            throw new ValidationException("Liên kết chia sẻ không được trống");
 
         if (shareLink.Length > 500)
-            throw new ArgumentException("Share link cannot exceed 500 characters", nameof(shareLink));
+            throw new ValidationException("Liên kết chia sẻ không được vượt quá 500 ký tự");
 
         return new Challenge
         {
@@ -76,52 +77,6 @@ public sealed class Challenge : AggregateRoot
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-    }
-
-    public void AddAttempt(ChallengeAttempt attempt)
-    {
-        if (attempt == null)
-            throw new ArgumentNullException(nameof(attempt));
-
-        _attempts.Add(attempt);
-        PlayCount++;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateTitle(string title)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be empty", nameof(title));
-
-        if (title.Length > 255)
-            throw new ArgumentException("Title cannot exceed 255 characters", nameof(title));
-
-        Title = title.Trim();
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateDescription(string? description)
-    {
-        Description = description?.Trim();
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void SetShowLeaderboard(bool show)
-    {
-        ShowLeaderboard = show;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void Archive()
-    {
-        Status = ChallengeStatus.Archived;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void Activate()
-    {
-        Status = ChallengeStatus.Active;
-        UpdatedAt = DateTime.UtcNow;
     }
 }
 

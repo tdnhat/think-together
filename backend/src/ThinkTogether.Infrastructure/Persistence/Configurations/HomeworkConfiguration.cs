@@ -53,20 +53,20 @@ public class HomeworkConfiguration : IEntityTypeConfiguration<Homework>
             "CK_BaiTapVeNha_hanChot",
             "hanChot IS NULL OR hanChot >= ngayGiao"));
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<Domain.Aggregates.ClassAggregate.Class>()
             .WithMany()
-            .HasForeignKey("ClassId")
+            .HasForeignKey(h => h.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<Domain.Aggregates.QuizAggregate.QuizSet>()
+        builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet>()
             .WithMany()
-            .HasForeignKey("QuizSetId")
+            .HasForeignKey(h => h.QuizSetId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany<HomeworkSubmission>()
             .WithOne()
-            .HasForeignKey("HomeworkId")
+            .HasForeignKey(hs => hs.HomeworkId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes

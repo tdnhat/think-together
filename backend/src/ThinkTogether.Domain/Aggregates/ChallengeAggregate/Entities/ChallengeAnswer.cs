@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ChallengeAggregate.Entities;
@@ -28,16 +29,16 @@ public sealed class ChallengeAnswer : Entity
         int pointsEarned)
     {
         if (challengeAttemptId == Guid.Empty)
-            throw new ArgumentException("Challenge attempt ID cannot be empty", nameof(challengeAttemptId));
+            throw new ValidationException("ID nỗ lực thử thách không được trống");
 
         if (questionId == Guid.Empty)
-            throw new ArgumentException("Question ID cannot be empty", nameof(questionId));
+            throw new ValidationException("ID câu hỏi không được trống");
 
         if (submissionTimeMs < 0)
-            throw new ArgumentException("Submission time cannot be negative", nameof(submissionTimeMs));
+            throw new ValidationException("Thời gian nộp không được âm");
 
         if (pointsEarned < 0)
-            throw new ArgumentException("Points cannot be negative", nameof(pointsEarned));
+            throw new ValidationException("Điểm kiếm được không được âm");
 
         return new ChallengeAnswer
         {

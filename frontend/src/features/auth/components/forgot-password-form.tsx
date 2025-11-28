@@ -59,7 +59,7 @@ export function ForgotPasswordForm() {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button variant="default" type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Gửi link đặt lại mật khẩu
         </Button>

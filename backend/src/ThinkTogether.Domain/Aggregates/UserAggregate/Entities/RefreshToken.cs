@@ -1,6 +1,7 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.UserAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
 public sealed class RefreshToken : Entity
 {
@@ -21,13 +22,13 @@ public sealed class RefreshToken : Entity
     public static RefreshToken Create(Guid userId, string token, TimeSpan lifetime)
     {
         if (userId == Guid.Empty)
-            throw new ArgumentException("User ID cannot be empty", nameof(userId));
+            throw new ValidationException("ID người dùng không được trống");
 
         if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Token cannot be empty", nameof(token));
+            throw new ValidationException("Token không được trống");
 
         if (lifetime <= TimeSpan.Zero)
-            throw new ArgumentException("Lifetime must be positive", nameof(lifetime));
+            throw new ValidationException("Thời gian sống phải dương");
 
         return new RefreshToken
         {

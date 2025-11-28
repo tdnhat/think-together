@@ -6,6 +6,7 @@
 
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { STORAGE_KEYS } from '@/config/constants';
 import type { Quiz, Question } from '@/lib/api/types';
 
 // ============================================================================
@@ -243,20 +244,20 @@ export const useQuizStore = create<QuizStore>()(
             set({ draft: null }, false, 'quiz/clearDraft');
             
             if (typeof globalThis.window !== 'undefined') {
-              localStorage.removeItem('quiz-draft');
+              localStorage.removeItem(STORAGE_KEYS.QUIZ_DRAFT);
             }
           },
           
           saveDraft: () => {
             const draft = get().draft;
             if (draft && typeof globalThis.window !== 'undefined') {
-              localStorage.setItem('quiz-draft', JSON.stringify(draft));
+              localStorage.setItem(STORAGE_KEYS.QUIZ_DRAFT, JSON.stringify(draft));
             }
           },
           
           loadDraft: () => {
             if (typeof globalThis.window !== 'undefined') {
-              const saved = localStorage.getItem('quiz-draft');
+              const saved = localStorage.getItem(STORAGE_KEYS.QUIZ_DRAFT);
               if (saved) {
                 try {
                   const draft = JSON.parse(saved);
