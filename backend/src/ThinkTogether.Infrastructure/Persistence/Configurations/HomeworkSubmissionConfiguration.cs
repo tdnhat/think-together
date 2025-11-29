@@ -70,20 +70,20 @@ public class HomeworkSubmissionConfiguration : IEntityTypeConfiguration<Homework
         // Unique constraint on ChallengeAttemptId
         builder.HasIndex(hs => hs.ChallengeAttemptId).IsUnique();
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<Homework>()
             .WithMany()
-            .HasForeignKey("HomeworkId")
+            .HasForeignKey(hs => hs.HomeworkId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<User>()
             .WithMany()
-            .HasForeignKey("StudentId")
+            .HasForeignKey(hs => hs.StudentId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<global::Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt>()
             .WithMany()
-            .HasForeignKey("ChallengeAttemptId")
+            .HasForeignKey(hs => hs.ChallengeAttemptId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes

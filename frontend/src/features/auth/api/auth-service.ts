@@ -180,19 +180,19 @@ class AuthService {
   }
 
   /**
-   * Activate teacher/creator role for current user
+   * Activate creator role for current user
    * Requires verified email
    * @returns API response
    */
-  async activateTeacher(): Promise<ApiResponse<void>> {
+  async becomeCreator(): Promise<ApiResponse<void>> {
     try {
       const response = await axiosInstance.post<ApiResponse<void>>(
-        API_ENDPOINTS.AUTH.ACTIVATE_TEACHER
+        API_ENDPOINTS.AUTH.BECOME_CREATOR
       )
       return response.data
     } catch (error) {
       throw handleError(error, {
-        customMessage: 'Kích hoạt tài khoản giáo viên thất bại',
+        customMessage: 'Kích hoạt tài khoản người sáng tạo thất bại',
       })
     }
   }

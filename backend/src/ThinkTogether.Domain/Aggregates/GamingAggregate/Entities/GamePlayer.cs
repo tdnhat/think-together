@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.GamingAggregate.Entities;
@@ -25,13 +26,13 @@ public sealed class GamePlayer : Entity
     public static GamePlayer Create(Guid gameSessionId, string nickname)
     {
         if (gameSessionId == Guid.Empty)
-            throw new ArgumentException("Game session ID cannot be empty", nameof(gameSessionId));
+            throw new ValidationException("ID phiên trò chơi không được trống");
 
         if (string.IsNullOrWhiteSpace(nickname))
-            throw new ArgumentException("Nickname cannot be empty", nameof(nickname));
+            throw new ValidationException("Biệt danh không được trống");
 
         if (nickname.Length < 2 || nickname.Length > 100)
-            throw new ArgumentException("Nickname must be between 2 and 100 characters", nameof(nickname));
+            throw new ValidationException("Biệt danh phải từ 2 đến 100 ký tự");
 
         return new GamePlayer
         {

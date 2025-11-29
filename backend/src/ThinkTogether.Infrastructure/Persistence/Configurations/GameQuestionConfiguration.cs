@@ -64,15 +64,15 @@ public class GameQuestionConfiguration : IEntityTypeConfiguration<GameQuestion>
             tb.HasCheckConstraint("CK_CauHoiPhienChoi_thoiGian", "thoiGianTraLoiTrungBinh >= 0");
         });
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
             .WithMany()
-            .HasForeignKey("GameSessionId")
+            .HasForeignKey(gq => gq.GameSessionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<Domain.Aggregates.QuizAggregate.Entities.Question>()
+        builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question>()
             .WithMany()
-            .HasForeignKey("QuestionId")
+            .HasForeignKey(gq => gq.QuestionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes and unique constraint

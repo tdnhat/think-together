@@ -147,6 +147,19 @@ class ApiClient {
       config.headers.Authorization = `Bearer ${token}`;
     }
     
+    // Handle FormData - don't set Content-Type, let browser set it with boundary
+    if (config.data instanceof FormData && config.headers) {
+      // Remove Content-Type to let browser set it automatically with boundary
+      // Axios will automatically set multipart/form-data with boundary
+      if ('Content-Type' in config.headers) {
+        delete config.headers['Content-Type'];
+      }
+      // Also check commonContentType (Axios internal)
+      if ('common' in config.headers && config.headers.common && 'Content-Type' in config.headers.common) {
+        delete (config.headers.common as Record<string, string>)['Content-Type'];
+      }
+    }
+    
     // Log request in development
     if (env.isDevelopment) {
       console.log('[API Request]', {
@@ -177,8 +190,18 @@ class ApiClient {
       _retry?: boolean;
     };
     
+    // Check if this is the refresh token endpoint itself
+    const isRefreshEndpoint = originalRequest.url?.includes('/api/auth/refresh-token');
+    
     // Handle 401 Unauthorized - Token expired
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // If this is the refresh endpoint itself returning 401, don't retry - just logout
+      if (isRefreshEndpoint) {
+        this.handleAuthenticationFailure();
+        const appError = parseAxiosError(error);
+        throw appError;
+      }
+      
       // If already refreshing, queue this request
       if (this.refreshQueue.getRefreshing()) {
         return new Promise((resolve) => {
@@ -223,8 +246,16 @@ class ApiClient {
   
   private async refreshAccessToken(): Promise<string> {
     try {
-      const response = await this.client.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
-        '/api/auth/refresh-token'
+      // Prevent infinite loop - if refresh endpoint returns 401, don't retry
+      const response = await axios.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
+        `${env.apiUrl}/api/auth/refresh-token`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
       
       if (response.data.success && response.data.data) {
@@ -242,13 +273,32 @@ class ApiClient {
   }
   
   private handleAuthenticationFailure(): void {
+    // Clear tokens first
     this.tokenManager.clearTokens();
     
     if (typeof globalThis.window !== 'undefined') {
-      // Redirect to login
+      // Clear all auth-related localStorage items
+      try {
+        localStorage.removeItem('auth-storage');
+        localStorage.removeItem(AUTH.TOKEN_KEY);
+        localStorage.removeItem(AUTH.REFRESH_TOKEN_KEY);
+        localStorage.removeItem(AUTH.USER_KEY);
+      } catch {
+        // Ignore errors if localStorage is not available
+      }
+      
       const currentPath = globalThis.window.location.pathname;
-      const loginUrl = `${ROUTES.AUTH.LOGIN}?returnUrl=${encodeURIComponent(currentPath)}`;
-      globalThis.window.location.href = loginUrl;
+      const loginPath = ROUTES.AUTH.LOGIN;
+      
+      // Prevent infinite redirect loop
+      if (currentPath === loginPath || currentPath.startsWith(loginPath)) {
+        return;
+      }
+      
+      // Use window.location.replace to prevent back button issues
+      // This ensures user can't go back to the protected page
+      const loginUrl = `${loginPath}?returnUrl=${encodeURIComponent(currentPath)}`;
+      globalThis.window.location.replace(loginUrl);
     }
   }
   

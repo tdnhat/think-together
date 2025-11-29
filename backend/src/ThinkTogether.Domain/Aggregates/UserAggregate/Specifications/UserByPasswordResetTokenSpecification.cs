@@ -1,4 +1,4 @@
-using Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;

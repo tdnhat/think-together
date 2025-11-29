@@ -33,7 +33,7 @@ export function StatusIcon({
     <div
       className={cn(
         "mx-auto flex size-16 items-center justify-center",
-        "rounded-2xl border-2 border-[var(--color-border-main)] shadow-brutal-sm",
+        "rounded-2xl border-2 border-[var(--color-border-main)]",
         variantStyles[variant],
         className
       )}

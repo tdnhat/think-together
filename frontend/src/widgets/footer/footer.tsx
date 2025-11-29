@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { Code2, GraduationCap, Mail, Network } from "lucide-react";
+import { Separator } from "@/shared/ui/separator";
+import { ROUTES } from "@/config/routes";
 
 const socialLinks = [
   {
@@ -22,7 +24,8 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t-4 border-[var(--color-border-main)] bg-[var(--bg-surface)]">
+    <footer className="relative bg-[var(--bg-surface)]">
+      <Separator className="absolute top-0 left-0 right-0" />
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 grid gap-8 md:grid-cols-4">
           {/* Logo and Description */}
@@ -44,22 +47,22 @@ export function Footer() {
             </h3>
             <ul className="space-y-2 text-[var(--text-secondary)]">
               <li>
-                <Link href="/about" className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.about} className="transition-colors hover:text-[var(--text-primary)]">
                   Giới thiệu
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.privacy} className="transition-colors hover:text-[var(--text-primary)]">
                   Chính sách bảo mật
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.terms} className="transition-colors hover:text-[var(--text-primary)]">
                   Điều khoản sử dụng
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.contact} className="transition-colors hover:text-[var(--text-primary)]">
                   Liên hệ
                 </Link>
               </li>
@@ -78,7 +81,7 @@ export function Footer() {
                   href={href}
                   target={href.startsWith("http") ? "_blank" : undefined}
                   rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-[var(--color-border-main)] bg-[var(--brand-primary)] text-white shadow-brutal transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-brutal-sm"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--brand-primary-hover)] bg-[var(--brand-primary)] text-white transition-transform hover:translate-x-0.5 hover:translate-y-0.5"
                   aria-label={label}
                 >
                   <Icon className="h-5 w-5" />
@@ -89,7 +92,8 @@ export function Footer() {
         </div>
         
         {/* Bottom bar */}
-        <div className="border-t-2 border-[var(--color-border-main)] pt-8 text-center text-[var(--text-secondary)]">
+        <div className="pt-8 text-center text-[var(--text-secondary)]">
+          <Separator className="mb-8" />
           <p>&copy; {new Date().getFullYear()} ThinkTogether. Tất cả quyền được bảo lưu.</p>
         </div>
       </div>

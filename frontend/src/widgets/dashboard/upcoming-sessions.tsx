@@ -1,18 +1,20 @@
 import Link from "next/link";
 import { Button } from "@/shared";
+import { Card } from "@/shared/ui/card";
+import { ROUTES } from "@/config/routes";
 import { MOCK_UPCOMING_SESSIONS } from "./constants";
 
 export function UpcomingSessions() {
   return (
-    <div className="rounded-3xl border border-[var(--color-border-main)] bg-[var(--bg-surface)] p-6 shadow-brutal">
+    <Card className="p-6">
       <h2 className="mb-4 font-heading text-2xl font-semibold text-[var(--text-primary)]">
         Các bài học sắp diễn ra
       </h2>
       <div className="space-y-4">
         {MOCK_UPCOMING_SESSIONS.map((session) => (
-          <div
+          <Card
             key={session}
-            className="flex items-center justify-between rounded-2xl border border-[var(--color-border-main)] bg-[var(--bg-surface)]/80 px-4 py-3 text-[var(--text-secondary)] shadow-brutal-sm"
+            className="flex items-center justify-between px-4 py-3 text-[var(--text-secondary)]"
           >
             <div>
               <p className="font-heading text-base font-semibold text-[var(--text-primary)]">
@@ -20,13 +22,13 @@ export function UpcomingSessions() {
               </p>
               <p className="text-sm">Bắt đầu lúc 19:30 tối nay</p>
             </div>
-            <Button asChild size="sm" variant="outline" className="rounded-lg shadow-brutal-secondary-sm">
-              <Link href="/play">Nhắc tôi</Link>
+            <Button asChild size="sm" variant="neutral" className="rounded-lg">
+              <Link href={ROUTES.game.play}>Nhắc tôi</Link>
             </Button>
-          </div>
+          </Card>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 

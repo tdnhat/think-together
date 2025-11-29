@@ -8,7 +8,8 @@ interface AuthStore extends AuthState {
   refreshToken: string | null
   tokenExpiry: number | null
   lastActivity: number | null
-  
+  isHydrated: boolean
+
   actions: {
     login: (user: User, token: string, refreshToken?: string, expiresIn?: number) => void
     logout: () => void
@@ -18,6 +19,7 @@ interface AuthStore extends AuthState {
     checkTokenExpiry: () => boolean
     updateLastActivity: () => void
     clearSession: () => void
+    setHydrated: () => void
   }
 }
 
@@ -33,6 +35,7 @@ export const useAuthStore = create<AuthStore>()(
         lastActivity: Date.now(),
         isAuthenticated: false,
         isLoading: false,
+        isHydrated: false,
 
         // Actions
         actions: {
@@ -136,17 +139,26 @@ export const useAuthStore = create<AuthStore>()(
           updateLastActivity: () => {
             set({ lastActivity: Date.now() }, false, 'auth/updateLastActivity')
           },
+
+          setHydrated: () => {
+            set({ isHydrated: true }, false, 'auth/setHydrated')
+          },
         },
       }),
       {
-        name: STORAGE_KEYS.AUTH_STORAGE,
-        partialize: (state) => ({
-          user: state.user,
-          token: state.token,
-          refreshToken: state.refreshToken,
-          tokenExpiry: state.tokenExpiry,
-          isAuthenticated: state.isAuthenticated,
-        }),
+      name: STORAGE_KEYS.AUTH_STORAGE,
+      partialize: (state) => ({
+      user: state.user,
+      token: state.token,
+      refreshToken: state.refreshToken,
+      tokenExpiry: state.tokenExpiry,
+      isAuthenticated: state.isAuthenticated,
+      }),
+        onRehydrateStorage: () => (state) => {
+          if (state) {
+            state.actions.setHydrated()
+          }
+        },
       }
     ),
     { name: 'AuthStore' }
@@ -161,5 +173,6 @@ export const selectTokenExpiry = (state: AuthStore): number | null => state.toke
 export const selectLastActivity = (state: AuthStore): number | null => state.lastActivity
 export const selectIsAuthenticated = (state: AuthStore): boolean => state.isAuthenticated
 export const selectIsLoading = (state: AuthStore): boolean => state.isLoading
+export const selectIsHydrated = (state: AuthStore): boolean => state.isHydrated
 export const selectAuthActions = (state: AuthStore): AuthStore['actions'] => state.actions
 

@@ -60,6 +60,11 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(EmailOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.AddOptions<CloudinaryOptions>()
+            .Bind(configuration.GetSection(CloudinaryOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
     }
 
     private static void ConfigureRedis(IServiceCollection services, IConfiguration configuration)
@@ -98,6 +103,7 @@ public static class DependencyInjection
     private static void ConfigureRepositories(IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IQuizSetRepository, QuizSetRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
@@ -121,5 +127,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
         services.AddScoped<IEmailService, EmailService>();
+        
+        // Cloud Services
+        services.AddScoped<IImageUploadService, CloudinaryService>();
     }
 }

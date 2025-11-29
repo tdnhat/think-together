@@ -75,16 +75,16 @@ public class GameScoreConfiguration : IEntityTypeConfiguration<GameScore>
         // Unique constraint on GamePlayerId
         builder.HasIndex(gs => gs.GamePlayerId).IsUnique();
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
             .WithMany()
-            .HasForeignKey("GameSessionId")
+            .HasForeignKey(gs => gs.GameSessionId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // NO ACTION to avoid multiple cascade paths (GameSession -> GamePlayer -> GameScore)
         builder.HasOne<Domain.Aggregates.GamingAggregate.Entities.GamePlayer>()
             .WithMany()
-            .HasForeignKey("GamePlayerId")
+            .HasForeignKey(gs => gs.GamePlayerId)
             .OnDelete(DeleteBehavior.NoAction);
 
         // Indexes

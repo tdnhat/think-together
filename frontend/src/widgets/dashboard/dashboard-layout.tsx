@@ -1,7 +1,12 @@
 import type { ReactNode } from "react";
 
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/shared/ui/sidebar";
+import { Separator } from "@/shared/ui/separator";
 import { DashboardNavbar } from "./dashboard-navbar";
-import { DashboardSidebar } from "./dashboard-sidebar";
+import { AppSidebar } from "./app-sidebar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -9,16 +14,20 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: Readonly<DashboardLayoutProps>) {
   return (
-    <div className="min-h-screen bg-[var(--bg-page)]">
-      <DashboardSidebar />
-      <div className="pl-64">
-        <DashboardNavbar />
-        <main className="min-h-screen bg-[var(--bg-surface)] px-10 pb-12 pt-24">
+    <SidebarProvider defaultOpen={true}>
+      <AppSidebar />
+      <div className="flex w-full flex-col">
+        <header className="relative flex h-16 shrink-0 items-center gap-2 bg-[var(--bg-page)]/95 backdrop-blur">
+          <SidebarTrigger className="-ml-1" />
+          <DashboardNavbar />
+          <Separator className="absolute bottom-0 left-0 right-0" />
+        </header>
+        <main className="flex flex-1 flex-col bg-[var(--bg-surface)] px-10 pb-12 pt-8 overflow-hidden">
           <div className="mx-auto w-full max-w-6xl">
             {children}
           </div>
         </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

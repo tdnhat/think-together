@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.GamingAggregate.Entities;
@@ -23,7 +24,7 @@ public sealed class GameSettings : Entity
     public static GameSettings Create(Guid gameSessionId)
     {
         if (gameSessionId == Guid.Empty)
-            throw new ArgumentException("Game session ID cannot be empty", nameof(gameSessionId));
+            throw new ValidationException("ID phiên trò chơi không được trống");
 
         return new GameSettings
         {

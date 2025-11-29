@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
@@ -29,10 +30,10 @@ public sealed class Role : Entity
     public static Role Create(Guid id, string name, string? description = null)
     {
         if (id == Guid.Empty)
-            throw new ArgumentException("Role ID cannot be empty", nameof(id));
+            throw new ValidationException("ID vai trò không được trống");
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Role name cannot be empty", nameof(name));
+            throw new ValidationException("Tên vai trò không được trống");
 
         return new Role
         {

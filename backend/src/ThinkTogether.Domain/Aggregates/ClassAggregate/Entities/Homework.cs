@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Shared.Primitives;
 
 namespace Domain.Aggregates.ClassAggregate.Entities;
@@ -31,19 +32,19 @@ public sealed class Homework : Entity
         DateTime? dueDate = null)
     {
         if (classId == Guid.Empty)
-            throw new ArgumentException("Class ID cannot be empty", nameof(classId));
+            throw new ValidationException("ID lớp không được trống");
 
         if (quizSetId == Guid.Empty)
-            throw new ArgumentException("Quiz set ID cannot be empty", nameof(quizSetId));
+            throw new ValidationException("ID bộ câu hỏi không được trống");
 
         if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be empty", nameof(title));
+            throw new ValidationException("Tiêu đề không được trống");
 
         if (title.Length > 255)
-            throw new ArgumentException("Title cannot exceed 255 characters", nameof(title));
+            throw new ValidationException("Tiêu đề không được vượt quá 255 ký tự");
 
         if (dueDate.HasValue && dueDate <= DateTime.UtcNow)
-            throw new ArgumentException("Due date must be in the future", nameof(dueDate));
+            throw new ValidationException("Ngày hết hạn phải ở tương lai");
 
         return new Homework
         {
@@ -61,7 +62,7 @@ public sealed class Homework : Entity
     public void AddSubmission(HomeworkSubmission submission)
     {
         if (submission == null)
-            throw new ArgumentNullException(nameof(submission));
+            throw new ValidationException("Bài nộp không được null");
 
         _submissions.Add(submission);
         UpdatedAt = DateTime.UtcNow;
@@ -70,10 +71,10 @@ public sealed class Homework : Entity
     public void UpdateTitle(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be empty", nameof(title));
+            throw new ValidationException("Tiêu đề không được trống");
 
         if (title.Length > 255)
-            throw new ArgumentException("Title cannot exceed 255 characters", nameof(title));
+            throw new ValidationException("Tiêu đề không được vượt quá 255 ký tự");
 
         Title = title.Trim();
         UpdatedAt = DateTime.UtcNow;
@@ -82,7 +83,7 @@ public sealed class Homework : Entity
     public void UpdateDueDate(DateTime? dueDate)
     {
         if (dueDate.HasValue && dueDate <= DateTime.UtcNow)
-            throw new ArgumentException("Due date must be in the future", nameof(dueDate));
+            throw new ValidationException("Ngày hết hạn phải ở tương lai");
 
         DueDate = dueDate;
         UpdatedAt = DateTime.UtcNow;

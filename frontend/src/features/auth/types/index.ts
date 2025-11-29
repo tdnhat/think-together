@@ -1,7 +1,7 @@
 // Auth-specific types
 
 // User Role enum
-export type UserRole = 'Student' | 'Teacher' | 'Admin'
+export type UserRole = 'User' | 'Creator' | 'Admin'
 
 export interface User {
   id: string

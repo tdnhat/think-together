@@ -1,7 +1,7 @@
 using Domain.Aggregates.UserAggregate;
 using Domain.Aggregates.UserAggregate.ValueObjects;
 using Domain.Exceptions;
-using Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;

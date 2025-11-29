@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { Badge } from '@/shared/ui/badge'
+import { Card } from '@/shared/ui/card'
 import { cn } from '@/lib/utils'
 
 export type AuthHighlightItem = Readonly<{
@@ -22,20 +23,17 @@ export function AuthHighlights({ heading = 'Những gì bạn nhận được b�
   }
 
   return (
-    <section
+    <Card
       aria-label="Why Think Together shines"
-      className={cn(
-        'rounded-3xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] px-6 py-5 shadow-[8px_8px_0_var(--color-border-main)]',
-        className,
-      )}
+      className={cn('px-6 py-5', className)}
     >
       <header className="mb-4 space-y-2">
-        <Badge variant="secondary" size="sm">
+        <Badge variant="neutral">
           🚀 Được học sinh cung cấp
         </Badge>
         <div>
-          <h2 className="text-xl font-semibold text-[var(--text-primary)]">{heading}</h2>
-          {caption ? <p className="mt-1 text-sm text-[var(--text-secondary)]">{caption}</p> : null}
+          <h2 className="text-xl font-heading text-foreground">{heading}</h2>
+          {caption ? <p className="mt-1 text-sm text-foreground/70">{caption}</p> : null}
         </div>
       </header>
 
@@ -44,13 +42,13 @@ export function AuthHighlights({ heading = 'Những gì bạn nhận được b�
           <li key={item.title} className="flex items-start gap-3">
             {item.icon ? <span aria-hidden className="mt-1 text-lg">{item.icon}</span> : null}
             <div className="space-y-1">
-              <span className="text-base font-semibold text-[var(--text-primary)]">{item.title}</span>
-              <p className="text-sm text-[var(--text-secondary)]">{item.description}</p>
+              <span className="text-base font-heading text-foreground">{item.title}</span>
+              <p className="text-sm text-foreground/70">{item.description}</p>
             </div>
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   )
 }
 

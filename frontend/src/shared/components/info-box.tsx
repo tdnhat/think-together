@@ -10,7 +10,7 @@ interface InfoBoxProps {
 }
 
 const variantStyles: Record<InfoBoxVariant, string> = {
-  default: "rounded-2xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-4 shadow-brutal-sm",
+  default: "rounded-2xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-4",
   dashed: "rounded-2xl border border-dashed border-[var(--color-border-main)] bg-[var(--bg-surface)] p-4",
   countdown: "rounded-xl border border-dashed border-[var(--color-border-main)] bg-[var(--bg-surface)] px-4 py-2 text-sm text-[var(--text-secondary)]/80",
 };

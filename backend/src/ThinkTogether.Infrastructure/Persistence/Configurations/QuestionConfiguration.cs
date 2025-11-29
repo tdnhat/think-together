@@ -1,4 +1,4 @@
-using Domain.Aggregates.QuizAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,6 +41,13 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
             .IsRequired()
             .HasDefaultValue(0);
 
+        builder.Property(q => q.VideoUrl)
+            .HasColumnName("urlVideo")
+            .HasMaxLength(500);
+
+        builder.Property(q => q.VideoTimestamp)
+            .HasColumnName("dauThoiGianVideo");
+
         builder.Property(q => q.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
@@ -51,6 +58,71 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
 
         builder.Property(q => q.DeletedAt)
             .HasColumnName("ngayXoa");
+
+        // Configure owned entities (value objects)
+        builder.OwnsMany(q => q.Options, options =>
+        {
+            options.ToTable("CauHoi_TracNghiem");
+            options.WithOwner().HasForeignKey("idCauHoi");
+            options.Property<Guid>("Id").HasColumnName("idPhuongAn");
+            options.HasKey("Id");
+            
+            options.Property(o => o.Content)
+                .HasColumnName("noiDung")
+                .IsRequired()
+                .HasMaxLength(1000);
+            
+            options.Property(o => o.IsCorrect)
+                .HasColumnName("laDapAnDung")
+                .IsRequired();
+            
+            options.Property(o => o.DisplayOrder)
+                .HasColumnName("thuTu")
+                .IsRequired();
+            
+            options.Property(o => o.ImageUrl)
+                .HasColumnName("urlAnh")
+                .HasMaxLength(500);
+        });
+
+        builder.OwnsMany(q => q.MatchingPairs, pairs =>
+        {
+            pairs.ToTable("CauHoi_CapGhep");
+            pairs.WithOwner().HasForeignKey("idCauHoi");
+            pairs.Property<Guid>("Id").HasColumnName("idMucGhep");
+            pairs.HasKey("Id");
+            
+            pairs.Property(p => p.LeftContent)
+                .HasColumnName("noiDungTrai")
+                .IsRequired()
+                .HasMaxLength(500);
+            
+            pairs.Property(p => p.RightContent)
+                .HasColumnName("noiDungPhai")
+                .IsRequired()
+                .HasMaxLength(500);
+            
+            pairs.Property(p => p.DisplayOrder)
+                .HasColumnName("thuTu")
+                .IsRequired();
+        });
+
+        builder.OwnsMany(q => q.OrderingItems, items =>
+        {
+            items.ToTable("CauHoi_SapXep");
+            items.WithOwner().HasForeignKey("idCauHoi");
+            items.Property<Guid>("Id").HasColumnName("idMucSapXep");
+            items.HasKey("Id");
+            
+            items.Property(i => i.Content)
+                .HasColumnName("noiDung")
+                .IsRequired()
+                .HasMaxLength(500);
+            
+            items.Property(i => i.CorrectPosition)
+                .HasColumnName("viTriDung")
+                .IsRequired();
+        });
 
         // Add check constraint for enum values
         builder.ToTable(tb => tb.HasCheckConstraint(
@@ -67,10 +139,10 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
             "CK_CauHoi_thuTu",
             "thuTu >= 0"));
 
-        // Foreign key to QuizSet - explicitly configure without navigation properties
-        builder.HasOne<Domain.Aggregates.QuizAggregate.QuizSet>()
+        // Foreign key to QuizSet
+        builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet>()
             .WithMany()
-            .HasForeignKey("QuizSetId")
+            .HasForeignKey(q => q.QuizSetId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes

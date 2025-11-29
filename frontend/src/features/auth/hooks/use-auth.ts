@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore, selectAuthActions, selectUser, selectToken, selectIsAuthenticated, selectIsLoading } from '../stores/auth.store'
 import { authService } from '../api/auth-service'
 import apiClient from '@/api/client'
-import { handleError, toast } from '@/lib/errors/error-handler'
-import { AUTH, ROUTES } from '@/config/constants'
+import { handleError } from '@/lib/errors/error-handler'
+import { toastSuccess } from '@/lib/utils/toast'
+import { AUTH } from '@/config/constants'
+import { ROUTES } from '@/config/routes'
 import { LoginFormData, RegisterFormData } from '@/lib/validators'
 import type { User } from '../types'
 
@@ -36,13 +38,27 @@ export function useAuth() {
         
         if (userResponse.success && userResponse.data) {
           const userDto = userResponse.data
+          // Map API role to auth role
+          const mapRole = (apiRole: string): 'User' | 'Creator' | 'Admin' => {
+            switch (apiRole) {
+              case 'Student':
+                return 'User'
+              case 'Creator':
+                return 'Creator'
+              case 'Admin':
+                return 'Admin'
+              default:
+                return 'User'
+            }
+          }
+
           const user: User = {
             id: userDto.id,
             email: userDto.email,
             firstName: userDto.firstName,
             lastName: userDto.lastName,
             name: `${userDto.firstName} ${userDto.lastName}`,
-            role: userDto.role,
+            role: mapRole(userDto.role),
             isEmailVerified: userDto.isEmailVerified,
             avatarUrl: userDto.avatarUrl,
             bio: userDto.bio,
@@ -50,8 +66,13 @@ export function useAuth() {
           }
           
           loginAction(user, accessToken)
-          toast.success(AUTH.MESSAGES.LOGIN_SUCCESS)
-          router.push(ROUTES.DASHBOARD.HOME)
+          toastSuccess(AUTH.MESSAGES.LOGIN_SUCCESS)
+          
+          if (user.role === 'Creator') {
+            router.push(ROUTES.quiz.list)
+          } else {
+            router.push(ROUTES.dashboard.home)
+          }
           
           return { success: true as const }
         }
@@ -92,7 +113,7 @@ export function useAuth() {
       })
       
       if (response.success) {
-        toast.success(AUTH.MESSAGES.REGISTER_SUCCESS)
+        toastSuccess(AUTH.MESSAGES.REGISTER_SUCCESS)
         router.push(ROUTES.AUTH.VERIFY_EMAIL)
         
         return { success: true as const }
@@ -121,7 +142,7 @@ export function useAuth() {
       await authService.logout()
       apiClient.clearToken()
       logoutAction()
-      toast.success(AUTH.MESSAGES.LOGOUT_SUCCESS)
+      toastSuccess(AUTH.MESSAGES.LOGOUT_SUCCESS)
       router.push(ROUTES.AUTH.LOGIN)
     } catch (error) {
       handleError(error, {
@@ -135,26 +156,33 @@ export function useAuth() {
   }, [logoutAction, router])
 
   const refreshAuth = useCallback(async () => {
-    if (!token) return false
-    
+    if (!token) {
+      router.push(ROUTES.AUTH.LOGIN)
+      return false
+    }
+
     try {
       const response = await authService.refreshToken()
-      
+
       if (response.success && response.data) {
         const { accessToken } = response.data
         apiClient.setToken(accessToken)
         return true
       }
-      
+
+      // Refresh failed, redirect to login
+      router.push(ROUTES.AUTH.LOGIN)
       return false
     } catch (error) {
       handleError(error, {
         showToast: true,
       })
+      // Clear session and redirect to login
       logoutAction()
+      router.push(ROUTES.AUTH.LOGIN)
       return false
     }
-  }, [token, logoutAction])
+  }, [token, logoutAction, router])
 
   return {
     user,

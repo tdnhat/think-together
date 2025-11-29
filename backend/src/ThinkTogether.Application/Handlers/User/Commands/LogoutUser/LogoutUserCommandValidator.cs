@@ -1,4 +1,4 @@
-﻿﻿using FluentValidation;
+using FluentValidation;
 
 namespace ThinkTogether.Application.Handlers.User.Commands.LogoutUser;
 
@@ -13,4 +13,3 @@ public sealed class LogoutUserCommandValidator : AbstractValidator<LogoutUserCom
             .WithMessage("Format refresh token không hợp lệ");
     }
 }
-

@@ -5,13 +5,15 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { toastSuccess, toastError } from '@/lib/utils/toast'
+import Link from 'next/link'
 
 import { Button } from '@/shared/ui/button'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { AuthField } from './auth-field'
 import { PasswordToggle } from './password-toggle'
 import { authService } from '../api/auth-service'
+import { ROUTES } from '@/config/routes'
 
 const resetPasswordSchema = z
   .object({
@@ -43,7 +45,7 @@ export function ResetPasswordForm() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
-      toast.error('Thiếu mã đặt lại mật khẩu')
+      toastError('Thiếu mã đặt lại mật khẩu')
       return
     }
 
@@ -51,13 +53,13 @@ export function ResetPasswordForm() {
     try {
       const response = await authService.resetPassword(token, data.password, data.confirmPassword)
       if (response.success) {
-        toast.success('Đặt lại mật khẩu thành công!')
-        router.push('/login')
+        toastSuccess('Đặt lại mật khẩu thành công!')
+        router.push(ROUTES.auth.login)
       } else {
-        toast.error(response.message || 'Đặt lại mật khẩu thất bại')
+        toastError(response.message || 'Đặt lại mật khẩu thất bại')
       }
-    } catch (error) {
-      toast.error('Có lỗi xảy ra khi đặt lại mật khẩu')
+    } catch {
+      toastError('Có lỗi xảy ra khi đặt lại mật khẩu')
     } finally {
       setIsLoading(false)
     }
@@ -66,9 +68,9 @@ export function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="text-center">
-        <p className="text-[var(--color-error)]">Liên kết không hợp lệ hoặc đã hết hạn</p>
-        <Button asChild variant="outline" className="mt-4">
-          <a href="/forgot-password">Yêu cầu link mới</a>
+        <p className="text-[var(--color-error)] font-base">Liên kết không hợp lệ hoặc đã hết hạn</p>
+        <Button asChild variant="neutral" className="mt-4">
+          <Link href={ROUTES.auth.forgotPassword}>Yêu cầu link mới</Link>
         </Button>
       </div>
     )
@@ -103,8 +105,8 @@ export function ResetPasswordForm() {
         }
       />
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      <Button variant="default" type="submit" className="w-full" disabled={isLoading}>
+        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
         Đặt lại mật khẩu
       </Button>
     </form>

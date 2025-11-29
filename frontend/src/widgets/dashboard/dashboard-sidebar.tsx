@@ -15,7 +15,10 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-
+import { Badge } from "@/shared/ui/badge";
+import { useAuthStore, selectUser, selectIsHydrated } from "@/features/auth/stores/auth.store";
+import { ROUTES } from "@/config/routes";
+import { BecomeCreatorButton } from "@/features/become-creator";
 
 interface SidebarItem {
   icon: LucideIcon;
@@ -25,8 +28,8 @@ interface SidebarItem {
 }
 
 const mainMenuItems: SidebarItem[] = [
-  { icon: Home, label: "Trang chủ", href: "/home" },
-  { icon: BookOpen, label: "Bộ câu hỏi", href: "/quiz" },
+  { icon: Home, label: "Trang chủ", href: ROUTES.dashboard.home },
+  { icon: BookOpen, label: "Bộ câu hỏi", href: ROUTES.quiz.list },
   { icon: TrendingUp, label: "Bảng xếp hạng", href: "/leaderboard" },
   { icon: Activity, label: "Tiến trình", href: "/progress" },
 ];
@@ -40,9 +43,11 @@ const otherMenuItems: SidebarItem[] = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const user = useAuthStore(selectUser);
+  const isHydrated = useAuthStore(selectIsHydrated);
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--color-border-main)] bg-[var(--bg-surface)]">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)]">
       <div className="flex h-full flex-col">
         <div className="flex-1 overflow-y-auto px-5 py-8">
           <nav className="space-y-6">
@@ -78,6 +83,12 @@ export function DashboardSidebar() {
               </div>
             </section>
           </nav>
+
+          {isHydrated && user?.role !== "Creator" && (
+            <div className="mt-8 px-1">
+              <BecomeCreatorButton className="w-full justify-center" />
+            </div>
+          )}
         </div>
       </div>
     </aside>
@@ -104,11 +115,13 @@ function SidebarLink({ item, isActive, variant }: Readonly<SidebarLinkProps>) {
 
   if (!isActive) {
     if (variant === "main") {
-      hoverClasses = "hover:bg-[color-mix(in_oklab,var(--brand-primary)_10%,var(--bg-surface)_90%)] hover:text-[var(--brand-primary)]";
+      hoverClasses =
+        "hover:bg-[color-mix(in_oklab,var(--brand-primary)_10%,var(--bg-surface)_90%)] hover:text-[var(--brand-primary)]";
       iconBaseClass = "text-[var(--brand-primary)]";
       iconHoverClass = "group-hover:text-[var(--brand-primary)]";
     } else {
-      hoverClasses = "hover:bg-[color-mix(in_oklab,var(--brand-secondary)_20%,var(--bg-surface)_80%)] hover:text-[var(--text-primary)]";
+      hoverClasses =
+        "hover:bg-[color-mix(in_oklab,var(--brand-secondary)_20%,var(--bg-surface)_80%)] hover:text-[var(--text-primary)]";
       iconBaseClass = "text-[var(--brand-secondary)]";
       iconHoverClass = "group-hover:text-[var(--brand-secondary)]";
     }
@@ -123,12 +136,18 @@ function SidebarLink({ item, isActive, variant }: Readonly<SidebarLinkProps>) {
         hoverClasses
       )}
     >
-      <Icon className={cn("h-5 w-5 transition-colors", iconBaseClass, iconHoverClass)} />
+      <Icon
+        className={cn(
+          "h-5 w-5 transition-colors",
+          iconBaseClass,
+          iconHoverClass
+        )}
+      />
       <span>{item.label}</span>
       {item.badge && (
-        <span className="ml-auto rounded-full bg-[var(--brand-secondary)] px-2 py-0.5 text-xs font-semibold text-[var(--text-primary)]">
+        <Badge variant="neutral" className="ml-auto">
           {item.badge}
-        </span>
+        </Badge>
       )}
     </Link>
   );

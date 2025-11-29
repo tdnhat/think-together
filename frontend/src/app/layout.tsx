@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Raleway, Quicksand, Be_Vietnam_Pro } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
+import { QueryProvider } from '@/providers/query-provider'
+import { ToastProvider } from '@/providers/toast-provider'
 import './globals.css'
 
 const raleway = Raleway({ 
@@ -52,8 +53,10 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${raleway.variable} ${beVietnamPro.variable} ${quicksand.variable} font-sans`}>
-        {children}
-        <Toaster position="top-right" />
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+        <ToastProvider />
       </body>
     </html>
   )

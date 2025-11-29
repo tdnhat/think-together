@@ -76,10 +76,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.DeletedAt)
             .HasColumnName("ngayXoa");
 
-        // Foreign key relationship to VaiTro - explicitly configure without navigation properties
-        builder.HasOne<Role>()
+        // Foreign key relationship to VaiTro
+        builder.HasOne(u => u.Role)
             .WithMany()
-            .HasForeignKey("RoleId")
+            .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes

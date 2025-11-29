@@ -1,4 +1,3 @@
-using Application.DTOs;
 using Application.Handlers.User.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

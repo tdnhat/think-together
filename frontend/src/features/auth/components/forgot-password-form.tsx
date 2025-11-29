@@ -4,9 +4,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
-
 import { Button } from '@/shared/ui/button'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/ui/form'
 import { AuthField } from './auth-field'
 import { usePasswordRecovery } from '../hooks/use-password-recovery'
@@ -59,8 +58,8 @@ export function ForgotPasswordForm() {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button variant="default" type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
           Gửi link đặt lại mật khẩu
         </Button>
       </form>

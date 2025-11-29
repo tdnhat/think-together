@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Events;
@@ -36,12 +37,12 @@ public class PasswordResetRequestedDomainEventHandler : INotificationHandler<Pas
         catch (OperationCanceledException ex)
         {
             _logger.LogWarning(ex, "Password reset email sending was cancelled for user {UserId}", notification.UserId);
-            throw new OperationCanceledException($"Password reset email sending operation was cancelled for user {notification.UserId}", ex);
+            throw new ValidationException($"Gửi email đặt lại mật khẩu bị hủy cho người dùng {notification.UserId}", ex);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send password reset email to {Email} for user {UserId}", notification.Email, notification.UserId);
-            throw new InvalidOperationException($"Failed to send password reset email for user {notification.UserId}", ex);
+            throw new ValidationException($"Không thể gửi email đặt lại mật khẩu cho người dùng {notification.UserId}", ex);
         }
     }
 }

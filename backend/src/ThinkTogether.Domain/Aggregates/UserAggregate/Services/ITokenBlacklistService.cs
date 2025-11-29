@@ -1,4 +1,4 @@
-﻿namespace ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 
 public interface ITokenBlacklistService
 {

@@ -74,20 +74,20 @@ public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeA
                 "thoiGianHoanThanhMs IS NULL OR thoiGianHoanThanhMs > 0");
         });
 
-        // Foreign keys - explicitly configure without navigation properties
+        // Foreign keys
         builder.HasOne<global::Domain.Aggregates.ChallengeAggregate.Challenge>()
             .WithMany()
-            .HasForeignKey("ChallengeId")
+            .HasForeignKey(ca => ca.ChallengeId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<User>()
             .WithMany()
-            .HasForeignKey("UserId")
+            .HasForeignKey(ca => ca.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany<ChallengeAnswer>()
             .WithOne()
-            .HasForeignKey("ChallengeAttemptId")
+            .HasForeignKey(ca => ca.ChallengeAttemptId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes

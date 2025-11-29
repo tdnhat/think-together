@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { CheckCircle2, XCircle } from 'lucide-react'
+import Link from 'next/link'
 import { Button } from '@/shared/ui/button'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { authService } from '../api/auth-service'
+import { ROUTES } from '@/config/routes'
 
 export function ConfirmEmailForm() {
   const searchParams = useSearchParams()
@@ -29,7 +32,7 @@ export function ConfirmEmailForm() {
           setStatus('error')
           setMessage(response.message || 'Xác nhận email thất bại')
         }
-      } catch (error) {
+      } catch {
         setStatus('error')
         setMessage('Có lỗi xảy ra khi xác nhận email')
       }
@@ -42,8 +45,8 @@ export function ConfirmEmailForm() {
     <div className="flex flex-col items-center justify-center space-y-4 py-8">
       {status === 'loading' && (
         <>
-          <Loader2 className="h-12 w-12 animate-spin text-[var(--brand-primary)]" />
-          <p className="text-center text-[var(--text-secondary)]">Đang xác nhận email...</p>
+          <LoadingSpinner size="lg" />
+          <p className="text-center text-foreground/70">Đang xác nhận email...</p>
         </>
       )}
 
@@ -51,8 +54,8 @@ export function ConfirmEmailForm() {
         <>
           <CheckCircle2 className="h-12 w-12 text-[var(--color-success)]" />
           <p className="text-center text-lg font-medium">{message}</p>
-          <Button asChild className="mt-4">
-            <a href="/login">Đăng nhập ngay</a>
+          <Button asChild variant="default" className="mt-4">
+            <Link href={ROUTES.auth.login}>Đăng nhập ngay</Link>
           </Button>
         </>
       )}
@@ -61,8 +64,8 @@ export function ConfirmEmailForm() {
         <>
           <XCircle className="h-12 w-12 text-[var(--color-error)]" />
           <p className="text-center text-lg font-medium text-[var(--color-error)]">{message}</p>
-          <Button asChild variant="outline" className="mt-4">
-            <a href="/verify-email">Gửi lại email xác nhận</a>
+          <Button asChild variant="neutral" className="mt-4">
+            <Link href={ROUTES.auth.verifyEmail}>Gửi lại email xác nhận</Link>
           </Button>
         </>
       )}

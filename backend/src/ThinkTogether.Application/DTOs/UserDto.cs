@@ -1,4 +1,4 @@
-namespace Application.DTOs;
+namespace ThinkTogether.Application.DTOs;
 
 public record UserDto(
     string Id,

@@ -1,13 +1,15 @@
 import { Heart, Star, Zap } from "lucide-react";
 
+import { Card } from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
 import { SectionContainer, StatCard } from "@/shared/components";
 import { LANDING_STATS, RATING_STARS_COUNT } from "./constants";
 
 export function Stats() {
   return (
     <SectionContainer>
-      <div 
-        className="rounded-3xl border-4 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-8 shadow-brutal-primary-xl md:p-12"
+      <Card
+        className="p-8 md:p-12"
       >
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
@@ -30,19 +32,15 @@ export function Stats() {
             </p>
             
             <div className="flex flex-wrap gap-4">
-              <div 
-                className="flex items-center gap-2 rounded-full border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] px-4 py-2 shadow-brutal-secondary-sm"
-              >
+              <Badge variant="neutral" className="px-4 py-2">
                 <Zap className="h-5 w-5 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]" />
                 <span>Nhanh chóng</span>
-              </div>
+              </Badge>
               
-              <div 
-                className="flex items-center gap-2 rounded-full border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] px-4 py-2 shadow-brutal-primary-sm"
-              >
-                <Heart className="h-5 w-5 fill-[var(--brand-primary)] text-[var(--brand-primary)]" />
+              <Badge variant="default" className="px-4 py-2">
+                <Heart className="h-5 w-5 fill-white text-white" />
                 <span>Thú vị</span>
-              </div>
+              </Badge>
             </div>
           </div>
           
@@ -57,7 +55,7 @@ export function Stats() {
             ))}
           </div>
         </div>
-      </div>
+      </Card>
     </SectionContainer>
   );
 }

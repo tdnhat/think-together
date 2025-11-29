@@ -51,10 +51,10 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
                 "LEN(bietDanh) >= 2 AND LEN(bietDanh) <= 100");
         });
 
-        // Foreign key - explicitly configure without navigation properties
+        // Foreign key
         builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
             .WithMany()
-            .HasForeignKey("GameSessionId")
+            .HasForeignKey(gp => gp.GameSessionId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes

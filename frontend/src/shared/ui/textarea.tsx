@@ -2,16 +2,13 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Textarea({
-  className,
-  ...props
-}: React.ComponentProps<"textarea">) {
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea
       data-slot="textarea"
       className={cn(
-        "w-full min-h-[120px] rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] shadow-brutal-xs placeholder:text-[var(--text-tertiary)] transition-all resize-y focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2 focus-visible:translate-x-[1px] focus-visible:translate-y-[1px] focus-visible:shadow-none disabled:cursor-not-allowed disabled:bg-[var(--bg-surface-secondary)] disabled:opacity-50 disabled:text-[var(--text-tertiary)]",
-        className
+        "flex min-h-[80px] w-full rounded-base border-2 border-border bg-secondary-background selection:bg-main selection:text-main-foreground px-3 py-2 text-sm font-base text-foreground placeholder:text-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        className,
       )}
       {...props}
     />
@@ -19,4 +16,3 @@ function Textarea({
 }
 
 export { Textarea }
-

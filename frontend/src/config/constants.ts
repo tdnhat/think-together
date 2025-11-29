@@ -93,7 +93,7 @@ export const ROUTES = {
   // Dashboard routes (nested structure)
   DASHBOARD: {
     HOME: '/home',
-    MY_QUIZZES: '/my-quizzes',
+    MY_QUIZZES: '/creator/quizzes',
     CREATE_QUIZ: '/quiz/create',
     EDIT_QUIZ: (id: string) => `/quiz/${id}/edit`,
     QUIZ_REPORTS: (sessionId: string) => `/reports/${sessionId}`,
@@ -101,6 +101,7 @@ export const ROUTES = {
   
   // Game routes (nested structure)
   GAME: {
+    HOST: '/host',
     HOST_QUIZ: (quizId: string) => `/host/quizzes/${quizId}`,
     JOIN: '/join',
     PLAY: (pin: string) => `/play/${pin}`,
@@ -115,6 +116,7 @@ export const PROTECTED_ROUTES = [
   ROUTES.DASHBOARD.HOME,
   ROUTES.DASHBOARD.MY_QUIZZES,
   ROUTES.DASHBOARD.CREATE_QUIZ,
+  '/creator/quizzes',
   '/quiz/',
   '/reports/',
   '/host/',

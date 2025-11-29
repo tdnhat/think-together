@@ -1,10 +1,11 @@
-using Application.DTOs;
 using Application.Handlers.User.Queries.GetCurrentUser;
 using Domain.Exceptions;
 using Mapster;
 using MediatR;
+using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;
 
 namespace ThinkTogether.Application.Handlers.User.Queries.GetCurrentUser;
 
@@ -30,7 +31,7 @@ public sealed class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQ
             throw new UnauthorizedException("ID nguoi dung khong hop le");
         }
 
-        var user = await _userRepository.GetByIdAsync(userIdValue, cancellationToken);
+        var user = await _userRepository.GetBySpecAsync(new UserByIdWithRoleSpecification(userIdValue), cancellationToken);
 
         if (user == null || user.IsDeleted)
         {

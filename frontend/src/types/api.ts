@@ -6,6 +6,30 @@ export interface ApiResponse<T = unknown> {
   message?: string
 }
 
+export interface PaginatedResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+export interface QuizSetQueryParams {
+  search?: string
+  sortBy?: 'newest' | 'oldest' | 'title' | 'questions'
+  filterBy?: 'all' | 'published' | 'draft'
+  page?: number
+  pageSize?: number
+}
+
+export interface QuestionQueryParams {
+  search?: string
+  filterBy?: 'all' | string // QuestionType enum value
+  sortBy?: 'order' | 'createdAt' | 'type'
+  page?: number
+  pageSize?: number
+}
+
 // ProblemDetails format from backend (RFC 7807)
 export interface ApiError {
   type: string
@@ -76,3 +100,123 @@ export interface ResetPasswordRequest {
   confirmPassword: string
 }
 
+// Quiz Set DTOs
+export interface QuizSetDto {
+  id: string
+  title: string
+  description?: string
+  coverImageUrl?: string
+  isPublished: boolean
+  questionCount?: number
+  createdAt: string
+  updatedAt: string
+  creatorId: string
+  creatorName?: string
+}
+
+export interface CreateQuizSetRequest {
+  title: string
+  description?: string
+  coverImageUrl?: string
+}
+
+export interface UpdateQuizSetRequest {
+  id: string
+  title: string
+  description?: string
+  coverImageUrl?: string
+}
+
+export interface PublishQuizSetRequest {
+  id: string
+}
+
+// Question Types
+export enum QuestionType {
+  SINGLE_CHOICE = 'SingleChoice',
+  TRUE_FALSE = 'TrueFalse',
+  MULTIPLE_CHOICE = 'MultipleChoice',
+  MATCHING = 'Matching',
+  ORDERING = 'Ordering',
+  VIDEO = 'Video'
+}
+
+// Question Option (for Multiple Choice, Single Choice, True/False)
+export interface QuestionOptionDto {
+  id: string
+  content: string
+  isCorrect: boolean
+  displayOrder: number
+  imageUrl?: string
+}
+
+// Matching Pair (for Matching questions)
+export interface MatchingPairDto {
+  id: string
+  leftContent: string
+  rightContent: string
+  displayOrder: number
+}
+
+// Ordering Item (for Ordering questions)
+export interface OrderingItemDto {
+  id: string
+  content: string
+  correctPosition: number
+}
+
+// Question DTO
+export interface QuestionDto {
+  id: string
+  quizSetId: string
+  content: string
+  type: QuestionType
+  timeLimit: number
+  displayOrder: number
+  createdAt: string
+  updatedAt?: string
+  
+  // Type-specific data
+  options?: QuestionOptionDto[]
+  matchingPairs?: MatchingPairDto[]
+  orderingItems?: OrderingItemDto[]
+  videoUrl?: string
+  videoTimestamp?: number
+}
+
+// Create Question Request
+export interface CreateQuestionRequest {
+  quizSetId: string
+  content: string
+  type: QuestionType
+  timeLimit: number
+  displayOrder?: number
+  
+  // Type-specific data
+  options?: Omit<QuestionOptionDto, 'id'>[]
+  matchingPairs?: Omit<MatchingPairDto, 'id'>[]
+  orderingItems?: Omit<OrderingItemDto, 'id'>[]
+  videoUrl?: string
+  videoTimestamp?: number
+}
+
+// Update Question Request
+export interface UpdateQuestionRequest {
+  id: string
+  content?: string
+  timeLimit?: number
+  displayOrder?: number
+  
+  // Type-specific data
+  options?: QuestionOptionDto[]
+  matchingPairs?: MatchingPairDto[]
+  orderingItems?: OrderingItemDto[]
+  videoUrl?: string
+  videoTimestamp?: number
+}
+
+// Reorder Questions Request
+export interface ReorderQuestionsRequest {
+  quizSetId: string
+  questionOrders: Array<{ id: string; displayOrder: number }>
+}
