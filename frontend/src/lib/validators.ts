@@ -80,3 +80,21 @@ export const updateQuizSetSchema = z.object({
 // Type exports
 export type CreateQuizSetFormData = z.infer<typeof createQuizSetSchema>;
 export type UpdateQuizSetFormData = z.infer<typeof updateQuizSetSchema>;
+
+// Question schemas
+export const createQuestionSchema = z.object({
+  content: z.string()
+    .min(1, "Nội dung câu hỏi là bắt buộc")
+    .max(2000, "Nội dung câu hỏi không được vượt quá 2000 ký tự"),
+  type: z.string().min(1, "Loại câu hỏi là bắt buộc"),
+  timeLimit: z.number()
+    .min(5, "Thời gian giới hạn tối thiểu là 5 giây")
+    .max(300, "Thời gian giới hạn tối đa là 300 giây"),
+  options: z.array(z.object({
+    content: z.string().min(1, "Nội dung lựa chọn không được để trống"),
+    isCorrect: z.boolean(),
+    displayOrder: z.number(),
+  })).optional(),
+});
+
+export type CreateQuestionFormData = z.infer<typeof createQuestionSchema>;

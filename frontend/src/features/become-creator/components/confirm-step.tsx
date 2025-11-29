@@ -14,7 +14,7 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--color-border-main)] bg-[var(--brand-secondary)] shadow-brutal">
+        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--color-border-main)] bg-[var(--brand-secondary)]">
           <Sparkles className="h-10 w-10 text-[var(--text-primary)]" strokeWidth={2} />
         </div>
         <h2 className="text-3xl font-bold text-[var(--text-primary)] font-heading">
@@ -25,7 +25,7 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
         </p>
       </div>
 
-      <div className="space-y-3 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary-light)] p-5 shadow-brutal-sm">
+      <div className="space-y-3 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary-light)] p-5">
         {CREATOR_BENEFITS.map((benefit) => (
           <div key={benefit} className="flex items-start gap-3">
             <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-border-main)] bg-[var(--brand-primary)] text-white">

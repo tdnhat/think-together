@@ -380,6 +380,5 @@ export async function withRetry<T>(
 // ============================================================================
 
 // Re-export toast utilities
-export { toastError, toastInfo, toastSuccess } from '@/lib/utils/toast';
-export { toast } from 'react-hot-toast';
+export { toastError, toastInfo, toastSuccess, toast } from '@/lib/utils/toast';
 

@@ -43,7 +43,7 @@ export function HomeHero() {
           {MOCK_HIGHLIGHT_CARDS.map((card) => (
             <div
               key={card.title}
-              className="rounded-2xl border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)]/80 p-4 text-[var(--text-secondary)] shadow-brutal-primary-xs"
+              className="rounded-2xl border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)]/80 p-4 text-[var(--text-secondary)]"
             >
               <p className="text-sm font-medium uppercase tracking-wide text-[var(--text-secondary)]/70">
                 {card.title}

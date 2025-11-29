@@ -2,10 +2,12 @@
 
 import { Plus, Search, Filter, ChevronDown } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
+import { SearchInput } from '@/shared/components'
 import { Badge } from '@/shared/ui/badge'
 import { Card } from '@/shared/ui/card'
+import { Skeleton } from '@/shared/ui/skeleton'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu'
+import { PaginationControls } from '@/shared/components'
 import { QuizSetCard } from './quiz-set-card'
 import { QUIZ_SET_CONSTANTS } from '../constants'
 import type { QuizSetDto } from '@/types/api'
@@ -68,16 +70,16 @@ export function QuizSetList({
         <div className="space-y-6">
           {/* Header skeleton */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="h-8 w-48 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
-            <div className="h-10 w-32 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-10 w-32" />
           </div>
 
           {/* Filters skeleton */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
-            <div className="h-10 w-full max-w-sm animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
+            <Skeleton className="h-10 w-full max-w-sm" />
             <div className="flex gap-2">
-              <div className="h-10 w-24 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
-              <div className="h-10 w-24 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-24" />
             </div>
           </div>
 
@@ -85,14 +87,14 @@ export function QuizSetList({
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }, (_, i) => `skeleton-card-${i}`).map((key) => (
               <Card key={key} className="space-y-4 p-6">
-                <div className="h-32 animate-pulse rounded-lg bg-[var(--bg-surface-secondary)]" />
+                <Skeleton className="h-32 w-full rounded-lg" />
                 <div className="space-y-2">
-                  <div className="h-5 w-3/4 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
-                  <div className="h-4 w-full animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
                 </div>
                 <div className="flex justify-between">
-                  <div className="h-4 w-20 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
-                  <div className="h-4 w-16 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-16" />
                 </div>
               </Card>
             ))}
@@ -160,16 +162,13 @@ export function QuizSetList({
         {/* Filters */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           {/* Search */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
-            <Input
-              type="text"
-              placeholder="Tìm kiếm bộ trắc nghiệm..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange?.(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+          <SearchInput
+            className="flex-1 max-w-md"
+            placeholder="Tìm kiếm bộ trắc nghiệm..."
+            value={searchQuery}
+            onChange={(value) => onSearchChange?.(value)}
+            iconColor="text-[var(--text-tertiary)]"
+          />
 
           {/* Sort and Filter */}
           <div className="flex items-center gap-3">
@@ -228,27 +227,17 @@ export function QuizSetList({
         </div>
 
         {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="neutral"
-              size="sm"
-              onClick={() => onPageChange?.(pagination.page - 1)}
-              disabled={pagination.page === 1}
-            >
-              Trước
-            </Button>
+        {pagination && pagination.totalPages > 1 && onPageChange && (
+          <div className="flex flex-col items-center gap-2">
             <span className="text-sm text-[var(--text-secondary)]">
               Trang {pagination.page} / {pagination.totalPages}
             </span>
-            <Button
-              variant="neutral"
-              size="sm"
-              onClick={() => onPageChange?.(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
-            >
-              Sau
-            </Button>
+            <PaginationControls
+              page={pagination.page}
+              pageSize={pagination.pageSize}
+              total={pagination.total}
+              onPageChange={onPageChange}
+            />
           </div>
         )}
 

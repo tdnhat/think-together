@@ -6,6 +6,7 @@ import { useState } from "react";
 import { GraduationCap, Menu, X } from "lucide-react";
 
 import { Button } from "@/shared";
+import { Separator } from "@/shared/ui/separator";
 import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/config/routes";
 
@@ -14,7 +15,8 @@ export function Navbar() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[var(--brand-primary-shadow)] bg-[var(--bg-page)]/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 relative bg-[var(--bg-page)]/95 backdrop-blur">
+      <Separator className="absolute bottom-0 left-0 right-0" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -84,7 +86,8 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="border-t border-[var(--brand-primary-shadow)] py-4 md:hidden">
+          <div className="py-4 md:hidden">
+            <Separator className="mb-4" />
             <div className="flex flex-col gap-4 text-[var(--text-secondary)]">
               <Link
                 href={ROUTES.public.home}

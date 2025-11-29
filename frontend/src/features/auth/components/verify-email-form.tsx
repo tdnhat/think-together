@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, Mail } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { toastSuccess, toastError } from '@/lib/utils/toast'
 
 import { Button } from '@/shared/ui/button'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { AuthField } from './auth-field'
 import { authService } from '../api/auth-service'
 
@@ -74,7 +75,7 @@ export function VerifyEmailForm() {
       />
 
       <Button type="submit" variant="default" className="w-full" disabled={isLoading}>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
         Gửi email xác nhận
       </Button>
     </form>

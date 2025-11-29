@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
-import { X } from 'lucide-react'
-import { Button } from '@/shared/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog'
 import { QuizSetForm } from './quiz-set-form'
 import type { QuizSetDto } from '@/types/api'
 import type { CreateQuizSetFormData, UpdateQuizSetFormData } from '@/lib/validators'
@@ -25,24 +27,12 @@ export function QuizSetModal({
   isSubmitting = false,
   title,
 }: QuizSetModalProps) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   const isEditing = !!quizSet
   const modalTitle = title || (isEditing ? 'Chỉnh sửa bộ trắc nghiệm' : 'Tạo bộ trắc nghiệm mới')
 
-  const handleClose = () => {
+  const handleOpenChange = (newOpen: boolean) => {
     if (!isSubmitting) {
-      onOpenChange(false)
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && !isSubmitting) {
-      handleClose()
+      onOpenChange(newOpen)
     }
   }
 
@@ -51,61 +41,23 @@ export function QuizSetModal({
     onOpenChange(false)
   }
 
-  if (!open || !mounted) return null
-  if (!document.body) return null
-
-  return createPortal(
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50 bg-black/60"
-        onClick={handleClose}
-        aria-hidden={!open}
-      />
-
-      {/* Modal */}
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        onKeyDown={handleKeyDown}
-      >
-        <div
-          className="relative w-full max-w-2xl rounded-2xl border-3 border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)] max-h-[90vh] overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)] px-6 py-4">
-            <h2
-              id="modal-title"
-              className="font-heading text-xl font-bold text-[var(--text-primary)]"
-            >
-              {modalTitle}
-            </h2>
-            <Button
-              variant="neutral"
-              size="icon"
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="h-8 w-8"
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Content */}
-          <div className="max-h-[calc(90vh-120px)] overflow-y-auto p-6">
-            <QuizSetForm
-              quizSet={quizSet}
-              onSubmit={handleSubmit}
-              onCancel={handleClose}
-              isSubmitting={isSubmitting}
-            />
-          </div>
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="border-b border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)] px-6 py-4">
+          <DialogTitle className="font-heading text-xl font-bold text-[var(--text-primary)]">
+            {modalTitle}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="max-h-[calc(90vh-120px)] overflow-y-auto px-6 py-6">
+          <QuizSetForm
+            quizSet={quizSet}
+            onSubmit={handleSubmit}
+            onCancel={() => onOpenChange(false)}
+            isSubmitting={isSubmitting}
+          />
         </div>
-      </div>
-    </>,
-    document.body
+      </DialogContent>
+    </Dialog>
   )
 }

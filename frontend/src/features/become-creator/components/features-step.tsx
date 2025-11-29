@@ -36,9 +36,9 @@ export function FeaturesStep({ onNext, onBack }: Readonly<FeaturesStepProps>) {
           return (
             <div
               key={feature.title}
-              className="flex flex-col items-start gap-4 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-5 shadow-brutal-sm transition-all hover:-translate-y-1 hover:shadow-brutal"
+              className="flex flex-col items-start gap-4 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-5 transition-all hover:-translate-y-1"
             >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 border-[var(--color-border-main)] ${iconBg} text-[var(--text-primary)] shadow-brutal-xs`}>
+              <div className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 border-[var(--color-border-main)] ${iconBg} text-[var(--text-primary)]`}>
                 <Icon className="h-6 w-6" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col gap-2">

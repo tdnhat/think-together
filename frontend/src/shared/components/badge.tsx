@@ -20,8 +20,8 @@ export function BrandBadge({
   className
 }: Readonly<BrandBadgeProps>) {
   const variantStyles = variant === "primary" 
-    ? "bg-[var(--brand-primary-light)] shadow-brutal-primary-xs" 
-    : "bg-[var(--brand-secondary-light)] shadow-brutal-secondary-xs";
+    ? "bg-[var(--brand-primary-light)]" 
+    : "bg-[var(--brand-secondary-light)]";
 
   return (
     <div

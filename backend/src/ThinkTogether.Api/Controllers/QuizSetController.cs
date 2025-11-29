@@ -13,7 +13,10 @@ using ThinkTogether.Application.Handlers.QuizSet.Commands.DeleteQuestion;
 using ThinkTogether.Application.Handlers.QuizSet.Commands.DuplicateQuizSet;
 using ThinkTogether.Application.Handlers.QuizSet.Commands.DuplicateQuestion;
 using ThinkTogether.Application.Handlers.QuizSet.Commands.ReorderQuestions;
+using ThinkTogether.Application.Handlers.QuizSet.Commands.UploadCoverImage;
+using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Application.Handlers.QuizSet.Queries.GetAllQuizSets;
+using ThinkTogether.Application.Handlers.QuizSet.Queries.GetPublicQuizzes;
 using ThinkTogether.Application.Handlers.QuizSet.Queries.GetQuizSetById;
 using ThinkTogether.Application.Handlers.QuizSet.Queries.GetQuestionsByQuizSetId;
 using ThinkTogether.Application.Handlers.QuizSet.Queries.GetQuestionById;
@@ -27,10 +30,12 @@ namespace ThinkTogether.Api.Controllers;
 public class QuizSetController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IImageUploadService _imageUploadService;
 
-    public QuizSetController(IMediator mediator)
+    public QuizSetController(IMediator mediator, IImageUploadService imageUploadService)
     {
         _mediator = mediator;
+        _imageUploadService = imageUploadService;
     }
 
     [HttpGet]
@@ -48,6 +53,27 @@ public class QuizSetController : ControllerBase
             Search = search,
             SortBy = sortBy,
             FilterBy = filterBy,
+            Page = page,
+            PageSize = pageSize
+        }, cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpGet("public")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(PaginatedResponse<QuizSetDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPublicQuizzes(
+        [FromQuery] string? search,
+        [FromQuery] string? sortBy,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 12,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(new GetPublicQuizzesQuery
+        {
+            Search = search,
+            SortBy = sortBy,
             Page = page,
             PageSize = pageSize
         }, cancellationToken);
@@ -141,6 +167,86 @@ public class QuizSetController : ControllerBase
         {
             Success = true,
             Message = "Bộ trắc nghiệm đã được xuất bản thành công"
+        });
+    }
+
+    [HttpPost("upload-cover-temp")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UploadCoverImageTemp(
+        IFormFile coverImage,
+        CancellationToken cancellationToken)
+    {
+        if (coverImage == null || coverImage.Length == 0)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Title = "Bad Request",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "File ảnh không được trống",
+                Instance = HttpContext.Request.Path
+            });
+        }
+
+        try
+        {
+            var imageUrl = await _imageUploadService.UploadImageAsync(
+                coverImage,
+                "quiz-sets/covers",
+                cancellationToken);
+
+            return Ok(new ApiResponse<string>
+            {
+                Success = true,
+                Message = "Ảnh bìa đã được tải lên thành công",
+                Data = imageUrl
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Title = "Bad Request",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = ex.Message,
+                Instance = HttpContext.Request.Path
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Title = "Bad Request",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = ex.Message,
+                Instance = HttpContext.Request.Path
+            });
+        }
+    }
+
+    [HttpPost("{id}/upload-cover")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(typeof(ApiResponse<QuizSetDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UploadCoverImage(
+        Guid id,
+        IFormFile coverImage,
+        CancellationToken cancellationToken)
+    {
+        var command = new UploadCoverImageCommand(id, coverImage);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse<QuizSetDto>
+        {
+            Success = true,
+            Message = "Ảnh bìa đã được tải lên thành công",
+            Data = result
         });
     }
 

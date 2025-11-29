@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/shared/ui/dialog'
 import { toastSuccess, toastError } from "@/lib/utils/toast";
 
 import { useBecomeCreator } from "../hooks/use-become-creator";
 import { BECOME_CREATOR_STEPS } from "../constants";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
+import { ROUTES } from "@/config/routes";
 import { ProgressIndicator } from "./progress-indicator";
 import { IntroStep } from "./intro-step";
 import { FeaturesStep } from "./features-step";
@@ -23,90 +28,57 @@ export function BecomeCreatorModal({
   onOpenChange,
   onSuccess,
 }: Readonly<BecomeCreatorModalProps>) {
-  const [mounted, setMounted] = useState(false)
+  const router = useRouter()
   const { currentStep, isActivating, error, nextStep, prevStep, becomeCreator, resetState } =
     useBecomeCreator()
   const { updateUser } = useAuthStore((state) => state.actions)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const handleClose = () => {
+  const handleOpenChange = (newOpen: boolean) => {
     if (!isActivating) {
-      resetState()
-      onOpenChange(false)
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape" && !isActivating) {
-      handleClose()
+      if (!newOpen) {
+        resetState()
+      }
+      onOpenChange(newOpen)
     }
   }
 
   const handleActivate = async () => {
-  const success = await becomeCreator()
+    const success = await becomeCreator()
 
-  if (success) {
-  toastSuccess("Bạn đã trở thành Người sáng tạo!")
+    if (success) {
+      toastSuccess("Bạn đã trở thành Người sáng tạo!")
 
-  // Update the user role in the store instead of reloading
-  updateUser({ role: 'Creator' })
+      updateUser({ role: 'Creator' })
 
       onSuccess?.()
-  handleClose()
-  } else {
-    toastError(error || "Đã xảy ra lỗi khi kích hoạt vai trò Người sáng tạo")
+      handleOpenChange(false)
+
+      router.push(ROUTES.quiz.list)
+    } else {
+      toastError(error || "Đã xảy ra lỗi khi kích hoạt vai trò Người sáng tạo")
+    }
   }
-  }
 
-  const currentStepIndex = BECOME_CREATOR_STEPS.indexOf(currentStep as typeof BECOME_CREATOR_STEPS[number]);
+  const currentStepIndex = BECOME_CREATOR_STEPS.indexOf(currentStep);
 
-  if (!open || !mounted) return null
-  if (!document.body) return null
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogTitle className="sr-only">Trở thành Người sáng tạo</DialogTitle>
+        <ProgressIndicator steps={[...BECOME_CREATOR_STEPS]} currentStepIndex={currentStepIndex} />
 
-  return createPortal(
-    <>
-      <div
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-        onClick={handleClose}
-        aria-hidden={!open}
-      />
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        onKeyDown={handleKeyDown}
-      >
-        <button
-          className="pointer-events-auto absolute inset-0"
-          onClick={handleClose}
-          type="button"
-          aria-label="Close modal"
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-        />
-        <div
-          className="pointer-events-auto relative w-full max-w-2xl rounded-2xl border-4 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-6 mx-4 my-4 max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ProgressIndicator steps={[...BECOME_CREATOR_STEPS]} currentStepIndex={currentStepIndex} />
+        {currentStep === "intro" && (
+          <IntroStep onNext={nextStep} onClose={() => handleOpenChange(false)} />
+        )}
 
-          {currentStep === "intro" && (
-            <IntroStep onNext={nextStep} onClose={handleClose} />
-          )}
+        {currentStep === "features" && (
+          <FeaturesStep onNext={nextStep} onBack={prevStep} />
+        )}
 
-          {currentStep === "features" && (
-            <FeaturesStep onNext={nextStep} onBack={prevStep} />
-          )}
-
-          {currentStep === "confirm" && (
-            <ConfirmStep isActivating={isActivating} onActivate={handleActivate} onBack={prevStep} />
-          )}
-        </div>
-      </div>
-    </>,
-    document.body
+        {currentStep === "confirm" && (
+          <ConfirmStep isActivating={isActivating} onActivate={handleActivate} onBack={prevStep} />
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }

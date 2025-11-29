@@ -13,8 +13,8 @@ export function QuickActions() {
             <div className="flex items-start gap-4">
               <span
                 className={accent === "primary"
-                  ? "flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-primary-hover)] bg-[var(--brand-primary)] text-white shadow-brutal-primary-xs"
-                  : "flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] text-[var(--text-primary)] shadow-brutal-secondary-xs"}
+                  ? "flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-primary-hover)] bg-[var(--brand-primary)] text-white"
+                  : "flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] text-[var(--text-primary)]"}
               >
                 <Icon className="h-5 w-5" />
               </span>

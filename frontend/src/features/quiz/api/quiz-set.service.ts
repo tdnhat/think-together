@@ -11,6 +11,37 @@ import type {
 
 class QuizSetService {
   /**
+   * Get public published quiz sets for discovery with filtering, sorting, and pagination
+   * @param params Query parameters for filtering, sorting, and pagination
+   * @returns API response with paginated quiz sets
+   */
+  async getPublicQuizSets(params?: QuizSetQueryParams): Promise<ApiResponse<PaginatedResponse<QuizSetDto>>> {
+    try {
+      const queryParams = new URLSearchParams()
+      if (params?.search) queryParams.append('search', params.search)
+      if (params?.sortBy) queryParams.append('sortBy', params.sortBy)
+      if (params?.page) queryParams.append('page', params.page.toString())
+      if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString())
+
+      const url = queryParams.toString() 
+        ? `${API_ENDPOINTS.QUIZ_SET.LIST_QUIZ_SETS}/public?${queryParams.toString()}`
+        : `${API_ENDPOINTS.QUIZ_SET.LIST_QUIZ_SETS}/public`
+
+      const response = await apiClient.get<PaginatedResponse<QuizSetDto>>(url)
+      return {
+        success: true,
+        data: response,
+      }
+    } catch (error) {
+      console.error('Error fetching public quiz sets:', error)
+      return {
+        success: false,
+        message: 'Không thể tải danh sách bài kiểm tra',
+      }
+    }
+  }
+
+  /**
    * Get all quiz sets for the current user with filtering, sorting, and pagination
    * @param params Query parameters for filtering, sorting, and pagination
    * @returns API response with paginated quiz sets

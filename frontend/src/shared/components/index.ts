@@ -4,3 +4,8 @@ export { StatCard } from './stat-card';
 export { SectionContainer } from './section-container';
 export { StatusIcon } from './status-icon';
 export { InfoBox } from './info-box';
+export { PaginationControls } from './pagination-controls';
+export { SearchInput } from './search-input';
+export { FormInput } from './form-input';
+export { SafeImage } from './safe-image';
+export { CreatorRouteGuard } from './creator-route-guard';

@@ -1,0 +1,218 @@
+'use client'
+
+import { useRef, useState } from 'react'
+import { Upload, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { Button } from '@/shared/ui/button'
+import { Alert, AlertDescription } from '@/shared/ui/alert'
+import { useImageUpload } from '@/lib/hooks'
+import type { QuizSetDto } from '@/types/api'
+
+interface ImageUploadProps {
+  quizSetId?: string
+  currentImageUrl?: string
+  onUploadSuccess?: (quizSet: QuizSetDto) => void
+  onUploadSuccessTemp?: (imageUrl: string) => void
+  onError?: (error: string) => void
+  disabled?: boolean
+  className?: string
+}
+
+export function ImageUpload({
+  quizSetId,
+  currentImageUrl,
+  onUploadSuccess,
+  onUploadSuccessTemp,
+  onError,
+  disabled = false,
+  className = '',
+}: ImageUploadProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null)
+  const [showPreview, setShowPreview] = useState(!!currentImageUrl)
+  const isTempMode = !quizSetId
+
+  const { isUploading, uploadProgress, error, uploadImage, uploadImageTemp, clearError } = useImageUpload({
+    onSuccess: (quizSet) => {
+      setPreviewUrl(quizSet.coverImageUrl || null)
+      setShowPreview(!!quizSet.coverImageUrl)
+      onUploadSuccess?.(quizSet)
+    },
+    onSuccessTemp: (imageUrl) => {
+      setPreviewUrl(imageUrl)
+      setShowPreview(true)
+      onUploadSuccessTemp?.(imageUrl)
+    },
+    onError,
+  })
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    clearError()
+
+    // Create preview URL
+    const objectUrl = URL.createObjectURL(file)
+    setPreviewUrl(objectUrl)
+    setShowPreview(true)
+
+    // Upload the file
+    let result: QuizSetDto | string | null = null
+    if (isTempMode) {
+      result = await uploadImageTemp(file)
+    } else if (quizSetId) {
+      result = await uploadImage(quizSetId, file)
+    }
+
+    // Clean up preview URL if upload failed
+    if (!result) {
+      URL.revokeObjectURL(objectUrl)
+      setPreviewUrl(null)
+      setShowPreview(false)
+    } else if (isTempMode && typeof result === 'string') {
+      // For temp upload, result is the image URL, preview is already set
+      URL.revokeObjectURL(objectUrl)
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setPreviewUrl(null)
+    setShowPreview(false)
+    clearError()
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleUploadClick = () => {
+    if (!disabled && !isUploading) {
+      fileInputRef.current?.click()
+    }
+  }
+
+  return (
+    <div className={`space-y-3 ${className}`}>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        onChange={handleFileSelect}
+        disabled={disabled || isUploading}
+        className="hidden"
+        aria-label="Upload cover image"
+      />
+
+      {/* Preview Section */}
+      {showPreview && previewUrl && (
+        <div className="relative">
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrl}
+              alt="Cover preview"
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+              }}
+            />
+
+            {/* Overlay with actions */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors hover:bg-black/40">
+              <div className="flex gap-2 opacity-0 transition-opacity hover:opacity-100">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="default"
+                  onClick={handleUploadClick}
+                  disabled={disabled || isUploading}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutral"
+                  onClick={handleRemoveImage}
+                  disabled={disabled || isUploading}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Upload Progress Overlay */}
+            {isUploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                <div className="text-center">
+                  <Loader2 className="mx-auto h-8 w-8 animate-spin text-white" />
+                  <p className="mt-2 text-sm text-white">
+                    {uploadProgress}%
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Success indicator */}
+            {!isUploading && !error && currentImageUrl && previewUrl === currentImageUrl && (
+              <div className="absolute bottom-2 right-2">
+                <CheckCircle2 className="h-6 w-6 text-[var(--color-success)]" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!showPreview && (
+        <div className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] transition-colors hover:border-[var(--brand-primary)] hover:bg-[var(--bg-surface)]">
+          <Upload className="h-12 w-12 text-[var(--text-tertiary)]" />
+          <p className="mt-3 text-center text-sm text-[var(--text-secondary)]">
+            Click để tải ảnh bìa
+          </p>
+          <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+            JPEG, PNG, WebP, GIF • Max 5MB
+          </p>
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={handleUploadClick}
+            disabled={disabled || isUploading}
+            className="mt-4"
+          >
+            Chọn ảnh
+          </Button>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <Alert variant="destructive" className="flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+          <AlertDescription className="flex-1">{error}</AlertDescription>
+          <Button
+            type="button"
+            variant="neutral"
+            size="icon"
+            onClick={clearError}
+            className="h-5 w-5 shrink-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </Alert>
+      )}
+
+      {/* Helper text */}
+      <p className="text-xs text-[var(--text-tertiary)]">
+        Hãy chọn ảnh chất lượng cao (tối thiểu 800x600px).
+      </p>
+    </div>
+  )
+}

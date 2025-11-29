@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { ResetPasswordForm, AuthLayout } from '@/features/auth'
 import { AUTH_BRAND_NAME } from '@/features/auth/constants'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 
 function ResetPasswordFormWrapper() {
   return <ResetPasswordForm />
@@ -17,7 +18,7 @@ export default function ResetPasswordPage() {
     >
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--brand-primary)] border-t-transparent" />
+          <LoadingSpinner size="lg" />
           <p className="text-center text-foreground/70">Đang tải...</p>
         </div>
       }>

@@ -1,16 +1,17 @@
 'use client'
 
-import { Plus, Search, Filter, ChevronDown } from 'lucide-react'
+import { Plus, Search, Filter } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
 import { Card } from '@/shared/ui/card'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu'
-import { SectionContainer } from '@/shared/components'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select'
+import { PaginationControls, SearchInput, SectionContainer } from '@/shared/components'
 import { QuestionCard } from './question-card'
 import { QUESTION_CONSTANTS } from '../constants'
 import { QuestionType, type QuestionDto } from '@/types/api'
@@ -53,13 +54,6 @@ export function QuestionList({
   onDuplicate,
   className = '',
 }: QuestionListProps) {
-  // Get filter label
-  const getFilterLabel = () => {
-    if (filterBy === 'all') return 'Tất cả loại'
-    const questionType = filterBy as QuestionType
-    return QUESTION_CONSTANTS.TYPES[questionType]?.label || filterBy
-  }
-
   return (
     <SectionContainer background="white" className={className}>
       <div className="space-y-6">
@@ -93,59 +87,43 @@ export function QuestionList({
         {(questions.length > 0 || searchQuery || filterBy !== 'all') && (
           <div className="flex flex-col gap-3 sm:flex-row">
             {/* Search */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--brand-primary)]" />
-              <Input
-                type="text"
-                placeholder="Tìm kiếm câu hỏi..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange?.(e.target.value)}
-                className="pl-10 border-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] focus:ring-[var(--brand-primary)]/20"
-              />
-            </div>
+            <SearchInput
+              className="flex-1"
+              placeholder="Tìm kiếm câu hỏi..."
+              value={searchQuery}
+              onChange={(value) => onSearchChange?.(value)}
+              iconColor="text-[var(--brand-primary)]"
+            />
 
-            {/* Filter Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="neutral"
-                  className="gap-2 border-[var(--brand-secondary)]/30 hover:border-[var(--brand-secondary)] hover:bg-[var(--brand-secondary-light)]/10"
-                >
-                  <Filter className="h-4 w-4 text-[var(--brand-secondary)]" />
-                  {getFilterLabel()}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 border-[var(--brand-secondary)]/20">
-                <DropdownMenuItem onClick={() => onFilterChange?.('all')} className="hover:bg-[var(--brand-primary-light)]/20">
-                  <span>Tất cả loại</span>
-                </DropdownMenuItem>
-
-                {Object.entries(QUESTION_CONSTANTS.TYPES).map(([type, info]) => (
-                  <DropdownMenuItem
-                    key={type}
-                    onClick={() => onFilterChange?.(type)}
-                    className="hover:bg-[var(--brand-primary-light)]/20"
-                  >
-                    <span>{info.label}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Filter Select */}
+             <Select value={filterBy} onValueChange={onFilterChange}>
+               <SelectTrigger className="w-auto gap-2 bg-secondary-background border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none">
+                 <Filter className="h-4 w-4 text-[var(--brand-secondary)]" />
+                 <SelectValue />
+               </SelectTrigger>
+               <SelectContent align="end">
+                 <SelectItem value="all">Tất cả loại</SelectItem>
+                 {Object.entries(QUESTION_CONSTANTS.TYPES).map(([type, info]) => (
+                   <SelectItem key={type} value={type}>
+                     {info.label}
+                   </SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
           </div>
         )}
 
         {/* Loading State */}
         {isLoading && (
           <div className="flex items-center justify-center py-16">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--brand-primary)] border-t-transparent" />
+            <LoadingSpinner size="md" />
           </div>
         )}
 
         {/* Empty State */}
         {!isLoading && questions.length === 0 && (
-          <Card className="flex flex-col items-center justify-center border-dashed border-[var(--brand-primary)]/20 bg-gradient-to-br from-[var(--bg-surface-secondary)] to-[var(--brand-secondary-light)]/5 py-20 px-6 text-center shadow-brutal-secondary-xs">
-            <Card className="mb-6 rounded-full p-6 bg-gradient-to-br from-[var(--brand-primary-light)] to-[var(--brand-secondary-light)] shadow-brutal-primary-sm">
+          <Card className="flex flex-col items-center justify-center border-dashed border-[var(--brand-primary)]/20 bg-gradient-to-br from-[var(--bg-surface-secondary)] to-[var(--brand-secondary-light)]/5 py-20 px-6 text-center">
+            <Card className="mb-6 rounded-full p-6 bg-gradient-to-br from-[var(--brand-primary-light)] to-[var(--brand-secondary-light)]">
               <Plus className="h-10 w-10 text-[var(--brand-primary)]" />
             </Card>
             <h3 className="mb-3 font-heading text-2xl font-bold text-[var(--text-primary)]">
@@ -155,7 +133,7 @@ export function QuestionList({
               {QUESTION_CONSTANTS.MESSAGES.EMPTY_STATE_DESCRIPTION}
             </p>
             {onCreateNew && (
-              <Button onClick={onCreateNew} size="lg" variant="default" className="bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] shadow-brutal-primary-sm">
+              <Button onClick={onCreateNew} size="lg" variant="default" className="bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)]">
                 <Plus className="mr-2 h-5 w-5" />
                 {QUESTION_CONSTANTS.MESSAGES.CREATE_FIRST_QUESTION}
               </Button>
@@ -164,17 +142,8 @@ export function QuestionList({
         )}
 
         {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="neutral"
-              size="sm"
-              onClick={() => onPageChange?.(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              className="border-[var(--brand-primary)]/30 hover:border-[var(--brand-primary)] hover:bg-[var(--brand-primary-light)]/10 disabled:opacity-50"
-            >
-              Trước
-            </Button>
+        {pagination && pagination.totalPages > 1 && onPageChange && (
+          <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-[var(--bg-surface-secondary)] border border-[var(--brand-secondary)]/20">
               <span className="text-sm font-medium text-[var(--brand-primary)]">
                 Trang {pagination.page}
@@ -183,22 +152,19 @@ export function QuestionList({
                 / {pagination.totalPages}
               </span>
             </div>
-            <Button
-              variant="neutral"
-              size="sm"
-              onClick={() => onPageChange?.(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
-              className="border-[var(--brand-primary)]/30 hover:border-[var(--brand-primary)] hover:bg-[var(--brand-primary-light)]/10 disabled:opacity-50"
-            >
-              Sau
-            </Button>
+            <PaginationControls
+              page={pagination.page}
+              pageSize={pagination.pageSize}
+              total={pagination.total}
+              onPageChange={onPageChange}
+            />
           </div>
         )}
 
         {/* No Results State */}
         {!isLoading && (pagination?.total || questions.length) > 0 && questions.length === 0 && (
-          <Card className="flex flex-col items-center justify-center border-dashed border-[var(--brand-secondary)]/30 bg-gradient-to-br from-[var(--bg-surface-secondary)] to-[var(--brand-secondary-light)]/10 py-16 px-6 text-center shadow-brutal-secondary-xs">
-            <Card className="mb-6 rounded-full p-6 bg-gradient-to-br from-[var(--brand-secondary-light)] to-[var(--accent-cyan-light)] shadow-brutal-secondary-sm">
+          <Card className="flex flex-col items-center justify-center border-dashed border-[var(--brand-secondary)]/30 bg-gradient-to-br from-[var(--bg-surface-secondary)] to-[var(--brand-secondary-light)]/10 py-16 px-6 text-center">
+            <Card className="mb-6 rounded-full p-6 bg-gradient-to-br from-[var(--brand-secondary-light)] to-[var(--accent-cyan-light)]">
               <Search className="h-10 w-10 text-[var(--brand-secondary)]" />
             </Card>
             <h3 className="mb-3 font-heading text-xl font-bold text-[var(--text-primary)]">

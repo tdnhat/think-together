@@ -6,6 +6,7 @@ import { ArrowLeft, Settings, Eye } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
 import { Card } from '@/shared/ui/card'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { QuestionList, QuestionModal } from '@/features/quiz'
 import { useQuizSets } from '@/features/quiz/hooks/use-quiz-sets'
@@ -173,7 +174,7 @@ export default function QuizEditorPage() {
     return (
       <DashboardLayout>
         <div className="flex h-[50vh] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--brand-primary)] border-t-transparent" />
+          <LoadingSpinner size="md" />
         </div>
       </DashboardLayout>
     )
@@ -227,25 +228,14 @@ export default function QuizEditorPage() {
                     {quizSet.description}
                   </p>
                 )}
-                <div className="mt-3 flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 rounded-lg border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)] px-3 py-1 shadow-brutal-primary-xs">
-                    <span className="font-heading text-sm font-bold text-[var(--brand-primary)]">
-                      {pagination?.total || questions.length}
-                    </span>
-                    <span className="text-xs font-medium text-[var(--text-secondary)]">
-                      câu hỏi
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-              <Button variant="neutral" onClick={handleSettings} className="gap-2">
+              <Button variant="neutral" size="icon" onClick={handleSettings} className="shrink-0">
                 <Settings className="h-4 w-4" />
-                Cài đặt
               </Button>
-              <Button variant="neutral" onClick={handlePreview} className="gap-2">
+              <Button variant="neutral" onClick={handlePreview} className="shrink-0">
                 <Eye className="h-4 w-4" />
                 Xem trước
               </Button>

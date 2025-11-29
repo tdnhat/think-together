@@ -35,8 +35,8 @@ export function FeatureCard({
         className={cn(
           "mb-5 flex h-16 w-16 items-center justify-center rounded-xl border",
           variant === "primary" 
-            ? "border-[var(--brand-primary-hover)] shadow-brutal-primary-xs"
-            : "border-[var(--brand-secondary-hover)] shadow-brutal-secondary-xs",
+            ? "border-[var(--brand-primary-hover)]"
+            : "border-[var(--brand-secondary-hover)]",
           iconThemeClass
         )}
       >

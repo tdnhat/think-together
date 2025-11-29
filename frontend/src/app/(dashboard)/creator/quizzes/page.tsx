@@ -3,19 +3,33 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toastSuccess } from '@/lib/utils/toast'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/ui/alert-dialog'
+import { Button } from '@/shared/ui/button'
 
-import { QuizSetList, QuizSetModal } from '@/features/quiz'
-import { useQuizSets } from '@/features/quiz'
+import { QuizSetList, QuizSetModal, useQuizSets } from '@/features/quiz'
 import { DashboardLayout } from '@/widgets/dashboard'
+import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
 import { ROUTES } from '@/config/routes'
 import type { QuizSetDto, QuizSetQueryParams } from '@/types/api'
 import type { CreateQuizSetFormData, UpdateQuizSetFormData } from '@/lib/validators'
 
-export default function MyQuizzesPage() {
+export default function CreatorQuizzesPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [modalOpen, setModalOpen] = useState(false)
   const [editingQuizSet, setEditingQuizSet] = useState<QuizSetDto | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+  const [selectedQuizSet, setSelectedQuizSet] = useState<QuizSetDto | null>(null)
 
   // Get params from URL
   const searchQuery = searchParams.get('search') || ''
@@ -103,29 +117,34 @@ export default function MyQuizzesPage() {
     router.push(ROUTES.quiz.edit(quizSet.id))
   }
 
-  const handleDelete = async (quizSet: QuizSetDto) => {
-    const confirmed = globalThis.confirm(
-      `Bạn có chắc chắn muốn xóa bộ trắc nghiệm "${quizSet.title}" không? Hành động này không thể hoàn tác.`
-    )
+  const handleDelete = (quizSet: QuizSetDto) => {
+    setSelectedQuizSet(quizSet)
+    setDeleteDialogOpen(true)
+  }
 
-    if (confirmed) {
+  const handleDeleteConfirm = async () => {
+    if (selectedQuizSet) {
       try {
-        await deleteQuizSet(quizSet.id)
+        await deleteQuizSet(selectedQuizSet.id)
+        setDeleteDialogOpen(false)
+        setSelectedQuizSet(null)
       } catch (error) {
-        // Error is already handled by the hook
         console.error('Failed to delete quiz set:', error)
       }
     }
   }
 
-  const handlePublish = async (quizSet: QuizSetDto) => {
-    const confirmed = globalThis.confirm(
-      `Xuất bản bộ trắc nghiệm "${quizSet.title}" sẽ cho phép người khác sử dụng. Bạn có muốn tiếp tục?`
-    )
+  const handlePublish = (quizSet: QuizSetDto) => {
+    setSelectedQuizSet(quizSet)
+    setPublishDialogOpen(true)
+  }
 
-    if (confirmed) {
+  const handlePublishConfirm = async () => {
+    if (selectedQuizSet) {
       try {
-        await publishQuizSet(quizSet.id)
+        await publishQuizSet(selectedQuizSet.id)
+        setPublishDialogOpen(false)
+        setSelectedQuizSet(null)
       } catch (error) {
         console.error('Failed to publish quiz set:', error)
       }
@@ -149,11 +168,14 @@ export default function MyQuizzesPage() {
     try {
       if (editingQuizSet) {
         await updateQuizSet(data as UpdateQuizSetFormData)
+        setModalOpen(false)
+        setEditingQuizSet(null)
       } else {
-        await createQuizSet(data as CreateQuizSetFormData)
+        const createdQuizSet = await createQuizSet(data as CreateQuizSetFormData)
+        if (createdQuizSet) {
+          setEditingQuizSet(createdQuizSet)
+        }
       }
-      setModalOpen(false)
-      setEditingQuizSet(null)
     } catch (error) {
       // Error is already handled by the hook
       console.error('Failed to save quiz set:', error)
@@ -169,7 +191,8 @@ export default function MyQuizzesPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <CreatorRouteGuard>
+        <div className="space-y-6">
         <QuizSetList
           quizSets={quizSets}
           pagination={pagination}
@@ -198,7 +221,53 @@ export default function MyQuizzesPage() {
           isSubmitting={isCreating || isUpdating}
           title={editingQuizSet ? 'Chỉnh sửa bộ trắc nghiệm' : 'Tạo bộ trắc nghiệm mới'}
         />
-      </div>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xóa bộ trắc nghiệm?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Bạn có chắc chắn muốn xóa bộ trắc nghiệm &quot;{selectedQuizSet?.title}&quot; không? Hành động này không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel asChild>
+                <Button variant="neutral">Hủy</Button>
+              </AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <Button variant="default" onClick={handleDeleteConfirm}>
+                  Xóa
+                </Button>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Publish Confirmation Dialog */}
+        <AlertDialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xuất bản bộ trắc nghiệm?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Xuất bản bộ trắc nghiệm &quot;{selectedQuizSet?.title}&quot; sẽ cho phép người khác sử dụng. Bạn có muốn tiếp tục?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel asChild>
+                <Button variant="neutral">Hủy</Button>
+              </AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <Button variant="default" onClick={handlePublishConfirm}>
+                  Xuất bản
+                </Button>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        </div>
+      </CreatorRouteGuard>
     </DashboardLayout>
   )
 }
+

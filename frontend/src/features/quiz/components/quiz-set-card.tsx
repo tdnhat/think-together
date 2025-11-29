@@ -1,11 +1,12 @@
 'use client'
 
-import Image from 'next/image'
 import { MoreVertical, Edit, Trash2, Share, Play, Eye } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
+import { Separator } from '@/shared/ui/separator'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu'
+import { SafeImage } from '@/shared/components'
 import { QUIZ_SET_CONSTANTS } from '../constants'
 import type { QuizSetDto } from '@/types/api'
 
@@ -44,15 +45,14 @@ export function QuizSetCard({
   return (
     <Card className={`group relative overflow-hidden transition-all duration-200 ${className}`}>
       {/* Cover Image */}
-      <div className="relative h-40 overflow-hidden rounded-t-2xl">
-        <Image
+      <div className="relative aspect-video w-full overflow-hidden bg-[var(--bg-surface-secondary)]">
+        <SafeImage
           src={coverImage}
           alt={quizSet.title}
           fill
-          className="object-cover transition-transform duration-200 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
@@ -65,7 +65,18 @@ export function QuizSetCard({
         </div>
 
         {/* Actions Menu */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 flex gap-2">
+          {onView && (
+            <Button
+              variant="neutral"
+              size="icon"
+              onClick={() => onView(quizSet)}
+              className="bg-[var(--bg-surface)]/95 transition-all duration-200"
+              title="Xem chi tiết"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -77,12 +88,6 @@ export function QuizSetCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              {onView && (
-                <DropdownMenuItem onClick={() => onView(quizSet)}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Xem chi tiết
-                </DropdownMenuItem>
-              )}
               {onEdit && (
                 <DropdownMenuItem onClick={() => onEdit(quizSet)}>
                   <Edit className="mr-2 h-4 w-4" />
@@ -136,17 +141,18 @@ export function QuizSetCard({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <div className="flex items-center justify-between border-t border-[var(--color-border-light)] pt-3">
+      <CardContent className="pt-0 space-y-3">
+        <Separator />
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 rounded-lg border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)] px-2.5 py-1 shadow-brutal-primary-xs">
+            <Badge variant="default" className="gap-1.5">
               <span className="font-heading text-sm font-bold text-[var(--brand-primary)]">
                 {questionCount}
               </span>
               <span className="text-xs font-medium text-[var(--text-secondary)]">
                 câu hỏi
               </span>
-            </div>
+            </Badge>
 
             {quizSet.creatorName && (
               <span className="text-xs text-[var(--text-tertiary)]">

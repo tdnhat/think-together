@@ -44,7 +44,7 @@ const routes = {
   // ========== QUIZ ROUTES ==========
   quiz: {
     browse: '/quiz',
-    list: '/my-quizzes',
+    list: '/creator/quizzes',
     create: '/quiz/create',
     edit: (id: string) => `/quiz/${id}/edit` as const,
     view: (id: string) => `/quiz/${id}` as const,

@@ -5,7 +5,7 @@
  */
 
 import { api } from '../client';
-import { QUIZ_ENDPOINTS, buildUrl } from '../endpoints';
+import { QUIZ_SET_ENDPOINTS, QUIZ_ENDPOINTS, buildUrl } from '../endpoints';
 import type {
   ApiResponse,
   PaginatedResponse,
@@ -18,6 +18,7 @@ import type {
   CreateQuestionRequest,
   UpdateQuestionRequest,
   ReorderQuestionsRequest,
+  QuizSetDto,
 } from '../types';
 
 // ============================================================================
@@ -293,6 +294,51 @@ export class QuizService {
     }
     
     throw new Error(response.message || 'Hủy xuất bản quiz thất bại');
+  }
+
+  // ==========================================================================
+  // QUIZ SET IMAGE UPLOAD
+  // ==========================================================================
+
+  /**
+   * Upload cover image temporarily (before quiz set is created)
+   * Returns the image URL that can be saved with the quiz set
+   */
+  async uploadQuizSetCoverImageTemp(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('coverImage', file);
+
+    // Don't set Content-Type header - let axios set it automatically with boundary
+    const response = await api.post<ApiResponse<string>>(
+      QUIZ_SET_ENDPOINTS.UPLOAD_COVER_IMAGE_TEMP,
+      formData
+    );
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Tải ảnh bìa thất bại');
+  }
+
+  /**
+   * Upload cover image for a quiz set
+   */
+  async uploadQuizSetCoverImage(quizSetId: string, file: File): Promise<QuizSetDto> {
+    const formData = new FormData();
+    formData.append('coverImage', file);
+
+    // Don't set Content-Type header - let axios set it automatically with boundary
+    const response = await api.post<ApiResponse<QuizSetDto>>(
+      QUIZ_SET_ENDPOINTS.UPLOAD_COVER_IMAGE(quizSetId),
+      formData
+    );
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Tải ảnh bìa thất bại');
   }
 }
 

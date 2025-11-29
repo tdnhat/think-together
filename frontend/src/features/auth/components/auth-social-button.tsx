@@ -32,7 +32,7 @@ export function AuthSocialButton({
       )}
       {...props}
     >
-      <span className="flex size-10 items-center justify-center rounded-base base-border bg-secondary-background shadow-brutal-primary-xs">
+      <span className="flex size-10 items-center justify-center rounded-base base-border bg-secondary-background">
         {iconSrc ? <Image src={iconSrc} alt={label} width={22} height={22} /> : icon}
       </span>
       <span className="flex flex-1 flex-col text-left">

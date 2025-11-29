@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { CheckCircle2, XCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/shared/ui/button'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { authService } from '../api/auth-service'
 import { ROUTES } from '@/config/routes'
 
@@ -44,7 +45,7 @@ export function ConfirmEmailForm() {
     <div className="flex flex-col items-center justify-center space-y-4 py-8">
       {status === 'loading' && (
         <>
-          <Loader2 className="h-12 w-12 animate-spin text-[var(--brand-primary)]" />
+          <LoadingSpinner size="lg" />
           <p className="text-center text-foreground/70">Đang xác nhận email...</p>
         </>
       )}

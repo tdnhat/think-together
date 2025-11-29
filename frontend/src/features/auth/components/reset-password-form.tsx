@@ -5,11 +5,11 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
 import { toastSuccess, toastError } from '@/lib/utils/toast'
 import Link from 'next/link'
 
 import { Button } from '@/shared/ui/button'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { AuthField } from './auth-field'
 import { PasswordToggle } from './password-toggle'
 import { authService } from '../api/auth-service'
@@ -106,7 +106,7 @@ export function ResetPasswordForm() {
       />
 
       <Button variant="default" type="submit" className="w-full" disabled={isLoading}>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
         Đặt lại mật khẩu
       </Button>
     </form>

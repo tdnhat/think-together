@@ -147,6 +147,19 @@ class ApiClient {
       config.headers.Authorization = `Bearer ${token}`;
     }
     
+    // Handle FormData - don't set Content-Type, let browser set it with boundary
+    if (config.data instanceof FormData && config.headers) {
+      // Remove Content-Type to let browser set it automatically with boundary
+      // Axios will automatically set multipart/form-data with boundary
+      if ('Content-Type' in config.headers) {
+        delete config.headers['Content-Type'];
+      }
+      // Also check commonContentType (Axios internal)
+      if ('common' in config.headers && config.headers.common && 'Content-Type' in config.headers.common) {
+        delete (config.headers.common as Record<string, string>)['Content-Type'];
+      }
+    }
+    
     // Log request in development
     if (env.isDevelopment) {
       console.log('[API Request]', {

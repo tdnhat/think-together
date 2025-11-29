@@ -7,7 +7,8 @@ import { authService } from '../api/auth-service'
 import apiClient from '@/api/client'
 import { handleError } from '@/lib/errors/error-handler'
 import { toastSuccess } from '@/lib/utils/toast'
-import { AUTH, ROUTES } from '@/config/constants'
+import { AUTH } from '@/config/constants'
+import { ROUTES } from '@/config/routes'
 import { LoginFormData, RegisterFormData } from '@/lib/validators'
 import type { User } from '../types'
 
@@ -68,9 +69,9 @@ export function useAuth() {
           toastSuccess(AUTH.MESSAGES.LOGIN_SUCCESS)
           
           if (user.role === 'Creator') {
-            router.push(ROUTES.DASHBOARD.MY_QUIZZES)
+            router.push(ROUTES.quiz.list)
           } else {
-            router.push(ROUTES.DASHBOARD.HOME)
+            router.push(ROUTES.dashboard.home)
           }
           
           return { success: true as const }

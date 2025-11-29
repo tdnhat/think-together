@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Badge } from "@/shared/ui/badge";
 import { useAuthStore, selectUser, selectIsHydrated } from "@/features/auth/stores/auth.store";
-import { BecomeCreatorButton } from "@/features/become-creator/components/become-creator-button";
+import { ROUTES } from "@/config/routes";
+import { BecomeCreatorButton } from "@/features/become-creator";
 
 interface SidebarItem {
   icon: LucideIcon;
@@ -26,8 +28,8 @@ interface SidebarItem {
 }
 
 const mainMenuItems: SidebarItem[] = [
-  { icon: Home, label: "Trang chủ", href: "/home" },
-  { icon: BookOpen, label: "Bộ câu hỏi", href: "/quiz" },
+  { icon: Home, label: "Trang chủ", href: ROUTES.dashboard.home },
+  { icon: BookOpen, label: "Bộ câu hỏi", href: ROUTES.quiz.list },
   { icon: TrendingUp, label: "Bảng xếp hạng", href: "/leaderboard" },
   { icon: Activity, label: "Tiến trình", href: "/progress" },
 ];
@@ -84,7 +86,7 @@ export function DashboardSidebar() {
 
           {isHydrated && user?.role !== "Creator" && (
             <div className="mt-8 px-1">
-              <BecomeCreatorButton className="w-full justify-center shadow-brutal-sm" />
+              <BecomeCreatorButton className="w-full justify-center" />
             </div>
           )}
         </div>
@@ -143,9 +145,9 @@ function SidebarLink({ item, isActive, variant }: Readonly<SidebarLinkProps>) {
       />
       <span>{item.label}</span>
       {item.badge && (
-        <span className="ml-auto rounded-full bg-[var(--brand-secondary)] px-2 py-0.5 text-xs font-semibold text-[var(--text-primary)]">
+        <Badge variant="neutral" className="ml-auto">
           {item.badge}
-        </span>
+        </Badge>
       )}
     </Link>
   );

@@ -114,9 +114,7 @@ export function QuestionCard({
 
   return (
     <Card
-      className={`group transition-all duration-300 hover:border-[var(--brand-primary)] hover:shadow-brutal-primary-sm hover:-translate-y-1 hover:bg-gradient-to-r hover:from-[var(--bg-surface)] hover:to-[var(--brand-primary-light)]/5 ${
-        isDragging ? 'opacity-50' : ''
-      }`}
+      className={`group ${isDragging ? 'opacity-50' : ''}`}
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
         <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -126,7 +124,7 @@ export function QuestionCard({
           </div>
 
           {/* Question Number */}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)] font-heading text-sm font-bold shadow-brutal-primary-xs">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)] font-heading text-sm font-bold">
             {index + 1}
           </div>
 
@@ -140,12 +138,12 @@ export function QuestionCard({
                 <Icon className="h-3 w-3" />
                 {typeInfo.label}
               </Badge>
-              <div className="flex items-center gap-1 rounded-md border border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] px-2 py-0.5">
+              <Badge variant="neutral" className="gap-1">
                 <Clock className="h-3 w-3 text-[var(--text-tertiary)]" />
                 <span className="text-xs font-medium text-[var(--text-secondary)]">
                   {question.timeLimit}s
                 </span>
-              </div>
+              </Badge>
             </div>
             
             <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 mb-1.5">
@@ -159,29 +157,35 @@ export function QuestionCard({
         </div>
 
         {/* Actions Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <div className="flex items-center gap-1">
+          {onEdit && (
             <Button
               variant="neutral"
               size="icon"
+              onClick={handleEdit}
               className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              title="Chỉnh sửa"
             >
-              <MoreVertical className="h-4 w-4" />
+              <Edit className="h-4 w-4" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            {onEdit && (
-              <DropdownMenuItem onClick={handleEdit}>
-                <Edit className="mr-2 h-4 w-4" />
-                Chỉnh sửa
-              </DropdownMenuItem>
-            )}
-            {onDuplicate && (
-              <DropdownMenuItem onClick={handleDuplicate}>
-                <Copy className="mr-2 h-4 w-4" />
-                Sao chép
-              </DropdownMenuItem>
-            )}
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="neutral"
+                size="icon"
+                className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {onDuplicate && (
+                <DropdownMenuItem onClick={handleDuplicate}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Sao chép
+                </DropdownMenuItem>
+              )}
             {onDelete && (
               <DropdownMenuItem onClick={handleDeleteClick} className="text-[var(--color-error)] focus:text-[var(--color-error)]">
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -190,6 +194,7 @@ export function QuestionCard({
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </CardHeader>
 
       {/* Delete Confirmation Dialog */}

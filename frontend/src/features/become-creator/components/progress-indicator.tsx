@@ -22,8 +22,8 @@ export function ProgressIndicator({ steps, currentStepIndex }: Readonly<Progress
               className={cn(
                 "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 text-sm font-bold transition-all",
                 isActive
-                  ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white shadow-brutal-sm"
-                  : "border-[var(--color-border-main)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-brutal-sm"
+                  ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white"
+                  : "border-[var(--color-border-main)] bg-[var(--bg-surface)] text-[var(--text-primary)]"
               )}
             >
               {isCompleted ? (

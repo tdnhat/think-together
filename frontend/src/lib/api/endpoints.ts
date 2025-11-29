@@ -66,6 +66,8 @@ export const QUIZ_SET_ENDPOINTS = {
   // Quiz Set Actions
   PUBLISH_QUIZ_SET: (id: string) => `${BASE}/quiz-sets/${id}/publish`,
   DUPLICATE_QUIZ_SET: (id: string) => `${BASE}/quiz-sets/${id}/duplicate`,
+  UPLOAD_COVER_IMAGE: (id: string) => `${BASE}/quiz-sets/${id}/upload-cover`,
+  UPLOAD_COVER_IMAGE_TEMP: `${BASE}/quiz-sets/upload-cover-temp`,
 
   // Quiz Set Questions
   LIST_QUESTIONS: (quizSetId: string) => `${BASE}/quiz-sets/${quizSetId}/questions`,

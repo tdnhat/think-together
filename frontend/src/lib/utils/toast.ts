@@ -1,9 +1,9 @@
 /**
  * Toast utility with duplicate prevention
- * Prevents the same toast message from showing multiple times within a short window
+ * Uses Sonner for consistent toast notifications
  */
 
-import toast, { Toast } from 'react-hot-toast'
+import { toast as sonnerToast } from 'sonner'
 
 // Track recent toast messages to prevent duplicates
 const recentToasts = new Map<string, number>()
@@ -40,42 +40,44 @@ function shouldShowToast(id: string): boolean {
 /**
  * Show success toast with duplicate prevention
  */
-export function toastSuccess(message: string, options?: Partial<Pick<Toast, 'id' | 'duration'>>): string {
+export function toastSuccess(message: string, options?: { id?: string; duration?: number }): string {
   const id = options?.id || getToastId(message, 'success')
   
   if (!shouldShowToast(id)) {
     return id
   }
   
-  return toast.success(message, { id, ...options })
+  sonnerToast.success(message, { id, duration: options?.duration })
+  return id
 }
 
 /**
  * Show error toast with duplicate prevention
  */
-export function toastError(message: string, options?: Partial<Pick<Toast, 'id' | 'duration'>>): string {
+export function toastError(message: string, options?: { id?: string; duration?: number }): string {
   const id = options?.id || getToastId(message, 'error')
   
   if (!shouldShowToast(id)) {
     return id
   }
   
-  return toast.error(message, { id, ...options })
+  sonnerToast.error(message, { id, duration: options?.duration })
+  return id
 }
 
 /**
  * Show info toast with duplicate prevention
  */
-export function toastInfo(message: string, options?: Partial<Pick<Toast, 'id' | 'duration'>>): string {
+export function toastInfo(message: string, options?: { id?: string; duration?: number }): string {
   const id = options?.id || getToastId(message, 'info')
   
   if (!shouldShowToast(id)) {
     return id
   }
   
-  return toast(message, { id, ...options })
+  sonnerToast(message, { id, duration: options?.duration })
+  return id
 }
 
-// Re-export toast for other uses
-export { toast }
-
+// Re-export sonner toast for other uses
+export { toast } from 'sonner'

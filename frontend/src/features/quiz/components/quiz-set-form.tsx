@@ -1,15 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImageIcon, Upload, X } from 'lucide-react'
+import { ImageIcon, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
+import { FormInput } from '@/shared/components'
 import { Label } from '@/shared/ui/label'
 import { Textarea } from '@/shared/ui/textarea'
 import { createQuizSetSchema, updateQuizSetSchema, type CreateQuizSetFormData, type UpdateQuizSetFormData } from '@/lib/validators'
 import { QUIZ_SET_CONSTANTS } from '../constants'
+import { ImageUpload } from './image-upload'
 import type { QuizSetDto } from '@/types/api'
 
 interface QuizSetFormProps {
@@ -28,6 +29,7 @@ export function QuizSetForm({
   className = '',
 }: QuizSetFormProps) {
   const isEditing = !!quizSet
+  const [uploadSuccess, setUploadSuccess] = useState(false)
 
   const schema = isEditing ? updateQuizSetSchema : createQuizSetSchema
   const defaultValues = isEditing && quizSet ? {
@@ -68,6 +70,12 @@ export function QuizSetForm({
     await onSubmit(data)
   }
 
+  const handleImageUploadSuccess = (updatedQuizSet: QuizSetDto) => {
+    setValue('coverImageUrl', updatedQuizSet.coverImageUrl || '')
+    setUploadSuccess(true)
+    setTimeout(() => setUploadSuccess(false), 2000)
+  }
+
   const handleRemoveImage = () => {
     setValue('coverImageUrl', '')
   }
@@ -83,16 +91,13 @@ export function QuizSetForm({
         <Label htmlFor="title" className="text-sm font-semibold">
           Tiêu đề <span className="text-[var(--color-error)]">*</span>
         </Label>
-        <Input
+        <FormInput
           id="title"
           type="text"
           placeholder={QUIZ_SET_CONSTANTS.PLACEHOLDERS.TITLE}
+          error={errors.title?.message}
           {...register('title')}
-          className={errors.title ? 'border-[var(--color-error)]' : ''}
         />
-        {errors.title && (
-          <p className="text-sm text-[var(--color-error)]">{errors.title.message}</p>
-        )}
       </div>
 
       {/* Description */}
@@ -116,77 +121,37 @@ export function QuizSetForm({
       <div className="space-y-4">
         <Label className="text-sm font-semibold">Ảnh bìa</Label>
 
-        {/* Current Image Preview */}
-        {coverImageUrl && (
-          <div className="relative">
-            <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)] shadow-brutal-primary-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={coverImageUrl}
-                alt="Cover preview"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.style.display = 'none'
-                }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <Button
-                  type="button"
-                  variant="neutral"
-                  size="sm"
-                  onClick={handleRemoveImage}
-                  className="absolute top-2 right-2"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* File Upload Component - show for both create and edit */}
+        <ImageUpload
+          quizSetId={isEditing && quizSet ? quizSet.id : undefined}
+          currentImageUrl={coverImageUrl}
+          onUploadSuccess={handleImageUploadSuccess}
+          onUploadSuccessTemp={(imageUrl) => {
+            handleImageUrlChange(imageUrl)
+            setUploadSuccess(true)
+            setTimeout(() => setUploadSuccess(false), 2000)
+          }}
+          disabled={isSubmitting}
+        />
 
-        {/* Image URL Input */}
-        <div className="space-y-2">
-          <Label htmlFor="coverImageUrl" className="text-sm font-semibold">
-            URL ảnh bìa
-          </Label>
-          <div className="flex gap-2">
-            <Input
-              id="coverImageUrl"
-              type="url"
-              placeholder="https://example.com/image.jpg"
-              value={coverImageUrl}
-              onChange={(e) => handleImageUrlChange(e.target.value)}
-              className={errors.coverImageUrl ? 'border-[var(--color-error)]' : ''}
-            />
-            <Button
-              type="button"
-              variant="neutral"
-              size="icon"
-              className="shrink-0"
-            >
-              <Upload className="h-4 w-4" />
-            </Button>
-          </div>
-          {errors.coverImageUrl && (
-            <p className="text-sm text-[var(--color-error)]">{errors.coverImageUrl.message}</p>
-          )}
-          <p className="text-xs text-[var(--text-tertiary)]">
-            Nhập URL của ảnh bìa. Để trống nếu không muốn thêm ảnh bìa.
-          </p>
-        </div>
-
-        {/* Placeholder when no image */}
-        {!coverImageUrl && (
-          <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)]">
-            <div className="text-center">
-              <ImageIcon className="mx-auto h-12 w-12 text-[var(--text-tertiary)]" />
-              <p className="mt-2 text-sm text-[var(--text-tertiary)]">
-                Chưa có ảnh bìa
-              </p>
-            </div>
-          </div>
-        )}
+        {/* URL Input - for manual URL entry (optional) */}
+         <div className="space-y-2">
+           <Label htmlFor="coverImageUrl" className="text-sm font-semibold">
+             Hoặc nhập URL ảnh bìa
+           </Label>
+           <FormInput
+             id="coverImageUrl"
+             type="url"
+             placeholder="https://example.com/image.jpg"
+             value={coverImageUrl}
+             onChange={(e) => handleImageUrlChange(e.target.value)}
+             error={errors.coverImageUrl?.message}
+             disabled={isSubmitting}
+           />
+           <p className="text-xs text-[var(--text-tertiary)]">
+             Bạn có thể tải ảnh lên hoặc nhập URL trực tiếp.
+           </p>
+         </div>
       </div>
 
       {/* Actions */}

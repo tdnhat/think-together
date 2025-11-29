@@ -113,7 +113,7 @@ QUIZ_SET_ENDPOINTS = {
 
 #### Neo-Brutalism Style
 - 3px borders throughout
-- Black shadows (`shadow-brutal`)
+- Đổ bóng sử dụng các utility mặc định của Tailwind kết hợp màu trong design system
 - Vibrant color palette
 - Bold typography
 
@@ -236,7 +236,7 @@ function QuizSetModalWrapper({ open, onOpenChange, quizSet, onSuccess }) {
 - `react-hook-form` - Form management
 - `@hookform/resolvers/zod` - Zod validation
 - `@tanstack/react-query` - Data fetching
-- `react-hot-toast` - Notifications
+- `sonner` - Toast notifications
 
 ### Internal
 - `@/shared/ui/*` - UI components

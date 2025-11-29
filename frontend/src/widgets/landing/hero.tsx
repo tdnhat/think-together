@@ -67,7 +67,7 @@ export function Hero() {
         {/* Right Image */}
         <div className="relative">
           <div 
-            className="relative h-[400px] overflow-hidden rounded-3xl border border-[var(--brand-primary-shadow)] shadow-brutal-primary-lg md:h-[500px]"
+            className="relative h-[400px] overflow-hidden rounded-3xl border border-[var(--brand-primary-shadow)] md:h-[500px]"
           >
             <Image
               src="/images/hero-1.png"
@@ -80,11 +80,11 @@ export function Hero() {
           
           {/* Floating decorations */}
           <div 
-            className="absolute -right-6 -top-6 hidden h-28 w-28 rounded-full border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] shadow-brutal-secondary-sm md:block"
+            className="absolute -right-6 -top-6 hidden h-28 w-28 rounded-full border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] md:block"
             aria-hidden="true"
           />
           <div 
-            className="absolute -left-4 bottom-8 hidden h-20 w-20 rotate-12 rounded-2xl border border-[var(--accent-pink-hover)] bg-[var(--accent-pink)] shadow-brutal-pink-xs md:block"
+            className="absolute -left-4 bottom-8 hidden h-20 w-20 rotate-12 rounded-2xl border border-[var(--accent-pink-hover)] bg-[var(--accent-pink)] md:block"
             aria-hidden="true"
           />
         </div>

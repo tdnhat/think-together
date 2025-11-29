@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
-import { X } from 'lucide-react'
-import { Button } from '@/shared/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog'
 import { QuestionForm } from './question-form'
 import type { QuestionDto, CreateQuestionRequest } from '@/types/api'
 
@@ -26,89 +28,38 @@ export function QuestionModal({
   isSubmitting = false,
   title,
 }: QuestionModalProps) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-    return () => setMounted(false)
-  }, [])
-
   const modalTitle = title || (question ? 'Chỉnh sửa câu hỏi' : 'Tạo câu hỏi mới')
 
-  const handleClose = () => {
+  const handleOpenChange = (newOpen: boolean) => {
     if (!isSubmitting) {
-      onOpenChange(false)
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && !isSubmitting) {
-      handleClose()
+      onOpenChange(newOpen)
     }
   }
 
   const handleSubmit = async (data: CreateQuestionRequest) => {
     await onSubmit(data)
-    handleClose()
+    onOpenChange(false)
   }
 
-  if (!open || !mounted) return null
-  if (!document.body) return null
-
-  return createPortal(
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50 bg-black/60"
-        onClick={handleClose}
-        aria-hidden={!open}
-      />
-
-      {/* Modal */}
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        onKeyDown={handleKeyDown}
-      >
-        <div
-          className="relative w-full max-w-3xl rounded-2xl border-3 border-[var(--brand-primary)] bg-[var(--bg-surface)] max-h-[90vh] overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b-2 border-[var(--brand-primary)] bg-[var(--bg-surface-secondary)] px-6 py-4">
-            <h2
-              id="modal-title"
-              className="font-heading text-xl font-bold text-[var(--text-primary)]"
-            >
-              {modalTitle}
-            </h2>
-            <Button
-              variant="neutral"
-              size="icon"
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="h-8 w-8 hover:bg-[var(--brand-primary-light)]/20 text-[var(--text-secondary)] hover:text-[var(--brand-primary)]"
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Content */}
-          <div className="max-h-[calc(90vh-120px)] overflow-y-auto p-6">
-            <QuestionForm
-              question={question}
-              quizSetId={quizSetId}
-              onSubmit={handleSubmit}
-              onCancel={handleClose}
-              isSubmitting={isSubmitting}
-            />
-          </div>
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="border-b-2 border-[var(--brand-primary)] bg-[var(--bg-surface-secondary)] px-6 py-4">
+          <DialogTitle className="font-heading text-xl font-bold text-[var(--text-primary)]">
+            {modalTitle}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="max-h-[calc(90vh-120px)] overflow-y-auto px-6 py-6">
+          <QuestionForm
+            question={question}
+            quizSetId={quizSetId}
+            onSubmit={handleSubmit}
+            onCancel={() => onOpenChange(false)}
+            isSubmitting={isSubmitting}
+          />
         </div>
-      </div>
-    </>,
-    document.body
+      </DialogContent>
+    </Dialog>
   )
 }
 
