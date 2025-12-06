@@ -94,7 +94,7 @@ export function SignupForm() {
       </div>
 
       <Button type="submit" variant="default" size="lg" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? 'Đang tạo không gian của bạn…' : 'Tạo tài khoản'}
+        {isSubmitting ? 'Đang tạo tài khoản…' : 'Tạo tài khoản'}
       </Button>
     </form>
   )

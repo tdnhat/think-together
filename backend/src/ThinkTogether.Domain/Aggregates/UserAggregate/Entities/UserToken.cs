@@ -1,13 +1,9 @@
-using Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Enums;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
-public enum TokenType
-{
-    PASSWORD_RESET,
-    EMAIL_CONFIRMATION
-}
 
 public sealed partial class UserToken : Entity
 {

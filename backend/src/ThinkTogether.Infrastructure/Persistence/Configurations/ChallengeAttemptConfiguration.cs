@@ -1,6 +1,6 @@
-using Domain.Aggregates.ChallengeAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
@@ -74,20 +74,18 @@ public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeA
                 "thoiGianHoanThanhMs IS NULL OR thoiGianHoanThanhMs > 0");
         });
 
-        // Foreign keys
-        builder.HasOne<global::Domain.Aggregates.ChallengeAggregate.Challenge>()
-            .WithMany()
-            .HasForeignKey(ca => ca.ChallengeId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to Challenge is defined in ChallengeConfiguration using navigation property
 
+        // Foreign key to User
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(ca => ca.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany<ChallengeAnswer>()
+        // Use navigation property to avoid shadow FK
+        builder.HasMany(ca => ca.Answers)
             .WithOne()
-            .HasForeignKey(ca => ca.ChallengeAttemptId)
+            .HasForeignKey(answer => answer.ChallengeAttemptId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes

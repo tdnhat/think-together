@@ -1,8 +1,7 @@
-using Domain.Aggregates.UserAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
-using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
@@ -48,9 +47,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(u => u.RoleId)
-            .HasColumnName("idVaiTro")
-            .IsRequired();
+        // Store RoleType enum as integer
+        builder.Property(u => u.Role)
+            .HasColumnName("vaiTro")
+            .IsRequired()
+            .HasConversion<int>();
 
         builder.Property(u => u.AvatarUrl)
             .HasColumnName("urlAnhDaiDien")
@@ -76,17 +77,17 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.DeletedAt)
             .HasColumnName("ngayXoa");
 
-        // Foreign key relationship to VaiTro
-        builder.HasOne(u => u.Role)
-            .WithMany()
-            .HasForeignKey(u => u.RoleId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         // Indexes
-        builder.HasIndex(u => u.RoleId);
+        builder.HasIndex(u => u.Role);
         builder.HasIndex(u => u.DeletedAt);
 
-        // Configure UserTokens relationship
+        // Configure RefreshTokens relationship - use navigation property to avoid shadow FK
+        builder.HasMany(u => u.RefreshTokens)
+            .WithOne()
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure UserTokens relationship - use navigation property to avoid shadow FK
         builder.HasMany(u => u.UserTokens)
             .WithOne()
             .HasForeignKey(ut => ut.UserId)

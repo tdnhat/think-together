@@ -1,21 +1,17 @@
-using Domain.Aggregates.GamingAggregate.Entities;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Events;
+using ThinkTogether.Domain.Enums;
 
-namespace Domain.Aggregates.GamingAggregate;
-
-public enum GameStatus
-{
-    Waiting,
-    Started,
-    Ended
-}
+namespace ThinkTogether.Domain.Aggregates.GamingAggregate;
 
 public sealed partial class GameSession : AggregateRoot
 {
     private readonly List<GamePlayer> _players = new();
     private readonly List<GameQuestion> _gameQuestions = new();
     private readonly List<GameScore> _scores = new();
+    private readonly List<PlayerAnswer> _playerAnswers = new();
 
     private GameSession()
     {
@@ -43,6 +39,8 @@ public sealed partial class GameSession : AggregateRoot
 
     public IReadOnlyList<GameScore> Scores => _scores.AsReadOnly();
 
+    public IReadOnlyList<PlayerAnswer> PlayerAnswers => _playerAnswers.AsReadOnly();
+
     public static GameSession Create(Guid hostUserId, Guid quizSetId, string pin)
     {
         if (hostUserId == Guid.Empty)
@@ -57,7 +55,7 @@ public sealed partial class GameSession : AggregateRoot
         if (!pin.All(char.IsDigit))
             throw new ValidationException("Mã PIN chỉ được chứa chữ số");
 
-        return new GameSession
+        var session = new GameSession
         {
             Id = Guid.NewGuid(),
             HostUserId = hostUserId,
@@ -68,6 +66,36 @@ public sealed partial class GameSession : AggregateRoot
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        session.AddDomainEvent(new GameSessionCreatedDomainEvent(
+            session.Id,
+            hostUserId,
+            quizSetId,
+            pin));
+
+        return session;
+    }
+
+    /// <summary>
+    /// Finds a player by their ID.
+    /// </summary>
+    public GamePlayer? GetPlayer(Guid playerId)
+    {
+        return _players.FirstOrDefault(p => p.Id == playerId);
+    }
+
+    public GameQuestion? GetCurrentGameQuestion()
+    {
+        return _gameQuestions.FirstOrDefault(q => q.PositionInGame == CurrentQuestionIndex);
+    }
+
+    public bool HasMoreQuestions()
+    {
+        return CurrentQuestionIndex < _gameQuestions.Count - 1;
+    }
+
+    public GameScore? GetPlayerScore(Guid playerId)
+    {
+        return _scores.FirstOrDefault(s => s.GamePlayerId == playerId);
     }
 }
-

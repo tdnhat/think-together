@@ -1,4 +1,4 @@
-using Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 

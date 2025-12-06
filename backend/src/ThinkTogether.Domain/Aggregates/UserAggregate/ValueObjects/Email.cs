@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 
-namespace Domain.Aggregates.UserAggregate.ValueObjects;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
 
 public sealed record Email(string Value)
 {
@@ -29,4 +29,3 @@ public sealed record Email(string Value)
 
     public static implicit operator string(Email email) => email.Value;
 }
-

@@ -1,12 +1,12 @@
-using Domain.Aggregates.ChallengeAggregate;
-using Domain.Aggregates.ChallengeAggregate.Entities;
-using Domain.Aggregates.ClassAggregate;
-using Domain.Aggregates.ClassAggregate.Entities;
-using Domain.Aggregates.GamingAggregate;
-using Domain.Aggregates.GamingAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.ClassAggregate;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.GamingAggregate;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using ThinkTogether.Infrastructure.Persistence.Interceptors;
@@ -17,7 +17,6 @@ public class ApplicationDbContext : DbContext
 {
     // User Aggregate Entities
     public DbSet<User> Users { get; set; } = null!;
-    public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<UserToken> UserTokens { get; set; } = null!;
 

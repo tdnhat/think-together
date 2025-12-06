@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Infrastructure.Interfaces;
@@ -104,6 +106,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IQuizSetRepository, QuizSetRepository>();
+        services.AddScoped<IGameSessionRepository, GameSessionRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
@@ -127,6 +130,14 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
         services.AddScoped<IEmailService, EmailService>();
+        
+        // Gaming Services
+        services.AddScoped<IPinGeneratorService, PinGeneratorService>();
+        services.AddScoped<IScoreCalculatorService, ScoreCalculatorService>();
+        services.AddScoped<IQuestionTimerService, QuestionTimerService>();
+        services.AddScoped<ILeaderboardService, LeaderboardService>();
+        services.AddScoped<IGameQuestionMappingService, GameQuestionMappingService>();
+        services.AddSingleton<IGameSessionStateService, RedisGameSessionStateService>();
         
         // Cloud Services
         services.AddScoped<IImageUploadService, CloudinaryService>();

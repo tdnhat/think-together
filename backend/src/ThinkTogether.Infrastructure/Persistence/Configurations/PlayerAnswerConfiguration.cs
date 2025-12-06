@@ -1,8 +1,8 @@
-using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class PlayerAnswerConfiguration : IEntityTypeConfiguration<PlayerAnswer>
 {
@@ -15,6 +15,10 @@ public class PlayerAnswerConfiguration : IEntityTypeConfiguration<PlayerAnswer>
         builder.Property(pa => pa.Id)
             .HasColumnName("idTraLoi")
             .ValueGeneratedNever();
+
+        builder.Property(pa => pa.GameSessionId)
+            .HasColumnName("idPhienChoi")
+            .IsRequired();
 
         builder.Property(pa => pa.GamePlayerId)
             .HasColumnName("idNguoiChoi")
@@ -55,12 +59,7 @@ public class PlayerAnswerConfiguration : IEntityTypeConfiguration<PlayerAnswer>
             tb.HasCheckConstraint("CK_TraLoiNguoiChoi_diemNhan", "diemNhan >= 0");
         });
 
-        // Foreign keys
-        builder.HasOne<Domain.Aggregates.GamingAggregate.Entities.GamePlayer>()
-            .WithMany()
-            .HasForeignKey(pa => pa.GamePlayerId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        // Foreign key to GameQuestion (GamePlayer FK is defined in GamePlayerConfiguration)
         builder.HasOne<Domain.Aggregates.GamingAggregate.Entities.GameQuestion>()
             .WithMany()
             .HasForeignKey(pa => pa.GameQuestionId)

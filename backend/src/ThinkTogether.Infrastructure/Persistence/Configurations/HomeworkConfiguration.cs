@@ -1,8 +1,8 @@
-using Domain.Aggregates.ClassAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class HomeworkConfiguration : IEntityTypeConfiguration<Homework>
 {
@@ -55,7 +55,7 @@ public class HomeworkConfiguration : IEntityTypeConfiguration<Homework>
 
         // Foreign keys
         builder.HasOne<Domain.Aggregates.ClassAggregate.Class>()
-            .WithMany()
+            .WithMany(c => c.Homeworks)
             .HasForeignKey(h => h.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -64,7 +64,8 @@ public class HomeworkConfiguration : IEntityTypeConfiguration<Homework>
             .HasForeignKey(h => h.QuizSetId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany<HomeworkSubmission>()
+        // Use navigation property to avoid shadow FK
+        builder.HasMany(h => h.Submissions)
             .WithOne()
             .HasForeignKey(hs => hs.HomeworkId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -77,4 +78,3 @@ public class HomeworkConfiguration : IEntityTypeConfiguration<Homework>
         builder.HasIndex(h => h.DeletedAt);
     }
 }
-

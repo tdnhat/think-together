@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toastSuccess } from '@/lib/utils/toast'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +23,7 @@ import { ROUTES } from '@/config/routes'
 import type { QuizSetDto, QuizSetQueryParams } from '@/types/api'
 import type { CreateQuizSetFormData, UpdateQuizSetFormData } from '@/lib/validators'
 
-export default function CreatorQuizzesPage() {
+function CreatorQuizzesContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [modalOpen, setModalOpen] = useState(false)
@@ -268,6 +269,18 @@ export default function CreatorQuizzesPage() {
         </div>
       </CreatorRouteGuard>
     </DashboardLayout>
+  )
+}
+
+export default function CreatorQuizzesPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    }>
+      <CreatorQuizzesContent />
+    </Suspense>
   )
 }
 

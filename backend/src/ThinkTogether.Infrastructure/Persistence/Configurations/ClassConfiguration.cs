@@ -1,6 +1,6 @@
-using Domain.Aggregates.ClassAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ClassAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
@@ -62,13 +62,13 @@ public class ClassConfiguration : IEntityTypeConfiguration<Class>
             .HasForeignKey(c => c.TeacherId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Relationships to child entities
-        builder.HasMany<global::Domain.Aggregates.ClassAggregate.Entities.ClassMember>()
+        // Use navigation properties to avoid shadow FKs
+        builder.HasMany(c => c.Members)
             .WithOne()
             .HasForeignKey(cm => cm.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany<global::Domain.Aggregates.ClassAggregate.Entities.Homework>()
+        builder.HasMany(c => c.Homeworks)
             .WithOne()
             .HasForeignKey(h => h.ClassId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -1,7 +1,6 @@
-using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 using MediatR;
 using ThinkTogether.Application.Interfaces;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.DeleteQuestion;
 

@@ -1,8 +1,9 @@
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
-using Domain.Aggregates.UserAggregate.ValueObjects;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
+using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Events;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate;
 
@@ -13,12 +14,9 @@ public sealed partial class User
         string firstName,
         string lastName,
         Password passwordHash,
-        Guid roleId)
+        RoleType role = RoleType.User)
     {
         ValidateNames(firstName, lastName);
-
-        if (roleId == Guid.Empty)
-            throw new ValidationException("Vai tr� kh�ng h?p l?");
 
         var userId = Guid.NewGuid();
         var user = new User
@@ -28,7 +26,7 @@ public sealed partial class User
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
             PasswordHash = passwordHash,
-            RoleId = roleId,
+            Role = role,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -82,30 +80,27 @@ public sealed partial class User
         return passwordService.VerifyPassword(plainTextPassword, PasswordHash);
     }
 
-    public void ChangeRole(Guid newRoleId)
+    public void ChangeRole(RoleType newRole)
     {
         if (IsDeleted)
-            throw new ValidationException("Kh�ng th? thay d?i vai tr� c?a ngu?i d�ng d� b? x�a");
+            throw new ValidationException("Không thể thay đổi vai trò của người dùng đã bị xóa");
 
-        if (newRoleId == Guid.Empty)
-            throw new ValidationException("Vai tr� kh�ng h?p l?");
-
-        RoleId = newRoleId;
+        Role = newRole;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void ActivateCreatorRole()
     {
         if (IsDeleted)
-            throw new ValidationException("Kh�ng th? k�ch ho?t vai tr� ngu?i s�ng t?o cho ngu?i d�ng d� b? x�a");
+            throw new ValidationException("Không thể kích hoạt vai trò người sáng tạo cho người dùng đã bị xóa");
 
         if (!IsEmailVerified)
-            throw new ValidationException("Vui l�ng x�c nh?n email tru?c khi tr? th�nh ngu?i s�ng t?o");
+            throw new ValidationException("Vui lòng xác nhận email trước khi trở thành người sáng tạo");
 
-        if (RoleId == CreatorRoleId)
+        if (Role == RoleType.Creator)
             return;
 
-        RoleId = CreatorRoleId;
+        Role = RoleType.Creator;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -275,4 +270,3 @@ public sealed partial class User
             throw new ValidationException("T�n g?i qu� d�i");
     }
 }
-

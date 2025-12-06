@@ -1,8 +1,7 @@
-using Domain.Exceptions;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
+using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.User.Commands.ActivateCreator;

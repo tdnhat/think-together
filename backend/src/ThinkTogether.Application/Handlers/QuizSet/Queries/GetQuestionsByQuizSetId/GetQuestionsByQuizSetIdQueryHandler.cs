@@ -1,11 +1,10 @@
-using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Shared.Common;
-using Domain.Exceptions;
-using Microsoft.EntityFrameworkCore;
+using ThinkTogether.Domain.Enums;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Queries.GetQuestionsByQuizSetId;
 

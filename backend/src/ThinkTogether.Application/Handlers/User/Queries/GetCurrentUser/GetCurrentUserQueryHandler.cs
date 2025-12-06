@@ -1,11 +1,11 @@
 using Application.Handlers.User.Queries.GetCurrentUser;
-using Domain.Exceptions;
 using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.User.Queries.GetCurrentUser;
 

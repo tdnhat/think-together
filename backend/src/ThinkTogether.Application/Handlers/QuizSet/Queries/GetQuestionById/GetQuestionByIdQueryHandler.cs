@@ -1,9 +1,8 @@
-using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Queries.GetQuestionById;
 

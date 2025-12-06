@@ -29,7 +29,7 @@ export function QuizPreviewQuestions({
 
   if (isLoading) {
     return (
-      <Card variant="primary">
+      <Card>
         <CardHeader>
           <CardTitle className="text-lg">Xem trước câu hỏi</CardTitle>
           <CardDescription>
@@ -45,7 +45,7 @@ export function QuizPreviewQuestions({
 
   if (questions.length === 0) {
     return (
-      <Card variant="primary">
+      <Card>
         <CardHeader>
           <CardTitle className="text-lg">Xem trước câu hỏi</CardTitle>
           <CardDescription>
@@ -62,7 +62,7 @@ export function QuizPreviewQuestions({
   }
 
   return (
-    <Card variant="primary">
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
@@ -73,7 +73,7 @@ export function QuizPreviewQuestions({
           </div>
           {showViewAllButton && hasMore && (
             <Button
-              variant="outline"
+              variant="neutral"
               size="sm"
               onClick={onViewAll}
               className="shrink-0"

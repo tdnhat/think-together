@@ -1,16 +1,13 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Enums;
 
-namespace Domain.Aggregates.GamingAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-public enum ConnectionStatus
+public sealed partial class GamePlayer : Entity
 {
-    Connected,
-    Disconnected
-}
+    private readonly List<PlayerAnswer> _answers = new();
 
-public sealed class GamePlayer : Entity
-{
     private GamePlayer()
     {
     }
@@ -22,6 +19,10 @@ public sealed class GamePlayer : Entity
     public string Nickname { get; private set; } = string.Empty;
 
     public ConnectionStatus ConnectionStatus { get; private set; }
+
+    public string? ConnectionId { get; private set; }
+
+    public IReadOnlyList<PlayerAnswer> Answers => _answers.AsReadOnly();
 
     public static GamePlayer Create(Guid gameSessionId, string nickname)
     {
@@ -45,22 +46,11 @@ public sealed class GamePlayer : Entity
         };
     }
 
-    public void SetConnectionStatus(ConnectionStatus status)
+    /// <summary>
+    /// Checks if this player has already answered a specific question.
+    /// </summary>
+    public bool HasAnswered(Guid gameQuestionId)
     {
-        ConnectionStatus = status;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void Connect()
-    {
-        ConnectionStatus = ConnectionStatus.Connected;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void Disconnect()
-    {
-        ConnectionStatus = ConnectionStatus.Disconnected;
-        UpdatedAt = DateTime.UtcNow;
+        return _answers.Any(a => a.GameQuestionId == gameQuestionId);
     }
 }
-

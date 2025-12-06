@@ -1,8 +1,9 @@
-using Domain.Aggregates.ChallengeAggregate.Entities;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Enums;
 
-namespace Domain.Aggregates.ChallengeAggregate;
+namespace ThinkTogether.Domain.Aggregates.ChallengeAggregate;
 
 public sealed partial class Challenge : AggregateRoot
 {

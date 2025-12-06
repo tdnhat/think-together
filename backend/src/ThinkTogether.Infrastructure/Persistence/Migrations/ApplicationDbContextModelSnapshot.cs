@@ -69,10 +69,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("hienThiBangXepHang");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
                         .HasColumnName("trangThai");
 
                     b.Property<string>("Title")
@@ -104,7 +102,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         {
                             t.HasCheckConstraint("CK_ThachThuc_luotChoi", "luotChoi >= 0");
 
-                            t.HasCheckConstraint("CK_ThachThuc_trangThai", "trangThai IN ('Active', 'Archived')");
+                            t.HasCheckConstraint("CK_ThachThuc_trangThai", "trangThai IN (1, 2)");
                         });
                 });
 
@@ -117,9 +115,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ChallengeAttemptId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idLuotChoiThachThuc");
-
-                    b.Property<Guid?>("ChallengeAttemptId1")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -159,8 +154,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ChallengeAttemptId");
 
-                    b.HasIndex("ChallengeAttemptId1");
-
                     b.HasIndex("DeletedAt");
 
                     b.HasIndex("QuestionId");
@@ -185,9 +178,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ChallengeId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idThachThuc");
-
-                    b.Property<Guid?>("ChallengeId1")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CompletedAt")
                         .ValueGeneratedOnAdd()
@@ -244,8 +234,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChallengeId");
-
-                    b.HasIndex("ChallengeId1");
 
                     b.HasIndex("CompletedAt");
 
@@ -340,9 +328,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idLopHoc");
 
-                    b.Property<Guid?>("ClassId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -375,8 +360,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.HasIndex("ClassId1");
-
                     b.HasIndex("UserId");
 
                     b.HasIndex("ClassId", "UserId")
@@ -400,9 +383,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ClassId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idLopHoc");
-
-                    b.Property<Guid?>("ClassId1")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -435,8 +415,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassId");
-
-                    b.HasIndex("ClassId1");
 
                     b.HasIndex("DeletedAt");
 
@@ -476,19 +454,14 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idBaiTapVeNha");
 
-                    b.Property<Guid?>("HomeworkId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Score")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
                         .HasColumnName("diem");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
                         .HasColumnName("trangThai");
 
                     b.Property<Guid>("StudentId")
@@ -510,8 +483,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasIndex("ChallengeAttemptId")
                         .IsUnique();
 
-                    b.HasIndex("HomeworkId1");
-
                     b.HasIndex("Status");
 
                     b.HasIndex("StudentId");
@@ -523,7 +494,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         {
                             t.HasCheckConstraint("CK_BaiNop_diem", "diem >= 0");
 
-                            t.HasCheckConstraint("CK_BaiNop_trangThai", "trangThai IN ('Submitted', 'Late', 'NotSubmitted')");
+                            t.HasCheckConstraint("CK_BaiNop_trangThai", "trangThai IN (0, 1, 2)");
                         });
                 });
 
@@ -533,10 +504,13 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idNguoiChoi");
 
-                    b.Property<string>("ConnectionStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                    b.Property<string>("ConnectionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("idKetNoi");
+
+                    b.Property<int>("ConnectionStatus")
+                        .HasColumnType("int")
                         .HasColumnName("trangThaiKetNoi");
 
                     b.Property<DateTime>("CreatedAt")
@@ -552,9 +526,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("GameSessionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
-
-                    b.Property<Guid?>("GameSessionId1")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Nickname")
                         .IsRequired()
@@ -572,15 +543,13 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("GameSessionId");
 
-                    b.HasIndex("GameSessionId1");
-
                     b.HasIndex("GameSessionId", "CreatedAt");
 
                     b.ToTable("NguoiChoiPhien", null, t =>
                         {
                             t.HasCheckConstraint("CK_NguoiChoiPhien_bietDanh", "LEN(bietDanh) >= 2 AND LEN(bietDanh) <= 100");
 
-                            t.HasCheckConstraint("CK_NguoiChoiPhien_trangThaiKetNoi", "trangThaiKetNoi IN ('Connected', 'Disconnected')");
+                            t.HasCheckConstraint("CK_NguoiChoiPhien_trangThaiKetNoi", "trangThaiKetNoi IN (1, 2)");
                         });
                 });
 
@@ -617,9 +586,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
 
-                    b.Property<Guid?>("GameSessionId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("PositionInGame")
                         .HasColumnType("int")
                         .HasColumnName("viTriTrongPhien");
@@ -643,8 +609,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasIndex("DeletedAt");
 
                     b.HasIndex("GameSessionId");
-
-                    b.HasIndex("GameSessionId1");
 
                     b.HasIndex("QuestionId");
 
@@ -704,9 +668,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idPhienChoi");
 
-                    b.Property<Guid?>("GameSessionId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("TotalPoints")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -731,8 +692,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasIndex("GameSessionId");
-
-                    b.HasIndex("GameSessionId1");
 
                     b.HasIndex("GameSessionId", "FinalRank");
 
@@ -834,6 +793,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoiPhien");
 
+                    b.Property<Guid>("GameSessionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idPhienChoi");
+
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit")
                         .HasColumnName("laDapAnDung");
@@ -859,6 +822,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasIndex("GamePlayerId");
 
                     b.HasIndex("GameQuestionId");
+
+                    b.HasIndex("GameSessionId");
 
                     b.HasIndex("GamePlayerId", "GameQuestionId")
                         .IsUnique();
@@ -915,10 +880,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("thoiGianBatDau");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
                         .HasColumnName("trangThai");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -945,7 +908,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_PhienChoi_thoiGian", "thoiGianKetThuc IS NULL OR thoiGianKetThuc >= thoiGianBatDau");
 
-                            t.HasCheckConstraint("CK_PhienChoi_trangThai", "trangThai IN ('Waiting', 'Started', 'Ended')");
+                            t.HasCheckConstraint("CK_PhienChoi_trangThai", "trangThai IN (1, 2, 3)");
                         });
                 });
 
@@ -981,19 +944,14 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idBoTracNghiem");
 
-                    b.Property<Guid?>("QuizSetId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("TimeLimit")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(30)
-                        .HasColumnName("giuiHanThoiGian");
+                        .HasColumnName("gioiHanThoiGian");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
                         .HasColumnName("loaiCauHoi");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -1017,16 +975,14 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("QuizSetId");
 
-                    b.HasIndex("QuizSetId1");
-
                     b.HasIndex("QuizSetId", "DisplayOrder")
                         .HasFilter("ngayXoa IS NULL");
 
                     b.ToTable("CauHoi", null, t =>
                         {
-                            t.HasCheckConstraint("CK_CauHoi_giuiHanThoiGian", "giuiHanThoiGian > 0 AND giuiHanThoiGian <= 300");
+                            t.HasCheckConstraint("CK_CauHoi_gioiHanThoiGian", "gioiHanThoiGian > 0 AND gioiHanThoiGian <= 300");
 
-                            t.HasCheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN ('SingleChoice', 'TrueFalse', 'MultipleChoice', 'Matching', 'Ordering', 'Video')");
+                            t.HasCheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN (1, 2, 3, 4, 5, 6)");
 
                             t.HasCheckConstraint("CK_CauHoi_thuTu", "thuTu >= 0");
                         });
@@ -1057,14 +1013,15 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
 
                     b.Property<decimal>("Difficulty")
                         .ValueGeneratedOnAdd()
                         .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)")
                         .HasDefaultValue(0m)
-                        .HasColumnName("doDung");
+                        .HasColumnName("doKho");
 
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier")
@@ -1088,6 +1045,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("Difficulty");
 
                     b.HasIndex("QuestionId")
@@ -1095,7 +1054,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.ToTable("ThongKeCauHoi", null, t =>
                         {
-                            t.HasCheckConstraint("CK_ThongKeCauHoi_doDung", "doDung >= 0 AND doDung <= 100");
+                            t.HasCheckConstraint("CK_ThongKeCauHoi_doKho", "doKho >= 0 AND doKho <= 100");
 
                             t.HasCheckConstraint("CK_ThongKeCauHoi_soLanHoi", "soLanHoi >= 0");
 
@@ -1126,7 +1085,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idNguoiDung");
+                        .HasColumnName("idNguoiTao");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2")
@@ -1181,7 +1140,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("taoLuc")
+                        .HasColumnName("ngayTao")
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -1203,7 +1162,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
-                        .HasColumnName("capNhatLuc");
+                        .HasColumnName("ngayCapNhat");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
@@ -1223,44 +1182,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("MaLamMoi", (string)null);
                 });
 
-            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idVaiTro");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayTao")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("moTa");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("tenVaiTro");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngayCapNhat");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("VaiTro", (string)null);
-                });
-
             modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.UserToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1270,7 +1191,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("taoLuc")
+                        .HasColumnName("ngayTao")
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -1286,15 +1207,13 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(500)")
                         .HasColumnName("maToken");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
                         .HasColumnName("loaiToken");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
-                        .HasColumnName("capNhatLuc");
+                        .HasColumnName("ngayCapNhat");
 
                     b.Property<DateTime?>("UsedAt")
                         .HasColumnType("datetime2")
@@ -1321,7 +1240,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.ToTable("MaNguoiDung", null, t =>
                         {
-                            t.HasCheckConstraint("CK_MaNguoiDung_loaiToken", "loaiToken IN ('PASSWORD_RESET', 'EMAIL_CONFIRMATION')");
+                            t.HasCheckConstraint("CK_MaNguoiDung_loaiToken", "loaiToken IN (1, 2)");
                         });
                 });
 
@@ -1381,9 +1300,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("matKhau");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("idVaiTro");
+                    b.Property<int>("Role")
+                        .HasColumnType("int")
+                        .HasColumnName("vaiTro");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -1396,7 +1315,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("Role");
 
                     b.ToTable("NguoiDung", (string)null);
                 });
@@ -1419,14 +1338,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
                 {
                     b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
-                        .WithMany()
+                        .WithMany("Answers")
                         .HasForeignKey("ChallengeAttemptId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
-                        .WithMany("Answers")
-                        .HasForeignKey("ChallengeAttemptId1");
 
                     b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question", null)
                         .WithMany()
@@ -1438,14 +1353,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.HasOne("Domain.Aggregates.ChallengeAggregate.Challenge", null)
-                        .WithMany()
+                        .WithMany("Attempts")
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Challenge", null)
-                        .WithMany("Attempts")
-                        .HasForeignKey("ChallengeId1");
 
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
@@ -1465,14 +1376,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
                 {
                     b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
-                        .WithMany()
+                        .WithMany("Members")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
-                        .WithMany("Members")
-                        .HasForeignKey("ClassId1");
 
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
@@ -1484,14 +1391,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
                 {
                     b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
-                        .WithMany()
+                        .WithMany("Homeworks")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
-                        .WithMany("Homeworks")
-                        .HasForeignKey("ClassId1");
 
                     b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet", null)
                         .WithMany()
@@ -1509,14 +1412,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Aggregates.ClassAggregate.Entities.Homework", null)
-                        .WithMany()
+                        .WithMany("Submissions")
                         .HasForeignKey("HomeworkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.ClassAggregate.Entities.Homework", null)
-                        .WithMany("Submissions")
-                        .HasForeignKey("HomeworkId1");
 
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
@@ -1528,27 +1427,19 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
                 {
                     b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
-                        .WithMany()
+                        .WithMany("Players")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
-                        .WithMany("Players")
-                        .HasForeignKey("GameSessionId1");
                 });
 
             modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
                 {
                     b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
-                        .WithMany()
+                        .WithMany("GameQuestions")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
-                        .WithMany("GameQuestions")
-                        .HasForeignKey("GameSessionId1");
 
                     b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question", null)
                         .WithMany()
@@ -1566,14 +1457,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
-                        .WithMany()
+                        .WithMany("Scores")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
-                        .WithMany("Scores")
-                        .HasForeignKey("GameSessionId1");
                 });
 
             modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
@@ -1588,15 +1475,21 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
                 {
                     b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
-                        .WithMany()
+                        .WithMany("Answers")
                         .HasForeignKey("GamePlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", null)
                         .WithMany()
                         .HasForeignKey("GameQuestionId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                        .WithMany("PlayerAnswers")
+                        .HasForeignKey("GameSessionId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -1618,14 +1511,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question", b =>
                 {
                     b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet", null)
-                        .WithMany()
+                        .WithMany("Questions")
                         .HasForeignKey("QuizSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizSetId1");
 
                     b.OwnsMany("ThinkTogether.Domain.Aggregates.QuizSetAggregate.ValueObjects.MatchingPair", "MatchingPairs", b1 =>
                         {
@@ -1739,6 +1628,15 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Navigation("OrderingItems");
                 });
 
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.QuestionStatistic", b =>
+                {
+                    b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question", null)
+                        .WithOne()
+                        .HasForeignKey("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.QuestionStatistic", "QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet", b =>
                 {
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
@@ -1766,17 +1664,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.UserAggregate.User", b =>
-                {
-                    b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.Entities.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Navigation("Attempts");
@@ -1799,9 +1686,16 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Navigation("Submissions");
                 });
 
+            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
             modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
                 {
                     b.Navigation("GameQuestions");
+
+                    b.Navigation("PlayerAnswers");
 
                     b.Navigation("Players");
 

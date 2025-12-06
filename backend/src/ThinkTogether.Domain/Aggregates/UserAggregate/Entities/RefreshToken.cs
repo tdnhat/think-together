@@ -1,9 +1,9 @@
-using Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
-public sealed class RefreshToken : Entity
+public sealed partial class RefreshToken : Entity
 {
     private RefreshToken()
     {
@@ -37,19 +37,5 @@ public sealed class RefreshToken : Entity
             Token = token,
             ExpiresAt = DateTime.UtcNow.Add(lifetime)
         };
-    }
-
-    public bool IsExpired() => DateTime.UtcNow >= ExpiresAt;
-
-    public bool IsRevoked() => RevokedAt.HasValue;
-
-    public bool IsValid() => !IsExpired() && !IsRevoked();
-
-    public void Revoke()
-    {
-        if (IsRevoked())
-            return;
-
-        RevokedAt = DateTime.UtcNow;
     }
 }

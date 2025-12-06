@@ -1,8 +1,6 @@
-using Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
@@ -16,18 +14,18 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
 
         builder.Property(ut => ut.Id)
             .HasColumnName("idMaNguoiDung")
-            .ValueGeneratedNever(); // Application generates the ID
+            .ValueGeneratedNever();
 
+        // Store TokenType enum as integer
         builder.Property(ut => ut.Type)
             .HasColumnName("loaiToken")
             .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(50);
+            .HasConversion<int>();
 
         // Add check constraint for enum values
         builder.ToTable(tb => tb.HasCheckConstraint(
             "CK_MaNguoiDung_loaiToken",
-            "loaiToken IN ('PASSWORD_RESET', 'EMAIL_CONFIRMATION')"));
+            "loaiToken IN (1, 2)"));
 
         builder.Property(ut => ut.UserId)
             .HasColumnName("idNguoiDung")
@@ -46,18 +44,14 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
             .HasColumnName("suDungLuc");
 
         builder.Property(ut => ut.CreatedAt)
-            .HasColumnName("taoLuc")
+            .HasColumnName("ngayTao")
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
         builder.Property(ut => ut.UpdatedAt)
-            .HasColumnName("capNhatLuc");
+            .HasColumnName("ngayCapNhat");
 
-        // Foreign key relationship
-        builder.HasOne<User>()
-            .WithMany(u => u.UserTokens)
-            .HasForeignKey(ut => ut.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key relationship is defined in UserConfiguration
 
         // Indexes
         builder.HasIndex(ut => ut.UserId);

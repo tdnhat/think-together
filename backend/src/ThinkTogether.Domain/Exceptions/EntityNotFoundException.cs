@@ -1,6 +1,6 @@
 using Shared.Common;
 
-namespace Domain.Exceptions;
+namespace ThinkTogether.Domain.Exceptions;
 
 public class EntityNotFoundException : DomainException
 {
@@ -14,4 +14,3 @@ public class EntityNotFoundException : DomainException
     public string EntityName { get; }
     public object EntityId { get; }
 }
-

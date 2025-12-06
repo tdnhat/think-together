@@ -15,11 +15,11 @@ export function QuizActions({ quizSet, onStart, isStarting = false }: QuizAction
   const canStart = quizSet.isPublished && (quizSet.questionCount || 0) > 0
 
   return (
-    <Card variant="secondary">
+    <Card>
       <CardContent className="pt-6 space-y-3">
-        <Button 
-          variant="primary" 
-          size="lg" 
+        <Button
+          variant="default"
+          size="lg"
           className="w-full"
           onClick={onStart}
           disabled={!canStart || isStarting}

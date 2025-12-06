@@ -18,8 +18,8 @@ import type {
   CreateQuestionRequest,
   UpdateQuestionRequest,
   ReorderQuestionsRequest,
-  QuizSetDto,
 } from '../types';
+import type { QuizSetDto } from '@/types/api';
 
 // ============================================================================
 // QUIZ SERVICE

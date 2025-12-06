@@ -1,27 +1,16 @@
 // Game Feature Public API
+// 
+// NOTE: This feature has been replaced by game-host and game-player features.
+// This file is kept for backward compatibility but exports nothing.
+// Use @/features/game-host or @/features/game-player instead.
 
-// Store
-export {
-  useGameStore,
-  selectSession,
-  selectIsHost,
-  selectCurrentQuestion,
-  selectLeaderboard,
-  selectTimeRemaining,
-  selectIsConnected,
-  selectGameActions,
-} from './store/game.store'
-
-// API Service
-export { gameService } from './api/game.service'
-
-// Types
+// Re-export from game-host for convenience
+export { gameSessionService } from '../game-host/api/game-session.service'
 export type {
-  Player,
-  Question,
   GameSession,
-  GameState,
-  PlayerAnswer,
-  GameResult,
-} from './types'
+  GameQuestion,
+  LeaderboardEntry,
+  GameStatus,
+  QuestionType,
+} from '../game-host/types'
 

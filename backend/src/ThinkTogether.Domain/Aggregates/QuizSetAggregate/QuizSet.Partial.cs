@@ -1,6 +1,6 @@
-using Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Shared.Primitives;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 

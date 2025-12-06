@@ -25,14 +25,14 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
             .IsRequired()
             .HasMaxLength(2000);
 
+        // Store QuestionType enum as integer
         builder.Property(q => q.Type)
             .HasColumnName("loaiCauHoi")
             .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(50);
+            .HasConversion<int>();
 
         builder.Property(q => q.TimeLimit)
-            .HasColumnName("giuiHanThoiGian")
+            .HasColumnName("gioiHanThoiGian")
             .IsRequired()
             .HasDefaultValue(30);
 
@@ -124,26 +124,22 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
                 .IsRequired();
         });
 
-        // Add check constraint for enum values
+        // Add check constraint for enum values (stored as integers 1-6)
         builder.ToTable(tb => tb.HasCheckConstraint(
             "CK_CauHoi_loaiCauHoi",
-            "loaiCauHoi IN ('SingleChoice', 'TrueFalse', 'MultipleChoice', 'Matching', 'Ordering', 'Video')"));
+            "loaiCauHoi IN (1, 2, 3, 4, 5, 6)"));
 
         // Add check constraint for time limit
         builder.ToTable(tb => tb.HasCheckConstraint(
-            "CK_CauHoi_giuiHanThoiGian",
-            "giuiHanThoiGian > 0 AND giuiHanThoiGian <= 300"));
+            "CK_CauHoi_gioiHanThoiGian",
+            "gioiHanThoiGian > 0 AND gioiHanThoiGian <= 300"));
 
         // Add check constraint for display order
         builder.ToTable(tb => tb.HasCheckConstraint(
             "CK_CauHoi_thuTu",
             "thuTu >= 0"));
 
-        // Foreign key to QuizSet
-        builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet>()
-            .WithMany()
-            .HasForeignKey(q => q.QuizSetId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to QuizSet is defined in QuizSetConfiguration using navigation property
 
         // Indexes
         builder.HasIndex(q => q.QuizSetId);

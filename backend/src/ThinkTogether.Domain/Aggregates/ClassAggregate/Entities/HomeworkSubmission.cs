@@ -1,16 +1,10 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
+using ThinkTogether.Domain.Enums;
 
-namespace Domain.Aggregates.ClassAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 
-public enum SubmissionStatus
-{
-    Submitted,
-    Late,
-    NotSubmitted
-}
-
-public sealed class HomeworkSubmission : Entity
+public sealed partial class HomeworkSubmission : Entity
 {
     private HomeworkSubmission()
     {
@@ -68,14 +62,4 @@ public sealed class HomeworkSubmission : Entity
             UpdatedAt = DateTime.UtcNow
         };
     }
-
-    public void UpdateScore(int score)
-    {
-        if (score < 0)
-            throw new ValidationException("Điểm không được âm");
-
-        Score = score;
-        UpdatedAt = DateTime.UtcNow;
-    }
 }
-

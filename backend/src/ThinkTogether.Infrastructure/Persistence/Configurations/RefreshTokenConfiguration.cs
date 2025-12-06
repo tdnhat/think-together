@@ -1,8 +1,6 @@
-using Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
@@ -35,18 +33,14 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .HasColumnName("thuHoiLuc");
 
         builder.Property(rt => rt.CreatedAt)
-            .HasColumnName("taoLuc")
+            .HasColumnName("ngayTao")
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
         builder.Property(rt => rt.UpdatedAt)
-            .HasColumnName("capNhatLuc");
+            .HasColumnName("ngayCapNhat");
 
-        // Foreign key relationship
-        builder.HasOne<User>()
-            .WithMany(u => u.RefreshTokens)
-            .HasForeignKey(rt => rt.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key relationship is defined in UserConfiguration
 
         // Indexes
         builder.HasIndex(rt => rt.UserId);

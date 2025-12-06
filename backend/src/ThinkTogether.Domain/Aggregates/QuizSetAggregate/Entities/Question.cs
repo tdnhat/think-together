@@ -1,18 +1,10 @@
-using Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.ValueObjects;
 using Shared.Primitives;
+using ThinkTogether.Domain.Enums;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 
-public enum QuestionType
-{
-    SingleChoice,
-    TrueFalse,
-    MultipleChoice,
-    Matching,
-    Ordering,
-    Video
-}
 
 public sealed partial class Question : Entity
 {

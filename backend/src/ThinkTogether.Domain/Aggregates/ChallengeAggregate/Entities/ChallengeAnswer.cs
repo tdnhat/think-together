@@ -1,9 +1,9 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.ChallengeAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 
-public sealed class ChallengeAnswer : Entity
+public sealed partial class ChallengeAnswer : Entity
 {
     private ChallengeAnswer()
     {
@@ -53,4 +53,3 @@ public sealed class ChallengeAnswer : Entity
         };
     }
 }
-

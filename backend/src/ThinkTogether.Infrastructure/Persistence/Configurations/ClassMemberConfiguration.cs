@@ -1,6 +1,6 @@
-using Domain.Aggregates.ClassAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
@@ -44,12 +44,9 @@ public class ClassMemberConfiguration : IEntityTypeConfiguration<ClassMember>
         builder.Property(cm => cm.DeletedAt)
             .HasColumnName("ngayXoa");
 
-        // Foreign keys
-        builder.HasOne<global::Domain.Aggregates.ClassAggregate.Class>()
-            .WithMany()
-            .HasForeignKey(cm => cm.ClassId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to Class is defined in ClassConfiguration using navigation property
 
+        // Foreign key to User
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(cm => cm.UserId)
