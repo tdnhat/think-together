@@ -1,12 +1,12 @@
-using Domain.Aggregates.UserAggregate.ValueObjects;
 using Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
+using ThinkTogether.Domain.Enums;
 using ThinkTogether.Infrastructure.Interfaces;
 using ThinkTogether.Infrastructure.Persistence;
-using ThinkTogether.Infrastructure.Persistence.Seeders;
 
 namespace ThinkTogether.Infrastructure.Services;
 
@@ -30,9 +30,6 @@ public class DbInitializer : IDbInitializer
     {
         // Apply migrations
         await _context.Database.MigrateAsync();
-
-        // Seed roles first (required for admin user)
-        await RoleSeeder.SeedRolesAsync(_context);
 
         // Seed admin user
         await SeedAdminUserAsync();
@@ -66,7 +63,7 @@ public class DbInitializer : IDbInitializer
             adminOptions.FirstName,
             adminOptions.LastName,
             passwordHash,
-            User.AdminRoleId
+            RoleType.Administrator
         );
 
         _context.Users.Add(adminUser);

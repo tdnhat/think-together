@@ -15,3 +15,6 @@ export { QuestionCard } from './question-card'
 export { QuestionForm } from './question-form'
 export { QuestionList } from './question-list'
 export { QuestionModal } from './question-modal'
+
+// Utility components
+export { ImageUpload } from './image-upload'

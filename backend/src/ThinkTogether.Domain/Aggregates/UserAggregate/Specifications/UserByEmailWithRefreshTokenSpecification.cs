@@ -1,5 +1,5 @@
-using Domain.Aggregates.UserAggregate;
-using Domain.Aggregates.UserAggregate.ValueObjects;
+using ThinkTogether.Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
 using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;

@@ -41,7 +41,7 @@ public class QuestionStatisticConfiguration : IEntityTypeConfiguration<QuestionS
             .HasDefaultValue(0);
 
         builder.Property(qs => qs.Difficulty)
-            .HasColumnName("doDung")
+            .HasColumnName("doKho")
             .IsRequired()
             .HasDefaultValue(0m)
             .HasPrecision(5, 2);
@@ -54,6 +54,9 @@ public class QuestionStatisticConfiguration : IEntityTypeConfiguration<QuestionS
         builder.Property(qs => qs.UpdatedAt)
             .HasColumnName("ngayCapNhat");
 
+        builder.Property(qs => qs.DeletedAt)
+            .HasColumnName("ngayXoa");
+
         // Add check constraints
         builder.ToTable(tb =>
         {
@@ -61,14 +64,23 @@ public class QuestionStatisticConfiguration : IEntityTypeConfiguration<QuestionS
             tb.HasCheckConstraint("CK_ThongKeCauHoi_soLanTraLoiDung", "soLanTraLoiDung >= 0");
             tb.HasCheckConstraint("CK_ThongKeCauHoi_soLanTraLoiSai", "soLanTraLoiSai >= 0");
             tb.HasCheckConstraint("CK_ThongKeCauHoi_thoiGianTrungBinhMs", "thoiGianTrungBinhMs >= 0");
-            tb.HasCheckConstraint("CK_ThongKeCauHoi_doDung", "doDung >= 0 AND doDung <= 100");
+            tb.HasCheckConstraint("CK_ThongKeCauHoi_doKho", "doKho >= 0 AND doKho <= 100");
         });
+
+        // Foreign key to Question
+        builder.HasOne<Question>()
+            .WithOne()
+            .HasForeignKey<QuestionStatistic>(qs => qs.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Unique constraint on QuestionId
         builder.HasIndex(qs => qs.QuestionId).IsUnique();
 
         // Index on Difficulty
         builder.HasIndex(qs => qs.Difficulty);
+        
+        // Index for soft delete
+        builder.HasIndex(qs => qs.DeletedAt);
     }
 }
 

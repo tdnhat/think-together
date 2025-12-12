@@ -32,7 +32,7 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
       </div>
 
       {/* Cover and Title Section */}
-      <Card variant="primary" className="overflow-hidden">
+      <Card className="overflow-hidden">
         {quizSet.coverImageUrl && (
           <div className="relative h-48 w-full bg-gray-100 sm:h-64">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -52,11 +52,11 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
               </CardTitle>
               <div className="flex flex-wrap gap-2">
                 {quizSet.isPublished ? (
-                  <Badge variant="success">Đã xuất bản</Badge>
+                  <Badge variant="default" className="bg-green-400 text-black">Đã xuất bản</Badge>
                 ) : (
                   <Badge variant="neutral">Bản nháp</Badge>
                 )}
-                <Badge variant="outline" className="text-[var(--text-secondary)]">
+                <Badge variant="neutral" className="text-[var(--text-secondary)]">
                   <Calendar className="mr-1 h-3 w-3" />
                   {format(new Date(quizSet.createdAt), 'dd/MM/yyyy', { locale: vi })}
                 </Badge>

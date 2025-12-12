@@ -1,8 +1,8 @@
-using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class GameSettingsConfiguration : IEntityTypeConfiguration<GameSettings>
 {

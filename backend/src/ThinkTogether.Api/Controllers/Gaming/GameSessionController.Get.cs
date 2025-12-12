@@ -1,0 +1,57 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ThinkTogether.Api.Models;
+using ThinkTogether.Application.DTOs;
+using ThinkTogether.Application.Handlers.GameSession.Queries.GetGameSession;
+using ThinkTogether.Application.Handlers.GameSession.Queries.GetGameSessionByPin;
+using ThinkTogether.Application.Handlers.GameSession.Queries.GetLeaderboard;
+
+namespace ThinkTogether.Api.Controllers.Gaming;
+
+public partial class GameSessionController
+{
+    [HttpGet("{id:guid}")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<GameSessionDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGameSession(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetGameSessionQuery(id);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<GameSessionDto>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    [HttpGet("by-pin/{pin}")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<GameSessionDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGameSessionByPin(string pin, CancellationToken cancellationToken)
+    {
+        var query = new GetGameSessionByPinQuery(pin);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<GameSessionDto>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    [HttpGet("{id:guid}/leaderboard")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<List<LeaderboardEntryDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetLeaderboard(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetLeaderboardQuery(id);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<List<LeaderboardEntryDto>>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+}

@@ -1,8 +1,8 @@
-using Domain.Aggregates.ClassAggregate.Entities;
-using Domain.Exceptions;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.ClassAggregate;
+namespace ThinkTogether.Domain.Aggregates.ClassAggregate;
 
 public sealed partial class Class : AggregateRoot
 {
@@ -72,4 +72,3 @@ public sealed partial class Class : AggregateRoot
         return code;
     }
 }
-

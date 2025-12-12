@@ -1,6 +1,6 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 
-namespace Domain.Aggregates.UserAggregate.ValueObjects;
+namespace ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
 
 public sealed record Password(string HashedValue)
 {

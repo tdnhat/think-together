@@ -1,8 +1,8 @@
-using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class GameQuestionConfiguration : IEntityTypeConfiguration<GameQuestion>
 {
@@ -64,12 +64,9 @@ public class GameQuestionConfiguration : IEntityTypeConfiguration<GameQuestion>
             tb.HasCheckConstraint("CK_CauHoiPhienChoi_thoiGian", "thoiGianTraLoiTrungBinh >= 0");
         });
 
-        // Foreign keys
-        builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
-            .WithMany()
-            .HasForeignKey(gq => gq.GameSessionId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to GameSession is defined in GameSessionConfiguration using navigation property
 
+        // Foreign key to Question
         builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question>()
             .WithMany()
             .HasForeignKey(gq => gq.QuestionId)

@@ -1,13 +1,13 @@
-using Domain.Aggregates.UserAggregate;
-using Domain.Aggregates.UserAggregate.ValueObjects;
-using Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Specifications;
+using ThinkTogether.Domain.Enums;
 using Microsoft.Extensions.Options;
 using Infrastructure.Configuration;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Infrastructure.Services;
 
@@ -62,7 +62,7 @@ public class AuthenticationService : IAuthenticationService
             throw new ConflictException("Email đã được đăng ký");
 
         var passwordHash = _passwordService.HashPassword(plainTextPassword);
-        var user = User.Create(emailValue, firstName, lastName, passwordHash, User.UserRoleId);
+        var user = User.Create(emailValue, firstName, lastName, passwordHash, RoleType.User);
 
         return user;
     }
@@ -123,7 +123,7 @@ public class AuthenticationService : IAuthenticationService
         var resetToken = GenerateSecureToken();
         var tokenLifetime = TimeSpan.FromHours(_authenticationOptions.PasswordResetTokenLifetimeHours);
 
-        var passwordResetTokenEntity = UserToken.Create(TokenType.PASSWORD_RESET, user.Id, resetToken, tokenLifetime);
+        var passwordResetTokenEntity = UserToken.Create(TokenType.PasswordReset, user.Id, resetToken, tokenLifetime);
         user.AddUserToken(passwordResetTokenEntity);
 
         // Replace {token} placeholder with actual token
@@ -166,7 +166,7 @@ public class AuthenticationService : IAuthenticationService
         var confirmationToken = GenerateSecureToken();
         var tokenLifetime = TimeSpan.FromHours(_authenticationOptions.EmailConfirmationTokenLifetimeHours);
 
-        var emailConfirmationTokenEntity = UserToken.Create(TokenType.EMAIL_CONFIRMATION, user.Id, confirmationToken, tokenLifetime);
+        var emailConfirmationTokenEntity = UserToken.Create(TokenType.EmailConfirmation, user.Id, confirmationToken, tokenLifetime);
         user.AddUserToken(emailConfirmationTokenEntity);
 
         // Replace {token} placeholder with actual token
@@ -184,7 +184,7 @@ public class AuthenticationService : IAuthenticationService
             throw new ValidationException("Token xác nhận email là bắt buộc");
 
         // Find user by email confirmation token
-        var specification = new UserByUserTokenSpecification(confirmationToken, TokenType.EMAIL_CONFIRMATION);
+        var specification = new UserByUserTokenSpecification(confirmationToken, TokenType.EmailConfirmation);
         var user = await _userRepository.GetBySpecAsync(specification);
 
         if (user == null || !user.CanAuthenticate())

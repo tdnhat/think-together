@@ -1,8 +1,8 @@
-using Domain.Aggregates.ChallengeAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class ChallengeAnswerConfiguration : IEntityTypeConfiguration<ChallengeAnswer>
 {
@@ -57,12 +57,9 @@ public class ChallengeAnswerConfiguration : IEntityTypeConfiguration<ChallengeAn
             tb.HasCheckConstraint("CK_CauTraLoiThachThuc_diemDat", "diemDat >= 0");
         });
 
-        // Foreign keys
-        builder.HasOne<Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt>()
-            .WithMany()
-            .HasForeignKey(ca => ca.ChallengeAttemptId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to ChallengeAttempt is defined in ChallengeAttemptConfiguration using navigation property
 
+        // Foreign key to Question
         builder.HasOne<ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question>()
             .WithMany()
             .HasForeignKey(ca => ca.QuestionId)

@@ -1,8 +1,8 @@
-using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
 {
@@ -25,11 +25,15 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
             .IsRequired()
             .HasMaxLength(100);
 
+        // Store ConnectionStatus enum as integer
         builder.Property(gp => gp.ConnectionStatus)
             .HasColumnName("trangThaiKetNoi")
             .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(20);
+            .HasConversion<int>();
+
+        builder.Property(gp => gp.ConnectionId)
+            .HasColumnName("idKetNoi")
+            .HasMaxLength(100);
 
         builder.Property(gp => gp.CreatedAt)
             .HasColumnName("ngayTao")
@@ -46,15 +50,15 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
         builder.ToTable(tb =>
         {
             tb.HasCheckConstraint("CK_NguoiChoiPhien_trangThaiKetNoi",
-                "trangThaiKetNoi IN ('Connected', 'Disconnected')");
+                "trangThaiKetNoi IN (1, 2)");
             tb.HasCheckConstraint("CK_NguoiChoiPhien_bietDanh",
                 "LEN(bietDanh) >= 2 AND LEN(bietDanh) <= 100");
         });
 
-        // Foreign key
-        builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
-            .WithMany()
-            .HasForeignKey(gp => gp.GameSessionId)
+        // Navigation property - answers
+        builder.HasMany(gp => gp.Answers)
+            .WithOne()
+            .HasForeignKey(pa => pa.GamePlayerId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes

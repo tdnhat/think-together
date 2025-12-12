@@ -66,15 +66,6 @@ export {
   selectAuthActions,
 } from '@/features/auth/stores/auth.store';
 
-// Game Store (re-export from features)
-export {
-  useGameStore,
-  selectSession,
-  selectIsHost,
-  selectCurrentQuestion,
-  selectLeaderboard,
-  selectTimeRemaining,
-  selectIsConnected,
-  selectGameActions,
-} from '@/features/game/store/game.store';
+// Game Store removed - use game-host and game-player stores instead
+// Import from @/features/game-host or @/features/game-player
 

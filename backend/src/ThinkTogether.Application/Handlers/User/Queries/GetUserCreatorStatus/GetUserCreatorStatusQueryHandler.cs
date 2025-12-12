@@ -1,9 +1,8 @@
-using Domain.Exceptions;
 using MediatR;
 using ThinkTogether.Application.Interfaces;
-
-using ThinkTogether.Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.User.Queries.GetUserCreatorStatus;
 
@@ -34,8 +33,8 @@ public sealed class GetUserCreatorStatusQueryHandler : IRequestHandler<GetUserCr
 
         return new UserCreatorStatusDto
         {
-            IsCreator = user.RoleId == ThinkTogether.Domain.Aggregates.UserAggregate.User.CreatorRoleId || user.RoleId == ThinkTogether.Domain.Aggregates.UserAggregate.User.AdminRoleId,
-            IsAdmin = user.RoleId == ThinkTogether.Domain.Aggregates.UserAggregate.User.AdminRoleId
+            IsCreator = user.Role == RoleType.Creator || user.Role == RoleType.Administrator,
+            IsAdmin = user.Role == RoleType.Administrator
         };
     }
 }

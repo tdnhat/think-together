@@ -1,4 +1,4 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate.ValueObjects;
 
@@ -43,4 +43,3 @@ public record QuestionOption
         };
     }
 }
-

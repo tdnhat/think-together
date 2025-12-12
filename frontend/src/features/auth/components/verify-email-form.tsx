@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -21,6 +21,7 @@ type VerifyEmailFormData = z.infer<typeof verifyEmailSchema>
 export function VerifyEmailForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   const {
     register,
@@ -29,6 +30,16 @@ export function VerifyEmailForm() {
   } = useForm<VerifyEmailFormData>({
     resolver: zodResolver(verifyEmailSchema),
   })
+
+  useEffect(() => {
+    // Check if user just registered
+    const storedEmail = sessionStorage.getItem('pendingVerificationEmail')
+    if (storedEmail) {
+      setPendingEmail(storedEmail)
+      // Clear from sessionStorage after reading
+      sessionStorage.removeItem('pendingVerificationEmail')
+    }
+  }, [])
 
   const onSubmit = async (data: VerifyEmailFormData) => {
     setIsLoading(true)
@@ -47,14 +58,43 @@ export function VerifyEmailForm() {
     }
   }
 
+  // User just registered - show notification
+  if (pendingEmail) {
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-col items-center space-y-4 text-center py-8">
+          <Mail className="h-12 w-12 text-[var(--brand-primary)]" />
+          <div className="space-y-2">
+            <h3 className="text-lg font-heading">Kiểm tra email của bạn</h3>
+            <p className="text-foreground/70">
+              Chúng tôi đã gửi email xác nhận đến <span className="font-medium">{pendingEmail}</span>
+            </p>
+          </div>
+        </div>
+
+        <Button
+          variant="neutral"
+          size="lg"
+          className="w-full"
+          onClick={() => setPendingEmail(null)}
+        >
+          Gửi lại email xác nhận
+        </Button>
+      </div>
+    )
+  }
+
+  // User navigated directly or requested resend - show form
   if (emailSent) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <Mail className="h-12 w-12 text-[var(--brand-primary)]" />
-        <h3 className="text-lg font-heading">Email đã được gửi!</h3>
-        <p className="text-center text-foreground/70">
-          Vui lòng kiểm tra hộp thư của bạn và nhấp vào liên kết xác nhận.
-        </p>
+      <div className="space-y-4">
+        <div className="flex flex-col items-center space-y-4 py-8">
+          <Mail className="h-12 w-12 text-[var(--brand-primary)]" />
+          <h3 className="text-lg font-heading">Email đã được gửi!</h3>
+          <p className="text-center text-foreground/70">
+            Vui lòng kiểm tra hộp thư của bạn và nhấp vào liên kết xác nhận.
+          </p>
+        </div>
       </div>
     )
   }
@@ -74,7 +114,7 @@ export function VerifyEmailForm() {
         disabled={isLoading}
       />
 
-      <Button type="submit" variant="default" className="w-full" disabled={isLoading}>
+      <Button type="submit" variant="default" size="lg" className="w-full" disabled={isLoading}>
         {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
         Gửi email xác nhận
       </Button>

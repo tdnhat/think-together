@@ -1,4 +1,4 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Shared.Primitives;
 
@@ -61,4 +61,3 @@ public sealed partial class QuizSet : AggregateRoot
         return question;
     }
 }
-

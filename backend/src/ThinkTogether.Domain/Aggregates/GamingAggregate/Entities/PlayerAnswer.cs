@@ -1,7 +1,7 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.GamingAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
 public sealed class PlayerAnswer : Entity
 {
@@ -10,6 +10,8 @@ public sealed class PlayerAnswer : Entity
     }
 
     public Guid Id { get; private set; }
+
+    public Guid GameSessionId { get; private set; }
 
     public Guid GamePlayerId { get; private set; }
 
@@ -22,12 +24,16 @@ public sealed class PlayerAnswer : Entity
     public int PointsEarned { get; private set; }
 
     public static PlayerAnswer Create(
+        Guid gameSessionId,
         Guid gamePlayerId,
         Guid gameQuestionId,
         bool isCorrect,
         int responseTimeMs,
         int pointsEarned)
     {
+        if (gameSessionId == Guid.Empty)
+            throw new ValidationException("ID phiên trò chơi không được trống");
+
         if (gamePlayerId == Guid.Empty)
             throw new ValidationException("ID người chơi trò chơi không được trống");
 
@@ -43,6 +49,7 @@ public sealed class PlayerAnswer : Entity
         return new PlayerAnswer
         {
             Id = Guid.NewGuid(),
+            GameSessionId = gameSessionId,
             GamePlayerId = gamePlayerId,
             GameQuestionId = gameQuestionId,
             IsCorrect = isCorrect,
@@ -53,4 +60,3 @@ public sealed class PlayerAnswer : Entity
         };
     }
 }
-

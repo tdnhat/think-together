@@ -12,6 +12,7 @@ builder.Services.AddApiServices();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCorsConfiguration();
+builder.Services.AddSignalRServices();
 
 var app = builder.Build();
 
@@ -20,6 +21,9 @@ await app.InitializeDatabaseAsync();
 
 // Configure middleware pipeline
 app.ConfigurePipeline();
+
+// Map SignalR hubs
+app.MapSignalRHubs();
 
 await app.RunAsync();
 

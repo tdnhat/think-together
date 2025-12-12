@@ -1,9 +1,9 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.GamingAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-public sealed class GameSettings : Entity
+public sealed partial class GameSettings : Entity
 {
     private GameSettings()
     {
@@ -38,18 +38,4 @@ public sealed class GameSettings : Entity
             UpdatedAt = DateTime.UtcNow
         };
     }
-
-    public void UpdateSettings(
-        bool shuffleQuestions,
-        bool shuffleAnswers,
-        bool showLeaderboard,
-        bool showCorrectAnswers)
-    {
-        ShuffleQuestions = shuffleQuestions;
-        ShuffleAnswers = shuffleAnswers;
-        ShowLeaderboard = showLeaderboard;
-        ShowCorrectAnswers = showCorrectAnswers;
-        UpdatedAt = DateTime.UtcNow;
-    }
 }
-

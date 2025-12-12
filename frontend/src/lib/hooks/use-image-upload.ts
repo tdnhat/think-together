@@ -10,7 +10,7 @@ interface UseImageUploadOptions {
   onError?: (error: string) => void
 }
 
-interface UseImageUploadReturn {
+export interface UseImageUploadReturn {
   isUploading: boolean
   uploadProgress: number
   error: string | null

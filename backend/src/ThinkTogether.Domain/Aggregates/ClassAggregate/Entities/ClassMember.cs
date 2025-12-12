@@ -1,9 +1,9 @@
-using Domain.Exceptions;
+using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 
-namespace Domain.Aggregates.ClassAggregate.Entities;
+namespace ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 
-public sealed class ClassMember : Entity
+public sealed partial class ClassMember : Entity
 {
     private ClassMember()
     {
@@ -38,14 +38,4 @@ public sealed class ClassMember : Entity
             UpdatedAt = DateTime.UtcNow
         };
     }
-
-    public void MarkAsLeft()
-    {
-        if (LeftAt == null)
-        {
-            LeftAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
-        }
-    }
 }
-

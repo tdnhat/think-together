@@ -1,6 +1,6 @@
-using Domain.Aggregates.ChallengeAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
@@ -39,11 +39,11 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             .IsRequired()
             .HasMaxLength(500);
 
+        // Store ChallengeStatus enum as integer
         builder.Property(c => c.Status)
             .HasColumnName("trangThai")
             .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(20);
+            .HasConversion<int>();
 
         builder.Property(c => c.ShowLeaderboard)
             .HasColumnName("hienThiBangXepHang")
@@ -70,7 +70,7 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         builder.ToTable(tb =>
         {
             tb.HasCheckConstraint("CK_ThachThuc_trangThai",
-                "trangThai IN ('Active', 'Archived')");
+                "trangThai IN (1, 2)");
             tb.HasCheckConstraint("CK_ThachThuc_luotChoi", "luotChoi >= 0");
         });
 
@@ -88,7 +88,8 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             .HasForeignKey(c => c.QuizSetId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany<global::Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt>()
+        // Use navigation property to avoid shadow FK
+        builder.HasMany(c => c.Attempts)
             .WithOne()
             .HasForeignKey(ca => ca.ChallengeId)
             .OnDelete(DeleteBehavior.Cascade);

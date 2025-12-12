@@ -1,6 +1,6 @@
-using Domain.Aggregates.GamingAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.GamingAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
@@ -30,11 +30,11 @@ public class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
             .IsRequired()
             .HasMaxLength(6);
 
+        // Store GameStatus enum as integer
         builder.Property(gs => gs.Status)
             .HasColumnName("trangThai")
             .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(20);
+            .HasConversion<int>();
 
         builder.Property(gs => gs.CurrentQuestionIndex)
             .HasColumnName("cauHoiHienTai")
@@ -62,7 +62,7 @@ public class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
         builder.ToTable(tb =>
         {
             tb.HasCheckConstraint("CK_PhienChoi_trangThai", 
-                "trangThai IN ('Waiting', 'Started', 'Ended')");
+                "trangThai IN (1, 2, 3)");
             tb.HasCheckConstraint("CK_PhienChoi_maPIN", 
                 "LEN(maPIN) = 6 AND maPIN LIKE '[0-9][0-9][0-9][0-9][0-9][0-9]'");
             tb.HasCheckConstraint("CK_PhienChoi_cauHoiHienTai", 
@@ -82,20 +82,26 @@ public class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
             .HasForeignKey(gs => gs.QuizSetId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany<global::Domain.Aggregates.GamingAggregate.Entities.GamePlayer>()
+        // Use navigation properties for child collections to avoid shadow FKs
+        builder.HasMany(gs => gs.Players)
             .WithOne()
             .HasForeignKey(gp => gp.GameSessionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany<global::Domain.Aggregates.GamingAggregate.Entities.GameQuestion>()
+        builder.HasMany(gs => gs.GameQuestions)
             .WithOne()
             .HasForeignKey(gq => gq.GameSessionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany<global::Domain.Aggregates.GamingAggregate.Entities.GameScore>()
+        builder.HasMany(gs => gs.Scores)
             .WithOne()
-            .HasForeignKey(gs => gs.GameSessionId)
+            .HasForeignKey(score => score.GameSessionId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(gs => gs.PlayerAnswers)
+            .WithOne()
+            .HasForeignKey("GameSessionId")
+            .OnDelete(DeleteBehavior.NoAction);
 
         // Indexes
         builder.HasIndex(gs => gs.HostUserId);

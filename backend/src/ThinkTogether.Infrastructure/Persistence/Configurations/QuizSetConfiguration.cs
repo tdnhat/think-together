@@ -19,7 +19,7 @@ public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
             .ValueGeneratedNever();
 
         builder.Property(qs => qs.CreatorId)
-            .HasColumnName("idNguoiDung")
+            .HasColumnName("idNguoiTao")
             .IsRequired();
 
         builder.Property(qs => qs.Title)
@@ -56,14 +56,14 @@ public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
         builder.Property(qs => qs.DeletedAt)
             .HasColumnName("ngayXoa");
 
-        // Foreign key to User
+        // Foreign key to User (Creator)
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(qs => qs.CreatorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Relationship to Questions
-        builder.HasMany<Question>()
+        // Relationship to Questions - use navigation property to avoid shadow FK
+        builder.HasMany(qs => qs.Questions)
             .WithOne()
             .HasForeignKey(q => q.QuizSetId)
             .OnDelete(DeleteBehavior.Cascade);

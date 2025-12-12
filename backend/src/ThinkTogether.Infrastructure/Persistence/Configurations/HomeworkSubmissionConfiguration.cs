@@ -1,6 +1,7 @@
-using Domain.Aggregates.ClassAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
@@ -39,11 +40,11 @@ public class HomeworkSubmissionConfiguration : IEntityTypeConfiguration<Homework
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
+        // Store SubmissionStatus enum as integer
         builder.Property(hs => hs.Status)
             .HasColumnName("trangThai")
             .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(20);
+            .HasConversion<int>();
 
         builder.Property(hs => hs.CreatedAt)
             .HasColumnName("ngayTao")
@@ -60,7 +61,7 @@ public class HomeworkSubmissionConfiguration : IEntityTypeConfiguration<Homework
         builder.ToTable(tb =>
         {
             tb.HasCheckConstraint("CK_BaiNop_trangThai",
-                "trangThai IN ('Submitted', 'Late', 'NotSubmitted')");
+                "trangThai IN (0, 1, 2)");
             tb.HasCheckConstraint("CK_BaiNop_diem", "diem >= 0");
         });
 
@@ -70,18 +71,16 @@ public class HomeworkSubmissionConfiguration : IEntityTypeConfiguration<Homework
         // Unique constraint on ChallengeAttemptId
         builder.HasIndex(hs => hs.ChallengeAttemptId).IsUnique();
 
-        // Foreign keys
-        builder.HasOne<Homework>()
-            .WithMany()
-            .HasForeignKey(hs => hs.HomeworkId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to Homework is defined in HomeworkConfiguration using navigation property
 
+        // Foreign key to User (Student)
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(hs => hs.StudentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<global::Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt>()
+        // Foreign key to ChallengeAttempt
+        builder.HasOne<ChallengeAttempt>()
             .WithMany()
             .HasForeignKey(hs => hs.ChallengeAttemptId)
             .OnDelete(DeleteBehavior.Restrict);

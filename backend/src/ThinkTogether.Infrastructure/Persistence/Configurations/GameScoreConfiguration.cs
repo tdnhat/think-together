@@ -1,8 +1,8 @@
-using Domain.Aggregates.GamingAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class GameScoreConfiguration : IEntityTypeConfiguration<GameScore>
 {
@@ -75,11 +75,7 @@ public class GameScoreConfiguration : IEntityTypeConfiguration<GameScore>
         // Unique constraint on GamePlayerId
         builder.HasIndex(gs => gs.GamePlayerId).IsUnique();
 
-        // Foreign keys
-        builder.HasOne<Domain.Aggregates.GamingAggregate.GameSession>()
-            .WithMany()
-            .HasForeignKey(gs => gs.GameSessionId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Note: Foreign key to GameSession is defined in GameSessionConfiguration using navigation property
 
         // NO ACTION to avoid multiple cascade paths (GameSession -> GamePlayer -> GameScore)
         builder.HasOne<Domain.Aggregates.GamingAggregate.Entities.GamePlayer>()

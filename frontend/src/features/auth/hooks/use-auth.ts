@@ -114,7 +114,9 @@ export function useAuth() {
       
       if (response.success) {
         toastSuccess(AUTH.MESSAGES.REGISTER_SUCCESS)
-        router.push(ROUTES.AUTH.VERIFY_EMAIL)
+        // Store email temporarily for verify-email page
+        sessionStorage.setItem('pendingVerificationEmail', data.email)
+        router.push(ROUTES.auth.verifyEmail)
         
         return { success: true as const }
       }
@@ -143,7 +145,7 @@ export function useAuth() {
       apiClient.clearToken()
       logoutAction()
       toastSuccess(AUTH.MESSAGES.LOGOUT_SUCCESS)
-      router.push(ROUTES.AUTH.LOGIN)
+      router.push(ROUTES.auth.login)
     } catch (error) {
       handleError(error, {
         showToast: false,
@@ -151,13 +153,13 @@ export function useAuth() {
       // Still clear session even if API call fails
       apiClient.clearToken()
       logoutAction()
-      router.push(ROUTES.AUTH.LOGIN)
+      router.push(ROUTES.auth.login)
     }
   }, [logoutAction, router])
 
   const refreshAuth = useCallback(async () => {
     if (!token) {
-      router.push(ROUTES.AUTH.LOGIN)
+      router.push(ROUTES.auth.login)
       return false
     }
 
@@ -171,7 +173,7 @@ export function useAuth() {
       }
 
       // Refresh failed, redirect to login
-      router.push(ROUTES.AUTH.LOGIN)
+      router.push(ROUTES.auth.login)
       return false
     } catch (error) {
       handleError(error, {
@@ -179,7 +181,7 @@ export function useAuth() {
       })
       // Clear session and redirect to login
       logoutAction()
-      router.push(ROUTES.AUTH.LOGIN)
+      router.push(ROUTES.auth.login)
       return false
     }
   }, [token, logoutAction, router])

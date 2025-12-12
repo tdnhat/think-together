@@ -12,7 +12,7 @@ interface QuizInfoStatsProps {
 
 export function QuizInfoStats({ quizSet }: QuizInfoStatsProps) {
   return (
-    <Card variant="secondary">
+    <Card>
       <CardHeader>
         <CardTitle className="text-lg">Thông tin</CardTitle>
       </CardHeader>

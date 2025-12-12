@@ -1,8 +1,8 @@
-using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Events;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.DomainEventHandlers.User;
 

@@ -15,11 +15,10 @@ public sealed class TokenClaimService : ITokenClaimService
             new(JwtRegisteredClaimNames.Email, user.Email.Value),
             new(JwtRegisteredClaimNames.GivenName, user.FirstName),
             new(JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new("role", user.Role?.Name ?? string.Empty),
+            new("role", user.Role.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         return Task.FromResult<IEnumerable<Claim>>(claims);
     }
 }
-

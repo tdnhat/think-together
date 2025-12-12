@@ -1,4 +1,5 @@
 using Shared.Primitives;
+using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
 
@@ -19,6 +20,6 @@ public sealed partial class UserToken : Entity
     }
 
     // Helper methods for specific token types
-    public bool IsPasswordResetToken() => Type == TokenType.PASSWORD_RESET;
-    public bool IsEmailConfirmationToken() => Type == TokenType.EMAIL_CONFIRMATION;
+    public bool IsPasswordResetToken() => Type == TokenType.PasswordReset;
+    public bool IsEmailConfirmationToken() => Type == TokenType.EmailConfirmation;
 }

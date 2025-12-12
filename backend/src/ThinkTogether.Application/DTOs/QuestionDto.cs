@@ -1,4 +1,5 @@
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
+using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Application.DTOs;
 

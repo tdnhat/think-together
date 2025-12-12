@@ -1,6 +1,6 @@
 using Shared.Common;
 
-namespace Domain.Exceptions;
+namespace ThinkTogether.Domain.Exceptions;
 
 public class ForbiddenException : DomainException
 {
@@ -13,4 +13,3 @@ public class ForbiddenException : DomainException
     {
     }
 }
-

@@ -1,5 +1,5 @@
-using Domain.Aggregates.UserAggregate.ValueObjects;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Aggregates.UserAggregate.ValueObjects;
 
 namespace ThinkTogether.Infrastructure.Services;
 
