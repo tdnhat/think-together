@@ -84,6 +84,13 @@ public sealed class DuplicateQuestionCommandHandler : IRequestHandler<DuplicateQ
                     duplicatedQuestion.SetVideoDetails(originalQuestion.VideoUrl, originalQuestion.VideoTimestamp.Value);
                 }
                 break;
+
+            case QuestionType.Audio:
+                if (!string.IsNullOrEmpty(originalQuestion.AudioUrl) && originalQuestion.AudioTimestamp.HasValue)
+                {
+                    duplicatedQuestion.SetAudioDetails(originalQuestion.AudioUrl, originalQuestion.AudioTimestamp.Value);
+                }
+                break;
         }
 
         quizSet.AddQuestion(duplicatedQuestion);

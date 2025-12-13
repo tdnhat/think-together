@@ -61,6 +61,22 @@ export function QuestionForm({
       }
     }
 
+    if (question?.type === QuestionType.VIDEO) {
+      return {
+        ...baseValues,
+        videoUrl: question?.videoUrl || '',
+        videoTimestamp: question?.videoTimestamp || 0,
+      }
+    }
+
+    if (question?.type === QuestionType.AUDIO) {
+      return {
+        ...baseValues,
+        audioUrl: question?.audioUrl || '',
+        audioTimestamp: question?.audioTimestamp || 0,
+      }
+    }
+
     return {
       ...baseValues,
       options: question?.options || [
@@ -83,6 +99,10 @@ export function QuestionForm({
   const options = watch('options') || []
   const matchingPairs = watch('matchingPairs') || []
   const orderingItems = watch('orderingItems') || []
+  const videoUrl = watch('videoUrl')
+  const videoTimestamp = watch('videoTimestamp')
+  const audioUrl = watch('audioUrl')
+  const audioTimestamp = watch('audioTimestamp')
   const timeLimit = watch('timeLimit')
 
   // Handle type changes - reset type-specific data
@@ -91,39 +111,61 @@ export function QuestionForm({
     if (question) return // Don't reset when editing an existing question
 
     if ([QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.MULTIPLE_CHOICE].includes(type as QuestionType)) {
-      // Ensure options exist for choice questions
-      if (!options || options.length === 0) {
-        setValue('options', [
-          { content: '', isCorrect: false, displayOrder: 0 },
-          { content: '', isCorrect: false, displayOrder: 1 },
-        ])
-      }
-      // Clear matching and ordering data
+      // ...existing code...
+      setValue('options', [
+        { content: '', isCorrect: false, displayOrder: 0 },
+        { content: '', isCorrect: false, displayOrder: 1 },
+      ])
+      // ...existing code...
       setValue('matchingPairs', undefined)
       setValue('orderingItems', undefined)
+      setValue('videoUrl', undefined)
+      setValue('videoTimestamp', undefined)
     } else if (type === QuestionType.MATCHING) {
-      // Ensure matching pairs exist
-      if (!matchingPairs || matchingPairs.length === 0) {
-        setValue('matchingPairs', [
-          { id: crypto.randomUUID(), leftContent: '', rightContent: '', displayOrder: 0 },
-          { id: crypto.randomUUID(), leftContent: '', rightContent: '', displayOrder: 1 },
-        ])
-      }
-      // Clear other data
+      // ...existing code...
+      setValue('matchingPairs', [
+        { id: crypto.randomUUID(), leftContent: '', rightContent: '', displayOrder: 0 },
+        { id: crypto.randomUUID(), leftContent: '', rightContent: '', displayOrder: 1 },
+      ])
+      // ...existing code...
       setValue('options', undefined)
       setValue('orderingItems', undefined)
+      setValue('videoUrl', undefined)
+      setValue('videoTimestamp', undefined)
     } else if (type === QuestionType.ORDERING) {
-      // Ensure ordering items exist
-      if (!orderingItems || orderingItems.length === 0) {
-        setValue('orderingItems', [
-          { id: crypto.randomUUID(), content: '', correctPosition: 0 },
-          { id: crypto.randomUUID(), content: '', correctPosition: 1 },
-          { id: crypto.randomUUID(), content: '', correctPosition: 2 },
-        ])
-      }
-      // Clear other data
+      // ...existing code...
+      setValue('orderingItems', [
+        { id: crypto.randomUUID(), content: '', correctPosition: 0 },
+        { id: crypto.randomUUID(), content: '', correctPosition: 1 },
+        { id: crypto.randomUUID(), content: '', correctPosition: 2 },
+      ])
+      // ...existing code...
       setValue('options', undefined)
       setValue('matchingPairs', undefined)
+      setValue('videoUrl', undefined)
+      setValue('videoTimestamp', undefined)
+    } else if (type === QuestionType.VIDEO) {
+      // Clear other data for video questions
+      setValue('options', undefined)
+      setValue('matchingPairs', undefined)
+      setValue('orderingItems', undefined)
+      setValue('audioUrl', undefined)
+      setValue('audioTimestamp', undefined)
+      // Initialize timestamp if not set (only on initial load)
+      if (!videoUrl) {
+        setValue('videoTimestamp', 0)
+      }
+    } else if (type === QuestionType.AUDIO) {
+      // Clear other data for audio questions
+      setValue('options', undefined)
+      setValue('matchingPairs', undefined)
+      setValue('orderingItems', undefined)
+      setValue('videoUrl', undefined)
+      setValue('videoTimestamp', undefined)
+      // Initialize timestamp if not set (only on initial load)
+      if (!audioUrl) {
+        setValue('audioTimestamp', 0)
+      }
     }
   }, [type, question, setValue])
 
@@ -158,6 +200,12 @@ export function QuestionForm({
         content: item.content.trim(),
         correctPosition: idx + 1, // Convert from 0-based to 1-based
       })) || []
+    } else if (formData.type === QuestionType.VIDEO) {
+      createData.videoUrl = formData.videoUrl?.trim()
+      createData.videoTimestamp = formData.videoTimestamp || 0
+    } else if (formData.type === QuestionType.AUDIO) {
+      createData.audioUrl = formData.audioUrl?.trim()
+      createData.audioTimestamp = formData.audioTimestamp || 0
     }
 
     await onSubmit(createData)
@@ -659,6 +707,192 @@ export function QuestionForm({
             </div>
           </FormItem>
         )}
+
+        {/* Video (for video questions) */}
+        {type === QuestionType.VIDEO && (
+          <>
+            {/* Video URL Input */}
+            <FormField
+              control={control}
+              name="videoUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>
+                    URL Video <span className="text-[var(--color-error)]">*</span>
+                  </Label>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
+                      className={formState.errors.videoUrl ? 'border-[var(--color-error)]' : ''}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    Hỗ trợ YouTube URLs. Ví dụ: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Video Timestamp Input */}
+            <FormField
+              control={control}
+              name="videoTimestamp"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>
+                    Thời gian bắt đầu video (giây)
+                  </Label>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      className={formState.errors.videoTimestamp ? 'border-[var(--color-error)]' : ''}
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    Video sẽ bắt đầu từ thời gian này (tính bằng giây). Ví dụ: 120 = 2 phút
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Video Preview */}
+            {videoUrl && (
+              <div className="bg-[var(--bg-surface-secondary)] rounded-lg border border-[var(--border-secondary)] p-4">
+                <p className="text-sm font-medium text-[var(--text-primary)] mb-2">Xem trước video:</p>
+                <div className="bg-black rounded aspect-video flex items-center justify-center">
+                  <p className="text-white text-sm">
+                    Video preview sẽ được hiển thị tại đây
+                  </p>
+                </div>
+                <p className="text-xs text-[var(--text-secondary)] mt-2">
+                  {videoUrl}
+                  {videoTimestamp && videoTimestamp > 0 && ` (bắt đầu từ ${videoTimestamp}s)`}
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Audio (for audio questions) */}
+        {type === QuestionType.AUDIO && (
+          <>
+            {/* Audio File Upload */}
+            <FormField
+              control={control}
+              name="audioUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>
+                    Tệp Âm thanh <span className="text-[var(--color-error)]">*</span>
+                  </Label>
+                  <FormControl>
+                    <div className="space-y-2">
+                      {!audioUrl ? (
+                        <div className="border-2 border-dashed border-[var(--border-secondary)] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--brand-primary)] transition-colors"
+                          onClick={() => document.getElementById('audio-input')?.click()}
+                        >
+                          <input
+                            id="audio-input"
+                            type="file"
+                            accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/flac,audio/webm,.mp3,.wav,.ogg,.m4a,.flac,.webm"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0]
+                              if (file) {
+                                // Upload file to Cloudinary via backend
+                                const formData = new FormData()
+                                formData.append('file', file)
+                                try {
+                                  const response = await fetch('/api/upload/audio', {
+                                    method: 'POST',
+                                    body: formData,
+                                  })
+                                  const data = await response.json()
+                                  if (data.url) {
+                                    field.onChange(data.url)
+                                  } else {
+                                    console.error('Upload failed:', data.error)
+                                  }
+                                } catch (error) {
+                                  console.error('Upload error:', error)
+                                }
+                              }
+                            }}
+                          />
+                          <p className="text-sm text-[var(--text-primary)]">
+                            Nhấp để chọn tệp âm thanh
+                          </p>
+                          <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                            Hỗ trợ: MP3, WAV, OGG, M4A, FLAC, WebM
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="bg-[var(--bg-surface-secondary)] rounded-lg border border-[var(--border-secondary)] p-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-[var(--text-primary)]">
+                              Tệp đã tải lên
+                            </p>
+                            <Button
+                              type="button"
+                              variant="neutral"
+                              size="sm"
+                              onClick={() => field.onChange('')}
+                            >
+                              Thay đổi
+                            </Button>
+                          </div>
+                          <audio
+                            controls
+                            className="w-full mt-2"
+                          >
+                            <source src={audioUrl} />
+                            Trình duyệt của bạn không hỗ trợ phát âm thanh HTML5.
+                          </audio>
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Audio Timestamp Input */}
+            <FormField
+              control={control}
+              name="audioTimestamp"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>
+                    Thời gian bắt đầu âm thanh (giây)
+                  </Label>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      className={formState.errors.audioTimestamp ? 'border-[var(--color-error)]' : ''}
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    Âm thanh sẽ bắt đầu từ thời gian này (tính bằng giây). Ví dụ: 120 = 2 phút
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
+
         <div className="space-y-4 pt-4">
           <Separator />
           <div className="flex justify-end gap-3">

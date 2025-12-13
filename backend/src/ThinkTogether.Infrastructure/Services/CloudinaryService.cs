@@ -50,7 +50,7 @@ public sealed class CloudinaryService : IImageUploadService
 
         // Validate file type
         var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
-        if (!allowedMimeTypes.Contains(file.ContentType?.ToLower()))
+        if (!allowedMimeTypes.Contains(file.ContentType.ToLower()))
         {
             throw new ArgumentException(
                 "Chỉ hỗ trợ các định dạng ảnh: JPEG, PNG, WebP, GIF",
@@ -174,6 +174,129 @@ public sealed class CloudinaryService : IImageUploadService
         catch
         {
             return null;
+        }
+    }
+
+    public async Task<string> UploadAudioAsync(
+        IFormFile file,
+        string folder = "quiz-sets/audio",
+        CancellationToken cancellationToken = default)
+    {
+        if (file == null || file.Length == 0)
+        {
+            throw new ArgumentException("File không được trống", nameof(file));
+        }
+
+        // Validate file size
+        var maxSizeBytes = _options.MaxFileSizeMb * 1024 * 1024;
+        if (file.Length > maxSizeBytes)
+        {
+            throw new ArgumentException(
+                $"Kích thước file không được vượt quá {_options.MaxFileSizeMb}MB",
+                nameof(file));
+        }
+
+        // Validate file type for audio
+        var allowedMimeTypes = new[] { "audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4", "audio/flac", "audio/webm" };
+        if (!allowedMimeTypes.Contains(file.ContentType.ToLower()))
+        {
+            throw new ArgumentException(
+                "Chỉ hỗ trợ các định dạng âm thanh: MP3, WAV, OGG, M4A, FLAC, WebM",
+                nameof(file));
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream();
+
+            var uploadParams = new RawUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = folder,
+                PublicId = $"{Guid.NewGuid()}_{Path.GetFileNameWithoutExtension(file.FileName)}",
+                Overwrite = false
+            };
+
+            _logger.LogInformation("Uploading audio {FileName} to Cloudinary folder {Folder}",
+                file.FileName, folder);
+
+            var uploadResult = await _cloudinary.UploadLargeAsync(uploadParams, 20971520, cancellationToken);
+
+            if (uploadResult.Error != null)
+            {
+                _logger.LogError("Cloudinary audio upload failed: {Error}",
+                    uploadResult.Error.Message);
+                throw new InvalidOperationException(
+                    $"Tải âm thanh lên thất bại: {uploadResult.Error.Message}");
+            }
+
+            _logger.LogInformation("Audio uploaded successfully: {PublicId}",
+                uploadResult.PublicId);
+
+            return uploadResult.SecureUrl.ToString();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Audio upload was cancelled for file {FileName}",
+                file.FileName);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error uploading audio {FileName}",
+                file.FileName);
+            throw new InvalidOperationException(
+                "Tải âm thanh lên thất bại", ex);
+        }
+    }
+
+    public async Task DeleteAudioAsync(
+        string audioUrl,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(audioUrl))
+        {
+            throw new ArgumentException("URL âm thanh không được trống", nameof(audioUrl));
+        }
+
+        try
+        {
+            // Extract public ID from URL
+            var publicId = ExtractPublicIdFromUrl(audioUrl);
+            if (string.IsNullOrEmpty(publicId))
+            {
+                _logger.LogWarning("Could not extract public ID from URL: {AudioUrl}",
+                    audioUrl);
+                return;
+            }
+
+            var deleteParams = new DeletionParams(publicId) { ResourceType = ResourceType.Auto };
+
+            _logger.LogInformation("Deleting audio with public ID: {PublicId}", publicId);
+
+            var deleteResult = await _cloudinary.DestroyAsync(deleteParams);
+
+            if (deleteResult.Error != null)
+            {
+                _logger.LogWarning("Cloudinary audio deletion warning: {Error}",
+                    deleteResult.Error.Message);
+            }
+            else
+            {
+                _logger.LogInformation("Audio deleted successfully: {PublicId}", publicId);
+            }
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Audio deletion was cancelled for URL: {AudioUrl}",
+                audioUrl);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error deleting audio from URL: {AudioUrl}",
+                audioUrl);
+            // Don't throw - deletion failure shouldn't break the application
         }
     }
 }

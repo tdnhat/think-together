@@ -138,7 +138,8 @@ export enum QuestionType {
   MULTIPLE_CHOICE = 'MultipleChoice',
   MATCHING = 'Matching',
   ORDERING = 'Ordering',
-  VIDEO = 'Video'
+  VIDEO = 'Video',
+  AUDIO = 'Audio'
 }
 
 // Question Option (for Multiple Choice, Single Choice, True/False)
@@ -182,6 +183,8 @@ export interface QuestionDto {
   orderingItems?: OrderingItemDto[]
   videoUrl?: string
   videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
 }
 
 // Create Question Request
@@ -198,6 +201,8 @@ export interface CreateQuestionRequest {
   orderingItems?: Omit<OrderingItemDto, 'id'>[]
   videoUrl?: string
   videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
 }
 
 // Update Question Request
@@ -213,6 +218,8 @@ export interface UpdateQuestionRequest {
   orderingItems?: OrderingItemDto[]
   videoUrl?: string
   videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
 }
 
 // Reorder Questions Request

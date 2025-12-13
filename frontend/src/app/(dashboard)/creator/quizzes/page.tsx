@@ -15,8 +15,10 @@ import {
   AlertDialogTitle,
 } from '@/shared/ui/alert-dialog'
 import { Button } from '@/shared/ui/button'
+import { toast } from 'sonner'
 
 import { QuizSetList, QuizSetModal, useQuizSets } from '@/features/quiz'
+import { useCreateChallenge, type ChallengeDto } from '@/features/challenge'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
 import { ROUTES } from '@/config/routes'
@@ -58,6 +60,8 @@ function CreatorQuizzesContent() {
     isCreating,
     isUpdating,
   } = useQuizSets(queryParams)
+
+  const { mutate: createChallenge } = useCreateChallenge()
 
   // Update URL params when filters change
   const updateUrlParams = (updates: Partial<QuizSetQueryParams>) => {
@@ -165,6 +169,26 @@ function CreatorQuizzesContent() {
     toastSuccess('Tính năng sao chép sẽ được triển khai trong phiên bản tiếp theo')
   }
 
+  const handleCreateChallenge = (quizSet: QuizSetDto) => {
+    createChallenge(
+      {
+        quizSetId: quizSet.id,
+        title: quizSet.title,
+        description: quizSet.description,
+      },
+      {
+        onSuccess: (challenge: ChallengeDto) => {
+          toast.success('Thử thách đã được tạo thành công!')
+          // Copy share link to clipboard
+          const shareUrl = `${window.location.origin}/challenge/${challenge.shareLink}`
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            toast.success('Đã sao chép liên kết thử thách!')
+          })
+        },
+      }
+    )
+  }
+
   const handleModalSubmit = async (data: CreateQuizSetFormData | UpdateQuizSetFormData) => {
     try {
       if (editingQuizSet) {
@@ -212,6 +236,7 @@ function CreatorQuizzesContent() {
           onView={handleView}
           onHost={handleHost}
           onDuplicate={handleDuplicate}
+          onCreateChallenge={handleCreateChallenge}
         />
 
         <QuizSetModal

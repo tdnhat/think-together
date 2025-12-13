@@ -138,6 +138,22 @@ public sealed class CreateQuestionCommandValidator : AbstractValidator<CreateQue
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Dấu thời gian video không được âm");
         });
+
+        // Validate audio details
+        When(x => x.Type == QuestionType.Audio, () =>
+        {
+            RuleFor(x => x.AudioUrl)
+                .NotEmpty()
+                .WithMessage("URL audio là bắt buộc cho câu hỏi audio")
+                .MaximumLength(500)
+                .WithMessage("URL audio không được vượt quá 500 ký tự");
+
+            RuleFor(x => x.AudioTimestamp)
+                .NotNull()
+                .WithMessage("Dấu thời gian audio là bắt buộc")
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Dấu thời gian audio không được âm");
+        });
     }
 }
 

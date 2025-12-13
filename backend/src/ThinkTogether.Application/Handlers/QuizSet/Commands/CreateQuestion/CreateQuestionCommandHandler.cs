@@ -92,6 +92,13 @@ public sealed class CreateQuestionCommandHandler : IRequestHandler<CreateQuestio
                     question.SetVideoDetails(request.VideoUrl, request.VideoTimestamp.Value);
                 }
                 break;
+
+            case QuestionType.Audio:
+                if (!string.IsNullOrEmpty(request.AudioUrl) && request.AudioTimestamp.HasValue)
+                {
+                    question.SetAudioDetails(request.AudioUrl, request.AudioTimestamp.Value);
+                }
+                break;
         }
 
         quizSet.AddQuestion(question);

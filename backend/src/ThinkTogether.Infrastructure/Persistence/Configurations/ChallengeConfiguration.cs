@@ -77,6 +77,11 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         // Unique constraint on ShareLink
         builder.HasIndex(c => c.ShareLink).IsUnique();
 
+        // Unique constraint: One challenge per creator per quiz set
+        builder.HasIndex(c => new { c.CreatorId, c.QuizSetId })
+            .IsUnique()
+            .HasFilter("ngayXoa IS NULL");
+
         // Foreign keys
         builder.HasOne<User>()
             .WithMany()

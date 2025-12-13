@@ -1,6 +1,6 @@
 'use client'
 
-import { MoreVertical, Edit, Trash2, Share, Play, Eye } from 'lucide-react'
+import { MoreVertical, Edit, Trash2, Share, Play, Eye, Trophy } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
@@ -18,6 +18,7 @@ interface QuizSetCardProps {
   onView?: (quizSet: QuizSetDto) => void
   onHost?: (quizSet: QuizSetDto) => void
   onDuplicate?: (quizSet: QuizSetDto) => void
+  onCreateChallenge?: (quizSet: QuizSetDto) => void
   className?: string
 }
 
@@ -29,6 +30,7 @@ export function QuizSetCard({
   onView,
   onHost,
   onDuplicate,
+  onCreateChallenge,
   className = '',
 }: Readonly<QuizSetCardProps>) {
   const coverImage = quizSet.coverImageUrl || QUIZ_SET_CONSTANTS.DEFAULTS.COVER_IMAGE
@@ -104,6 +106,12 @@ export function QuizSetCard({
                 <DropdownMenuItem onClick={() => onHost(quizSet)}>
                   <Play className="mr-2 h-4 w-4" />
                   Tổ chức trò chơi
+                </DropdownMenuItem>
+              )}
+              {onCreateChallenge && quizSet.isPublished && (
+                <DropdownMenuItem onClick={() => onCreateChallenge(quizSet)}>
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Tạo thử thách
                 </DropdownMenuItem>
               )}
               {onDuplicate && (

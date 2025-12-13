@@ -102,6 +102,13 @@ public sealed class UpdateQuestionCommandHandler : IRequestHandler<UpdateQuestio
                     question.SetVideoDetails(request.VideoUrl, request.VideoTimestamp.Value);
                 }
                 break;
+
+            case QuestionType.Audio:
+                if (!string.IsNullOrEmpty(request.AudioUrl) && request.AudioTimestamp.HasValue)
+                {
+                    question.SetAudioDetails(request.AudioUrl, request.AudioTimestamp.Value);
+                }
+                break;
         }
 
         await _repository.SaveChangesAsync(cancellationToken);

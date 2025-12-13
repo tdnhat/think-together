@@ -12,6 +12,7 @@ import {
   Link,
   ArrowUpDown,
   Video,
+  Volume2,
   Clock,
   AlertTriangle
 } from 'lucide-react'
@@ -54,6 +55,7 @@ const questionTypeIcons: Record<QuestionType, typeof CircleDot> = {
   [QuestionType.MATCHING]: Link,
   [QuestionType.ORDERING]: ArrowUpDown,
   [QuestionType.VIDEO]: Video,
+  [QuestionType.AUDIO]: Volume2,
 }
 
 const questionTypeColors: Record<QuestionType, 'default' | 'neutral'> = {
@@ -63,6 +65,7 @@ const questionTypeColors: Record<QuestionType, 'default' | 'neutral'> = {
   [QuestionType.MATCHING]: 'default',
   [QuestionType.ORDERING]: 'neutral',
   [QuestionType.VIDEO]: 'default',
+  [QuestionType.AUDIO]: 'neutral',
 }
 
 export function QuestionCard({

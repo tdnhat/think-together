@@ -1,14 +1,13 @@
 using System.Reflection;
+using Application.Common.Behaviors;
 using FluentValidation;
+using Mapster;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Common.Behaviors;
-using MapsterMapper;
-using Mapster;
 using ThinkTogether.Application.Configuration;
 
-namespace Application;
+namespace ThinkTogether.Application;
 
 public static class DependencyInjection
 {

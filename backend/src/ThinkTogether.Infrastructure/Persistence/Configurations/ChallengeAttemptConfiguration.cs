@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
-
+using ThinkTogether.Domain.Enums;
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
 public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeAttempt>
@@ -52,6 +52,25 @@ public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeA
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
+        builder.Property(ca => ca.StartedAt)
+            .HasColumnName("thoiGianBatDau")
+            .IsRequired()
+            .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.Property(ca => ca.CurrentQuestionIndex)
+            .HasColumnName("chiSoCauHoiHienTai")
+            .IsRequired()
+            .HasDefaultValue(0);
+
+        builder.Property(ca => ca.Status)
+            .HasColumnName("trangThai")
+            .IsRequired()
+            .HasConversion<int>()
+            .HasDefaultValue(AttemptStatus.InProgress)
+            .HasSentinel((AttemptStatus)0); // Set sentinel to 0 so database default is only used when Status is 0 (invalid)
+        builder.Property(ca => ca.TimeLimitMs)
+            .HasColumnName("gioHanThoiGianMs");
+
         builder.Property(ca => ca.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
@@ -88,12 +107,30 @@ public class ChallengeAttemptConfiguration : IEntityTypeConfiguration<ChallengeA
             .HasForeignKey(answer => answer.ChallengeAttemptId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(ca => ca.FlaggedQuestions)
+            .WithOne()
+            .HasForeignKey(fq => fq.ChallengeAttemptId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Add check constraints for new fields
+        builder.ToTable(tb =>
+        {
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_chiSoCauHoiHienTai",
+                "chiSoCauHoiHienTai >= 0 AND chiSoCauHoiHienTai < tongSoCau");
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_trangThai",
+                "trangThai IN (1, 2, 3)");
+            tb.HasCheckConstraint("CK_LuotChoiThachThuc_gioHanThoiGianMs",
+                "gioHanThoiGianMs IS NULL OR gioHanThoiGianMs > 0");
+        });
+
         // Indexes
         builder.HasIndex(ca => ca.ChallengeId);
         builder.HasIndex(ca => ca.UserId);
         builder.HasIndex(ca => ca.Nickname);
         builder.HasIndex(ca => ca.CompletedAt);
+        builder.HasIndex(ca => ca.Status);
         builder.HasIndex(ca => new { ca.ChallengeId, ca.ScoreAchieved, ca.CompletedAt });
+        builder.HasIndex(ca => new { ca.ChallengeId, ca.Status });
         builder.HasIndex(ca => ca.DeletedAt);
     }
 }

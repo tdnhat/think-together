@@ -110,6 +110,20 @@ public sealed class UpdateQuestionCommandValidator : AbstractValidator<UpdateQue
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Dấu thời gian video không được âm");
         });
+
+        // Validate audio details if provided
+        When(x => !string.IsNullOrEmpty(x.AudioUrl), () =>
+        {
+            RuleFor(x => x.AudioUrl)
+                .MaximumLength(500)
+                .WithMessage("URL audio không được vượt quá 500 ký tự");
+
+            RuleFor(x => x.AudioTimestamp)
+                .NotNull()
+                .WithMessage("Dấu thời gian audio là bắt buộc khi có URL audio")
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Dấu thời gian audio không được âm");
+        });
     }
 }
 

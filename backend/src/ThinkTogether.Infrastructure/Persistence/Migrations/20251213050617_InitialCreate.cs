@@ -147,6 +147,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     thuTu = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     urlVideo = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     dauThoiGianVideo = table.Column<int>(type: "int", nullable: true),
+                    urlAudio = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    dauThoiGianAudio = table.Column<int>(type: "int", nullable: true),
                     ngayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     ngayCapNhat = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ngayXoa = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -155,7 +157,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_CauHoi", x => x.idCauHoi);
                     table.CheckConstraint("CK_CauHoi_gioiHanThoiGian", "gioiHanThoiGian > 0 AND gioiHanThoiGian <= 300");
-                    table.CheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN (1, 2, 3, 4, 5, 6)");
+                    table.CheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN (1, 2, 3, 4, 5, 6, 7)");
                     table.CheckConstraint("CK_CauHoi_thuTu", "thuTu >= 0");
                     table.ForeignKey(
                         name: "FK_CauHoi_BoTracNghiem_idBoTracNghiem",
@@ -494,6 +496,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     tongSoCau = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     thoiGianHoanThanhMs = table.Column<int>(type: "int", nullable: true),
                     thoiGianHoanTatLuot = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    thoiGianBatDau = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    chiSoCauHoiHienTai = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    trangThai = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    gioHanThoiGianMs = table.Column<int>(type: "int", nullable: true),
                     ngayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     ngayCapNhat = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ngayXoa = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -501,10 +507,13 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LuotChoiThachThuc", x => x.idLuotChoi);
+                    table.CheckConstraint("CK_LuotChoiThachThuc_chiSoCauHoiHienTai", "chiSoCauHoiHienTai >= 0 AND chiSoCauHoiHienTai < tongSoCau");
                     table.CheckConstraint("CK_LuotChoiThachThuc_diemDat", "diemDat >= 0");
+                    table.CheckConstraint("CK_LuotChoiThachThuc_gioHanThoiGianMs", "gioHanThoiGianMs IS NULL OR gioHanThoiGianMs > 0");
                     table.CheckConstraint("CK_LuotChoiThachThuc_soCauDung", "soCauDung >= 0 AND soCauDung <= tongSoCau");
                     table.CheckConstraint("CK_LuotChoiThachThuc_thoiGian", "thoiGianHoanThanhMs IS NULL OR thoiGianHoanThanhMs > 0");
                     table.CheckConstraint("CK_LuotChoiThachThuc_tongSoCau", "tongSoCau >= 0");
+                    table.CheckConstraint("CK_LuotChoiThachThuc_trangThai", "trangThai IN (1, 2, 3)");
                     table.ForeignKey(
                         name: "FK_LuotChoiThachThuc_NguoiDung_idNguoiDung",
                         column: x => x.idNguoiDung,
@@ -636,6 +645,40 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CauHoiDanhDau",
+                columns: table => new
+                {
+                    idCauHoiDanhDau = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    idLuotChoiThachThuc = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    idCauHoi = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChallengeAttemptId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ngayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    ngayCapNhat = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ngayXoa = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CauHoiDanhDau", x => x.idCauHoiDanhDau);
+                    table.ForeignKey(
+                        name: "FK_CauHoiDanhDau_CauHoi_idCauHoi",
+                        column: x => x.idCauHoi,
+                        principalTable: "CauHoi",
+                        principalColumn: "idCauHoi",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CauHoiDanhDau_LuotChoiThachThuc_ChallengeAttemptId1",
+                        column: x => x.ChallengeAttemptId1,
+                        principalTable: "LuotChoiThachThuc",
+                        principalColumn: "idLuotChoi");
+                    table.ForeignKey(
+                        name: "FK_CauHoiDanhDau_LuotChoiThachThuc_idLuotChoiThachThuc",
+                        column: x => x.idLuotChoiThachThuc,
+                        principalTable: "LuotChoiThachThuc",
+                        principalColumn: "idLuotChoi",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CauTraLoiThachThuc",
                 columns: table => new
                 {
@@ -645,6 +688,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     thoiGianNopMs = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     dung = table.Column<bool>(type: "bit", nullable: false),
                     diemDat = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    cacChiSoPhuongAnDaChon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    cacCapGhep = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    cacMucSapXep = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ngayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     ngayCapNhat = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ngayXoa = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -783,6 +829,32 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 column: "idCauHoi");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CauHoiDanhDau_ChallengeAttemptId1",
+                table: "CauHoiDanhDau",
+                column: "ChallengeAttemptId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CauHoiDanhDau_idCauHoi",
+                table: "CauHoiDanhDau",
+                column: "idCauHoi");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CauHoiDanhDau_idLuotChoiThachThuc",
+                table: "CauHoiDanhDau",
+                column: "idLuotChoiThachThuc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CauHoiDanhDau_idLuotChoiThachThuc_idCauHoi",
+                table: "CauHoiDanhDau",
+                columns: new[] { "idLuotChoiThachThuc", "idCauHoi" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CauHoiDanhDau_ngayXoa",
+                table: "CauHoiDanhDau",
+                column: "ngayXoa");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CauHoiPhienChoi_idCauHoi",
                 table: "CauHoiPhienChoi",
                 column: "idCauHoi");
@@ -887,6 +959,11 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 columns: new[] { "idThachThuc", "diemDat", "thoiGianHoanTatLuot" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_LuotChoiThachThuc_idThachThuc_trangThai",
+                table: "LuotChoiThachThuc",
+                columns: new[] { "idThachThuc", "trangThai" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LuotChoiThachThuc_ngayXoa",
                 table: "LuotChoiThachThuc",
                 column: "ngayXoa");
@@ -895,6 +972,11 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 name: "IX_LuotChoiThachThuc_thoiGianHoanTatLuot",
                 table: "LuotChoiThachThuc",
                 column: "thoiGianHoanTatLuot");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LuotChoiThachThuc_trangThai",
+                table: "LuotChoiThachThuc",
+                column: "trangThai");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaLamMoi_hetHanLuc",
@@ -1111,6 +1193,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "CauHoi_TracNghiem");
+
+            migrationBuilder.DropTable(
+                name: "CauHoiDanhDau");
 
             migrationBuilder.DropTable(
                 name: "CauTraLoiThachThuc");

@@ -37,6 +37,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Challenge> Challenges { get; set; } = null!;
     public DbSet<ChallengeAttempt> ChallengeAttempts { get; set; } = null!;
     public DbSet<ChallengeAnswer> ChallengeAnswers { get; set; } = null!;
+    public DbSet<FlaggedQuestion> FlaggedQuestions { get; set; } = null!;
 
     // Class Aggregate Entities
     public DbSet<Class> Classes { get; set; } = null!;

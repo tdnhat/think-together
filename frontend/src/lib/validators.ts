@@ -129,6 +129,18 @@ export const createQuestionSchema = z.object({
     .min(3, "Phải có ít nhất 3 mục để sắp xếp")
     .max(6, "Không được có quá 6 mục để sắp xếp")
     .optional(),
+  videoUrl: z.string()
+    .max(500, "URL video không được vượt quá 500 ký tự")
+    .optional(),
+  videoTimestamp: z.number()
+    .min(0, "Dấu thời gian video không được âm")
+    .optional(),
+  audioUrl: z.string()
+    .max(500, "URL audio không được vượt quá 500 ký tự")
+    .optional(),
+  audioTimestamp: z.number()
+    .min(0, "Dấu thời gian audio không được âm")
+    .optional(),
 }).refine(
   (data) => {
     // For choice-based questions, options must be provided
@@ -142,6 +154,14 @@ export const createQuestionSchema = z.object({
     // For ordering questions, orderingItems must be provided
     if (data.type === 'Ordering') {
       return Array.isArray(data.orderingItems) && data.orderingItems.length >= 3;
+    }
+    // For video questions, videoUrl must be provided
+    if (data.type === 'Video') {
+      return !!data.videoUrl && data.videoUrl.trim().length > 0;
+    }
+    // For audio questions, audioUrl must be provided
+    if (data.type === 'Audio') {
+      return !!data.audioUrl && data.audioUrl.trim().length > 0;
     }
     return true;
   },

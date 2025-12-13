@@ -22,7 +22,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -96,6 +96,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("CreatorId", "QuizSetId")
+                        .IsUnique()
+                        .HasFilter("ngayXoa IS NULL");
+
                     b.HasIndex("Status", "DeletedAt", "PlayCount");
 
                     b.ToTable("ThachThuc", null, t =>
@@ -106,7 +110,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -130,6 +134,16 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("dung");
 
+                    b.Property<string>("MatchingPairs")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("cacCapGhep");
+
+                    b.Property<string>("OrderingItems")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("cacMucSapXep");
+
                     b.Property<int>("PointsEarned")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -139,6 +153,11 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoi");
+
+                    b.Property<string>("SelectedOptionIndexes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("cacChiSoPhuongAnDaChon");
 
                     b.Property<int>("SubmissionTimeMs")
                         .ValueGeneratedOnAdd()
@@ -169,7 +188,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -201,6 +220,12 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnName("ngayTao")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<int>("CurrentQuestionIndex")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("chiSoCauHoiHienTai");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayXoa");
@@ -216,6 +241,22 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0)
                         .HasColumnName("diemDat");
+
+                    b.Property<DateTime>("StartedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thoiGianBatDau")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("trangThai");
+
+                    b.Property<int?>("TimeLimitMs")
+                        .HasColumnType("int")
+                        .HasColumnName("gioHanThoiGianMs");
 
                     b.Property<int>("TotalQuestions")
                         .ValueGeneratedOnAdd()
@@ -241,23 +282,75 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Nickname");
 
+                    b.HasIndex("Status");
+
                     b.HasIndex("UserId");
+
+                    b.HasIndex("ChallengeId", "Status");
 
                     b.HasIndex("ChallengeId", "ScoreAchieved", "CompletedAt");
 
                     b.ToTable("LuotChoiThachThuc", null, t =>
                         {
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_chiSoCauHoiHienTai", "chiSoCauHoiHienTai >= 0 AND chiSoCauHoiHienTai < tongSoCau");
+
                             t.HasCheckConstraint("CK_LuotChoiThachThuc_diemDat", "diemDat >= 0");
+
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_gioHanThoiGianMs", "gioHanThoiGianMs IS NULL OR gioHanThoiGianMs > 0");
 
                             t.HasCheckConstraint("CK_LuotChoiThachThuc_soCauDung", "soCauDung >= 0 AND soCauDung <= tongSoCau");
 
                             t.HasCheckConstraint("CK_LuotChoiThachThuc_thoiGian", "thoiGianHoanThanhMs IS NULL OR thoiGianHoanThanhMs > 0");
 
                             t.HasCheckConstraint("CK_LuotChoiThachThuc_tongSoCau", "tongSoCau >= 0");
+
+                            t.HasCheckConstraint("CK_LuotChoiThachThuc_trangThai", "trangThai IN (1, 2, 3)");
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Class", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.FlaggedQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idCauHoiDanhDau");
+
+                    b.Property<Guid>("ChallengeAttemptId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idLuotChoiThachThuc");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idCauHoi");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeAttemptId");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("ChallengeAttemptId", "QuestionId")
+                        .IsUnique();
+
+                    b.ToTable("CauHoiDanhDau", (string)null);
+                });
+
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Class", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -318,7 +411,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -368,7 +461,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("ThanhVienLop", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -430,7 +523,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.HomeworkSubmission", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.HomeworkSubmission", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -498,7 +591,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -553,7 +646,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -627,7 +720,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameScore", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameScore", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -711,7 +804,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -769,7 +862,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("CaiDatPhienChoi", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -836,7 +929,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -918,6 +1011,15 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idCauHoi");
 
+                    b.Property<int?>("AudioTimestamp")
+                        .HasColumnType("int")
+                        .HasColumnName("dauThoiGianAudio");
+
+                    b.Property<string>("AudioUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("urlAudio");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2000)
@@ -982,7 +1084,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         {
                             t.HasCheckConstraint("CK_CauHoi_gioiHanThoiGian", "gioiHanThoiGian > 0 AND gioiHanThoiGian <= 300");
 
-                            t.HasCheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN (1, 2, 3, 4, 5, 6)");
+                            t.HasCheckConstraint("CK_CauHoi_loaiCauHoi", "loaiCauHoi IN (1, 2, 3, 4, 5, 6, 7)");
 
                             t.HasCheckConstraint("CK_CauHoi_thuTu", "thuTu >= 0");
                         });
@@ -1320,7 +1422,7 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.ToTable("NguoiDung", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
@@ -1335,9 +1437,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAnswer", b =>
                 {
-                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
                         .WithMany("Answers")
                         .HasForeignKey("ChallengeAttemptId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1350,9 +1452,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
-                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Challenge", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge", null)
                         .WithMany("Attempts")
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1364,7 +1466,22 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Class", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.FlaggedQuestion", b =>
+                {
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
+                        .WithMany("FlaggedQuestions")
+                        .HasForeignKey("ChallengeAttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities.Question", null)
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Class", b =>
                 {
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
@@ -1373,9 +1490,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.ClassMember", b =>
                 {
-                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ClassAggregate.Class", null)
                         .WithMany("Members")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1388,9 +1505,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
                 {
-                    b.HasOne("Domain.Aggregates.ClassAggregate.Class", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ClassAggregate.Class", null)
                         .WithMany("Homeworks")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1403,15 +1520,15 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.HomeworkSubmission", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.HomeworkSubmission", b =>
                 {
-                    b.HasOne("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", null)
                         .WithMany()
                         .HasForeignKey("ChallengeAttemptId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregates.ClassAggregate.Entities.Homework", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.Homework", null)
                         .WithMany("Submissions")
                         .HasForeignKey("HomeworkId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1424,18 +1541,18 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", null)
                         .WithMany("Players")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameQuestion", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", null)
                         .WithMany("GameQuestions")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1448,52 +1565,52 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameScore", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameScore", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
                         .WithMany()
                         .HasForeignKey("GamePlayerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", null)
                         .WithMany("Scores")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameSettings", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", null)
                         .WithOne()
-                        .HasForeignKey("Domain.Aggregates.GamingAggregate.Entities.GameSettings", "GameSessionId")
+                        .HasForeignKey("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameSettings", "GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.PlayerAnswer", b =>
                 {
-                    b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GamePlayer", null)
                         .WithMany("Answers")
                         .HasForeignKey("GamePlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregates.GamingAggregate.Entities.GameQuestion", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GameQuestion", null)
                         .WithMany()
                         .HasForeignKey("GameQuestionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregates.GamingAggregate.GameSession", null)
+                    b.HasOne("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", null)
                         .WithMany("PlayerAnswers")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", b =>
                 {
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
@@ -1664,34 +1781,36 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Challenge", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Navigation("Attempts");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt", b =>
                 {
                     b.Navigation("Answers");
+
+                    b.Navigation("FlaggedQuestions");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Class", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Class", b =>
                 {
                     b.Navigation("Homeworks");
 
                     b.Navigation("Members");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ClassAggregate.Entities.Homework", b =>
                 {
                     b.Navigation("Submissions");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.Entities.GamePlayer", b =>
                 {
                     b.Navigation("Answers");
                 });
 
-            modelBuilder.Entity("Domain.Aggregates.GamingAggregate.GameSession", b =>
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.GamingAggregate.GameSession", b =>
                 {
                     b.Navigation("GameQuestions");
 

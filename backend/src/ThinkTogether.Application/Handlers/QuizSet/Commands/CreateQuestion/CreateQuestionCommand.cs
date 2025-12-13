@@ -15,5 +15,7 @@ public sealed record CreateQuestionCommand(
     List<MatchingPairDto>? MatchingPairs = null,
     List<OrderingItemDto>? OrderingItems = null,
     string? VideoUrl = null,
-    int? VideoTimestamp = null) : IRequest<QuestionDto>;
+    int? VideoTimestamp = null,
+    string? AudioUrl = null,
+    int? AudioTimestamp = null) : IRequest<QuestionDto>;
 
