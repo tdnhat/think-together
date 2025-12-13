@@ -90,12 +90,16 @@ public class GameSessionNotificationService : IGameSessionNotificationService
 
     private async Task SendQuestionAsync(string pin, GameQuestionDto question, int totalQuestions)
     {
+        // Calculate absolute end time for time synchronization
+        var endTime = DateTime.UtcNow.AddSeconds(question.TimeLimit);
+
         await _hubContext.Clients.Group($"game_{pin}").QuestionStarted(new QuestionStartedMessage(
             question.GameQuestionId,
             question.Id,
             question.Content,
             question.Type.ToString(),
             question.TimeLimit,
+            endTime,
             question.PositionInGame,
             totalQuestions,
             question.VideoUrl,

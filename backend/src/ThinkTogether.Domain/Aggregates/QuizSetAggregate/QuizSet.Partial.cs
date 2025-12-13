@@ -9,7 +9,7 @@ public sealed partial class QuizSet : AggregateRoot
     public void AddQuestion(Question question)
     {
         if (question == null)
-            throw new ValidationException("Câu hỏi không được null");
+            throw new ValidationException("Câu hỏi không được để trống");
 
         if (question.QuizSetId != Id)
             throw new ValidationException("Câu hỏi không thuộc bộ trắc nghiệm này");

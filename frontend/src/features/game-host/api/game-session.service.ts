@@ -19,6 +19,7 @@ import type {
   EndGameResponse,
   GameSession,
   LeaderboardEntry,
+  SyncGameSessionResult,
 } from '../types'
 
 const GAME_SESSION_ENDPOINTS = {
@@ -26,6 +27,7 @@ const GAME_SESSION_ENDPOINTS = {
   BY_PIN: (pin: string) => `/api/game-sessions/by-pin/${pin}`,
   BY_ID: (id: string) => `/api/game-sessions/${id}`,
   LEADERBOARD: (id: string) => `/api/game-sessions/${id}/leaderboard`,
+  SYNC: (id: string) => `/api/game-sessions/${id}/sync`,
   ABANDON_ACTIVE: '/api/game-sessions/abandon-active',
   JOIN: '/api/game-sessions/join',
   RECONNECT: '/api/game-sessions/reconnect',
@@ -126,6 +128,17 @@ class GameSessionService {
     return api.post<ApiResponse<EndGameResponse>>(
       GAME_SESSION_ENDPOINTS.END(sessionId)
     )
+  }
+
+  /**
+   * Sync game session state (public endpoint)
+   * Used for state recovery after browser refresh or reconnection
+   */
+  async syncGameSession(sessionId: string, playerId?: string): Promise<ApiResponse<SyncGameSessionResult>> {
+    const url = playerId
+      ? `${GAME_SESSION_ENDPOINTS.SYNC(sessionId)}?playerId=${playerId}`
+      : GAME_SESSION_ENDPOINTS.SYNC(sessionId)
+    return api.get<ApiResponse<SyncGameSessionResult>>(url)
   }
 }
 

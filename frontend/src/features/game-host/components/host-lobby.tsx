@@ -10,7 +10,7 @@ import { PlayerList } from './player-list'
 import { toastSuccess, toastError, toastInfo } from '@/lib/utils/toast'
 import { GAME_HOST_CONSTANTS } from '../constants'
 import { gameSessionService } from '../api/game-session.service'
-import { useHostGameStore, selectHostSession, selectHostPhase, selectHostActions, selectHostError, selectHostIsConnected } from '../store/host-game.store'
+import { useHostGameStore, selectHostSession, selectHostPhase, selectHostActions, selectHostError, selectHostIsConnected } from '../store/host-game-store'
 import type { GameSession, GameEndedMessage, StartGameResponse } from '../types'
 
 interface HostLobbyProps {

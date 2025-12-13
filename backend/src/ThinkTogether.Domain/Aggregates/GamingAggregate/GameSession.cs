@@ -76,9 +76,6 @@ public sealed partial class GameSession : AggregateRoot
         return session;
     }
 
-    /// <summary>
-    /// Finds a player by their ID.
-    /// </summary>
     public GamePlayer? GetPlayer(Guid playerId)
     {
         return _players.FirstOrDefault(p => p.Id == playerId);

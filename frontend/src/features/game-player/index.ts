@@ -9,7 +9,8 @@
 export * from './types'
 
 // ============= Hooks =============
-export { usePlayerSession } from './hooks/use-player-session'
+export { usePlayerGame } from './hooks/use-player-game'
+export type { UsePlayerGameOptions, UsePlayerGameReturn } from './hooks/use-player-game'
 export { useJoinGame } from './hooks/use-join-game'
 
 // ============= Store & Selectors =============
@@ -21,16 +22,18 @@ export {
   selectPlayerNickname,
   selectPlayerSessionId,
   selectPlayerCurrentQuestion,
-  selectPlayerAnswerResult,
   selectPlayerSelectedAnswers,
   selectPlayerHasAnswered,
   selectPlayerLeaderboard,
   selectPlayerTotalPoints,
   selectPlayerCurrentRank,
+  selectPlayerTotalQuestions,
+  selectPlayerConnectionState,
   selectPlayerError,
   selectPlayerIsConnected,
   selectPlayerActions,
-} from './store/player-game.store'
+} from './store/player-game-store'
+// Types from store are available via './types' re-export or direct import
 
 // ============= Components =============
 export {

@@ -42,9 +42,6 @@ public sealed class EndGameCommandHandler : IRequestHandler<EndGameCommand, Game
 
         gameSession.ValidateHostPermission(hostUserId);
 
-        if (gameSession.Status != GameStatus.InProgress)
-            throw new ConflictException("Trò chơi chưa bắt đầu hoặc đã kết thúc");
-
         await _questionTimerService.StopTimerAsync(request.GameSessionId, cancellationToken);
 
         gameSession.End();

@@ -11,10 +11,29 @@ export * from './types'
 // ============= API Service =============
 export { gameSessionService } from './api/game-session.service'
 
+// ============= Session Storage =============
+export { saveHostSession, getStoredHostSession, clearStoredHostSession } from './lib/session-storage'
+export type { StoredHostSession } from './lib/session-storage'
+
+// ============= SignalR Service =============
+export { gameSignalR } from './services/signalr.service'
+export type {
+  SignalREvents,
+  ConnectionState,
+  PlayerJoinedEvent,
+  PlayerLeftEvent,
+  GameStartedEvent,
+  QuestionStartedEvent,
+  QuestionEndedEvent,
+  AnswerReceivedEvent,
+  LeaderboardUpdatedEvent,
+  GameEndedEvent,
+  ErrorEvent,
+} from './services/signalr.service'
+
 // ============= Hooks =============
-export { useGameHub } from './hooks/use-game-hub'
-export type { GameHubCallbacks, GameHubState, GameHubActions } from './hooks/use-game-hub'
-export { useHostSession } from './hooks/use-host-session'
+export { useHostGame } from './hooks/use-host-game'
+export type { UseHostGameOptions, UseHostGameReturn } from './hooks/use-host-game'
 
 // ============= Store & Selectors =============
 export { 
@@ -25,10 +44,13 @@ export {
   selectHostQuestionResult,
   selectHostLeaderboard,
   selectHostAnsweredCount,
+  selectHostTotalPlayers,
+  selectHostConnectionState,
   selectHostError,
   selectHostIsConnected,
   selectHostActions,
-} from './store/host-game.store'
+} from './store/host-game-store'
+export type { HostPhase, HostGameState } from './store/host-game-store'
 
 // ============= Components =============
 export {
@@ -48,12 +70,4 @@ export {
 
 // ============= Constants =============
 export { GAME_HOST_CONSTANTS } from './constants'
-
-// ============= Utilities =============
-export {
-  saveHostSession,
-  getStoredHostSession,
-  clearStoredHostSession,
-} from './lib/session-storage'
-export type { StoredHostSession } from './lib/session-storage'
 

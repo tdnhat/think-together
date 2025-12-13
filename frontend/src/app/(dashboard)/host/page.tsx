@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
@@ -14,26 +14,13 @@ import {
   HostPageError,
   HostPageResumeOption,
   HostPageNoQuiz,
-  useHostGameStore,
-  useGameHub,
-  useHostSession,
-  selectHostPhase,
-  selectHostSession,
-  selectHostCurrentQuestion,
-  selectHostActions,
-  GAME_HOST_CONSTANTS,
+  useHostGame,
+  getStoredHostSession,
 } from '@/features/game-host'
 import type { 
   GameEndedMessage,
-  QuestionStartedMessage,
-  QuestionEndedMessage,
-  AnswerReceivedMessage,
-  LeaderboardUpdatedMessage,
-  PlayerJoinedMessage,
-  PlayerLeftMessage,
   StartGameResponse,
 } from '@/features/game-host'
-import { toastError, toastInfo, toastSuccess } from '@/lib/utils/toast'
 import { ROUTES } from '@/config/routes'
 import { useRouter } from 'next/navigation'
 
@@ -43,204 +30,29 @@ function HostPageContent() {
   const quizId = searchParams.get('quizId')
   const sessionIdParam = searchParams.get('sessionId')
 
-  const phase = useHostGameStore(selectHostPhase)
-  const storeSession = useHostGameStore(selectHostSession)
-  const currentQuestion = useHostGameStore(selectHostCurrentQuestion)
-  const { 
-    setPhase, 
-    setSession: setStoreSession,
-    setCurrentQuestion,
-    setQuestionResult,
-    setLeaderboard,
-    setConnected,
-    handlePlayerJoined,
-    handlePlayerLeft,
-    handleAnswerReceived,
-    handleGameEnded: handleStoreGameEnded,
-    setError: setStoreError,
-  } = useHostGameStore(selectHostActions)
-
-  // Session management hook
   const {
-    session: hookSession,
-    isLoading: sessionLoading,
-    isCreating,
-    error: sessionError,
-    showResumeOption,
-    storedSession,
-    createNewSession,
+    session,
+    phase,
+    isLoading,
+    error,
+    createSession,
     resumeSession,
-    rejoinByPin,
     abandonSession,
-  } = useHostSession({
-    quizId,
-    sessionIdParam,
-    onSessionReady: (session) => {
-      setStoreSession(session)
-      setPhase('lobby')
-    },
-  })
+    startGame,
+  } = useHostGame({ quizId: quizId ?? undefined, sessionId: sessionIdParam ?? undefined })
 
-  // Use session from hook or store
-  const activeSession = hookSession || storeSession
+  // Check for stored session
+  const storedSession = typeof window !== 'undefined' ? getStoredHostSession() : null
+  const showResumeOption = !session && storedSession && (
+    !quizId || storedSession.quizSetId === quizId
+  )
 
-  // SignalR Callbacks
-  const handleQuestionStarted = useCallback((message: QuestionStartedMessage) => {
-    console.log('[Host] QuestionStarted received:', {
-      gameQuestionId: message.gameQuestionId,
-      positionInGame: message.positionInGame,
-      currentQuestionId: currentQuestion?.gameQuestionId,
-    })
-    
-    // Only update if this is actually a new question
-    if (currentQuestion?.gameQuestionId === message.gameQuestionId) {
-      console.log('[Host] Ignoring duplicate QuestionStarted event - same gameQuestionId')
-      return
-    }
-    
-    console.log('[Host] Processing new question:', message.positionInGame)
-    
-    setCurrentQuestion({
-      id: message.questionId,
-      gameQuestionId: message.gameQuestionId,
-      content: message.content,
-      type: Number.parseInt(message.questionType) || 1,
-      timeLimit: message.timeLimit,
-      positionInGame: message.positionInGame,
-      videoUrl: message.videoUrl,
-      videoTimestamp: message.videoTimestamp,
-      options: message.options,
-    })
-    setQuestionResult(null)
-    setPhase('question')
-  }, [setCurrentQuestion, setQuestionResult, setPhase, currentQuestion?.gameQuestionId])
-
-  const handleQuestionEnded = useCallback((message: QuestionEndedMessage) => {
-    setQuestionResult(message)
-    setPhase('question-result')
-  }, [setQuestionResult, setPhase])
-
-  const handleAnswerReceivedCallback = useCallback((message: AnswerReceivedMessage) => {
-    handleAnswerReceived(message)
-  }, [handleAnswerReceived])
-
-  const handleLeaderboardUpdated = useCallback((message: LeaderboardUpdatedMessage) => {
-    setLeaderboard(message.leaderboard)
-  }, [setLeaderboard])
-
-  const handleHubGameEnded = useCallback((message: GameEndedMessage) => {
-    handleStoreGameEnded(message)
-  }, [handleStoreGameEnded])
-
-  const handleHubPlayerJoined = useCallback((message: PlayerJoinedMessage) => {
-    handlePlayerJoined(message)
-    toastInfo(`${message.nickname} ${GAME_HOST_CONSTANTS.MESSAGES.PLAYER_JOINED}`)
-  }, [handlePlayerJoined])
-
-  const handleHubPlayerLeft = useCallback((message: PlayerLeftMessage) => {
-    handlePlayerLeft(message)
-    toastInfo(`${message.nickname} ${GAME_HOST_CONSTANTS.MESSAGES.PLAYER_LEFT}`)
-  }, [handlePlayerLeft])
-
-  const handleHubError = useCallback((error: { message: string }) => {
-    setStoreError(error.message)
-    toastError(error.message)
-  }, [setStoreError])
-
-  // SignalR Hub
-  const {
-    isConnected,
-    connect,
-    joinAsHost,
-  } = useGameHub({
-    onQuestionStarted: handleQuestionStarted,
-    onQuestionEnded: handleQuestionEnded,
-    onAnswerReceived: handleAnswerReceivedCallback,
-    onLeaderboardUpdated: handleLeaderboardUpdated,
-    onGameEnded: handleHubGameEnded,
-    onPlayerJoined: handleHubPlayerJoined,
-    onPlayerLeft: handleHubPlayerLeft,
-    onError: handleHubError,
-    onConnected: () => {
-      setConnected(true)
-      toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.CONNECTED)
-    },
-    onDisconnected: () => {
-      setConnected(false)
-      toastInfo(GAME_HOST_CONSTANTS.MESSAGES.DISCONNECTED)
-    },
-    onReconnecting: () => {
-      toastInfo(GAME_HOST_CONSTANTS.MESSAGES.RECONNECTING)
-    },
-    onReconnected: () => {
-      setConnected(true)
-      toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.CONNECTED)
-    },
-  })
-
-  // Manage SignalR connection
+  // Auto-create session if quizId is provided and no session exists
   useEffect(() => {
-    if (!activeSession?.id || !activeSession?.pin) return
-
-    let isMounted = true
-    let connectionInitiated = false
-
-    const initConnection = async () => {
-      if (connectionInitiated) return
-      connectionInitiated = true
-
-      try {
-        if (!isConnected) {
-          await connect()
-        }
-        if (isMounted) {
-          await joinAsHost(activeSession.id, activeSession.pin)
-        }
-      } catch (err) {
-        if (isMounted) {
-          const errorMessage = err instanceof Error 
-            ? err.message 
-            : GAME_HOST_CONSTANTS.ERRORS.CONNECTION_FAILED
-          toastError(errorMessage)
-        }
-      } finally {
-        connectionInitiated = false
-      }
+    if (quizId && !session && !isLoading && !showResumeOption && !error) {
+      createSession()
     }
-
-    // Only connect if not already connected
-    if (isConnected) {
-      // If already connected but session changed, join as host
-      joinAsHost(activeSession.id, activeSession.pin).catch(console.error)
-    } else {
-      initConnection()
-    }
-
-    return () => {
-      isMounted = false
-    }
-  }, [activeSession?.id, activeSession?.pin, connect, joinAsHost, isConnected])
-
-  // Game handlers
-  const handleGameStart = (data: StartGameResponse) => {
-    setCurrentQuestion({
-      id: data.id,
-      gameQuestionId: data.gameQuestionId,
-      content: data.content,
-      type: data.type,
-      timeLimit: data.timeLimit,
-      positionInGame: data.positionInGame,
-      videoUrl: data.videoUrl,
-      videoTimestamp: data.videoTimestamp,
-      options: data.options,
-    })
-    setQuestionResult(null)
-    setPhase('question')
-  }
-
-  const handleGameEnd = useCallback((_result: GameEndedMessage) => {
-    setPhase('ended')
-  }, [setPhase])
+  }, [quizId, session, isLoading, showResumeOption, error, createSession])
 
   const handleGoBack = () => {
     router.push(ROUTES.quiz.list)
@@ -249,12 +61,21 @@ function HostPageContent() {
   const handleStartFresh = async () => {
     await abandonSession()
     if (quizId) {
-      await createNewSession()
+      await createSession()
     }
   }
 
+  const handleGameStart = async (_data: StartGameResponse) => {
+    // Game start is handled by useHostGame via SignalR
+    // The phase will automatically transition
+  }
+
+  const handleGameEnd = (_result: GameEndedMessage) => {
+    // Game end is handled by useHostGame via SignalR
+  }
+
   // Loading state
-  if (sessionLoading) {
+  if (isLoading) {
     return <HostPageLoading />
   }
 
@@ -263,19 +84,19 @@ function HostPageContent() {
     return (
       <HostPageResumeOption
         storedSession={storedSession}
-        isLoading={sessionLoading}
-        error={sessionError}
-        onResume={resumeSession}
+        isLoading={isLoading}
+        error={error}
+        onResume={() => resumeSession(storedSession.sessionId)}
         onStartFresh={handleStartFresh}
       />
     )
   }
 
   // Error state (no active session)
-  if (sessionError && !activeSession) {
+  if (error && !session) {
     return (
       <HostPageError
-        error={sessionError}
+        error={error}
         quizId={quizId}
         onRetry={handleStartFresh}
       />
@@ -283,28 +104,24 @@ function HostPageContent() {
   }
 
   // No quiz selected - show options
-  if (!quizId && !activeSession) {
+  if (!quizId && !session) {
     return (
       <HostPageNoQuiz
-        error={sessionError}
-        onRejoinByPin={rejoinByPin}
+        error={error}
+        onRejoinByPin={async (pin: string) => {
+          // Get session by pin and resume
+          const { gameSessionService } = await import('@/features/game-host')
+          const response = await gameSessionService.getSessionByPin(pin)
+          if (response.success && response.data) {
+            resumeSession(response.data.id)
+          }
+        }}
       />
     )
   }
 
-  // Creating state
-  if (isCreating) {
-    return <HostPageLoading />
-  }
-
-  // Need to create session
-  if (!activeSession && quizId) {
-    createNewSession()
-    return <HostPageLoading />
-  }
-
   // Session not ready
-  if (!activeSession) {
+  if (!session) {
     return (
       <div className="flex items-center justify-center py-16">
         <LoadingSpinner size="lg" />
@@ -313,7 +130,7 @@ function HostPageContent() {
   }
 
   // Render based on phase
-  if (phase === 'lobby' || phase === 'creating' || phase === 'idle') {
+  if (phase === 'lobby' || phase === 'idle') {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
@@ -327,7 +144,7 @@ function HostPageContent() {
         </div>
         
         <HostLobby
-          session={activeSession}
+          session={session}
           onGameStart={handleGameStart}
           onGameEnd={handleGameEnd}
         />
@@ -338,7 +155,7 @@ function HostPageContent() {
   // Game in progress or ended
   return (
     <div className="space-y-6">
-      <HostGameScreen session={activeSession} />
+      <HostGameScreen session={session} />
     </div>
   )
 }

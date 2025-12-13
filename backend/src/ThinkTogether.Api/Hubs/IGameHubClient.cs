@@ -42,6 +42,7 @@ public record QuestionStartedMessage(
     string Content,
     string QuestionType,
     int TimeLimit,
+    DateTime EndTime, // Absolute UTC end time for time synchronization
     int PositionInGame,
     int TotalQuestions,
     string? VideoUrl,

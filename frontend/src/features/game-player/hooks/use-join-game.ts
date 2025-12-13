@@ -8,8 +8,8 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { gameSessionService, GameStatus } from '@/features/game-host'
-import { usePlayerGameStore, selectPlayerActions } from '../store/player-game.store'
+import { gameSessionService } from '@/features/game-host'
+import { usePlayerGameStore, selectPlayerActions } from '../store/player-game-store'
 import { GAME_PLAYER_CONSTANTS } from '../constants'
 import { ROUTES } from '@/config/routes'
 import { toastError, toastSuccess } from '@/lib/utils/toast'
@@ -23,8 +23,8 @@ interface UseJoinGameReturn {
 
 export function useJoinGame(): UseJoinGameReturn {
   const router = useRouter()
-  const { setPin, setPlayerId, setNickname, setSessionId, setPhase } = usePlayerGameStore(selectPlayerActions)
-  
+  const { setPlayerInfo, setPhase } = usePlayerGameStore(selectPlayerActions)
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -43,20 +43,19 @@ export function useJoinGame(): UseJoinGameReturn {
         return
       }
 
-      // Get sessionId - we need it for SignalR, but we can get it later via reconnect
-      // For now, fetch it once after successful join
+      // Get sessionId - we need it for SignalR
       const sessionResponse = await gameSessionService.getSessionByPin(pin)
       const sessionId = sessionResponse.success && sessionResponse.data 
         ? sessionResponse.data.id 
-        : null
+        : ''
 
-      // Store player info (sessionId can be null, we'll get it via SignalR reconnect if needed)
-      setPin(pin)
-      setPlayerId(joinResponse.data.playerId)
-      setNickname(nickname)
-      if (sessionId) {
-        setSessionId(sessionId)
-      }
+      // Store player info
+      setPlayerInfo({
+        pin,
+        playerId: joinResponse.data.playerId,
+        nickname,
+        sessionId,
+      })
       setPhase('lobby')
 
       toastSuccess(GAME_PLAYER_CONSTANTS.MESSAGES.JOINED)
@@ -72,7 +71,7 @@ export function useJoinGame(): UseJoinGameReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [setPin, setPlayerId, setNickname, setSessionId, setPhase, router])
+  }, [setPlayerInfo, setPhase, router])
 
   const clearError = useCallback(() => {
     setError(null)

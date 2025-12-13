@@ -1,6 +1,6 @@
 'use client'
 
-import { use } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   PlayerGameScreen,
@@ -8,7 +8,6 @@ import {
   PlayerPageError,
   PlayerPageHeader,
   usePlayerGameStore,
-  usePlayerSession,
   selectPlayerPin,
   selectPlayerPlayerId,
   selectPlayerNickname,
@@ -32,7 +31,22 @@ export default function PlayPage({ params }: Readonly<PlayPageProps>) {
   const storedSessionId = usePlayerGameStore(selectPlayerSessionId)
   const { reset } = usePlayerGameStore(selectPlayerActions)
 
-  const { isValid, isLoading, error } = usePlayerSession({ pin })
+  const [isValid, setIsValid] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Validate session on mount
+  useEffect(() => {
+    // Check if we have stored session info for this PIN
+    if (storedPin !== pin || !storedPlayerId || !storedNickname) {
+      // No valid session, redirect to join page
+      router.replace(`${ROUTES.game.join}?pin=${pin}`)
+      return
+    }
+
+    // We have valid stored data
+    setIsValid(true)
+    setIsLoading(false)
+  }, [pin, storedPin, storedPlayerId, storedNickname, router])
 
   const handleGoBack = () => {
     reset()
@@ -44,14 +58,9 @@ export default function PlayPage({ params }: Readonly<PlayPageProps>) {
     return <PlayerPageLoading />
   }
 
-  // Error state
-  if (error || !isValid) {
-    return (
-      <PlayerPageError 
-        error={error || 'Phiên chơi không hợp lệ'} 
-        onGoBack={handleGoBack}
-      />
-    )
+  // Not valid - redirect will happen
+  if (!isValid) {
+    return <PlayerPageLoading />
   }
 
   // Valid session, show game screen

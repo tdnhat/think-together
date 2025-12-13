@@ -8,6 +8,8 @@ export { PlayerWaiting } from './player-waiting'
 export { PlayerQuestion } from './player-question'
 export { PlayerAnswerResult } from './player-answer-result'
 export { PlayerFinalResult } from './player-final-result'
+
+// Main game screen (v2 - clean implementation)
 export { PlayerGameScreen } from './player-game-screen'
 
 // Page state components

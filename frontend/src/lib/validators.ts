@@ -82,6 +82,36 @@ export type CreateQuizSetFormData = z.infer<typeof createQuizSetSchema>;
 export type UpdateQuizSetFormData = z.infer<typeof updateQuizSetSchema>;
 
 // Question schemas
+const matchingPairSchema = z.object({
+  id: z.string().optional(),
+  leftContent: z.string()
+    .min(1, "Nội dung ghép cặp bên trái không được để trống")
+    .max(500, "Nội dung không được vượt quá 500 ký tự"),
+  rightContent: z.string()
+    .min(1, "Nội dung ghép cặp bên phải không được để trống")
+    .max(500, "Nội dung không được vượt quá 500 ký tự"),
+  displayOrder: z.number(),
+});
+
+const orderingItemSchema = z.object({
+  id: z.string().optional(),
+  content: z.string()
+    .min(1, "Nội dung mục sắp xếp không được để trống")
+    .max(500, "Nội dung không được vượt quá 500 ký tự"),
+  correctPosition: z.number(),
+});
+
+const optionsSchema = z.array(z.object({
+  content: z.string().min(1, "Nội dung lựa chọn không được để trống"),
+  isCorrect: z.boolean(),
+  displayOrder: z.number(),
+})).refine(
+  (options) => options.some(opt => opt.isCorrect),
+  {
+    message: "Phải có ít nhất một đáp án đúng",
+  }
+);
+
 export const createQuestionSchema = z.object({
   content: z.string()
     .min(1, "Nội dung câu hỏi là bắt buộc")
@@ -90,11 +120,36 @@ export const createQuestionSchema = z.object({
   timeLimit: z.number()
     .min(5, "Thời gian giới hạn tối thiểu là 5 giây")
     .max(300, "Thời gian giới hạn tối đa là 300 giây"),
-  options: z.array(z.object({
-    content: z.string().min(1, "Nội dung lựa chọn không được để trống"),
-    isCorrect: z.boolean(),
-    displayOrder: z.number(),
-  })).optional(),
-});
+  options: optionsSchema.optional(),
+  matchingPairs: z.array(matchingPairSchema)
+    .min(2, "Phải có ít nhất 2 cặp ghép")
+    .max(5, "Không được có quá 5 cặp ghép")
+    .optional(),
+  orderingItems: z.array(orderingItemSchema)
+    .min(3, "Phải có ít nhất 3 mục để sắp xếp")
+    .max(6, "Không được có quá 6 mục để sắp xếp")
+    .optional(),
+}).refine(
+  (data) => {
+    // For choice-based questions, options must be provided
+    if (['SingleChoice', 'TrueFalse', 'MultipleChoice'].includes(data.type)) {
+      return Array.isArray(data.options) && data.options.length > 0;
+    }
+    // For matching questions, matchingPairs must be provided
+    if (data.type === 'Matching') {
+      return Array.isArray(data.matchingPairs) && data.matchingPairs.length >= 2;
+    }
+    // For ordering questions, orderingItems must be provided
+    if (data.type === 'Ordering') {
+      return Array.isArray(data.orderingItems) && data.orderingItems.length >= 3;
+    }
+    return true;
+  },
+  {
+    message: "Nội dung câu hỏi không đầy đủ cho loại câu hỏi đã chọn",
+  }
+);
 
 export type CreateQuestionFormData = z.infer<typeof createQuestionSchema>;
+export type MatchingPairFormData = z.infer<typeof matchingPairSchema>;
+export type OrderingItemFormData = z.infer<typeof orderingItemSchema>;

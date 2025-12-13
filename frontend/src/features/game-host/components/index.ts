@@ -10,6 +10,8 @@ export { QuestionResult } from './question-result'
 export { Leaderboard } from './leaderboard'
 export { GameEnded } from './game-ended'
 export { HostLobby } from './host-lobby'
+
+// Main game screen (v2 - clean implementation)
 export { HostGameScreen } from './host-game-screen'
 
 // Page state components
