@@ -1,9 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, Trash2, Check, X, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Trash2, Check, X, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Label } from '@/shared/ui/label'
 import { Textarea } from '@/shared/ui/textarea'
@@ -16,6 +16,8 @@ import { Input } from '@/shared/ui/input'
 import { createQuestionSchema, type CreateQuestionFormData } from '@/lib/validators'
 import { QuestionType, type QuestionDto, type CreateQuestionRequest } from '@/types/api'
 import { QUESTION_CONSTANTS } from '../constants'
+import { quizService } from '@/lib/api/services/quiz.service'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 
 interface QuestionFormProps {
   question?: QuestionDto | null
@@ -66,6 +68,10 @@ export function QuestionForm({
         ...baseValues,
         videoUrl: question?.videoUrl || '',
         videoTimestamp: question?.videoTimestamp || 0,
+        options: question?.options || [
+          { content: '', isCorrect: false, displayOrder: 0 },
+          { content: '', isCorrect: false, displayOrder: 1 },
+        ],
       }
     }
 
@@ -74,6 +80,10 @@ export function QuestionForm({
         ...baseValues,
         audioUrl: question?.audioUrl || '',
         audioTimestamp: question?.audioTimestamp || 0,
+        options: question?.options || [
+          { content: '', isCorrect: false, displayOrder: 0 },
+          { content: '', isCorrect: false, displayOrder: 1 },
+        ],
       }
     }
 
@@ -104,6 +114,11 @@ export function QuestionForm({
   const audioUrl = watch('audioUrl')
   const audioTimestamp = watch('audioTimestamp')
   const timeLimit = watch('timeLimit')
+
+  // Audio upload state
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false)
+  const [audioUploadError, setAudioUploadError] = useState<string | null>(null)
+  const [audioUploadProgress, setAudioUploadProgress] = useState(0)
 
   // Handle type changes - reset type-specific data
   // Only depend on type and question to avoid infinite loop
@@ -146,25 +161,35 @@ export function QuestionForm({
       setValue('videoTimestamp', undefined)
     } else if (type === QuestionType.VIDEO) {
       // Clear other data for video questions
-      setValue('options', undefined)
       setValue('matchingPairs', undefined)
       setValue('orderingItems', undefined)
       setValue('audioUrl', undefined)
       setValue('audioTimestamp', undefined)
-      // Initialize timestamp if not set (only on initial load)
-      if (!videoUrl) {
-        setValue('videoTimestamp', 0)
+      // Initialize options and timestamp if not set (only on initial load)
+      if (!question) {
+        setValue('options', [
+          { content: '', isCorrect: false, displayOrder: 0 },
+          { content: '', isCorrect: false, displayOrder: 1 },
+        ])
+        if (!videoUrl) {
+          setValue('videoTimestamp', 0)
+        }
       }
     } else if (type === QuestionType.AUDIO) {
       // Clear other data for audio questions
-      setValue('options', undefined)
       setValue('matchingPairs', undefined)
       setValue('orderingItems', undefined)
       setValue('videoUrl', undefined)
       setValue('videoTimestamp', undefined)
-      // Initialize timestamp if not set (only on initial load)
-      if (!audioUrl) {
-        setValue('audioTimestamp', 0)
+      // Initialize options and timestamp if not set (only on initial load)
+      if (!question) {
+        setValue('options', [
+          { content: '', isCorrect: false, displayOrder: 0 },
+          { content: '', isCorrect: false, displayOrder: 1 },
+        ])
+        if (!audioUrl) {
+          setValue('audioTimestamp', 0)
+        }
       }
     }
   }, [type, question, setValue])
@@ -180,13 +205,15 @@ export function QuestionForm({
     }
 
     // Add type-specific data
-    if ([QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.MULTIPLE_CHOICE].includes(formData.type as QuestionType)) {
+    if ([QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.MULTIPLE_CHOICE, QuestionType.VIDEO, QuestionType.AUDIO].includes(formData.type as QuestionType)) {
       createData.options = formData.options?.map((opt, idx) => ({
         content: opt.content.trim(),
         isCorrect: opt.isCorrect,
         displayOrder: idx,
       })) || []
-    } else if (formData.type === QuestionType.MATCHING) {
+    }
+    
+    if (formData.type === QuestionType.MATCHING) {
       createData.matchingPairs = formData.matchingPairs?.map((pair, idx) => ({
         id: pair.id,
         leftContent: pair.leftContent.trim(),
@@ -200,12 +227,21 @@ export function QuestionForm({
         content: item.content.trim(),
         correctPosition: idx + 1, // Convert from 0-based to 1-based
       })) || []
-    } else if (formData.type === QuestionType.VIDEO) {
-      createData.videoUrl = formData.videoUrl?.trim()
-      createData.videoTimestamp = formData.videoTimestamp || 0
-    } else if (formData.type === QuestionType.AUDIO) {
-      createData.audioUrl = formData.audioUrl?.trim()
-      createData.audioTimestamp = formData.audioTimestamp || 0
+    }
+    
+    // Video questions need both options and video details
+    // Video questions need both options and video details
+    if (formData.type === QuestionType.VIDEO) {
+      createData.videoUrl = formData.videoUrl?.trim() || ''
+      createData.videoTimestamp = formData.videoTimestamp ?? 0
+      // Options are already set above for VIDEO type
+    }
+    
+    // Audio questions need both options and audio details
+    if (formData.type === QuestionType.AUDIO) {
+      createData.audioUrl = formData.audioUrl?.trim() || ''
+      createData.audioTimestamp = formData.audioTimestamp ?? 0
+      // Options are already set above for AUDIO type
     }
 
     await onSubmit(createData)
@@ -427,8 +463,8 @@ export function QuestionForm({
           )}
         />
 
-        {/* Options (for choice-based questions) */}
-        {[QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.MULTIPLE_CHOICE].includes(type as QuestionType) && (
+        {/* Options (for choice-based questions, video questions, and audio questions) */}
+        {[QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.MULTIPLE_CHOICE, QuestionType.VIDEO, QuestionType.AUDIO].includes(type as QuestionType) && (
           <FormItem className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>
@@ -708,7 +744,7 @@ export function QuestionForm({
           </FormItem>
         )}
 
-        {/* Video (for video questions) */}
+        {/* Video Details (for video questions) */}
         {type === QuestionType.VIDEO && (
           <>
             {/* Video URL Input */}
@@ -795,43 +831,104 @@ export function QuestionForm({
                   <FormControl>
                     <div className="space-y-2">
                       {!audioUrl ? (
-                        <div className="border-2 border-dashed border-[var(--border-secondary)] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--brand-primary)] transition-colors"
-                          onClick={() => document.getElementById('audio-input')?.click()}
+                        <div 
+                          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                            isUploadingAudio 
+                              ? 'border-[var(--brand-primary)] bg-[var(--brand-primary-light)]/10 cursor-wait' 
+                              : 'border-[var(--border-secondary)] hover:border-[var(--brand-primary)] cursor-pointer'
+                          }`}
+                          onClick={() => {
+                            if (!isUploadingAudio) {
+                              document.getElementById('audio-input')?.click()
+                            }
+                          }}
                         >
                           <input
                             id="audio-input"
                             type="file"
                             accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/flac,audio/webm,.mp3,.wav,.ogg,.m4a,.flac,.webm"
                             className="hidden"
+                            disabled={isUploadingAudio}
                             onChange={async (e) => {
                               const file = e.target.files?.[0]
                               if (file) {
-                                // Upload file to Cloudinary via backend
-                                const formData = new FormData()
-                                formData.append('file', file)
+                                setIsUploadingAudio(true)
+                                setAudioUploadError(null)
+                                setAudioUploadProgress(0)
+
                                 try {
-                                  const response = await fetch('/api/upload/audio', {
-                                    method: 'POST',
-                                    body: formData,
-                                  })
-                                  const data = await response.json()
-                                  if (data.url) {
-                                    field.onChange(data.url)
-                                  } else {
-                                    console.error('Upload failed:', data.error)
+                                  // Validate file size (max 20MB)
+                                  const maxSize = 20 * 1024 * 1024 // 20MB
+                                  if (file.size > maxSize) {
+                                    throw new Error('Kích thước file không được vượt quá 20MB')
                                   }
+
+                                  // Simulate progress (since we don't have real progress from API)
+                                  const progressInterval = setInterval(() => {
+                                    setAudioUploadProgress((prev) => {
+                                      if (prev >= 90) {
+                                        clearInterval(progressInterval)
+                                        return 90
+                                      }
+                                      return prev + 10
+                                    })
+                                  }, 200)
+
+                                  // Upload file to Cloudinary via backend
+                                  const uploadedAudioUrl = await quizService.uploadAudio(file)
+                                  
+                                  clearInterval(progressInterval)
+                                  setAudioUploadProgress(100)
+                                  
+                                  // Small delay to show 100% progress
+                                  await new Promise(resolve => setTimeout(resolve, 300))
+                                  
+                                  field.onChange(uploadedAudioUrl)
+                                  setAudioUploadError(null)
                                 } catch (error) {
                                   console.error('Upload error:', error)
+                                  const errorMessage = error instanceof Error 
+                                    ? error.message 
+                                    : 'Tải âm thanh lên thất bại. Vui lòng thử lại.'
+                                  setAudioUploadError(errorMessage)
+                                  setAudioUploadProgress(0)
+                                } finally {
+                                  setIsUploadingAudio(false)
+                                  // Reset progress after a delay
+                                  setTimeout(() => setAudioUploadProgress(0), 500)
                                 }
                               }
                             }}
                           />
-                          <p className="text-sm text-[var(--text-primary)]">
-                            Nhấp để chọn tệp âm thanh
-                          </p>
-                          <p className="text-xs text-[var(--text-tertiary)] mt-1">
-                            Hỗ trợ: MP3, WAV, OGG, M4A, FLAC, WebM
-                          </p>
+                          {isUploadingAudio ? (
+                            <div className="space-y-3">
+                              <LoadingSpinner size="md" className="mx-auto" />
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium text-[var(--text-primary)]">
+                                  Đang tải lên...
+                                </p>
+                                {/* Progress Bar */}
+                                <div className="w-full bg-[var(--bg-surface-secondary)] rounded-full h-2 overflow-hidden">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-primary-light)] transition-all duration-300 ease-out"
+                                    style={{ width: `${audioUploadProgress}%` }}
+                                  />
+                                </div>
+                                <p className="text-xs text-[var(--text-secondary)]">
+                                  {audioUploadProgress}% hoàn thành
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm text-[var(--text-primary)]">
+                                Nhấp để chọn tệp âm thanh
+                              </p>
+                              <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                                Hỗ trợ: MP3, WAV, OGG, M4A, FLAC, WebM (tối đa 20MB)
+                              </p>
+                            </>
+                          )}
                         </div>
                       ) : (
                         <div className="bg-[var(--bg-surface-secondary)] rounded-lg border border-[var(--border-secondary)] p-4">
@@ -855,6 +952,30 @@ export function QuestionForm({
                             <source src={audioUrl} />
                             Trình duyệt của bạn không hỗ trợ phát âm thanh HTML5.
                           </audio>
+                        </div>
+                      )}
+                      
+                      {/* Error Message */}
+                      {audioUploadError && (
+                        <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+                          <AlertCircle className="size-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                              Lỗi tải lên
+                            </p>
+                            <p className="text-xs text-red-700 dark:text-red-400 mt-1">
+                              {audioUploadError}
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="neutral"
+                            size="icon"
+                            className="size-6 shrink-0"
+                            onClick={() => setAudioUploadError(null)}
+                          >
+                            <X className="size-4" />
+                          </Button>
                         </div>
                       )}
                     </div>

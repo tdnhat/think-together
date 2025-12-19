@@ -3,12 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
-using ThinkTogether.Application.Handlers.Challenge.Commands.CompleteAttempt;
 using ThinkTogether.Application.Handlers.Challenge.Commands.CreateChallenge;
-using ThinkTogether.Application.Handlers.Challenge.Commands.FlagQuestion;
-using ThinkTogether.Application.Handlers.Challenge.Commands.NavigateQuestion;
 using ThinkTogether.Application.Handlers.Challenge.Commands.StartChallengeAttempt;
-using ThinkTogether.Application.Handlers.Challenge.Commands.SubmitAnswer;
 using ThinkTogether.Application.Handlers.Challenge.Commands.SubmitAnswers;
 using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeAttempt;
 using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeByQuizSetId;
@@ -145,83 +141,6 @@ public class ChallengeController : ControllerBase
     }
 
     /// <summary>
-    /// Submit or update an answer for a question
-    /// </summary>
-    [HttpPost("attempts/{attemptId:guid}/answers")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<ChallengeAnswerDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SubmitAnswer(
-        Guid attemptId,
-        [FromBody] SubmitAnswerRequest request,
-        CancellationToken cancellationToken)
-    {
-        var command = new SubmitAnswerCommand(
-            attemptId,
-            request.QuestionId,
-            request.SelectedOptionIndexes,
-            request.MatchingPairs,
-            request.OrderingItems);
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return Ok(new ApiResponse<ChallengeAnswerDto>
-        {
-            Success = true,
-            Data = result
-        });
-    }
-
-    /// <summary>
-    /// Flag or unflag a question
-    /// </summary>
-    [HttpPut("attempts/{attemptId:guid}/questions/{questionId:guid}/flag")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> FlagQuestion(
-        Guid attemptId,
-        Guid questionId,
-        [FromBody] FlagQuestionRequest request,
-        CancellationToken cancellationToken)
-    {
-        var command = new FlagQuestionCommand(
-            attemptId,
-            questionId,
-            request.IsFlagged);
-
-        await _mediator.Send(command, cancellationToken);
-
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = request.IsFlagged ? "Đã đánh dấu câu hỏi" : "Đã bỏ đánh dấu câu hỏi"
-        });
-    }
-
-    /// <summary>
-    /// Navigate to a specific question
-    /// </summary>
-    [HttpPut("attempts/{attemptId:guid}/navigate")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> NavigateQuestion(
-        Guid attemptId,
-        [FromBody] NavigateQuestionRequest request,
-        CancellationToken cancellationToken)
-    {
-        var command = new NavigateQuestionCommand(
-            attemptId,
-            request.QuestionIndex);
-
-        await _mediator.Send(command, cancellationToken);
-
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Đã chuyển đến câu hỏi"
-        });
-    }
-
-    /// <summary>
     /// Submit all answers for a challenge attempt at once
     /// </summary>
     [HttpPost("attempts/{attemptId:guid}/submit-answers")]
@@ -245,26 +164,7 @@ public class ChallengeController : ControllerBase
         return Ok(new ApiResponse<ChallengeAttemptDto>
         {
             Success = true,
-            Data = result
-        });
-    }
-
-    /// <summary>
-    /// Complete the challenge attempt
-    /// </summary>
-    [HttpPost("attempts/{attemptId:guid}/complete")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<ChallengeAttemptDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CompleteAttempt(
-        Guid attemptId,
-        CancellationToken cancellationToken)
-    {
-        var command = new CompleteAttemptCommand(attemptId);
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return Ok(new ApiResponse<ChallengeAttemptDto>
-        {
-            Success = true,
+            Message = "Đã nộp bài và chấm điểm thành công",
             Data = result
         });
     }
@@ -299,24 +199,6 @@ public class StartChallengeAttemptRequest
     public Guid? UserId { get; set; }
 }
 
-public class SubmitAnswerRequest
-{
-    public Guid QuestionId { get; set; }
-    public List<int>? SelectedOptionIndexes { get; set; }
-    public List<AnswerMatchingPairDto>? MatchingPairs { get; set; }
-    public List<AnswerOrderingItemDto>? OrderingItems { get; set; }
-}
-
-public class FlagQuestionRequest
-{
-    public bool IsFlagged { get; set; }
-}
-
-public class NavigateQuestionRequest
-{
-    public int QuestionIndex { get; set; }
-}
-
 public class SubmitAnswersRequest
 {
     public List<AnswerSubmissionItemDto> Answers { get; set; } = new();
@@ -329,4 +211,3 @@ public class AnswerSubmissionItemDto
     public List<AnswerMatchingPairDto>? MatchingPairs { get; set; }
     public List<AnswerOrderingItemDto>? OrderingItems { get; set; }
 }
-

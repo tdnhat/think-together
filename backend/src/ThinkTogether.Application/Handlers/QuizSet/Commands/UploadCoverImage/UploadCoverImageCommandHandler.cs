@@ -4,23 +4,27 @@ using Microsoft.Extensions.Logging;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.UploadCoverImage;
 
 public sealed class UploadCoverImageCommandHandler : IRequestHandler<UploadCoverImageCommand, QuizSetDto>
 {
     private readonly IQuizSetRepository _repository;
+    private readonly IUserRepository _userRepository;
     private readonly IImageUploadService _imageUploadService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<UploadCoverImageCommandHandler> _logger;
 
     public UploadCoverImageCommandHandler(
         IQuizSetRepository repository,
+        IUserRepository userRepository,
         IImageUploadService imageUploadService,
         ICurrentUserService currentUserService,
         ILogger<UploadCoverImageCommandHandler> logger)
     {
         _repository = repository;
+        _userRepository = userRepository;
         _imageUploadService = imageUploadService;
         _currentUserService = currentUserService;
         _logger = logger;
@@ -82,6 +86,11 @@ public sealed class UploadCoverImageCommandHandler : IRequestHandler<UploadCover
         _logger.LogInformation("Cover image uploaded successfully for quiz set {QuizSetId}. Image URL: {ImageUrl}",
             request.QuizSetId, imageUrl);
 
-        return quizSet.Adapt<QuizSetDto>();
+        var creator = await _userRepository.GetByIdAsync(quizSet.CreatorId, cancellationToken);
+
+        var dto = quizSet.Adapt<QuizSetDto>();
+        dto.CreatorName = creator != null ? $"{creator.FirstName} {creator.LastName}".Trim() : "Unknown Creator";
+
+        return dto;
     }
 }

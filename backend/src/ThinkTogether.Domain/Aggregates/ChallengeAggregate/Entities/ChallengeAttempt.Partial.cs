@@ -11,7 +11,7 @@ public sealed partial class ChallengeAttempt
             throw new ValidationException("Câu trả lời không được null");
 
         if (Status != AttemptStatus.InProgress)
-            throw new ValidationException("Chỉ có thể thêm câu trả lời khi đang trong quá trình làm bài");
+            throw new ValidationException("Chỉ có thể thêm/cập nhật câu trả lời khi đang làm bài");
 
         _answers.Add(answer);
         UpdatedAt = DateTime.UtcNow;
@@ -23,7 +23,7 @@ public sealed partial class ChallengeAttempt
             throw new ValidationException("Câu trả lời không được null");
 
         if (Status != AttemptStatus.InProgress)
-            throw new ValidationException("Chỉ có thể cập nhật câu trả lời khi đang trong quá trình làm bài");
+            throw new ValidationException("Chỉ có thể thêm/cập nhật câu trả lời khi đang làm bài");
 
         var existingAnswer = _answers.FirstOrDefault(a => a.QuestionId == answer.QuestionId);
         if (existingAnswer == null)
@@ -53,7 +53,7 @@ public sealed partial class ChallengeAttempt
     public void Complete(int score, int correctAnswers, int completionTimeMs)
     {
         if (Status != AttemptStatus.InProgress)
-            throw new ValidationException("Chỉ có thể hoàn thành khi đang trong quá trình làm bài");
+            throw new ValidationException("Chỉ có thể hoàn thành khi đang làm bài");
 
         if (score < 0)
             throw new ValidationException("Điểm không được âm");

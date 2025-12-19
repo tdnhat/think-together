@@ -6,7 +6,7 @@
 'use client'
 
 import { useCallback, useEffect } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { challengeService } from '../api/challenge.service'
 import { useChallengeStore } from '../store/challenge.store'
@@ -14,11 +14,9 @@ import { CHALLENGE_CONSTANTS } from '../constants'
 import type {
   ChallengeDto,
   ChallengeAttemptDto,
+  ChallengeAttemptApiDto,
   CreateChallengeRequest,
   UpdateChallengeRequest,
-  SubmitAnswerRequest,
-  CompleteAttemptRequest,
-  FlagQuestionRequest,
 } from '../types'
 
 /**
@@ -135,8 +133,20 @@ export function useStartAttempt() {
     }: {
       challengeId: string
       nickname: string
-    }) => {
-      return challengeService.startAttempt(challengeId, { challengeId, nickname })
+    }): Promise<ChallengeAttemptDto> => {
+      const apiAttempt = await challengeService.startAttempt(challengeId, { challengeId, nickname })
+      // Map API response to internal type with default frontend state
+      return {
+        ...apiAttempt,
+        currentQuestionIndex: 0,
+        flaggedQuestionIds: [],
+        questions: apiAttempt.questions.map(q => ({
+          ...q,
+          isFlagged: false,
+          isAnswered: false,
+          answer: undefined,
+        })),
+      }
     },
     onSuccess: (attempt) => {
       setCurrentAttempt(attempt)
@@ -155,52 +165,33 @@ export function useStartAttempt() {
 export function useAttempt(attemptId: string | undefined) {
   return useQuery({
     queryKey: ['attempt', attemptId],
-    queryFn: () => {
+    queryFn: async (): Promise<ChallengeAttemptDto> => {
       if (!attemptId) throw new Error('Attempt ID is required')
-      return challengeService.getAttempt(attemptId)
+      const apiAttempt = await challengeService.getAttempt(attemptId)
+      // Map API response to internal type with default frontend state
+      return {
+        ...apiAttempt,
+        currentQuestionIndex: 0, // Frontend manages this
+        flaggedQuestionIds: [], // Frontend manages this
+        questions: apiAttempt.questions.map(q => ({
+          ...q,
+          isFlagged: false, // Frontend manages this
+          isAnswered: false, // Frontend manages this
+          answer: undefined, // Not returned by API
+        })),
+      }
     },
     enabled: !!attemptId,
   })
 }
 
 /**
- * Hook for submitting an answer
- */
-export function useSubmitAnswer() {
-  const setAnswer = useChallengeStore((s) => s.setAnswer)
-
-  return useMutation({
-    mutationFn: async ({
-      attemptId,
-      data,
-    }: {
-      attemptId: string
-      data: SubmitAnswerRequest
-    }) => {
-      return challengeService.submitAnswer(attemptId, data)
-    },
-    onSuccess: (attempt, variables) => {
-      // Store the answer in the store if it exists
-      if (attempt.questions && variables.data.questionId) {
-        const question = attempt.questions.find((q) => q.id === variables.data.questionId)
-        if (question && question.answer) {
-          setAnswer(variables.data.questionId, question.answer)
-        }
-      }
-    },
-    onError: (error) => {
-      console.error('Submit answer error:', error)
-      toast.error(CHALLENGE_CONSTANTS.MESSAGES.SUBMIT_ANSWER_FAILED)
-    },
-  })
-}
-
-/**
  * Hook for submitting all answers at once
+ * Returns the completed attempt immediately (grading is done synchronously on server)
  */
 export function useSubmitAnswers() {
-  const setAnswer = useChallengeStore((s) => s.setAnswer)
-
+  const queryClient = useQueryClient()
+  
   return useMutation({
     mutationFn: async ({
       attemptId,
@@ -213,48 +204,31 @@ export function useSubmitAnswers() {
         matchingPairs?: Array<{ leftContent: string; rightContent: string }>
         orderingItems?: Array<{ content: string; position: number }>
       }>
-    }) => {
+    }): Promise<ChallengeAttemptApiDto> => {
       return challengeService.submitAnswers(attemptId, answers)
     },
-    onSuccess: (attempt) => {
-      // Store all answers in the store
-      attempt.questions.forEach((question) => {
-        if (question.answer) {
-          setAnswer(question.id, question.answer)
-        }
-      })
-      toast.success('Đã lưu tất cả câu trả lời')
+    onSuccess: (completedAttempt) => {
+      // Map API response to match the ChallengeAttemptDto type expected by the cache
+      const mappedAttempt: ChallengeAttemptDto = {
+        ...completedAttempt,
+        currentQuestionIndex: 0,
+        flaggedQuestionIds: [],
+        questions: completedAttempt.questions.map(q => ({
+          ...q,
+          isFlagged: false,
+          isAnswered: true,
+          answer: undefined,
+        })),
+      }
+      
+      // Update the query cache with the completed attempt data
+      queryClient.setQueryData(['attempt', completedAttempt.id], mappedAttempt)
+      
+      toast.success('Đã nộp bài và chấm điểm thành công!')
     },
     onError: (error) => {
       console.error('Submit answers error:', error)
       toast.error(CHALLENGE_CONSTANTS.MESSAGES.SUBMIT_ANSWER_FAILED)
-    },
-  })
-}
-
-/**
- * Hook for completing an attempt
- */
-export function useCompleteAttempt() {
-  return useMutation({
-    mutationFn: async ({
-      attemptId,
-      completionTimeMs,
-    }: {
-      attemptId: string
-      completionTimeMs: number
-    }) => {
-      return challengeService.completeAttempt(attemptId, {
-        attemptId,
-        completionTimeMs,
-      })
-    },
-    onSuccess: () => {
-      toast.success(CHALLENGE_CONSTANTS.MESSAGES.COMPLETE_SUCCESS)
-    },
-    onError: (error) => {
-      console.error('Complete attempt error:', error)
-      toast.error(CHALLENGE_CONSTANTS.MESSAGES.COMPLETE_FAILED)
     },
   })
 }
@@ -278,36 +252,6 @@ export function useAbandonAttempt() {
 }
 
 /**
- * Hook for flagging/unflagging a question
- */
-export function useFlagQuestion() {
-  const toggleFlag = useChallengeStore((s) => s.toggleFlagQuestion)
-
-  return useMutation({
-    mutationFn: async ({
-      attemptId,
-      questionId,
-      isFlagged,
-    }: {
-      attemptId: string
-      questionId: string
-      isFlagged: boolean
-    }) => {
-      await challengeService.flagQuestion(attemptId, questionId, {
-        isFlagged,
-      })
-    },
-    onSuccess: (_, variables) => {
-      toggleFlag(variables.questionId)
-    },
-    onError: (error) => {
-      console.error('Flag question error:', error)
-      toast.error('Không thể đánh dấu câu hỏi')
-    },
-  })
-}
-
-/**
  * Hook for getting leaderboard
  */
 export function useLeaderboard(challengeId: string | undefined, limit: number = 50) {
@@ -318,6 +262,41 @@ export function useLeaderboard(challengeId: string | undefined, limit: number = 
       return challengeService.getLeaderboard(challengeId, limit)
     },
     enabled: !!challengeId,
+  })
+}
+
+/**
+ * Hook for polling attempt status until completion
+ */
+export function usePollAttemptCompletion(attemptId: string | undefined, enabled: boolean = false) {
+  return useQuery({
+    queryKey: ['attempt-completion', attemptId],
+    queryFn: async (): Promise<ChallengeAttemptDto> => {
+      if (!attemptId) throw new Error('Attempt ID is required')
+      const apiAttempt = await challengeService.getAttempt(attemptId)
+      // Map API response to internal type with default frontend state
+      return {
+        ...apiAttempt,
+        currentQuestionIndex: 0, // Frontend manages this
+        flaggedQuestionIds: [], // Frontend manages this
+        questions: apiAttempt.questions.map(q => ({
+          ...q,
+          isFlagged: false, // Frontend manages this
+          isAnswered: false, // Frontend manages this
+          answer: undefined, // Not returned by API
+        })),
+      }
+    },
+    enabled: !!attemptId && enabled,
+    refetchInterval: (query) => {
+      // Stop polling when attempt is completed or failed
+      if (query.state.data && (query.state.data.status === 'Completed' || query.state.data.status === 'Abandoned')) {
+        return false
+      }
+      // Poll every 2 seconds while processing
+      return 2000
+    },
+    refetchIntervalInBackground: false,
   })
 }
 
@@ -346,4 +325,3 @@ export function useChallengeTimer(timeLimitMs?: number) {
     isCritical: remainingTimeMs <= CHALLENGE_CONSTANTS.TIMER.CRITICAL_THRESHOLD,
   }
 }
-

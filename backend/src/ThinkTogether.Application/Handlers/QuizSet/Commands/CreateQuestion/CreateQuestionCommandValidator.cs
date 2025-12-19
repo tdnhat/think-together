@@ -26,10 +26,12 @@ public sealed class CreateQuestionCommandValidator : AbstractValidator<CreateQue
             .GreaterThanOrEqualTo(0)
             .WithMessage("Thứ tự hiển thị không được âm");
 
-        // Validate options for choice-based questions
+        // Validate options for choice-based questions, video questions, and audio questions
         When(x => x.Type == QuestionType.SingleChoice || 
                   x.Type == QuestionType.TrueFalse || 
-                  x.Type == QuestionType.MultipleChoice, () =>
+                  x.Type == QuestionType.MultipleChoice ||
+                  x.Type == QuestionType.Video ||
+                  x.Type == QuestionType.Audio, () =>
         {
             RuleFor(x => x.Options)
                 .NotNull()
@@ -52,7 +54,7 @@ public sealed class CreateQuestionCommandValidator : AbstractValidator<CreateQue
             RuleFor(x => x.Options)
                 .Must(options => options != null && options.Count(o => o.IsCorrect) == 1)
                 .WithMessage("Câu hỏi một lựa chọn phải có đúng một đáp án đúng")
-                .When(x => x.Type == QuestionType.SingleChoice && x.Options != null);
+                .When(x => (x.Type == QuestionType.SingleChoice || x.Type == QuestionType.Video || x.Type == QuestionType.Audio) && x.Options != null);
 
             RuleForEach(x => x.Options)
                 .ChildRules(option =>
@@ -123,20 +125,18 @@ public sealed class CreateQuestionCommandValidator : AbstractValidator<CreateQue
                 .When(x => x.OrderingItems != null);
         });
 
-        // Validate video details
+        // Validate video details (optional - can be added later)
         When(x => x.Type == QuestionType.Video, () =>
         {
             RuleFor(x => x.VideoUrl)
-                .NotEmpty()
-                .WithMessage("URL video là bắt buộc cho câu hỏi video")
                 .MaximumLength(500)
-                .WithMessage("URL video không được vượt quá 500 ký tự");
+                .WithMessage("URL video không được vượt quá 500 ký tự")
+                .When(x => !string.IsNullOrEmpty(x.VideoUrl));
 
             RuleFor(x => x.VideoTimestamp)
-                .NotNull()
-                .WithMessage("Dấu thời gian video là bắt buộc")
                 .GreaterThanOrEqualTo(0)
-                .WithMessage("Dấu thời gian video không được âm");
+                .WithMessage("Dấu thời gian video không được âm")
+                .When(x => x.VideoTimestamp.HasValue);
         });
 
         // Validate audio details

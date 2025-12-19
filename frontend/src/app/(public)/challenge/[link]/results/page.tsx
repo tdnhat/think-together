@@ -7,11 +7,13 @@ import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Separator } from '@/shared/ui/separator'
+import { PageLayout, PageHeader, PageMain, PageFooter } from '@/shared/components'
 import {
   ResultsSummary,
   LeaderboardTable,
   useAttempt,
   useLeaderboard,
+  useChallengeStore,
 } from '@/features/challenge'
 import type { ChallengeResultsSummary } from '@/features/challenge'
 
@@ -22,8 +24,16 @@ function ChallengeResultsContent() {
   const shareLink = params.link as string
   const attemptId = searchParams.get('attemptId')
 
-  // Fetch attempt directly by attemptId
-  const { data: attempt, isLoading: isLoadingAttempt } = useAttempt(attemptId || undefined)
+  // Get attempt from store first (if just submitted), otherwise fetch from API
+  const storedAttempt = useChallengeStore((s) =>
+    s.currentAttempt?.id === attemptId && s.currentAttempt?.status === 'Completed'
+      ? s.currentAttempt
+      : null
+  )
+  const { data: apiAttempt, isLoading: isLoadingAttempt } = useAttempt(attemptId || undefined)
+
+  // Use stored attempt if available, otherwise API attempt
+  const attempt = storedAttempt || apiAttempt
 
   // Fetch leaderboard using challengeId from attempt
   const { data: leaderboard, isLoading: isLoadingLeaderboard } = useLeaderboard(
@@ -58,7 +68,7 @@ function ChallengeResultsContent() {
     router.push('/home')
   }
 
-  if (isLoadingAttempt || !attempt) {
+  if ((isLoadingAttempt && !storedAttempt) || !attempt) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
@@ -101,22 +111,20 @@ function ChallengeResultsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] flex flex-col">
+    <PageLayout>
       {/* Header */}
-      <header className="py-6 px-4 border-b border-[var(--border)]">
-        <div className="container mx-auto flex items-center justify-center">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-8 w-8 text-[var(--brand-primary)]" />
-            <span className="font-heading text-2xl font-bold text-[var(--text-primary)]">
-              Kết quả thử thách
-            </span>
-          </div>
+      <PageHeader bordered>
+        <div className="flex items-center gap-2">
+          <Trophy className="h-8 w-8 text-[var(--brand-primary)]" />
+          <span className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            Kết quả thử thách
+          </span>
         </div>
-      </header>
+      </PageHeader>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-8">
-        <div className="container mx-auto max-w-4xl space-y-8">
+      <PageMain>
+        <div className="max-w-4xl mx-auto space-y-8">
           {/* Results Summary */}
           <ResultsSummary results={resultsSummary} />
 
@@ -160,13 +168,13 @@ function ChallengeResultsContent() {
             </>
           )}
         </div>
-      </main>
+      </PageMain>
 
       {/* Footer */}
-      <footer className="py-4 text-center text-sm text-[var(--text-tertiary)] border-t border-[var(--border)]">
+      <PageFooter>
         <p>© 2024 ThinkTogether. Học cùng nhau, vui hơn gấp bội!</p>
-      </footer>
-    </div>
+      </PageFooter>
+    </PageLayout>
   )
 }
 
@@ -183,4 +191,3 @@ export default function ChallengeResultsPage() {
     </Suspense>
   )
 }
-

@@ -12,6 +12,7 @@ using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
 using ThinkTogether.Infrastructure.Interfaces;
+using ThinkTogether.Infrastructure.BackgroundTasks;
 using ThinkTogether.Infrastructure.Persistence;
 using ThinkTogether.Infrastructure.Persistence.Interceptors;
 using ThinkTogether.Infrastructure.Persistence.Repositories;
@@ -125,6 +126,10 @@ public static class DependencyInjection
     private static void ConfigureInfrastructureServices(IServiceCollection services)
     {
         services.AddScoped<IDbInitializer, DbInitializer>();
+
+        // Background tasks
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+        services.AddHostedService<QueuedHostedService>();
 
         // Domain Services
         services.AddScoped<IPasswordService, PasswordService>();

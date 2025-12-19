@@ -34,11 +34,8 @@ export {
   useDeleteChallenge,
   useStartAttempt,
   useAttempt,
-  useSubmitAnswer,
   useSubmitAnswers,
-  useCompleteAttempt,
-  useAbandonAttempt,
-  useFlagQuestion,
+  usePollAttemptCompletion,
   useLeaderboard,
   useChallengeTimer,
 } from './hooks'
@@ -47,9 +44,9 @@ export {
 export {
   TimerDisplay,
   ChallengeProgress,
-  FlagButton,
   QuestionDisplay,
   QuestionNavigation,
+  QuestionGrid,
   LeaderboardTable,
   ResultsSummary,
   StartChallengeForm,
@@ -59,7 +56,9 @@ export {
 export type {
   ChallengeDto,
   ChallengeAttemptDto,
+  ChallengeAttemptApiDto,
   ChallengeQuestionDto,
+  ChallengeQuestionApiDto,
   ChallengeAnswerDto,
   ChallengeLeaderboardEntryDto,
   ChallengeLeaderboardDto,
@@ -67,13 +66,10 @@ export type {
   CreateChallengeRequest,
   UpdateChallengeRequest,
   StartChallengeAttemptRequest,
-  SubmitAnswerRequest,
   CompleteAttemptRequest,
-  FlagQuestionRequest,
 } from './types'
 
 export { ChallengeStatus, AttemptStatus } from './types'
 
 // Constants
 export { CHALLENGE_CONSTANTS, CHALLENGE_STATUS_LABELS, ATTEMPT_STATUS_LABELS, LEADERBOARD_HEADERS } from './constants'
-

@@ -29,6 +29,10 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   },
+  // Increase body size limit for file uploads (20MB for audio files)
+  serverActions: {
+    bodySizeLimit: '20mb',
+  },
 }
 
 export default nextConfig

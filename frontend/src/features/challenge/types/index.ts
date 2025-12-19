@@ -33,8 +33,8 @@ export interface ChallengeDto {
   updatedAt?: string
 }
 
-// Challenge Attempt DTO (from backend)
-export interface ChallengeAttemptDto {
+// Challenge Attempt DTO (from backend API)
+export interface ChallengeAttemptApiDto {
   id: string
   challengeId: string
   userId?: string
@@ -45,12 +45,29 @@ export interface ChallengeAttemptDto {
   completionTimeMs?: number
   completedAt: string
   startedAt: string
-  currentQuestionIndex: number
   status: AttemptStatus
   timeLimitMs?: number
   remainingTimeMs?: number
-  questions: ChallengeQuestionDto[]
+  questions: ChallengeQuestionApiDto[]
+}
+
+// Challenge Question DTO (from backend API)
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ChallengeQuestionApiDto extends QuestionDto {
+  // No additional properties - backend doesn't return isFlagged, isAnswered, or answer
+}
+
+// Challenge Attempt DTO with frontend state
+export interface ChallengeAttemptDto extends ChallengeAttemptApiDto {
+  currentQuestionIndex: number
   flaggedQuestionIds: string[]
+  questions: ChallengeQuestionDto[]
+}
+
+export interface ChallengeQuestionDto extends ChallengeQuestionApiDto {
+  isFlagged: boolean
+  isAnswered: boolean
+  answer?: ChallengeAnswerDto
 }
 
 // Challenge Question DTO
@@ -123,16 +140,6 @@ export interface StartChallengeAttemptRequest {
   nickname: string
 }
 
-export interface SubmitAnswerRequest {
-  challengeId: string
-  attemptId: string
-  questionId: string
-  selectedOptionIndexes?: number[]
-  matchingPairs?: Array<{ leftIndex: number; rightIndex: number }>
-  orderingItems?: Array<{ itemId: string; position: number }>
-  submissionTimeMs: number
-}
-
 export interface CompleteAttemptRequest {
   attemptId: string
   completionTimeMs: number
@@ -180,4 +187,3 @@ export interface ChallengeResultsSummary {
   completionTimeMs?: number
   rank?: number
 }
-

@@ -340,6 +340,28 @@ export class QuizService {
 
     throw new Error(response.message || 'Tải ảnh bìa thất bại');
   }
+
+  /**
+   * Upload audio file for questions
+   * Backend returns { url, fileName, size } directly (not wrapped in ApiResponse)
+   */
+  async uploadAudio(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Don't set Content-Type header - let axios set it automatically with boundary
+    // Backend returns { url, fileName, size } directly
+    const result = await api.post<{ url: string; fileName: string; size: number }>(
+      QUIZ_SET_ENDPOINTS.UPLOAD_AUDIO,
+      formData
+    );
+
+    if (result && result.url) {
+      return result.url;
+    }
+
+    throw new Error('Tải âm thanh lên thất bại');
+  }
 }
 
 // ============================================================================

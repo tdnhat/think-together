@@ -99,10 +99,7 @@ public sealed class StartChallengeAttemptCommandHandler : IRequestHandler<StartC
             {
                 Content = i.Content,
                 CorrectPosition = 0 // Don't show correct position during attempt
-            }).ToList(),
-            IsFlagged = false,
-            IsAnswered = false,
-            Answer = null
+            }).ToList()
         }).ToList();
 
         return new ChallengeAttemptDto
@@ -117,12 +114,10 @@ public sealed class StartChallengeAttemptCommandHandler : IRequestHandler<StartC
             CompletionTimeMs = attempt.CompletionTimeMs,
             CompletedAt = attempt.CompletedAt,
             StartedAt = attempt.StartedAt,
-            CurrentQuestionIndex = attempt.CurrentQuestionIndex,
             Status = attempt.Status,
             TimeLimitMs = attempt.TimeLimitMs,
             RemainingTimeMs = attempt.GetRemainingTimeMs(),
-            Questions = questionDtos,
-            FlaggedQuestionIds = new List<Guid>()
+            Questions = questionDtos
         };
     }
 }

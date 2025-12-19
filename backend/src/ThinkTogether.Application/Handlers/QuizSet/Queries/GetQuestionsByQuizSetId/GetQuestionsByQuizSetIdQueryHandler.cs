@@ -25,14 +25,9 @@ public sealed class GetQuestionsByQuizSetIdQueryHandler : IRequestHandler<GetQue
         GetQuestionsByQuizSetIdQuery request,
         CancellationToken cancellationToken)
     {
-        var userId = Guid.Parse(_currentUserService.UserId!);
-
         var quizSet = await _repository.GetByIdAsync(request.QuizSetId, cancellationToken);
         if (quizSet == null)
             throw new EntityNotFoundException(nameof(QuizSet), request.QuizSetId);
-
-        if (quizSet.CreatorId != userId)
-            throw new UnauthorizedAccessException("Bạn không có quyền xem câu hỏi trong bộ trắc nghiệm này");
 
         var query = quizSet.Questions.AsQueryable();
 

@@ -29,12 +29,10 @@ public class ChallengeAttemptDto
     public int? CompletionTimeMs { get; set; }
     public DateTime CompletedAt { get; set; }
     public DateTime StartedAt { get; set; }
-    public int CurrentQuestionIndex { get; set; }
     public AttemptStatus Status { get; set; }
     public int? TimeLimitMs { get; set; }
     public int? RemainingTimeMs { get; set; }
     public List<ChallengeQuestionDto> Questions { get; set; } = new();
-    public List<Guid> FlaggedQuestionIds { get; set; } = new();
 }
 
 public class ChallengeQuestionDto
@@ -52,21 +50,6 @@ public class ChallengeQuestionDto
     public List<QuestionOptionDto>? Options { get; set; }
     public List<MatchingPairDto>? MatchingPairs { get; set; }
     public List<OrderingItemDto>? OrderingItems { get; set; }
-    public bool IsFlagged { get; set; }
-    public bool IsAnswered { get; set; }
-    public ChallengeAnswerDto? Answer { get; set; }
-}
-
-public class ChallengeAnswerDto
-{
-    public Guid Id { get; set; }
-    public Guid QuestionId { get; set; }
-    public int SubmissionTimeMs { get; set; }
-    public bool IsCorrect { get; set; }
-    public int PointsEarned { get; set; }
-    public List<int> SelectedOptionIndexes { get; set; } = new();
-    public List<AnswerMatchingPairDto> MatchingPairs { get; set; } = new();
-    public List<AnswerOrderingItemDto> OrderingItems { get; set; } = new();
 }
 
 public class AnswerMatchingPairDto

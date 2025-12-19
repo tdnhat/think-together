@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
@@ -15,19 +16,24 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
     private readonly IChallengeRepository _challengeRepository;
     private readonly IQuizSetRepository _quizSetRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<SubmitAnswersCommandHandler> _logger;
 
     public SubmitAnswersCommandHandler(
         IChallengeRepository challengeRepository,
         IQuizSetRepository quizSetRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILogger<SubmitAnswersCommandHandler> logger)
     {
         _challengeRepository = challengeRepository;
         _quizSetRepository = quizSetRepository;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<ChallengeAttemptDto> Handle(SubmitAnswersCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Processing answer submission for attempt {AttemptId}", request.AttemptId);
+
         var spec = new ChallengeByAttemptIdSpec(request.AttemptId);
         var challenge = await _challengeRepository.GetBySpecAsync(spec, cancellationToken)
             ?? throw new EntityNotFoundException("Thử thách", request.AttemptId);
@@ -41,7 +47,7 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
         var quizSet = await _quizSetRepository.GetByIdAsync(challenge.QuizSetId, cancellationToken)
             ?? throw new EntityNotFoundException("Bộ câu hỏi", challenge.QuizSetId);
 
-        // Process each answer
+        // Process and grade each answer
         foreach (var answerSubmission in request.Answers)
         {
             var question = quizSet.Questions.FirstOrDefault(q => q.Id == answerSubmission.QuestionId)
@@ -49,86 +55,6 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
 
             // Calculate elapsed time since attempt started
             var elapsedMs = (int)(DateTime.UtcNow - attempt.StartedAt).TotalMilliseconds;
-
-            // Validate and check answer based on question type
-            bool isCorrect = false;
-            int pointsEarned = 0;
-
-            switch (question.Type)
-            {
-                case QuestionType.SingleChoice:
-                case QuestionType.MultipleChoice:
-                case QuestionType.TrueFalse:
-                    if (answerSubmission.SelectedOptionIndexes == null || !answerSubmission.SelectedOptionIndexes.Any())
-                    {
-                        // Empty answer is treated as incorrect
-                        isCorrect = false;
-                    }
-                    else
-                    {
-                        var correctIndexes = question.Options
-                            .Select((o, index) => new { Option = o, Index = index })
-                            .Where(x => x.Option.IsCorrect)
-                            .Select(x => x.Index)
-                            .ToList();
-
-                        isCorrect = answerSubmission.SelectedOptionIndexes.Count == correctIndexes.Count &&
-                                   answerSubmission.SelectedOptionIndexes.All(i => correctIndexes.Contains(i));
-                    }
-                    break;
-
-                case QuestionType.Matching:
-                    if (answerSubmission.MatchingPairs == null || !answerSubmission.MatchingPairs.Any())
-                    {
-                        isCorrect = false;
-                    }
-                    else
-                    {
-                        // Compare matching pairs
-                        var correctPairs = question.MatchingPairs.OrderBy(p => p.DisplayOrder).ToList();
-                        var submittedPairs = answerSubmission.MatchingPairs.OrderBy(p => p.LeftContent).ToList();
-
-                        if (correctPairs.Count != submittedPairs.Count)
-                        {
-                            isCorrect = false;
-                        }
-                        else
-                        {
-                            isCorrect = correctPairs.All(cp =>
-                                submittedPairs.Any(sp =>
-                                    sp.LeftContent == cp.LeftContent &&
-                                    sp.RightContent == cp.RightContent));
-                        }
-                    }
-                    break;
-
-                case QuestionType.Ordering:
-                    if (answerSubmission.OrderingItems == null || !answerSubmission.OrderingItems.Any())
-                    {
-                        isCorrect = false;
-                    }
-                    else
-                    {
-                        var correctOrder = question.OrderingItems
-                            .OrderBy(i => i.CorrectPosition)
-                            .Select(i => i.Content)
-                            .ToList();
-
-                        var submittedOrder = answerSubmission.OrderingItems
-                            .OrderBy(i => i.Position)
-                            .Select(i => i.Content)
-                            .ToList();
-
-                        isCorrect = correctOrder.SequenceEqual(submittedOrder);
-                    }
-                    break;
-
-                default:
-                    throw new ValidationException("Loại câu hỏi không được hỗ trợ");
-            }
-
-            // Calculate points (simple: 10 points per correct answer, 0 for wrong)
-            pointsEarned = isCorrect ? 10 : 0;
 
             // Convert DTOs to domain entities
             List<AnswerMatchingPair>? matchingPairs = null;
@@ -151,6 +77,9 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
                 }).ToList();
             }
 
+            // Grade the answer immediately
+            var (isCorrect, pointsEarned) = GradeAnswer(question, answerSubmission, matchingPairs, orderingItems);
+
             var answer = ChallengeAnswer.Create(
                 attempt.Id,
                 question.Id,
@@ -164,30 +93,104 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
             attempt.UpdateAnswer(answer);
         }
 
+        // Calculate final results
+        var totalScore = attempt.Answers.Sum(a => a.PointsEarned);
+        var correctAnswers = attempt.Answers.Count(a => a.IsCorrect);
+        var completionTimeMs = (int)(DateTime.UtcNow - attempt.StartedAt).TotalMilliseconds;
+        
+        // Mark as completed
+        attempt.Complete(totalScore, correctAnswers, completionTimeMs);
+
         await _challengeRepository.UpdateAsync(challenge, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Get questions for mapping
-        var questions = quizSet.Questions
-            .Where(q => q.DeletedAt == null)
-            .OrderBy(q => q.DisplayOrder)
-            .ToList();
+        _logger.LogInformation(
+            "Completed grading for attempt {AttemptId}: Score={Score}, Correct={Correct}/{Total}", 
+            request.AttemptId, totalScore, correctAnswers, attempt.TotalQuestions);
 
-        // Return updated attempt with all answers
-        return MapToDto(attempt, questions);
+        // Return the completed attempt
+        return MapToDto(attempt, quizSet);
+    }
+
+    private static (bool IsCorrect, int PointsEarned) GradeAnswer(
+        Domain.Aggregates.QuizSetAggregate.Entities.Question question,
+        AnswerSubmissionDto answerSubmission,
+        List<AnswerMatchingPair>? matchingPairs,
+        List<AnswerOrderingItem>? orderingItems)
+    {
+        var isCorrect = false;
+
+        switch (question.Type)
+        {
+            case QuestionType.SingleChoice:
+            case QuestionType.MultipleChoice:
+            case QuestionType.TrueFalse:
+                if (answerSubmission.SelectedOptionIndexes == null || !answerSubmission.SelectedOptionIndexes.Any())
+                {
+                    isCorrect = false;
+                }
+                else
+                {
+                    var correctIndexes = question.Options
+                        .Select((o, index) => new { Option = o, Index = index })
+                        .Where(x => x.Option.IsCorrect)
+                        .Select(x => x.Index)
+                        .ToList();
+
+                    isCorrect = answerSubmission.SelectedOptionIndexes.Count == correctIndexes.Count &&
+                               answerSubmission.SelectedOptionIndexes.All(i => correctIndexes.Contains(i));
+                }
+                break;
+
+            case QuestionType.Matching:
+                if (matchingPairs == null || !matchingPairs.Any())
+                {
+                    isCorrect = false;
+                }
+                else
+                {
+                    var correctPairs = question.MatchingPairs.OrderBy(p => p.DisplayOrder).ToList();
+                    isCorrect = correctPairs.Count == matchingPairs.Count &&
+                               correctPairs.All(cp =>
+                                   matchingPairs.Any(sp =>
+                                       sp.LeftContent == cp.LeftContent &&
+                                       sp.RightContent == cp.RightContent));
+                }
+                break;
+
+            case QuestionType.Ordering:
+                if (orderingItems == null || !orderingItems.Any())
+                {
+                    isCorrect = false;
+                }
+                else
+                {
+                    var correctOrder = question.OrderingItems
+                        .OrderBy(i => i.CorrectPosition)
+                        .Select(i => i.Content)
+                        .ToList();
+
+                    var submittedOrder = orderingItems
+                        .OrderBy(i => i.Position)
+                        .Select(i => i.Content)
+                        .ToList();
+
+                    isCorrect = correctOrder.SequenceEqual(submittedOrder);
+                }
+                break;
+        }
+
+        var pointsEarned = isCorrect ? 10 : 0;
+        return (isCorrect, pointsEarned);
     }
 
     private static ChallengeAttemptDto MapToDto(
         ChallengeAttempt attempt,
-        List<Domain.Aggregates.QuizSetAggregate.Entities.Question> questions)
+        Domain.Aggregates.QuizSetAggregate.QuizSet quizSet)
     {
-        var flaggedQuestionIds = attempt.FlaggedQuestions.Select(fq => fq.QuestionId).ToList();
-        var answersByQuestionId = attempt.Answers.ToDictionary(a => a.QuestionId);
-
-        var questionDtos = questions.Select(q =>
+        var questionDtos = quizSet.Questions.OrderBy(q => q.DisplayOrder).Select(q =>
         {
-            var answer = answersByQuestionId.GetValueOrDefault(q.Id);
-            var isFlagged = flaggedQuestionIds.Contains(q.Id);
+            var answer = attempt.Answers.FirstOrDefault(a => a.QuestionId == q.Id);
 
             return new ChallengeQuestionDto
             {
@@ -201,45 +204,24 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
                 VideoTimestamp = q.VideoTimestamp,
                 AudioUrl = q.AudioUrl,
                 AudioTimestamp = q.AudioTimestamp,
-                Options = q.Options.Select(o => new QuestionOptionDto
+                Options = q.Options.OrderBy(o => o.DisplayOrder).Select(o => new QuestionOptionDto
                 {
                     Content = o.Content,
-                    IsCorrect = o.IsCorrect,
+                    IsCorrect = answer != null, // Only show correct answers after completion
                     DisplayOrder = o.DisplayOrder,
                     ImageUrl = o.ImageUrl
                 }).ToList(),
-                MatchingPairs = q.MatchingPairs.Select(p => new MatchingPairDto
+                MatchingPairs = q.MatchingPairs.OrderBy(p => p.DisplayOrder).Select(p => new MatchingPairDto
                 {
                     LeftContent = p.LeftContent,
                     RightContent = p.RightContent,
                     DisplayOrder = p.DisplayOrder
                 }).ToList(),
-                OrderingItems = q.OrderingItems.Select(i => new OrderingItemDto
+                OrderingItems = q.OrderingItems.OrderBy(i => i.CorrectPosition).Select(i => new OrderingItemDto
                 {
                     Content = i.Content,
                     CorrectPosition = i.CorrectPosition
-                }).ToList(),
-                IsFlagged = isFlagged,
-                IsAnswered = answer != null,
-                Answer = answer != null ? new ChallengeAnswerDto
-                {
-                    Id = answer.Id,
-                    QuestionId = answer.QuestionId,
-                    SubmissionTimeMs = answer.SubmissionTimeMs,
-                    IsCorrect = answer.IsCorrect,
-                    PointsEarned = answer.PointsEarned,
-                    SelectedOptionIndexes = answer.SelectedOptionIndexes.ToList(),
-                    MatchingPairs = answer.MatchingPairs.Select(p => new AnswerMatchingPairDto
-                    {
-                        LeftContent = p.LeftContent,
-                        RightContent = p.RightContent
-                    }).ToList(),
-                    OrderingItems = answer.OrderingItems.Select(i => new AnswerOrderingItemDto
-                    {
-                        Content = i.Content,
-                        Position = i.Position
-                    }).ToList()
-                } : null
+                }).ToList()
             };
         }).ToList();
 
@@ -255,10 +237,10 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
             CompletionTimeMs = attempt.CompletionTimeMs,
             CompletedAt = attempt.CompletedAt,
             StartedAt = attempt.StartedAt,
-            CurrentQuestionIndex = attempt.CurrentQuestionIndex,
             Status = attempt.Status,
+            TimeLimitMs = attempt.TimeLimitMs,
+            RemainingTimeMs = attempt.GetRemainingTimeMs(),
             Questions = questionDtos
         };
     }
 }
-

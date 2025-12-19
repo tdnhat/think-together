@@ -101,12 +101,36 @@ public sealed class UpdateQuestionCommandHandler : IRequestHandler<UpdateQuestio
                 {
                     question.SetVideoDetails(request.VideoUrl, request.VideoTimestamp.Value);
                 }
+                // Video questions also support options (like multiple choice)
+                if (request.Options != null && request.Options.Count > 0)
+                {
+                    var options = request.Options
+                        .Select(o => QuestionOption.Create(
+                            o.Content,
+                            o.IsCorrect,
+                            o.ImageUrl,
+                            o.DisplayOrder))
+                        .ToList();
+                    question.SetOptions(options);
+                }
                 break;
 
             case QuestionType.Audio:
                 if (!string.IsNullOrEmpty(request.AudioUrl) && request.AudioTimestamp.HasValue)
                 {
                     question.SetAudioDetails(request.AudioUrl, request.AudioTimestamp.Value);
+                }
+                // Audio questions also support options (like multiple choice)
+                if (request.Options != null && request.Options.Count > 0)
+                {
+                    var options = request.Options
+                        .Select(o => QuestionOption.Create(
+                            o.Content,
+                            o.IsCorrect,
+                            o.ImageUrl,
+                            o.DisplayOrder))
+                        .ToList();
+                    question.SetOptions(options);
                 }
                 break;
         }

@@ -68,6 +68,9 @@ export const QUIZ_SET_ENDPOINTS = {
   DUPLICATE_QUIZ_SET: (id: string) => `${BASE}/quiz-sets/${id}/duplicate`,
   UPLOAD_COVER_IMAGE: (id: string) => `${BASE}/quiz-sets/${id}/upload-cover`,
   UPLOAD_COVER_IMAGE_TEMP: `${BASE}/quiz-sets/upload-cover-temp`,
+  
+  // Upload endpoints
+  UPLOAD_AUDIO: `${BASE}/upload/audio`,
 
   // Quiz Set Questions
   LIST_QUESTIONS: (quizSetId: string) => `${BASE}/quiz-sets/${quizSetId}/questions`,
@@ -123,7 +126,17 @@ export const QUIZ_ENDPOINTS = {
   SHARE_QUIZ: (id: string) => `${BASE}/quizzes/${id}/share`,
 } as const;
 
+// ============================================================================
+// LEADERBOARD ENDPOINTS
+// ============================================================================
 
+export const LEADERBOARD_ENDPOINTS = {
+  // Leaderboard
+  GET_LEADERBOARD: `${BASE}/leaderboard`,
+  GET_LEADERBOARD_ENTRY: (attemptId: string) => `${BASE}/leaderboard/${attemptId}`,
+  GET_QUIZ_SET_LEADERBOARD: (quizSetId: string) => `${BASE}/quiz-sets/${quizSetId}/leaderboard`,
+  GET_CHALLENGE_LEADERBOARD: (challengeId: string) => `${BASE}/challenges/${challengeId}/leaderboard`,
+} as const;
 
 // ============================================================================
 // CONSOLIDATED API ENDPOINTS
@@ -138,6 +151,7 @@ export const API_ENDPOINTS = {
   USER: USER_ENDPOINTS,
   QUIZ_SET: QUIZ_SET_ENDPOINTS,
   QUIZ: QUIZ_ENDPOINTS,
+  LEADERBOARD: LEADERBOARD_ENDPOINTS,
 } as const;
 
 // ============================================================================

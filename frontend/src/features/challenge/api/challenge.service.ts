@@ -7,14 +7,11 @@ import { apiClient } from '@/lib/api/client'
 import type { ApiResponse, PaginatedResponse } from '@/types/api'
 import type {
   ChallengeDto,
-  ChallengeAttemptDto,
+  ChallengeAttemptApiDto,
   ChallengeLeaderboardDto,
   CreateChallengeRequest,
   UpdateChallengeRequest,
   StartChallengeAttemptRequest,
-  SubmitAnswerRequest,
-  CompleteAttemptRequest,
-  FlagQuestionRequest,
 } from '../types'
 
 const CHALLENGE_BASE_URL = '/api/challenges'
@@ -111,8 +108,8 @@ export const challengeService = {
   async startAttempt(
     challengeId: string,
     data: StartChallengeAttemptRequest
-  ): Promise<ChallengeAttemptDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptDto>>(
+  ): Promise<ChallengeAttemptApiDto> {
+    const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
       `${CHALLENGE_BASE_URL}/${challengeId}/attempts`,
       data
     )
@@ -120,26 +117,14 @@ export const challengeService = {
   },
 
   // Get attempt details
-  async getAttempt(attemptId: string): Promise<ChallengeAttemptDto> {
-    const response = await apiClient.get<ApiResponse<ChallengeAttemptDto>>(
+  async getAttempt(attemptId: string): Promise<ChallengeAttemptApiDto> {
+    const response = await apiClient.get<ApiResponse<ChallengeAttemptApiDto>>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}`
     )
     return response.data!
   },
 
-  // Submit answer
-  async submitAnswer(
-    attemptId: string,
-    data: SubmitAnswerRequest
-  ): Promise<ChallengeAttemptDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptDto>>(
-      `${CHALLENGE_BASE_URL}/attempts/${attemptId}/answers`,
-      data
-    )
-    return response.data!
-  },
-
-  // Submit all answers at once
+  // Submit all answers at once (now returns completed attempt immediately)
   async submitAnswers(
     attemptId: string,
     answers: Array<{
@@ -148,45 +133,21 @@ export const challengeService = {
       matchingPairs?: Array<{ leftContent: string; rightContent: string }>
       orderingItems?: Array<{ content: string; position: number }>
     }>
-  ): Promise<ChallengeAttemptDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptDto>>(
+  ): Promise<ChallengeAttemptApiDto> {
+    const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}/submit-answers`,
       { answers }
     )
     return response.data!
   },
 
-  // Complete attempt
-  async completeAttempt(
-    attemptId: string,
-    data: CompleteAttemptRequest
-  ): Promise<ChallengeAttemptDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptDto>>(
-      `${CHALLENGE_BASE_URL}/attempts/${attemptId}/complete`,
-      data
-    )
-    return response.data!
-  },
-
   // Abandon attempt
-  async abandonAttempt(attemptId: string): Promise<ChallengeAttemptDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptDto>>(
+  async abandonAttempt(attemptId: string): Promise<ChallengeAttemptApiDto> {
+    const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}/abandon`,
       {}
     )
     return response.data!
-  },
-
-  // Flag question
-  async flagQuestion(
-    attemptId: string,
-    questionId: string,
-    data: FlagQuestionRequest
-  ): Promise<void> {
-    await apiClient.put(
-      `${CHALLENGE_BASE_URL}/attempts/${attemptId}/questions/${questionId}/flag`,
-      data
-    )
   },
 
   // Get leaderboard
@@ -200,4 +161,3 @@ export const challengeService = {
     return response.data!
   },
 }
-

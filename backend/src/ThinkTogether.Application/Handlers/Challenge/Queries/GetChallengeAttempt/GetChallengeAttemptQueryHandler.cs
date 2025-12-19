@@ -45,14 +45,8 @@ public sealed class GetChallengeAttemptQueryHandler : IRequestHandler<GetChallen
         List<Domain.Aggregates.QuizSetAggregate.Entities.Question> questions,
         Domain.Aggregates.ChallengeAggregate.Challenge challenge)
     {
-        var flaggedQuestionIds = attempt.FlaggedQuestions.Select(fq => fq.QuestionId).ToList();
-        var answersByQuestionId = attempt.Answers.ToDictionary(a => a.QuestionId);
-
         var questionDtos = questions.Select(q =>
         {
-            var answer = answersByQuestionId.GetValueOrDefault(q.Id);
-            var isFlagged = flaggedQuestionIds.Contains(q.Id);
-
             return new ChallengeQuestionDto
             {
                 Id = q.Id,
@@ -68,7 +62,7 @@ public sealed class GetChallengeAttemptQueryHandler : IRequestHandler<GetChallen
                 Options = q.Options.Select(o => new QuestionOptionDto
                 {
                     Content = o.Content,
-                    IsCorrect = attempt.Status == Domain.Enums.AttemptStatus.Completed ? o.IsCorrect : false,
+                    IsCorrect = false,
                     DisplayOrder = o.DisplayOrder,
                     ImageUrl = o.ImageUrl
                 }).ToList(),
@@ -81,29 +75,8 @@ public sealed class GetChallengeAttemptQueryHandler : IRequestHandler<GetChallen
                 OrderingItems = q.OrderingItems.Select(i => new OrderingItemDto
                 {
                     Content = i.Content,
-                    CorrectPosition = attempt.Status == Domain.Enums.AttemptStatus.Completed ? i.CorrectPosition : 0
-                }).ToList(),
-                IsFlagged = isFlagged,
-                IsAnswered = answer != null,
-                Answer = answer != null ? new ChallengeAnswerDto
-                {
-                    Id = answer.Id,
-                    QuestionId = answer.QuestionId,
-                    SubmissionTimeMs = answer.SubmissionTimeMs,
-                    IsCorrect = answer.IsCorrect,
-                    PointsEarned = answer.PointsEarned,
-                    SelectedOptionIndexes = answer.SelectedOptionIndexes.ToList(),
-                    MatchingPairs = answer.MatchingPairs.Select(p => new AnswerMatchingPairDto
-                    {
-                        LeftContent = p.LeftContent,
-                        RightContent = p.RightContent
-                    }).ToList(),
-                    OrderingItems = answer.OrderingItems.Select(i => new AnswerOrderingItemDto
-                    {
-                        Content = i.Content,
-                        Position = i.Position
-                    }).ToList()
-                } : null
+                    CorrectPosition = 0
+                }).ToList()
             };
         }).ToList();
 
@@ -119,12 +92,10 @@ public sealed class GetChallengeAttemptQueryHandler : IRequestHandler<GetChallen
             CompletionTimeMs = attempt.CompletionTimeMs,
             CompletedAt = attempt.CompletedAt,
             StartedAt = attempt.StartedAt,
-            CurrentQuestionIndex = attempt.CurrentQuestionIndex,
             Status = attempt.Status,
             TimeLimitMs = attempt.TimeLimitMs,
             RemainingTimeMs = attempt.GetRemainingTimeMs(),
-            Questions = questionDtos,
-            FlaggedQuestionIds = flaggedQuestionIds
+            Questions = questionDtos
         };
     }
 }

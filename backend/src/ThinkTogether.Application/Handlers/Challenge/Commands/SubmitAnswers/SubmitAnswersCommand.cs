@@ -12,4 +12,3 @@ public sealed record AnswerSubmissionDto(
     List<int>? SelectedOptionIndexes = null,
     List<AnswerMatchingPairDto>? MatchingPairs = null,
     List<AnswerOrderingItemDto>? OrderingItems = null);
-

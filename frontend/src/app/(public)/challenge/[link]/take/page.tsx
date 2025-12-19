@@ -2,27 +2,14 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { AlertCircle, CheckCircle } from 'lucide-react'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
-import {
-  TimerDisplay,
-  ChallengeProgress,
-  QuestionDisplay,
-  QuestionNavigation,
-  FlagButton,
-  useChallengeStore,
-  useAttempt,
-  useSubmitAnswers,
-  useCompleteAttempt,
-  selectCurrentQuestion,
-  selectCurrentQuestionIndex,
-  selectTotalQuestions,
-  selectRemainingTime,
-} from '@/features/challenge'
+import { PageLayout, PageMain } from '@/shared/components'
+import { ChallengeProgress, QuestionDisplay, QuestionGrid, useChallengeStore, useAttempt, useSubmitAnswers, selectCurrentQuestion, selectCurrentQuestionIndex, selectTotalQuestions, selectRemainingTime, } from '@/features/challenge'
 import { CHALLENGE_CONSTANTS } from '@/features/challenge/constants'
+import { AlertCircle } from 'lucide-react'
 
 function ChallengeTakingContent() {
   const params = useParams()
@@ -31,7 +18,6 @@ function ChallengeTakingContent() {
   const shareLink = params.link as string
   const attemptId = searchParams.get('attemptId')
 
-  const [selectedAnswer, setSelectedAnswer] = useState<number[]>([])
   const [startTime, setStartTime] = useState<number>(Date.now())
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lastAttemptId, setLastAttemptId] = useState<string | null>(null)
@@ -41,7 +27,6 @@ function ChallengeTakingContent() {
 
   // Mutations
   const { mutate: submitAnswers, isPending: isSubmittingAnswers } = useSubmitAnswers()
-  const { mutate: completeAttempt, isPending: isCompleting } = useCompleteAttempt()
 
   // Store state
   const setCurrentAttempt = useChallengeStore((s) => s.setCurrentAttempt)
@@ -62,7 +47,6 @@ function ChallengeTakingContent() {
       // If attemptId changed, or if stored attempt doesn't match current attemptId, clear answers
       if (attemptId !== lastAttemptId || (currentAttempt && currentAttempt.id !== attemptId)) {
         clearAnswers()
-        setSelectedAnswer([])
       }
       setLastAttemptId(attemptId)
     }
@@ -79,8 +63,7 @@ function ChallengeTakingContent() {
   // Load existing answer when question changes
   useEffect(() => {
     if (currentQuestion) {
-      const existingAnswer = getAnswer(currentQuestion.id)
-      setSelectedAnswer(existingAnswer?.selectedOptionIndexes || [])
+      getAnswer(currentQuestion.id)
     }
   }, [currentQuestion, getAnswer])
 
@@ -92,16 +75,21 @@ function ChallengeTakingContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [remainingTimeMs])
 
-  const handleAnswerChange = (answer: number[] | Array<[number, number]> | Array<[string, number]>) => {
+  const handleAnswerChange = (
+    answer:
+      | number[]
+      | Array<[number, number]>
+      | Array<[string, number]>
+      | Array<{ leftContent: string; rightContent: string }>
+      | Array<{ content: string; position: number }>
+  ) => {
     if (!currentQuestion) return
 
     if (Array.isArray(answer) && answer.length > 0) {
-      // For now, we only handle single/multiple choice (number arrays)
+      // Handle single/multiple choice (number arrays)
       if (typeof answer[0] === 'number') {
         const answerArray = answer as number[]
-        setSelectedAnswer(answerArray)
 
-        // Automatically save the answer when selected
         useChallengeStore.setState((state) => ({
           answers: {
             ...state.answers,
@@ -114,6 +102,56 @@ function ChallengeTakingContent() {
               selectedOptionIndexes: answerArray,
               matchingPairs: [],
               orderingItems: [],
+            },
+          },
+        }))
+      }
+      // Handle matching questions
+      else if (
+        answer.length > 0 &&
+        typeof answer[0] === 'object' &&
+        'leftContent' in answer[0] &&
+        'rightContent' in answer[0]
+      ) {
+        const matchingPairs = answer as Array<{ leftContent: string; rightContent: string }>
+
+        useChallengeStore.setState((state) => ({
+          answers: {
+            ...state.answers,
+            [currentQuestion.id]: {
+              id: currentQuestion.id,
+              questionId: currentQuestion.id,
+              submissionTimeMs: Date.now() - startTime,
+              isCorrect: false,
+              pointsEarned: 0,
+              selectedOptionIndexes: [],
+              matchingPairs: matchingPairs,
+              orderingItems: [],
+            },
+          },
+        }))
+      }
+      // Handle ordering questions
+      else if (
+        answer.length > 0 &&
+        typeof answer[0] === 'object' &&
+        'content' in answer[0] &&
+        'position' in answer[0]
+      ) {
+        const orderingItems = answer as Array<{ content: string; position: number }>
+
+        useChallengeStore.setState((state) => ({
+          answers: {
+            ...state.answers,
+            [currentQuestion.id]: {
+              id: currentQuestion.id,
+              questionId: currentQuestion.id,
+              submissionTimeMs: Date.now() - startTime,
+              isCorrect: false,
+              pointsEarned: 0,
+              selectedOptionIndexes: [],
+              matchingPairs: [],
+              orderingItems: orderingItems,
             },
           },
         }))
@@ -164,59 +202,37 @@ function ChallengeTakingContent() {
         } => item !== null
       )
 
-    if (answersToSubmit.length > 0) {
-      // Submit all answers first
-      submitAnswers(
-        {
-          attemptId: attempt.id,
-          answers: answersToSubmit,
+    // Submit all answers (server grades immediately and returns completed attempt)
+    submitAnswers(
+      {
+        attemptId: attempt.id,
+        answers: answersToSubmit,
+      },
+      {
+        onSuccess: (completedAttempt) => {
+          setIsSubmitting(false)
+          
+          // Update store with completed attempt so results page has fresh data
+          setCurrentAttempt({
+            ...completedAttempt,
+            currentQuestionIndex: 0,
+            flaggedQuestionIds: [],
+            questions: completedAttempt.questions.map(q => ({
+              ...q,
+              isFlagged: false,
+              isAnswered: true,
+              answer: undefined,
+            })),
+          })
+          
+          // Navigate to results page
+          router.push(`/challenge/${shareLink}/results?attemptId=${attempt.id}`)
         },
-        {
-          onSuccess: () => {
-            // Then complete the attempt
-            const completionTimeMs = Date.now() - startTime
-            completeAttempt(
-              {
-                attemptId: attempt.id,
-                completionTimeMs,
-              },
-              {
-                onSuccess: () => {
-                  setIsSubmitting(false)
-                  // Navigate to results page
-                  router.push(`/challenge/${shareLink}/results?attemptId=${attempt.id}`)
-                },
-                onError: () => {
-                  setIsSubmitting(false)
-                },
-              }
-            )
-          },
-          onError: () => {
-            setIsSubmitting(false)
-          },
-        }
-      )
-    } else {
-      // If no answers, just complete
-      const completionTimeMs = Date.now() - startTime
-      completeAttempt(
-        {
-          attemptId: attempt.id,
-          completionTimeMs,
+        onError: () => {
+          setIsSubmitting(false)
         },
-        {
-          onSuccess: () => {
-            setIsSubmitting(false)
-            // Navigate to results page
-            router.push(`/challenge/${shareLink}/results?attemptId=${attempt.id}`)
-          },
-          onError: () => {
-            setIsSubmitting(false)
-          },
-        }
-      )
-    }
+      }
+    )
   }
 
   if (isLoading || !attempt) {
@@ -245,97 +261,82 @@ function ChallengeTakingContent() {
   }
 
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1
-  // Only show existing answer if it belongs to the current attempt
-  // Check that attempt exists and matches the current attemptId
-  const existingAnswer = currentQuestion && attempt && attempt.id === attemptId
-    ? getAnswer(currentQuestion.id) 
-    : undefined
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] flex flex-col">
-      {/* Header with timer */}
-      <header className="sticky top-0 z-10 py-4 px-4 bg-[var(--bg-surface)] border-b border-[var(--border)] shadow-sm">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="text-[var(--text-primary)] font-semibold">
-            {attempt.nickname}
-          </div>
-          <TimerDisplay />
-        </div>
-      </header>
-
+    <PageLayout>
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6">
-        <div className="container mx-auto max-w-4xl space-y-6">
-          {/* Progress */}
+      <PageMain className="py-6">
+        <div className="space-y-4">
+          {/* Progress (match reference layout) */}
           <ChallengeProgress />
+        </div>
 
-          {/* Time warning */}
-          {remainingTimeMs <= CHALLENGE_CONSTANTS.TIMER.WARNING_THRESHOLD &&
-            remainingTimeMs > 0 && (
-              <Alert className="border-orange-200 bg-orange-50">
-                <AlertCircle className="h-4 w-4 text-orange-600" />
-                <AlertDescription className="text-orange-800">
-                  {CHALLENGE_CONSTANTS.MESSAGES.TIME_RUNNING_OUT}
-                </AlertDescription>
-              </Alert>
-            )}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Left: Question */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Question */}
+            <QuestionDisplay onAnswerChange={handleAnswerChange} />
 
-          {/* Question */}
-          <QuestionDisplay onAnswerChange={handleAnswerChange} />
-
-          {/* Answer status */}
-          {existingAnswer && (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
-                Bạn đã trả lời câu hỏi này
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center">
-            <div className="flex gap-3">
-              <Button
-                variant="neutral"
-                onClick={goToPreviousQuestion}
-                disabled={currentQuestionIndex === 0}
-              >
-                ← Câu trước
-              </Button>
-              {currentQuestion && (
-                <FlagButton
-                  attemptId={attempt.id}
-                />
+            {/* Time warning */}
+            {remainingTimeMs <= CHALLENGE_CONSTANTS.TIMER.WARNING_THRESHOLD &&
+              remainingTimeMs > 0 && (
+                <Alert variant="warning">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {CHALLENGE_CONSTANTS.MESSAGES.TIME_RUNNING_OUT}
+                  </AlertDescription>
+                </Alert>
               )}
-            </div>
 
-            <div className="flex gap-3">
-              {isLastQuestion ? (
-                <Button
-                  variant="default"
-                  onClick={handleComplete}
-                  disabled={isSubmitting || isSubmittingAnswers || isCompleting}
-                >
-                  {isSubmitting || isSubmittingAnswers || isCompleting ? 'Đang hoàn thành...' : 'Hoàn thành'}
-                </Button>
-              ) : (
+            {/* Navigation buttons (match reference layout) */}
+            <Card className="py-4 gap-0">
+              <CardContent className="flex items-center justify-between">
                 <Button
                   variant="neutral"
-                  onClick={goToNextQuestion}
-                  disabled={currentQuestionIndex === totalQuestions - 1}
+                  onClick={goToPreviousQuestion}
+                  disabled={currentQuestionIndex === 0}
                 >
-                  Câu tiếp →
+                  ← Trước
                 </Button>
-              )}
-            </div>
+
+                {isLastQuestion ? (
+                  <Button
+                    variant="default"
+                    onClick={handleComplete}
+                    disabled={isSubmitting || isSubmittingAnswers}
+                  >
+                    {isSubmitting || isSubmittingAnswers ? 'Đang nộp bài...' : 'Hoàn thành'}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="neutral"
+                    onClick={goToNextQuestion}
+                    disabled={currentQuestionIndex === totalQuestions - 1}
+                  >
+                    Tiếp theo →
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Question Navigation */}
-          <QuestionNavigation />
+          {/* Right: Overview */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-6">
+              <QuestionGrid
+                questions={attempt.questions}
+                onQuestionClick={(index) => {
+                  useChallengeStore.getState().jumpToQuestion(index)
+                }}
+                onSubmit={handleComplete}
+                isSubmitting={isSubmitting || isSubmittingAnswers}
+                submitDisabled={isSubmitting || isSubmittingAnswers}
+              />
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </PageMain>
+    </PageLayout>
   )
 }
 
@@ -352,4 +353,3 @@ export default function ChallengeTakePage() {
     </Suspense>
   )
 }
-

@@ -6,6 +6,7 @@ import { Trophy, Users } from 'lucide-react'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
+import { PageLayout, PageHeader, PageMain, PageFooter } from '@/shared/components'
 import {
   StartChallengeForm,
   useChallengeLinkResolver,
@@ -60,21 +61,19 @@ function ChallengeStartContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] flex flex-col">
+    <PageLayout>
       {/* Header */}
-      <header className="py-6 px-4 border-b border-[var(--border)]">
-        <div className="container mx-auto flex items-center justify-center">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-8 w-8 text-[var(--brand-primary)]" />
-            <span className="font-heading text-2xl font-bold text-[var(--text-primary)]">
-              ThinkTogether Challenge
-            </span>
-          </div>
+      <PageHeader bordered>
+        <div className="flex items-center gap-2">
+          <Trophy className="h-8 w-8 text-[var(--brand-primary)]" />
+          <span className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            ThinkTogether Challenge
+          </span>
         </div>
-      </header>
+      </PageHeader>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-8">
+      <PageMain centered>
         <div className="w-full max-w-2xl space-y-6">
           {/* Challenge Info */}
           <Card>
@@ -103,13 +102,13 @@ function ChallengeStartContent() {
             onSubmit={handleStart}
           />
         </div>
-      </main>
+      </PageMain>
 
       {/* Footer */}
-      <footer className="py-4 text-center text-sm text-[var(--text-tertiary)] border-t border-[var(--border)]">
+      <PageFooter>
         <p>© 2024 ThinkTogether. Học cùng nhau, vui hơn gấp bội!</p>
-      </footer>
-    </div>
+      </PageFooter>
+    </PageLayout>
   )
 }
 
