@@ -46,7 +46,7 @@ export interface ValidationErrorResponse {
 }
 
 // User Role enum
-export type UserRole = 'Student' | 'Teacher' | 'Admin'
+export type UserRole = 'Student' | 'Teacher' | 'Administrator'
 
 // Backend DTOs
 export interface AuthTokenDto {
@@ -100,12 +100,39 @@ export interface ResetPasswordRequest {
   confirmPassword: string
 }
 
+// Category DTOs
+export interface CategoryDto {
+  id: string
+  name: string
+  description?: string
+  isActive: boolean
+  displayOrder: number
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface CreateCategoryRequest {
+  name: string
+  description?: string
+  displayOrder?: number
+}
+
+export interface UpdateCategoryRequest {
+  id: string
+  name: string
+  description?: string
+  displayOrder: number
+  isActive: boolean
+}
+
 // Quiz Set DTOs
 export interface QuizSetDto {
   id: string
   title: string
   description?: string
   coverImageUrl?: string
+  categoryId?: string
+  categoryName?: string
   isPublished: boolean
   questionCount?: number
   createdAt: string
@@ -118,6 +145,7 @@ export interface CreateQuizSetRequest {
   title: string
   description?: string
   coverImageUrl?: string
+  categoryId?: string
 }
 
 export interface UpdateQuizSetRequest {
@@ -125,6 +153,7 @@ export interface UpdateQuizSetRequest {
   title: string
   description?: string
   coverImageUrl?: string
+  categoryId?: string
 }
 
 export interface PublishQuizSetRequest {

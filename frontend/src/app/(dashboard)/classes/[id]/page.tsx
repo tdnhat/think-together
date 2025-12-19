@@ -31,7 +31,7 @@ export default function ClassDetailPage() {
   const router = useRouter()
   const classId = params.id as string
   const user = useAuthStore(selectUser)
-  const isTeacher = user?.role === 'Creator' || user?.role === 'Admin'
+  const isTeacher = user?.role === 'Creator' || user?.role === 'Administrator'
 
   const [activeTab, setActiveTab] = useState('home')
   const [isCreateHomeworkModalOpen, setIsCreateHomeworkModalOpen] = useState(false)

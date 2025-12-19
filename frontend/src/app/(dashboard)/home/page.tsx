@@ -41,7 +41,7 @@ export default function HomePage() {
     router.push(ROUTES.game.hostWithQuiz(quizSet.id))
   }
 
-  const isCreator = user?.role === 'Creator' || user?.role === 'Admin'
+  const isCreator = user?.role === 'Creator' || user?.role === 'Administrator'
 
   return (
     <DashboardLayout>

@@ -36,7 +36,7 @@ export function ProfileDropdown({ initials = "ND", onSignOut }: Readonly<Profile
   const router = useRouter()
   const pathname = usePathname()
   const user = useAuthStore(selectUser)
-  const isCreator = user?.role === 'Creator' || user?.role === 'Admin'
+  const isCreator = user?.role === 'Creator' || user?.role === 'Administrator'
   const [isBecomeCreatorModalOpen, setIsBecomeCreatorModalOpen] = useState(false)
 
   const isOnHomePage = pathname === ROUTES.dashboard.home

@@ -22,7 +22,7 @@ import type { LeaderboardFilters as LeaderboardFiltersType } from '@/features/le
 
 export default function LeaderboardPage() {
   const user = useAuthStore(selectUser)
-  const isCreator = user?.role === 'Creator' || user?.role === 'Admin'
+  const isCreator = user?.role === 'Creator' || user?.role === 'Administrator'
 
   const [filters, setFilters] = useState<LeaderboardFiltersType>({
     timePeriod: 'all',

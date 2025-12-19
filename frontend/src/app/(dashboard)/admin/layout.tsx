@@ -29,7 +29,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     redirect('/login')
   }
 
-  if (user.role !== 'Admin') {
+  if (user.role !== 'Administrator') {
     redirect('/home')
   }
 

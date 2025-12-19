@@ -18,7 +18,7 @@ export function CreatorRouteGuard({ children }: Readonly<CreatorRouteGuardProps>
   const isHydrated = useAuthStore(selectIsHydrated);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const isCreator = user?.role === 'Creator' || user?.role === 'Admin';
+  const isCreator = user?.role === 'Creator' || user?.role === 'Administrator';
 
   if (!isHydrated) {
     return null;

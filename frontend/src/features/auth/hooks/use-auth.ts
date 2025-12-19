@@ -39,14 +39,14 @@ export function useAuth() {
         if (userResponse.success && userResponse.data) {
           const userDto = userResponse.data
           // Map API role to auth role
-          const mapRole = (apiRole: string): 'User' | 'Creator' | 'Admin' => {
+          const mapRole = (apiRole: string): 'User' | 'Creator' | 'Administrator' => {
             switch (apiRole) {
               case 'Student':
                 return 'User'
               case 'Creator':
                 return 'Creator'
-              case 'Admin':
-                return 'Admin'
+              case 'Administrator':
+                return 'Administrator'
               default:
                 return 'User'
             }
@@ -68,7 +68,7 @@ export function useAuth() {
           loginAction(user, accessToken)
           toastSuccess(AUTH.MESSAGES.LOGIN_SUCCESS)
           
-          if (user.role === 'Admin') {
+          if (user.role === 'Administrator') {
             router.push(ROUTES.admin.dashboard)
           } else if (user.role === 'Creator') {
             router.push(ROUTES.quiz.list)

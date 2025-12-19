@@ -192,9 +192,9 @@ export function isAdminRoute(pathname: string): boolean {
  */
 export function getRedirectAfterLogin(userRole?: string): string {
   switch (userRole) {
-    case 'admin':
+    case 'Administrator':
       return routes.admin.dashboard;
-    case 'creator':
+    case 'Creator':
       return routes.creator.dashboard;
     default:
       return routes.dashboard.home;
