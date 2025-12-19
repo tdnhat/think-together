@@ -23,12 +23,12 @@ export function CategorySelector({
   const { categories, isLoading } = useCategories()
 
   return (
-    <Select value={value || ''} onValueChange={(val) => onChange(val || undefined)}>
+    <Select value={value || ''} onValueChange={(val) => onChange(val === 'none' ? undefined : val)}>
       <SelectTrigger disabled={isLoading}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="">Không có danh mục</SelectItem>
+        <SelectItem value="none">Không có danh mục</SelectItem>
         {categories.map((category) => (
           <SelectItem key={category.id} value={category.id}>
             {category.name}
