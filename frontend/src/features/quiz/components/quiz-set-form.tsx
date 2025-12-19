@@ -11,6 +11,7 @@ import { Textarea } from '@/shared/ui/textarea'
 import { createQuizSetSchema, updateQuizSetSchema, type CreateQuizSetFormData, type UpdateQuizSetFormData } from '@/lib/validators'
 import { QUIZ_SET_CONSTANTS } from '../constants'
 import { ImageUpload } from './image-upload'
+import { CategorySelector } from '@/features/category'
 import type { QuizSetDto } from '@/types/api'
 
 interface QuizSetFormProps {
@@ -37,10 +38,12 @@ export function QuizSetForm({
     title: quizSet.title,
     description: quizSet.description || '',
     coverImageUrl: quizSet.coverImageUrl || '',
+    categoryId: quizSet.categoryId || '',
   } : {
     title: '',
     description: '',
     coverImageUrl: '',
+    categoryId: '',
   }
 
   const {
@@ -63,6 +66,7 @@ export function QuizSetForm({
       setValue('title', quizSet.title)
       setValue('description', quizSet.description || '')
       setValue('coverImageUrl', quizSet.coverImageUrl || '')
+      setValue('categoryId', quizSet.categoryId || '')
     }
   }, [quizSet, isEditing, setValue])
 
@@ -114,6 +118,21 @@ export function QuizSetForm({
         />
         {errors.description && (
           <p className="text-sm text-[var(--color-error)]">{errors.description.message}</p>
+        )}
+      </div>
+
+      {/* Category */}
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">
+          Danh mục (Tùy chọn)
+        </Label>
+        <CategorySelector
+          value={watch('categoryId')}
+          onChange={(value) => setValue('categoryId', value || '')}
+          placeholder="Chọn danh mục"
+        />
+        {errors.categoryId && (
+          <p className="text-sm text-[var(--color-error)]">{errors.categoryId.message}</p>
         )}
       </div>
 

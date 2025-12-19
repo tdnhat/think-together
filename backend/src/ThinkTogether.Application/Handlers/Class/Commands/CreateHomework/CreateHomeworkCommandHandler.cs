@@ -4,6 +4,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.Class.Commands.CreateHomework;

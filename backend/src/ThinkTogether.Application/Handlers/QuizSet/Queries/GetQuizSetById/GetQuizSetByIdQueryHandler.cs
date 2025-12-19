@@ -2,6 +2,7 @@ using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 

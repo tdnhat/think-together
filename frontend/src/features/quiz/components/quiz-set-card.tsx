@@ -150,6 +150,15 @@ export function QuizSetCard({
       </CardHeader>
 
       <CardContent className="pt-0 space-y-3">
+        {/* Category Badge */}
+        {quizSet.categoryName && (
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              {quizSet.categoryName}
+            </Badge>
+          </div>
+        )}
+        
         <Separator />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">

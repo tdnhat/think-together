@@ -5,6 +5,7 @@ using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Specifications;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;
 

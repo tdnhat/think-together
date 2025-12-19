@@ -3,6 +3,7 @@ using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.ValueObjects;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Enums;

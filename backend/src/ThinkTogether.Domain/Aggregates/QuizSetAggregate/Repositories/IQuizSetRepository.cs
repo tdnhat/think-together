@@ -1,7 +1,6 @@
-using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 using Shared.Primitives;
 
-namespace ThinkTogether.Application.Interfaces;
+namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 
 public interface IQuizSetRepository : IRepository<QuizSet, Guid>
 {

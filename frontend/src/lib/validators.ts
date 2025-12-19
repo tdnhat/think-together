@@ -64,6 +64,7 @@ export const createQuizSetSchema = z.object({
         .max(2000, "Mô tả không được vượt quá 2000 ký tự")
         .optional(),
     coverImageUrl: z.string().url("URL ảnh bìa không hợp lệ").optional().or(z.literal("")),
+    categoryId: z.string().uuid("ID danh mục không hợp lệ").optional().or(z.literal("")),
 });
 
 export const updateQuizSetSchema = z.object({
@@ -75,6 +76,7 @@ export const updateQuizSetSchema = z.object({
         .max(2000, "Mô tả không được vượt quá 2000 ký tự")
         .optional(),
     coverImageUrl: z.string().url("URL ảnh bìa không hợp lệ").optional().or(z.literal("")),
+    categoryId: z.string().uuid("ID danh mục không hợp lệ").optional().or(z.literal("")),
 });
 
 // Type exports

@@ -16,6 +16,8 @@ public sealed partial class QuizSet : AggregateRoot
 
     public Guid CreatorId { get; private set; }
 
+    public Guid? CategoryId { get; private set; }
+
     public string Title { get; private set; } = string.Empty;
 
     public string? Description { get; private set; }
@@ -28,7 +30,7 @@ public sealed partial class QuizSet : AggregateRoot
 
     public IReadOnlyList<Question> Questions => _questions.AsReadOnly();
 
-    public static QuizSet Create(Guid creatorId, string title, string? description = null)
+    public static QuizSet Create(Guid creatorId, string title, string? description = null, Guid? categoryId = null)
     {
         if (creatorId == Guid.Empty)
             throw new ValidationException("ID người tạo không được trống");
@@ -39,10 +41,14 @@ public sealed partial class QuizSet : AggregateRoot
         if (title.Length > 255)
             throw new ValidationException("Tiêu đề không được vượt quá 255 ký tự");
 
+        if (categoryId == Guid.Empty)
+            throw new ValidationException("ID danh mục không hợp lệ");
+
         return new QuizSet
         {
             Id = Guid.NewGuid(),
             CreatorId = creatorId,
+            CategoryId = categoryId,
             Title = title.Trim(),
             Description = description?.Trim(),
             IsPublished = false,
@@ -59,5 +65,17 @@ public sealed partial class QuizSet : AggregateRoot
             throw new EntityNotFoundException(nameof(Question), questionId);
 
         return question;
+    }
+
+    /// <summary>
+    /// Set the category for this quiz set
+    /// </summary>
+    public void SetCategory(Guid? categoryId)
+    {
+        if (categoryId == Guid.Empty)
+            throw new ValidationException("ID danh mục không hợp lệ");
+
+        CategoryId = categoryId;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

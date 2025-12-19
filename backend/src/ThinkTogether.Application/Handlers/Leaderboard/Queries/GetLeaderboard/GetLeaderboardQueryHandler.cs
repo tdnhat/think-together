@@ -3,6 +3,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 

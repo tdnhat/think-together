@@ -22,6 +22,65 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ThinkTogether.Domain.Aggregates.CategoryAggregate.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idDanhMuc");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayTao")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayXoa");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("moTa");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("thuTu");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("daKichHoat");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("tenDanhMuc");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayCapNhat");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt")
+                        .HasDatabaseName("IDX_DanhMuc_ngayXoa");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IDX_DanhMuc_tenDanhMuc")
+                        .HasFilter("[ngayXoa] IS NULL");
+
+                    b.HasIndex("IsActive", "DisplayOrder")
+                        .HasDatabaseName("IDX_DanhMuc_IsActive_DisplayOrder");
+
+                    b.ToTable("DanhMuc", (string)null);
+                });
+
             modelBuilder.Entity("ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1174,6 +1233,10 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("idBoTracNghiem");
 
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("idDanhMuc");
+
                     b.Property<string>("CoverImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)")
@@ -1221,6 +1284,8 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnName("ngayCapNhat");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("CreatorId");
 
@@ -1756,6 +1821,11 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet", b =>
                 {
+                    b.HasOne("ThinkTogether.Domain.Aggregates.CategoryAggregate.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("ThinkTogether.Domain.Aggregates.UserAggregate.User", null)
                         .WithMany()
                         .HasForeignKey("CreatorId")

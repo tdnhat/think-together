@@ -3,6 +3,7 @@ using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
+using ThinkTogether.Domain.Aggregates.CategoryAggregate;
 
 namespace ThinkTogether.Infrastructure.Persistence.Configurations;
 
@@ -21,6 +22,10 @@ public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
         builder.Property(qs => qs.CreatorId)
             .HasColumnName("idNguoiTao")
             .IsRequired();
+
+        builder.Property(qs => qs.CategoryId)
+            .HasColumnName("idDanhMuc")
+            .IsRequired(false);
 
         builder.Property(qs => qs.Title)
             .HasColumnName("tieuDe")
@@ -62,6 +67,12 @@ public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
             .HasForeignKey(qs => qs.CreatorId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Foreign key to Category
+        builder.HasOne<Category>()
+            .WithMany()
+            .HasForeignKey(qs => qs.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // Relationship to Questions - use navigation property to avoid shadow FK
         builder.HasMany(qs => qs.Questions)
             .WithOne()
@@ -70,6 +81,7 @@ public class QuizSetConfiguration : IEntityTypeConfiguration<QuizSet>
 
         // Indexes
         builder.HasIndex(qs => qs.CreatorId);
+        builder.HasIndex(qs => qs.CategoryId);
         builder.HasIndex(qs => qs.IsPublished);
         builder.HasIndex(qs => qs.DeletedAt);
         builder.HasIndex(qs => new { qs.IsPublished, qs.DeletedAt, qs.CreatedAt });

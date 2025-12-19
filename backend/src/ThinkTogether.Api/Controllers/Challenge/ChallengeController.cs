@@ -13,6 +13,7 @@ using ThinkTogether.Application.Handlers.Challenge.Queries.GetLeaderboard;
 using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeStats;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Api.Controllers.Challenge;

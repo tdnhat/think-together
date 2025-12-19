@@ -3,6 +3,7 @@ using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Specifications;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 
 namespace ThinkTogether.Infrastructure.Persistence.Repositories;
 

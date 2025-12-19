@@ -169,6 +169,22 @@ export const CLASS_ENDPOINTS = {
 } as const;
 
 // ============================================================================
+// CATEGORY ENDPOINTS
+// ============================================================================
+
+export const CATEGORY_ENDPOINTS = {
+  // Category CRUD
+  LIST_CATEGORIES: `${BASE}/categories`,
+  GET_CATEGORY: (id: string) => `${BASE}/categories/${id}`,
+  CREATE_CATEGORY: `${BASE}/categories`,
+  UPDATE_CATEGORY: (id: string) => `${BASE}/categories/${id}`,
+  DELETE_CATEGORY: (id: string) => `${BASE}/categories/${id}`,
+  
+  // Category Search
+  SEARCH_CATEGORIES: `${BASE}/categories/search`,
+} as const;
+
+// ============================================================================
 // CONSOLIDATED API ENDPOINTS
 // ============================================================================
 
@@ -183,6 +199,7 @@ export const API_ENDPOINTS = {
   QUIZ: QUIZ_ENDPOINTS,
   LEADERBOARD: LEADERBOARD_ENDPOINTS,
   CLASS: CLASS_ENDPOINTS,
+  CATEGORY: CATEGORY_ENDPOINTS,
 } as const;
 
 // ============================================================================

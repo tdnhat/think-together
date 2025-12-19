@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.UploadCoverImage;

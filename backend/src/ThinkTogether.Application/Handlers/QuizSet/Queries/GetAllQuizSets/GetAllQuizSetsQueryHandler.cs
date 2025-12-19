@@ -5,6 +5,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Shared.Common;
 using Microsoft.EntityFrameworkCore;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Queries.GetAllQuizSets;
 

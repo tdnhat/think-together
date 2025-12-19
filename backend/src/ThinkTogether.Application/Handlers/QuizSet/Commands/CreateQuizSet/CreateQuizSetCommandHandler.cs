@@ -3,6 +3,7 @@ using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.CreateQuizSet;
@@ -32,7 +33,8 @@ public sealed class CreateQuizSetCommandHandler : IRequestHandler<CreateQuizSetC
         var quizSet = ThinkTogether.Domain.Aggregates.QuizSetAggregate.QuizSet.Create(
             userId,
             request.Title,
-            request.Description);
+            request.Description,
+            request.CategoryId);
 
         if (!string.IsNullOrEmpty(request.CoverImageUrl))
         {

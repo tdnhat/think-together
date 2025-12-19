@@ -9,6 +9,7 @@ using ThinkTogether.Domain.Aggregates.GamingAggregate;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.UserAggregate;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.CategoryAggregate;
 using ThinkTogether.Infrastructure.Persistence.Interceptors;
 
 namespace ThinkTogether.Infrastructure.Persistence;
@@ -44,6 +45,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<ClassMember> ClassMembers { get; set; } = null!;
     public DbSet<Homework> Homeworks { get; set; } = null!;
     public DbSet<HomeworkSubmission> HomeworkSubmissions { get; set; } = null!;
+
+    // Category Aggregate Entities
+    public DbSet<Category> Categories { get; set; } = null!;
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

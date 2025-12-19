@@ -7,6 +7,7 @@ using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Specifications;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;

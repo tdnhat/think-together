@@ -2,6 +2,7 @@ using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
@@ -44,6 +45,9 @@ public sealed class UpdateQuizSetCommandHandler : IRequestHandler<UpdateQuizSetC
 
         if (request.CoverImageUrl != null)
             quizSet.UpdateCoverImageUrl(request.CoverImageUrl);
+
+        if (request.CategoryId.HasValue)
+            quizSet.SetCategory(request.CategoryId);
 
         await _repository.UpdateAsync(quizSet, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);

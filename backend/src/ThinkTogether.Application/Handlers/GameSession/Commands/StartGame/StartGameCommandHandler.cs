@@ -3,6 +3,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Specifications;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;
 

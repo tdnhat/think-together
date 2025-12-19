@@ -1,5 +1,6 @@
 using MediatR;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.DeleteQuestion;

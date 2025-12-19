@@ -12,6 +12,8 @@ using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Aggregates.CategoryAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Infrastructure.Interfaces;
 using ThinkTogether.Infrastructure.BackgroundTasks;
 using ThinkTogether.Infrastructure.Persistence;
@@ -112,6 +114,7 @@ public static class DependencyInjection
         services.AddScoped<IGameSessionRepository, GameSessionRepository>();
         services.AddScoped<IChallengeRepository, ChallengeRepository>();
         services.AddScoped<IClassRepository, ClassRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

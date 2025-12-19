@@ -4,6 +4,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;

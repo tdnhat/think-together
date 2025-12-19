@@ -8,8 +8,8 @@ import { Trash2, Edit2 } from 'lucide-react'
 
 interface CategoryCardProps {
   category: CategoryDto
-  onEdit: (id: string) => void
-  onDelete: (id: string) => void
+  onEdit: (category: CategoryDto) => void
+  onDelete: (category: CategoryDto) => void
   isDeleting: boolean
 }
 
@@ -40,14 +40,14 @@ export function CategoryCard({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onEdit(category.id)}
+            onClick={() => onEdit(category)}
           >
             <Edit2 className="h-4 w-4" />
           </Button>
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => onDelete(category.id)}
+            onClick={() => onDelete(category)}
             disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4" />

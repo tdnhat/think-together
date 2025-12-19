@@ -3,6 +3,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Specifications;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeAttempt;

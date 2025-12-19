@@ -3,6 +3,7 @@ using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 using ChallengeEntity = ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge;
 
