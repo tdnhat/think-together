@@ -150,5 +150,8 @@ public static class DependencyInjection
         
         // Cloud Services
         services.AddScoped<IImageUploadService, CloudinaryService>();
+        
+        // PDF Export Services
+        services.AddScoped<IPdfExportService, PdfExportService>();
     }
 }

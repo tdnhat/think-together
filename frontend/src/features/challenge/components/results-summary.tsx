@@ -1,18 +1,28 @@
 'use client'
 
-import { CheckCircle, XCircle, Clock, Target } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, Target, Download } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
+import { Button } from '@/shared/ui/button'
 import type { ChallengeResultsSummary } from '@/features/challenge/types'
+import { usePdfExport } from '../hooks/use-pdf-export'
 
 interface ResultsSummaryProps {
   results: ChallengeResultsSummary
+  attemptId?: string
   className?: string
 }
 
-export function ResultsSummary({ results, className = '' }: ResultsSummaryProps) {
+export function ResultsSummary({ results, attemptId, className = '' }: ResultsSummaryProps) {
+  const { downloadAttemptPdf, isLoading } = usePdfExport()
   const accuracy = (results.correctAnswers / results.totalQuestions) * 100
   const incorrectAnswers = results.totalQuestions - results.correctAnswers
+
+  const handleDownloadPdf = async () => {
+    if (attemptId) {
+      await downloadAttemptPdf(attemptId)
+    }
+  }
 
   const formatTime = (ms?: number) => {
     if (!ms) return '-'
@@ -36,7 +46,21 @@ export function ResultsSummary({ results, className = '' }: ResultsSummaryProps)
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle className="text-center">Kết quả của bạn</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-center flex-1">Kết quả của bạn</CardTitle>
+          {attemptId && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPdf}
+              disabled={isLoading}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              {isLoading ? 'Đang tải...' : 'Tải PDF'}
+            </Button>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-6">
