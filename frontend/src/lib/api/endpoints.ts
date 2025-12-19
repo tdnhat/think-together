@@ -139,6 +139,36 @@ export const LEADERBOARD_ENDPOINTS = {
 } as const;
 
 // ============================================================================
+// CLASS ENDPOINTS
+// ============================================================================
+
+export const CLASS_ENDPOINTS = {
+  // Class CRUD
+  GET_CLASSES: `${BASE}/classes`,
+  GET_CLASS: (id: string) => `${BASE}/classes/${id}`,
+  CREATE_CLASS: `${BASE}/classes`,
+  UPDATE_CLASS: (id: string) => `${BASE}/classes/${id}`,
+  DELETE_CLASS: (id: string) => `${BASE}/classes/${id}`,
+  
+  // Class Actions
+  JOIN_CLASS: `${BASE}/classes/join`,
+  LEAVE_CLASS: (id: string) => `${BASE}/classes/${id}/leave`,
+  GET_CLASS_MEMBERS: (id: string) => `${BASE}/classes/${id}/members`,
+  REMOVE_MEMBER: (classId: string, memberId: string) => `${BASE}/classes/${classId}/members/${memberId}`,
+  
+  // Homework CRUD
+  GET_HOMEWORKS: (classId: string) => `${BASE}/classes/${classId}/homeworks`,
+  GET_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}`,
+  CREATE_HOMEWORK: (classId: string) => `${BASE}/classes/${classId}/homeworks`,
+  UPDATE_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}`,
+  DELETE_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}`,
+  
+  // Homework Submissions
+  GET_HOMEWORK_SUBMISSIONS: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submissions`,
+  SUBMIT_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submit`,
+} as const;
+
+// ============================================================================
 // CONSOLIDATED API ENDPOINTS
 // ============================================================================
 
@@ -152,6 +182,7 @@ export const API_ENDPOINTS = {
   QUIZ_SET: QUIZ_SET_ENDPOINTS,
   QUIZ: QUIZ_ENDPOINTS,
   LEADERBOARD: LEADERBOARD_ENDPOINTS,
+  CLASS: CLASS_ENDPOINTS,
 } as const;
 
 // ============================================================================

@@ -73,6 +73,13 @@ const routes = {
   // ========== LEADERBOARD ROUTES ==========
   leaderboard: '/leaderboard',
   
+  // ========== CLASS ROUTES ==========
+  classes: {
+    list: '/classes',
+    detail: (id: string) => `/classes/${id}` as const,
+    join: '/classes/join',
+  },
+  
   // ========== CREATOR ROUTES ==========
   creator: {
     becomeCreator: '/become-creator',

@@ -7,6 +7,7 @@ import {
   Activity,
   BookOpen,
   Clock,
+  GraduationCap,
   Home,
   Settings,
   Sparkles,
@@ -47,6 +48,7 @@ interface SidebarItem {
 const mainMenuItems: SidebarItem[] = [
   { icon: Home, label: "Trang chủ", href: ROUTES.dashboard.home },
   { icon: BookOpen, label: "Bộ câu hỏi", href: ROUTES.quiz.list },
+  { icon: GraduationCap, label: "Lớp học", href: ROUTES.classes.list },
   { icon: TrendingUp, label: "Bảng xếp hạng", href: ROUTES.leaderboard },
   { icon: Activity, label: "Tiến trình", href: "/progress" },
 ];

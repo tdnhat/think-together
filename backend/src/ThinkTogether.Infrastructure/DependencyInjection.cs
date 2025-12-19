@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
@@ -110,6 +111,7 @@ public static class DependencyInjection
         services.AddScoped<IQuizSetRepository, QuizSetRepository>();
         services.AddScoped<IGameSessionRepository, GameSessionRepository>();
         services.AddScoped<IChallengeRepository, ChallengeRepository>();
+        services.AddScoped<IClassRepository, ClassRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
