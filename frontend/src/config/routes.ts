@@ -91,6 +91,7 @@ const routes = {
   // ========== ADMIN ROUTES ==========
   admin: {
     dashboard: '/admin',
+    categories: '/admin/categories',
     users: '/admin/users',
     quizzes: '/admin/quizzes',
     reports: '/admin/reports',
@@ -142,6 +143,7 @@ export const creatorRoutes = [
  */
 export const adminRoutes = [
   routes.admin.dashboard,
+  routes.admin.categories,
   routes.admin.users,
   routes.admin.quizzes,
   routes.admin.reports,
