@@ -1,7 +1,13 @@
 'use client'
 
-import { Users, Target, Clock, TrendingUp, Award, Activity } from 'lucide-react'
-import { Card, CardContent } from '@/shared/ui/card'
+import { Activity } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/shared/ui/chart'
+import { Bar, BarChart, Cell, Pie, PieChart, XAxis, YAxis } from 'recharts'
 import type { LeaderboardStatsDto } from '../types'
 
 interface LeaderboardStatsOverviewProps {
@@ -9,88 +15,221 @@ interface LeaderboardStatsOverviewProps {
   className?: string
 }
 
+const chartConfig = {
+  attempts: {
+    label: 'Lượt làm',
+    color: 'var(--chart-1)',
+  },
+  participants: {
+    label: 'Người tham gia',
+    color: 'var(--chart-2)',
+  },
+  averageScore: {
+    label: 'Điểm TB',
+    color: 'var(--chart-3)',
+  },
+  averageAccuracy: {
+    label: 'Độ chính xác TB',
+    color: 'var(--chart-4)',
+  },
+  completed: {
+    label: 'Đã hoàn thành',
+    color: 'var(--chart-1)',
+  },
+  incomplete: {
+    label: 'Chưa hoàn thành',
+    color: '#94a3b8',
+  },
+  topScore: {
+    label: 'Điểm cao nhất',
+    color: 'var(--chart-5)',
+  },
+  recentActivity: {
+    label: 'Hoạt động gần đây',
+    color: 'var(--chart-2)',
+  },
+}
+
 export function LeaderboardStatsOverview({
   stats,
   className = '',
 }: LeaderboardStatsOverviewProps) {
-  const formatTime = (ms?: number) => {
-    if (!ms) return '-'
-    const minutes = Math.floor(ms / 60000)
-    const seconds = Math.floor((ms % 60000) / 1000)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
+  // Prepare data for Bar Chart
+  const barChartData = [
+    {
+      metric: 'Tổng số lượt làm',
+      value: stats.totalAttempts,
+      type: 'attempts',
+    },
+    {
+      metric: 'Người tham gia',
+      value: stats.totalParticipants,
+      type: 'participants',
+    },
+    {
+      metric: 'Điểm trung bình',
+      value: Math.round(stats.averageScore),
+      type: 'averageScore',
+    },
+    {
+      metric: 'Độ chính xác TB',
+      value: Math.round(stats.averageAccuracy),
+      type: 'averageAccuracy',
+    },
+  ]
 
-  const statCards = [
+  // Prepare data for Donut Chart (Completion Rate)
+  const completionRate = Math.round(stats.completionRate)
+  const donutChartData = [
     {
-      icon: Users,
-      label: 'Tổng số lượt làm',
-      value: stats.totalAttempts.toLocaleString('vi-VN'),
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      name: 'Đã hoàn thành',
+      value: completionRate,
+      fill: chartConfig.completed.color,
     },
     {
-      icon: Target,
-      label: 'Người tham gia',
-      value: stats.totalParticipants.toLocaleString('vi-VN'),
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-    },
-    {
-      icon: TrendingUp,
-      label: 'Điểm trung bình',
-      value: Math.round(stats.averageScore).toString(),
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-    },
-    {
-      icon: Award,
-      label: 'Độ chính xác TB',
-      value: `${Math.round(stats.averageAccuracy)}%`,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-    },
-    {
-      icon: Clock,
-      label: 'Thời gian TB',
-      value: formatTime(stats.averageCompletionTimeMs),
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-    },
-    {
-      icon: Activity,
-      label: 'Hoàn thành',
-      value: `${Math.round(stats.completionRate)}%`,
-      color: 'text-pink-600',
-      bgColor: 'bg-pink-50',
+      name: 'Chưa hoàn thành',
+      value: 100 - completionRate,
+      fill: chartConfig.incomplete.color,
     },
   ]
 
   return (
-    <div className={`grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6 ${className}`}>
-      {statCards.map((stat) => {
-        const Icon = stat.icon
-        return (
-          <Card key={stat.label} className="overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.bgColor}`}
-                >
-                  <Icon className={`h-5 w-5 ${stat.color}`} />
+    <div className={`grid grid-cols-1 gap-6 lg:grid-cols-4 ${className}`}>
+      {/* Bar Chart - Tổng quan thống kê */}
+      <Card className="lg:col-span-3">
+        <CardHeader>
+          <CardTitle>Tổng quan thống kê</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig}>
+            <BarChart data={barChartData}>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="dashed" />}
+              />
+              <XAxis
+                dataKey="metric"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis tickLine={false} axisLine={false} />
+              <Bar
+                dataKey="value"
+                radius={[4, 4, 0, 0]}
+              >
+                {barChartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={chartConfig[entry.type as keyof typeof chartConfig].color}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ChartContainer>
+          <div className="mt-4 flex flex-wrap gap-4 text-xs">
+            {Object.entries(chartConfig)
+              .filter(([key]) =>
+                ['attempts', 'participants', 'averageScore', 'averageAccuracy'].includes(
+                  key
+                )
+              )
+              .map(([key, config]) => (
+                <div key={key} className="flex items-center gap-2">
+                  <div
+                    className="h-3 w-3 rounded-sm"
+                    style={{
+                      backgroundColor: config.color,
+                    }}
+                  />
+                  <span className="text-[var(--text-secondary)]">
+                    {config.label}
+                  </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-[var(--text-secondary)] truncate">
-                    {stat.label}
-                  </p>
-                  <p className={`text-lg font-bold ${stat.color} truncate`}>
-                    {stat.value}
-                  </p>
-                </div>
+              ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Column 2: Recent Activity Card + Donut Chart */}
+      <div className="lg:col-span-1 flex flex-col gap-6">
+        {/* Card - Recent Activity */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-[var(--text-secondary)]">
+              Hoạt động gần đây
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
+                <Activity className="h-5 w-5 text-blue-600" />
               </div>
-            </CardContent>
-          </Card>
-        )
-      })}
+              <div>
+                <p className="text-2xl font-bold text-blue-600">
+                  {stats.recentActivityCount.toLocaleString('vi-VN')}
+                </p>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Lượt làm gần đây
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Donut Chart - Tỷ lệ hoàn thành */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Tỷ lệ hoàn thành</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px]">
+              <PieChart>
+                <ChartTooltip
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Pie
+                  data={donutChartData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={60}
+                  outerRadius={100}
+                  strokeWidth={5}
+                  stroke="var(--color-border)"
+                >
+                  {donutChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+            <div className="mt-4 flex flex-col items-center gap-2">
+              <div className="text-3xl font-bold">
+                {completionRate}%
+              </div>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Tỷ lệ hoàn thành
+              </p>
+              <div className="mt-2 flex gap-4 text-xs">
+                {donutChartData.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded-sm"
+                      style={{ backgroundColor: item.fill }}
+                    />
+                    <span className="text-[var(--text-secondary)]">
+                      {item.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
