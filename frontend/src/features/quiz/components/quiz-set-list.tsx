@@ -37,6 +37,7 @@ interface QuizSetListProps {
   readonly onView?: (quizSet: QuizSetDto) => void
   readonly onHost?: (quizSet: QuizSetDto) => void
   readonly onDuplicate?: (quizSet: QuizSetDto) => void
+  readonly onCreateChallenge?: (quizSet: QuizSetDto) => void
   readonly className?: string
 }
 
@@ -58,6 +59,7 @@ export function QuizSetList({
   onView,
   onHost,
   onDuplicate,
+  onCreateChallenge,
   className = '',
 }: QuizSetListProps) {
   const total = pagination?.total || quizSets.length
@@ -272,6 +274,7 @@ export function QuizSetList({
                 onView={onView}
                 onHost={onHost}
                 onDuplicate={onDuplicate}
+                onCreateChallenge={onCreateChallenge}
               />
             ))}
           </div>

@@ -5,6 +5,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.GameSession.Queries.GetGameSession;
 using ThinkTogether.Application.Handlers.GameSession.Queries.GetGameSessionByPin;
 using ThinkTogether.Application.Handlers.GameSession.Queries.GetLeaderboard;
+using ThinkTogether.Application.Handlers.GameSession.Queries.SyncGameSession;
 
 namespace ThinkTogether.Api.Controllers.Gaming;
 
@@ -49,6 +50,24 @@ public partial class GameSessionController
         var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(new ApiResponse<List<LeaderboardEntryDto>>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    /// <summary>
+    /// Sync game session state. Used for state recovery after browser refresh or reconnection.
+    /// </summary>
+    [HttpGet("{id:guid}/sync")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<SyncGameSessionResult>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SyncGameSession(Guid id, [FromQuery] Guid? playerId, CancellationToken cancellationToken)
+    {
+        var query = new SyncGameSessionQuery(id, playerId);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<SyncGameSessionResult>
         {
             Success = true,
             Data = result

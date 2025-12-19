@@ -32,7 +32,9 @@ public sealed partial class Question : Entity
     {
         if (Type != QuestionType.SingleChoice && 
             Type != QuestionType.TrueFalse && 
-            Type != QuestionType.MultipleChoice)
+            Type != QuestionType.MultipleChoice &&
+            Type != QuestionType.Video &&
+            Type != QuestionType.Audio)
             throw new ValidationException("Chỉ câu hỏi trắc nghiệm mới có thể có lựa chọn");
 
         if (options == null || options.Count == 0)
@@ -47,7 +49,7 @@ public sealed partial class Question : Entity
         if (!options.Any(o => o.IsCorrect))
             throw new ValidationException("Phải có ít nhất một đáp án đúng");
 
-        if (Type == QuestionType.SingleChoice && options.Count(o => o.IsCorrect) != 1)
+        if ((Type == QuestionType.SingleChoice || Type == QuestionType.Video || Type == QuestionType.Audio) && options.Count(o => o.IsCorrect) != 1)
             throw new ValidationException("Câu hỏi một lựa chọn phải có đúng một đáp án đúng");
 
         _options.Clear();

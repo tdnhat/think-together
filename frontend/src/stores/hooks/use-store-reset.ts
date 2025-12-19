@@ -5,8 +5,8 @@
  */
 
 import { useAuthStore } from '@/features/auth/stores/auth.store';
-import { useHostGameStore } from '@/features/game-host/store/host-game.store';
-import { usePlayerGameStore } from '@/features/game-player/store/player-game.store';
+import { useHostGameStore } from '@/features/game-host/store/host-game-store';
+import { usePlayerGameStore } from '@/features/game-player/store/player-game-store';
 import { useQuizStore } from '../quiz.store';
 
 export function useStoreReset() {

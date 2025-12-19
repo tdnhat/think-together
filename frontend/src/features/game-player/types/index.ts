@@ -28,6 +28,11 @@ export type {
   GameEndedMessage,
   ErrorMessage,
   StoredPlayerSession,
+  // Sync types for state recovery
+  SyncGameStatus,
+  SyncCurrentQuestion,
+  SyncPlayer,
+  SyncGameSessionResult,
 } from '@/features/game-host/types'
 
 // Player-specific state

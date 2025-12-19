@@ -6,11 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Services;
+using ThinkTogether.Domain.Aggregates.CategoryAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Infrastructure.Interfaces;
+using ThinkTogether.Infrastructure.BackgroundTasks;
 using ThinkTogether.Infrastructure.Persistence;
 using ThinkTogether.Infrastructure.Persistence.Interceptors;
 using ThinkTogether.Infrastructure.Persistence.Repositories;
@@ -107,6 +112,9 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IQuizSetRepository, QuizSetRepository>();
         services.AddScoped<IGameSessionRepository, GameSessionRepository>();
+        services.AddScoped<IChallengeRepository, ChallengeRepository>();
+        services.AddScoped<IClassRepository, ClassRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
@@ -123,6 +131,10 @@ public static class DependencyInjection
     private static void ConfigureInfrastructureServices(IServiceCollection services)
     {
         services.AddScoped<IDbInitializer, DbInitializer>();
+
+        // Background tasks
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+        services.AddHostedService<QueuedHostedService>();
 
         // Domain Services
         services.AddScoped<IPasswordService, PasswordService>();
@@ -141,5 +153,8 @@ public static class DependencyInjection
         
         // Cloud Services
         services.AddScoped<IImageUploadService, CloudinaryService>();
+        
+        // PDF Export Services
+        services.AddScoped<IPdfExportService, PdfExportService>();
     }
 }

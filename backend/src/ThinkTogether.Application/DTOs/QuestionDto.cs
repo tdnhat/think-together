@@ -13,6 +13,8 @@ public class QuestionDto
     public int DisplayOrder { get; set; }
     public string? VideoUrl { get; set; }
     public int? VideoTimestamp { get; set; }
+    public string? AudioUrl { get; set; }
+    public int? AudioTimestamp { get; set; }
     public List<QuestionOptionDto>? Options { get; set; }
     public List<MatchingPairDto>? MatchingPairs { get; set; }
     public List<OrderingItemDto>? OrderingItems { get; set; }

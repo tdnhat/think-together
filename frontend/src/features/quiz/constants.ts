@@ -110,6 +110,11 @@ export const QUESTION_CONSTANTS = {
       icon: 'Video',
       maxDuration: 120, // seconds
     },
+    [QuestionType.AUDIO]: {
+      label: 'Âm thanh',
+      description: 'Câu hỏi dựa trên audio với dấu thời gian',
+      icon: 'Volume2',
+    },
   },
 
   // Messages

@@ -46,7 +46,7 @@ export interface ValidationErrorResponse {
 }
 
 // User Role enum
-export type UserRole = 'Student' | 'Teacher' | 'Admin'
+export type UserRole = 'Student' | 'Teacher' | 'Administrator'
 
 // Backend DTOs
 export interface AuthTokenDto {
@@ -100,12 +100,39 @@ export interface ResetPasswordRequest {
   confirmPassword: string
 }
 
+// Category DTOs
+export interface CategoryDto {
+  id: string
+  name: string
+  description?: string
+  isActive: boolean
+  displayOrder: number
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface CreateCategoryRequest {
+  name: string
+  description?: string
+  displayOrder?: number
+}
+
+export interface UpdateCategoryRequest {
+  id: string
+  name: string
+  description?: string
+  displayOrder: number
+  isActive: boolean
+}
+
 // Quiz Set DTOs
 export interface QuizSetDto {
   id: string
   title: string
   description?: string
   coverImageUrl?: string
+  categoryId?: string
+  categoryName?: string
   isPublished: boolean
   questionCount?: number
   createdAt: string
@@ -118,6 +145,7 @@ export interface CreateQuizSetRequest {
   title: string
   description?: string
   coverImageUrl?: string
+  categoryId?: string
 }
 
 export interface UpdateQuizSetRequest {
@@ -125,6 +153,7 @@ export interface UpdateQuizSetRequest {
   title: string
   description?: string
   coverImageUrl?: string
+  categoryId?: string
 }
 
 export interface PublishQuizSetRequest {
@@ -138,7 +167,8 @@ export enum QuestionType {
   MULTIPLE_CHOICE = 'MultipleChoice',
   MATCHING = 'Matching',
   ORDERING = 'Ordering',
-  VIDEO = 'Video'
+  VIDEO = 'Video',
+  AUDIO = 'Audio'
 }
 
 // Question Option (for Multiple Choice, Single Choice, True/False)
@@ -182,6 +212,8 @@ export interface QuestionDto {
   orderingItems?: OrderingItemDto[]
   videoUrl?: string
   videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
 }
 
 // Create Question Request
@@ -198,6 +230,8 @@ export interface CreateQuestionRequest {
   orderingItems?: Omit<OrderingItemDto, 'id'>[]
   videoUrl?: string
   videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
 }
 
 // Update Question Request
@@ -213,6 +247,8 @@ export interface UpdateQuestionRequest {
   orderingItems?: OrderingItemDto[]
   videoUrl?: string
   videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
 }
 
 // Reorder Questions Request

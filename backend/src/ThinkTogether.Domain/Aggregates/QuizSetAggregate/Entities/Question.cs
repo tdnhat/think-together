@@ -32,6 +32,10 @@ public sealed partial class Question : Entity
 
     public int? VideoTimestamp { get; private set; }
 
+    public string? AudioUrl { get; private set; }
+
+    public int? AudioTimestamp { get; private set; }
+
     public IReadOnlyList<QuestionOption> Options => _options.AsReadOnly();
 
     public IReadOnlyList<MatchingPair> MatchingPairs => _matchingPairs.AsReadOnly();
@@ -120,6 +124,25 @@ public sealed partial class Question : Entity
 
         VideoUrl = videoUrl.Trim();
         VideoTimestamp = videoTimestamp;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void SetAudioDetails(string audioUrl, int audioTimestamp)
+    {
+        if (Type != QuestionType.Audio)
+            throw new ValidationException("Chỉ câu hỏi audio mới có thể có chi tiết audio");
+
+        if (string.IsNullOrWhiteSpace(audioUrl))
+            throw new ValidationException("URL audio không được trống");
+
+        if (audioUrl.Length > 500)
+            throw new ValidationException("URL audio không được vượt quá 500 ký tự");
+
+        if (audioTimestamp < 0)
+            throw new ValidationException("Dấu thời gian audio không được âm");
+
+        AudioUrl = audioUrl.Trim();
+        AudioTimestamp = audioTimestamp;
         UpdatedAt = DateTime.UtcNow;
     }
 }

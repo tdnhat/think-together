@@ -12,6 +12,7 @@ import {
   Link,
   ArrowUpDown,
   Video,
+  Volume2,
   Clock,
   AlertTriangle
 } from 'lucide-react'
@@ -54,6 +55,7 @@ const questionTypeIcons: Record<QuestionType, typeof CircleDot> = {
   [QuestionType.MATCHING]: Link,
   [QuestionType.ORDERING]: ArrowUpDown,
   [QuestionType.VIDEO]: Video,
+  [QuestionType.AUDIO]: Volume2,
 }
 
 const questionTypeColors: Record<QuestionType, 'default' | 'neutral'> = {
@@ -63,6 +65,7 @@ const questionTypeColors: Record<QuestionType, 'default' | 'neutral'> = {
   [QuestionType.MATCHING]: 'default',
   [QuestionType.ORDERING]: 'neutral',
   [QuestionType.VIDEO]: 'default',
+  [QuestionType.AUDIO]: 'neutral',
 }
 
 export function QuestionCard({
@@ -118,11 +121,6 @@ export function QuestionCard({
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          {/* Drag Handle */}
-          <div className="cursor-grab active:cursor-grabbing text-[var(--text-tertiary)] hover:text-[var(--brand-primary)] transition-colors shrink-0 mt-1">
-            <GripVertical className="h-5 w-5" />
-          </div>
-
           {/* Question Number */}
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)] font-heading text-sm font-bold">
             {index + 1}
@@ -130,23 +128,15 @@ export function QuestionCard({
 
           {/* Question Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <Badge
-                variant={typeColor}
-                className="gap-1 font-bold"
-              >
-                <Icon className="h-3 w-3" />
-                {typeInfo.label}
-              </Badge>
-              <Badge variant="neutral" className="gap-1">
-                <Clock className="h-3 w-3 text-[var(--text-tertiary)]" />
-                <span className="text-xs font-medium text-[var(--text-secondary)]">
-                  {question.timeLimit}s
-                </span>
-              </Badge>
-            </div>
+            <Badge
+              variant={typeColor}
+              className="gap-1 font-bold"
+            >
+              <Icon className="h-3 w-3" />
+              {typeInfo.label}
+            </Badge>
             
-            <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 mb-1.5">
+            <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 my-2">
               {question.content}
             </p>
             
@@ -155,81 +145,7 @@ export function QuestionCard({
             </p>
           </div>
         </div>
-
-        {/* Actions Menu */}
-        <div className="flex items-center gap-1">
-          {onEdit && (
-            <Button
-              variant="neutral"
-              size="icon"
-              onClick={handleEdit}
-              className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              title="Chỉnh sửa"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="neutral"
-                size="icon"
-                className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {onDuplicate && (
-                <DropdownMenuItem onClick={handleDuplicate}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Sao chép
-                </DropdownMenuItem>
-              )}
-            {onDelete && (
-              <DropdownMenuItem onClick={handleDeleteClick} className="text-[var(--color-error)] focus:text-[var(--color-error)]">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Xóa
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        </div>
       </CardHeader>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader className="border-b-2 border-[var(--color-border-main)] bg-[var(--bg-surface-secondary)] -mx-6 -mt-6 px-6 py-4 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--color-error)] bg-[var(--color-error)]/10">
-                <AlertTriangle className="h-5 w-5 text-[var(--color-error)]" />
-              </div>
-              <AlertDialogTitle className="text-lg">Xóa câu hỏi?</AlertDialogTitle>
-            </div>
-          </AlertDialogHeader>
-          <AlertDialogDescription className="text-base leading-relaxed">
-            Bạn có chắc chắn muốn xóa câu hỏi <span className="font-semibold text-[var(--text-primary)]">&quot;{question.content}&quot;</span>? 
-            Hành động này không thể hoàn tác.
-          </AlertDialogDescription>
-          <AlertDialogFooter className="mt-6">
-            <AlertDialogCancel asChild>
-              <Button variant="neutral" size="default">
-                Hủy
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="default"
-                size="default"
-                onClick={handleDeleteConfirm}
-              >
-                Xóa câu hỏi
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Preview of options/pairs/items (optional, can be expanded) */}
       {question.options && question.options.length > 0 && (
@@ -246,9 +162,6 @@ export function QuestionCard({
                 <span className="flex-1 text-xs text-[var(--text-secondary)] line-clamp-1">
                   {option.content}
                 </span>
-                {option.isCorrect && (
-                  <CheckCircle className="h-3.5 w-3.5 text-[var(--color-success)] flex-shrink-0" />
-                )}
               </div>
             ))}
             {question.options.length > 3 && (

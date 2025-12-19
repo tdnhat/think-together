@@ -2,21 +2,26 @@ using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Shared.Common;
 using Microsoft.EntityFrameworkCore;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Queries.GetAllQuizSets;
 
 public sealed class GetAllQuizSetsQueryHandler : IRequestHandler<GetAllQuizSetsQuery, PaginatedResponse<QuizSetDto>>
 {
     private readonly IQuizSetRepository _repository;
+    private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public GetAllQuizSetsQueryHandler(
         IQuizSetRepository repository,
+        IUserRepository userRepository,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
+        _userRepository = userRepository;
         _currentUserService = currentUserService;
     }
 
@@ -66,9 +71,18 @@ public sealed class GetAllQuizSetsQueryHandler : IRequestHandler<GetAllQuizSetsQ
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
+        var creator = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        var creatorName = creator != null ? $"{creator.FirstName} {creator.LastName}".Trim() : "Unknown Creator";
+
+        var dtos = quizSets.Adapt<List<QuizSetDto>>();
+        foreach (var dto in dtos)
+        {
+            dto.CreatorName = creatorName;
+        }
+
         return new PaginatedResponse<QuizSetDto>
         {
-            Data = quizSets.Adapt<List<QuizSetDto>>(),
+            Data = dtos,
             Total = total,
             Page = request.Page,
             PageSize = request.PageSize,

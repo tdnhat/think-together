@@ -1,4 +1,4 @@
-﻿namespace ThinkTogether.Application.Interfaces;
+﻿﻿namespace ThinkTogether.Application.Interfaces;
 
 /// <summary>
 /// Service for managing question timers in game sessions.
@@ -29,5 +29,10 @@ public interface IQuestionTimerService
     /// Get the start time of the current question.
     /// </summary>
     Task<DateTime?> GetQuestionStartTimeAsync(Guid gameSessionId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get the end time of the current question.
+    /// </summary>
+    Task<DateTime?> GetQuestionEndTimeAsync(Guid gameSessionId, CancellationToken cancellationToken = default);
 }
 

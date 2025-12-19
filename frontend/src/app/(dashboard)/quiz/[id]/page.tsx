@@ -11,14 +11,20 @@ import {
   QuizPreviewQuestions,
   QuizActions 
 } from '@/features/quiz/components'
+import { useCreateChallenge, useChallengeByQuizSetId } from '@/features/challenge'
+import { toast } from 'sonner'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function QuizDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const quizSetId = params.id as string
 
   const { quizSet, isLoadingQuizSet } = useQuizSet(quizSetId)
   const { questions, isLoadingQuestions } = useQuestions(quizSetId, { pageSize: 10 })
+  const { data: existingChallenge, isLoading: isLoadingChallenge } = useChallengeByQuizSetId(quizSetId)
+  const { mutate: createChallenge, isPending: isCreatingChallenge } = useCreateChallenge()
 
   const handleBack = () => {
     router.back()
@@ -28,6 +34,31 @@ export default function QuizDetailPage() {
     // Navigate to play/lobby page (to be implemented)
     console.log('Start quiz', quizSetId)
     // router.push(ROUTES.quiz.play(quizSetId)) 
+  }
+
+  const handleCreateChallenge = () => {
+    if (!quizSet) return
+
+    createChallenge(
+      {
+        quizSetId: quizSet.id,
+        title: quizSet.title,
+        description: quizSet.description,
+      },
+      {
+        onSuccess: (challenge) => {
+          toast.success('Thử thách đã được tạo thành công!')
+          // Invalidate query to refetch challenge
+          queryClient.invalidateQueries({ queryKey: ['challenge-by-quiz', quizSetId] })
+          // Navigate to challenge details
+          router.push(`/quiz/${quizSetId}/challenge`)
+        },
+      }
+    )
+  }
+
+  const handleViewChallenge = () => {
+    router.push(`/quiz/${quizSetId}/challenge`)
   }
 
   const handleViewAllQuestions = () => {
@@ -91,8 +122,13 @@ export default function QuizDetailPage() {
 
             {/* Action Card */}
             <QuizActions 
-              quizSet={quizSet} 
+              quizSet={quizSet}
+              challenge={existingChallenge}
               onStart={handleStart}
+              onCreateChallenge={handleCreateChallenge}
+              onViewChallenge={handleViewChallenge}
+              isCreatingChallenge={isCreatingChallenge}
+              isLoadingChallenge={isLoadingChallenge}
             />
           </div>
         </div>

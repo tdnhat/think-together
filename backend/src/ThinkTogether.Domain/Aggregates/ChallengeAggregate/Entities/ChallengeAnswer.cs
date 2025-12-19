@@ -5,6 +5,10 @@ namespace ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 
 public sealed partial class ChallengeAnswer : Entity
 {
+    private readonly List<int> _selectedOptionIndexes = new();
+    private readonly List<AnswerMatchingPair> _matchingPairs = new();
+    private readonly List<AnswerOrderingItem> _orderingItems = new();
+
     private ChallengeAnswer()
     {
     }
@@ -21,12 +25,21 @@ public sealed partial class ChallengeAnswer : Entity
 
     public int PointsEarned { get; private set; }
 
+    public IReadOnlyList<int> SelectedOptionIndexes => _selectedOptionIndexes.AsReadOnly();
+
+    public IReadOnlyList<AnswerMatchingPair> MatchingPairs => _matchingPairs.AsReadOnly();
+
+    public IReadOnlyList<AnswerOrderingItem> OrderingItems => _orderingItems.AsReadOnly();
+
     public static ChallengeAnswer Create(
         Guid challengeAttemptId,
         Guid questionId,
         int submissionTimeMs,
         bool isCorrect,
-        int pointsEarned)
+        int pointsEarned,
+        List<int>? selectedOptionIndexes = null,
+        List<AnswerMatchingPair>? matchingPairs = null,
+        List<AnswerOrderingItem>? orderingItems = null)
     {
         if (challengeAttemptId == Guid.Empty)
             throw new ValidationException("ID nỗ lực thử thách không được trống");
@@ -40,7 +53,7 @@ public sealed partial class ChallengeAnswer : Entity
         if (pointsEarned < 0)
             throw new ValidationException("Điểm kiếm được không được âm");
 
-        return new ChallengeAnswer
+        var answer = new ChallengeAnswer
         {
             Id = Guid.NewGuid(),
             ChallengeAttemptId = challengeAttemptId,
@@ -51,5 +64,34 @@ public sealed partial class ChallengeAnswer : Entity
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        if (selectedOptionIndexes != null)
+        {
+            answer._selectedOptionIndexes.AddRange(selectedOptionIndexes);
+        }
+
+        if (matchingPairs != null)
+        {
+            answer._matchingPairs.AddRange(matchingPairs);
+        }
+
+        if (orderingItems != null)
+        {
+            answer._orderingItems.AddRange(orderingItems);
+        }
+
+        return answer;
     }
+}
+
+public sealed class AnswerMatchingPair
+{
+    public string LeftContent { get; set; } = string.Empty;
+    public string RightContent { get; set; } = string.Empty;
+}
+
+public sealed class AnswerOrderingItem
+{
+    public string Content { get; set; } = string.Empty;
+    public int Position { get; set; }
 }

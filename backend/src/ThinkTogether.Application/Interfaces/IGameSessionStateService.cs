@@ -1,10 +1,12 @@
-﻿namespace ThinkTogether.Application.Interfaces;
+namespace ThinkTogether.Application.Interfaces;
 
 public interface IGameSessionStateService
 {
     Task AddPlayerConnectionAsync(string pin, Guid playerId, string connectionId);
     Task RemovePlayerConnectionAsync(string pin, Guid playerId);
+    Task<bool> RemovePlayerConnectionAsync(string pin, Guid playerId, string connectionId);
     Task<PlayerConnectionInfo?> GetPlayerByConnectionIdAsync(string connectionId);
+    Task<string?> GetPlayerConnectionAsync(string pin, Guid playerId);
     Task<string?> GetPlayerNicknameAsync(string pin, Guid playerId);
     Task<int> GetPlayerCountAsync(string pin);
     

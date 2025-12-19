@@ -28,7 +28,17 @@ export function QuestionDisplay({
   showOptions = true,
   className = '',
 }: Readonly<QuestionDisplayProps>) {
-  const [timeRemaining, setTimeRemaining] = useState(question.timeLimit)
+  // Calculate remaining time based on endTime for accurate sync
+  const calculateRemainingTime = useCallback(() => {
+    // Check if question has endTime (QuestionStartedMessage)
+    if ('endTime' in question && question.endTime) {
+      const endTimeMs = new Date(question.endTime).getTime()
+      return Math.max(0, Math.floor((endTimeMs - Date.now()) / 1000))
+    }
+    return question.timeLimit
+  }, [question])
+
+  const [timeRemaining, setTimeRemaining] = useState(calculateRemainingTime)
   const [timerActive, setTimerActive] = useState(true)
 
   const handleTimeEnd = useCallback(() => {
@@ -36,11 +46,13 @@ export function QuestionDisplay({
     onTimeEnd?.()
   }, [onTimeEnd])
 
+  // Reset timer when question changes
   useEffect(() => {
-    setTimeRemaining(question.timeLimit)
+    setTimeRemaining(calculateRemainingTime())
     setTimerActive(true)
-  }, [question])
+  }, [question, calculateRemainingTime])
 
+  // Timer countdown using endTime for synchronization
   useEffect(() => {
     if (!showTimer || !timerActive || timeRemaining <= 0) {
       if (timeRemaining <= 0 && timerActive) {
@@ -50,17 +62,17 @@ export function QuestionDisplay({
     }
 
     const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          handleTimeEnd()
-          return 0
-        }
-        return prev - 1
-      })
+      const remaining = calculateRemainingTime()
+      setTimeRemaining(remaining)
+
+      if (remaining <= 0) {
+        handleTimeEnd()
+        clearInterval(interval)
+      }
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [showTimer, timerActive, timeRemaining, handleTimeEnd])
+  }, [showTimer, timerActive, calculateRemainingTime, handleTimeEnd, timeRemaining])
 
   const getTimerColor = () => {
     if (timeRemaining <= GAME_HOST_CONSTANTS.TIMER.DANGER_THRESHOLD) {

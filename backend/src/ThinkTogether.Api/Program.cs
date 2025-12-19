@@ -1,6 +1,5 @@
 using Api.Extensions;
-using Application;
-using Infrastructure;
+using ThinkTogether.Application;
 using ThinkTogether.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);

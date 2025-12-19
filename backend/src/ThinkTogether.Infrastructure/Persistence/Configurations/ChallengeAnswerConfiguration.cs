@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 
@@ -38,6 +39,40 @@ public class ChallengeAnswerConfiguration : IEntityTypeConfiguration<ChallengeAn
             .IsRequired()
             .HasDefaultValue(0);
 
+        // Store answer data as JSON
+        builder.Property(ca => ca.SelectedOptionIndexes)
+            .HasColumnName("cacChiSoPhuongAnDaChon")
+            .HasConversion(
+                v => SerializeIntList(v),
+                v => DeserializeIntList(v),
+                new ValueComparer<IReadOnlyList<int>>(
+                    (c1, c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()))
+            .HasColumnType("nvarchar(max)");
+
+        builder.Property(ca => ca.MatchingPairs)
+            .HasColumnName("cacCapGhep")
+            .HasConversion(
+                v => SerializeMatchingPairs(v),
+                v => DeserializeMatchingPairs(v),
+                new ValueComparer<IReadOnlyList<AnswerMatchingPair>>(
+                    (c1, c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()))
+            .HasColumnType("nvarchar(max)");
+
+        builder.Property(ca => ca.OrderingItems)
+            .HasColumnName("cacMucSapXep")
+            .HasConversion(
+                v => SerializeOrderingItems(v),
+                v => DeserializeOrderingItems(v),
+                new ValueComparer<IReadOnlyList<AnswerOrderingItem>>(
+                    (c1, c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()))
+            .HasColumnType("nvarchar(max)");
+
         builder.Property(ca => ca.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
@@ -70,6 +105,36 @@ public class ChallengeAnswerConfiguration : IEntityTypeConfiguration<ChallengeAn
         builder.HasIndex(ca => ca.QuestionId);
         builder.HasIndex(ca => new { ca.ChallengeAttemptId, ca.QuestionId }).IsUnique();
         builder.HasIndex(ca => ca.DeletedAt);
+    }
+
+    private static string SerializeIntList(IReadOnlyList<int> value)
+    {
+        return System.Text.Json.JsonSerializer.Serialize(value);
+    }
+
+    private static IReadOnlyList<int> DeserializeIntList(string value)
+    {
+        return System.Text.Json.JsonSerializer.Deserialize<List<int>>(value) ?? new List<int>();
+    }
+
+    private static string SerializeMatchingPairs(IReadOnlyList<AnswerMatchingPair> value)
+    {
+        return System.Text.Json.JsonSerializer.Serialize(value);
+    }
+
+    private static IReadOnlyList<AnswerMatchingPair> DeserializeMatchingPairs(string value)
+    {
+        return System.Text.Json.JsonSerializer.Deserialize<List<AnswerMatchingPair>>(value) ?? new List<AnswerMatchingPair>();
+    }
+
+    private static string SerializeOrderingItems(IReadOnlyList<AnswerOrderingItem> value)
+    {
+        return System.Text.Json.JsonSerializer.Serialize(value);
+    }
+
+    private static IReadOnlyList<AnswerOrderingItem> DeserializeOrderingItems(string value)
+    {
+        return System.Text.Json.JsonSerializer.Deserialize<List<AnswerOrderingItem>>(value) ?? new List<AnswerOrderingItem>();
     }
 }
 

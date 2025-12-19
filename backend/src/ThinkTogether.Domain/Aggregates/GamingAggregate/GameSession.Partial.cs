@@ -95,9 +95,6 @@ public sealed partial class GameSession : AggregateRoot
 
     public void End()
     {
-        if (Status != GameStatus.InProgress)
-            throw new ConflictException("Chỉ có thể kết thúc trò chơi đã bắt đầu");
-
         Status = GameStatus.Ended;
         EndedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;

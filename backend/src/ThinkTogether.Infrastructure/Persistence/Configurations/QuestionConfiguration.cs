@@ -48,6 +48,13 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(q => q.VideoTimestamp)
             .HasColumnName("dauThoiGianVideo");
 
+        builder.Property(q => q.AudioUrl)
+            .HasColumnName("urlAudio")
+            .HasMaxLength(500);
+
+        builder.Property(q => q.AudioTimestamp)
+            .HasColumnName("dauThoiGianAudio");
+
         builder.Property(q => q.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
@@ -124,10 +131,10 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
                 .IsRequired();
         });
 
-        // Add check constraint for enum values (stored as integers 1-6)
+        // Add check constraint for enum values (stored as integers 1-7)
         builder.ToTable(tb => tb.HasCheckConstraint(
             "CK_CauHoi_loaiCauHoi",
-            "loaiCauHoi IN (1, 2, 3, 4, 5, 6)"));
+            "loaiCauHoi IN (1, 2, 3, 4, 5, 6, 7)"));
 
         // Add check constraint for time limit
         builder.ToTable(tb => tb.HasCheckConstraint(

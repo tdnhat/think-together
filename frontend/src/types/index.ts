@@ -1,5 +1,5 @@
 // User Role enum
-export type UserRole = 'User' | 'Creator' | 'Admin'
+export type UserRole = 'User' | 'Creator' | 'Administrator'
 
 // User types
 export interface User {

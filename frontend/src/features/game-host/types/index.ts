@@ -200,6 +200,7 @@ export interface QuestionStartedMessage {
   content: string
   questionType: string
   timeLimit: number
+  endTime: string // Absolute UTC end time for time synchronization
   positionInGame: number
   totalQuestions: number
   videoUrl: string | null
@@ -289,4 +290,39 @@ export interface StoredPlayerSession {
   nickname: string
   timestamp: number
 }
+
+// =============================================================================
+// SYNC TYPES (State Recovery)
+// =============================================================================
+
+export type SyncGameStatus = 'LOBBY' | 'IN_PROGRESS' | 'FINISHED' | 'UNKNOWN'
+
+export interface SyncCurrentQuestion {
+  id: string
+  gameQuestionId: string
+  content: string
+  questionType: string
+  endTime: string // Absolute UTC end time
+  totalTimeSeconds: number
+  positionInGame: number
+  videoUrl: string | null
+  videoTimestamp: number | null
+  options: Array<{ index: number; content: string; imageUrl: string | null }>
+}
+
+export interface SyncPlayer {
+  id: string
+  nickname: string
+  score: number
+}
+
+export interface SyncGameSessionResult {
+  status: SyncGameStatus
+  currentQuestion: SyncCurrentQuestion | null
+  players: SyncPlayer[]
+  isHost: boolean
+  currentQuestionIndex: number
+  totalQuestions: number
+}
+
 

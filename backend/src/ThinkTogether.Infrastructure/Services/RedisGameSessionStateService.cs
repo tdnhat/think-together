@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
@@ -28,6 +28,22 @@ public class RedisGameSessionStateService : IGameSessionStateService
         var expiry = TimeSpan.FromHours(ExpirationHours);
 
         var playerKey = GetPlayerKey(pin);
+        
+        // Check for existing connection and clean it up if different
+        var existingPlayerJson = await db.HashGetAsync(playerKey, playerId.ToString());
+        if (existingPlayerJson.HasValue)
+        {
+            var existingPlayerData = JsonSerializer.Deserialize<PlayerData>(existingPlayerJson.ToString());
+            if (existingPlayerData != null && existingPlayerData.ConnectionId != connectionId)
+            {
+                // Remove the old connection key
+                var oldConnectionKey = GetConnectionKey(existingPlayerData.ConnectionId);
+                await db.KeyDeleteAsync(oldConnectionKey);
+                _logger.LogDebug("Cleaned up old connection {OldConnectionId} for player {PlayerId}", 
+                    existingPlayerData.ConnectionId, playerId);
+            }
+        }
+
         var playerData = new PlayerData(playerId, connectionId, DateTime.UtcNow);
         await db.HashSetAsync(playerKey, playerId.ToString(), JsonSerializer.Serialize(playerData));
         await db.KeyExpireAsync(playerKey, expiry);
@@ -43,7 +59,6 @@ public class RedisGameSessionStateService : IGameSessionStateService
     public async Task RemovePlayerConnectionAsync(string pin, Guid playerId)
     {
         var db = GetDatabase();
-
         var playerKey = GetPlayerKey(pin);
         var playerJson = await db.HashGetAsync(playerKey, playerId.ToString());
         
@@ -58,8 +73,49 @@ public class RedisGameSessionStateService : IGameSessionStateService
         }
 
         await db.HashDeleteAsync(playerKey, playerId.ToString());
-
         _logger.LogDebug("Removed player {PlayerId} from game {Pin}", playerId, pin);
+    }
+
+    public async Task<bool> RemovePlayerConnectionAsync(string pin, Guid playerId, string connectionId)
+    {
+        var db = GetDatabase();
+        var playerKey = GetPlayerKey(pin);
+        var playerJson = await db.HashGetAsync(playerKey, playerId.ToString());
+        
+        if (playerJson.HasValue)
+        {
+            var playerData = JsonSerializer.Deserialize<PlayerData>(playerJson.ToString());
+            if (playerData != null)
+            {
+                // Only remove if the connection ID matches
+                if (playerData.ConnectionId == connectionId)
+                {
+                    var connectionKey = GetConnectionKey(connectionId);
+                    await db.KeyDeleteAsync(connectionKey);
+                    await db.HashDeleteAsync(playerKey, playerId.ToString());
+                    _logger.LogDebug("Removed player {PlayerId} from game {Pin} (Connection match)", playerId, pin);
+                    return true;
+                }
+                else
+                {
+                    _logger.LogDebug("Skipped removing player {PlayerId} from game {Pin} - Connection mismatch (Stored: {Stored}, Request: {Request})", 
+                        playerId, pin, playerData.ConnectionId, connectionId);
+                        
+                    // Cleanup the requesting connection key if it exists
+                    var requestConnectionKey = GetConnectionKey(connectionId);
+                    await db.KeyDeleteAsync(requestConnectionKey);
+                    return false;
+                }
+            }
+        }
+        else
+        {
+             // Player not in session, just clean up connection key
+             var connectionKey = GetConnectionKey(connectionId);
+             await db.KeyDeleteAsync(connectionKey);
+        }
+        
+        return false;
     }
 
     public async Task<PlayerConnectionInfo?> GetPlayerByConnectionIdAsync(string connectionId)
@@ -80,6 +136,19 @@ public class RedisGameSessionStateService : IGameSessionStateService
             connectionData.PlayerId,
             connectionData.Nickname,
             connectionId);
+    }
+
+    public async Task<string?> GetPlayerConnectionAsync(string pin, Guid playerId)
+    {
+        var db = GetDatabase();
+        var playerKey = GetPlayerKey(pin);
+        var playerJson = await db.HashGetAsync(playerKey, playerId.ToString());
+
+        if (!playerJson.HasValue)
+            return null;
+
+        var playerData = JsonSerializer.Deserialize<PlayerData>(playerJson.ToString());
+        return playerData?.ConnectionId;
     }
 
     public Task<string?> GetPlayerNicknameAsync(string pin, Guid playerId)
@@ -193,4 +262,3 @@ public class RedisGameSessionStateService : IGameSessionStateService
     private sealed record PlayerData(Guid PlayerId, string ConnectionId, DateTime JoinedAt);
     private sealed record ConnectionData(string Pin, Guid PlayerId, string Nickname);
 }
-

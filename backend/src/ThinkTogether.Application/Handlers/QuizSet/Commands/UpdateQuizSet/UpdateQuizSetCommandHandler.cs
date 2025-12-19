@@ -2,6 +2,8 @@ using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.UpdateQuizSet;
@@ -9,13 +11,16 @@ namespace ThinkTogether.Application.Handlers.QuizSet.Commands.UpdateQuizSet;
 public sealed class UpdateQuizSetCommandHandler : IRequestHandler<UpdateQuizSetCommand, QuizSetDto>
 {
     private readonly IQuizSetRepository _repository;
+    private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public UpdateQuizSetCommandHandler(
         IQuizSetRepository repository,
+        IUserRepository userRepository,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
+        _userRepository = userRepository;
         _currentUserService = currentUserService;
     }
 
@@ -41,9 +46,17 @@ public sealed class UpdateQuizSetCommandHandler : IRequestHandler<UpdateQuizSetC
         if (request.CoverImageUrl != null)
             quizSet.UpdateCoverImageUrl(request.CoverImageUrl);
 
+        if (request.CategoryId.HasValue)
+            quizSet.SetCategory(request.CategoryId);
+
         await _repository.UpdateAsync(quizSet, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
 
-        return quizSet.Adapt<QuizSetDto>();
+        var creator = await _userRepository.GetByIdAsync(quizSet.CreatorId, cancellationToken);
+
+        var dto = quizSet.Adapt<QuizSetDto>();
+        dto.CreatorName = creator != null ? $"{creator.FirstName} {creator.LastName}".Trim() : "Unknown Creator";
+
+        return dto;
     }
 }

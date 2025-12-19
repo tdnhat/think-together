@@ -5,6 +5,7 @@ using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Services;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Specifications;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;
 
@@ -39,10 +40,10 @@ public sealed class CreateGameSessionCommandHandler : IRequestHandler<CreateGame
         var quizSet = await _quizSetRepository.GetByIdAsync(request.QuizSetId, cancellationToken)
             ?? throw new EntityNotFoundException("Bộ câu hỏi", request.QuizSetId);
 
-        var existingSessionSpec = new ActiveGameSessionByHostSpec(hostUserId);
-        var existingSession = await _gameSessionRepository.GetBySpecAsync(existingSessionSpec, cancellationToken);
-        if (existingSession != null)
-            throw new ConflictException("Bạn đã có một phiên trò chơi đang hoạt động");
+        // var existingSessionSpec = new ActiveGameSessionByHostSpec(hostUserId);
+        // var existingSession = await _gameSessionRepository.GetBySpecAsync(existingSessionSpec, cancellationToken);
+        // if (existingSession != null)
+        //     throw new ConflictException("Bạn đã có một phiên trò chơi đang hoạt động");
 
         var pin = await _pinGeneratorService.GenerateUniquePinAsync(cancellationToken);
 

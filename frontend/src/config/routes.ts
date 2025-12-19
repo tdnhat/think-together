@@ -73,6 +73,13 @@ const routes = {
   // ========== LEADERBOARD ROUTES ==========
   leaderboard: '/leaderboard',
   
+  // ========== CLASS ROUTES ==========
+  classes: {
+    list: '/classes',
+    detail: (id: string) => `/classes/${id}` as const,
+    join: '/classes/join',
+  },
+  
   // ========== CREATOR ROUTES ==========
   creator: {
     becomeCreator: '/become-creator',
@@ -84,6 +91,7 @@ const routes = {
   // ========== ADMIN ROUTES ==========
   admin: {
     dashboard: '/admin',
+    categories: '/admin/categories',
     users: '/admin/users',
     quizzes: '/admin/quizzes',
     reports: '/admin/reports',
@@ -135,6 +143,7 @@ export const creatorRoutes = [
  */
 export const adminRoutes = [
   routes.admin.dashboard,
+  routes.admin.categories,
   routes.admin.users,
   routes.admin.quizzes,
   routes.admin.reports,
@@ -183,9 +192,9 @@ export function isAdminRoute(pathname: string): boolean {
  */
 export function getRedirectAfterLogin(userRole?: string): string {
   switch (userRole) {
-    case 'admin':
+    case 'Administrator':
       return routes.admin.dashboard;
-    case 'creator':
+    case 'Creator':
       return routes.creator.dashboard;
     default:
       return routes.dashboard.home;

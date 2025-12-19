@@ -9,3 +9,4 @@ export { SearchInput } from './search-input';
 export { FormInput } from './form-input';
 export { SafeImage } from './safe-image';
 export { CreatorRouteGuard } from './creator-route-guard';
+export { PageLayout, PageHeader, PageMain, PageFooter } from './page-layout';

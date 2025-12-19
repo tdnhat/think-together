@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿﻿using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
 
@@ -98,6 +98,19 @@ public class QuestionTimerService : IQuestionTimerService
 
         var timerData = System.Text.Json.JsonSerializer.Deserialize<TimerData>(json.ToString());
         return timerData?.StartTime;
+    }
+
+    public async Task<DateTime?> GetQuestionEndTimeAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
+    {
+        var db = GetDatabase();
+        var key = GetTimerKey(gameSessionId);
+        var json = await db.StringGetAsync(key);
+
+        if (!json.HasValue)
+            return null;
+
+        var timerData = System.Text.Json.JsonSerializer.Deserialize<TimerData>(json.ToString());
+        return timerData?.EndTime;
     }
 
     private static string GetTimerKey(Guid gameSessionId) => $"{KeyPrefix}{gameSessionId}";

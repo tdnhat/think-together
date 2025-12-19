@@ -7,4 +7,5 @@ public sealed record UpdateQuizSetCommand(
     Guid Id,
     string? Title,
     string? Description,
-    string? CoverImageUrl) : IRequest<QuizSetDto>;
+    string? CoverImageUrl,
+    Guid? CategoryId = null) : IRequest<QuizSetDto>;

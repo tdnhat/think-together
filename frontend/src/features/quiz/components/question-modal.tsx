@@ -43,7 +43,7 @@ export function QuestionModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="border-b-2 border-[var(--brand-primary)] bg-[var(--bg-surface-secondary)] px-6 py-4">
           <DialogTitle className="font-heading text-xl font-bold text-[var(--text-primary)]">
             {modalTitle}

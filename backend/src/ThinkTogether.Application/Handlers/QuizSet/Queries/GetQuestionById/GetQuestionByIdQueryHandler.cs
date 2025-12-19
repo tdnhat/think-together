@@ -2,6 +2,7 @@ using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Queries.GetQuestionById;
@@ -23,14 +24,9 @@ public sealed class GetQuestionByIdQueryHandler : IRequestHandler<GetQuestionByI
         GetQuestionByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var userId = Guid.Parse(_currentUserService.UserId!);
-
         var quizSet = await _repository.GetByIdAsync(request.QuizSetId, cancellationToken);
         if (quizSet == null)
             throw new EntityNotFoundException(nameof(QuizSet), request.QuizSetId);
-
-        if (quizSet.CreatorId != userId)
-            throw new UnauthorizedAccessException("Bạn không có quyền xem câu hỏi trong bộ trắc nghiệm này");
 
         var question = quizSet.GetQuestion(request.QuestionId);
 

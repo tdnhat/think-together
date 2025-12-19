@@ -3,6 +3,7 @@ using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Specifications;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 
 namespace ThinkTogether.Infrastructure.Persistence.Repositories;
 
@@ -52,6 +53,18 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
             await base.UpdateAsync(quizSet, cancellationToken);
             await SaveChangesAsync(cancellationToken);
         }
+    }
+
+    public async Task<List<QuizSet>> GetByIdsAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            return new List<QuizSet>();
+        }
+
+        return await _dbSet
+            .Where(q => ids.Contains(q.Id) && q.DeletedAt == null)
+            .ToListAsync(cancellationToken);
     }
 }
 

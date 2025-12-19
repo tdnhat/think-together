@@ -3,6 +3,7 @@ using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.ValueObjects;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
@@ -82,6 +83,13 @@ public sealed class DuplicateQuestionCommandHandler : IRequestHandler<DuplicateQ
                 if (!string.IsNullOrEmpty(originalQuestion.VideoUrl) && originalQuestion.VideoTimestamp.HasValue)
                 {
                     duplicatedQuestion.SetVideoDetails(originalQuestion.VideoUrl, originalQuestion.VideoTimestamp.Value);
+                }
+                break;
+
+            case QuestionType.Audio:
+                if (!string.IsNullOrEmpty(originalQuestion.AudioUrl) && originalQuestion.AudioTimestamp.HasValue)
+                {
+                    duplicatedQuestion.SetAudioDetails(originalQuestion.AudioUrl, originalQuestion.AudioTimestamp.Value);
                 }
                 break;
         }

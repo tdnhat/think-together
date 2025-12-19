@@ -41,6 +41,12 @@ public enum QuestionType
     /// A question that includes video content.
     /// </summary>
     [Description("Câu hỏi video")]
-    Video = 6
+    Video = 6,
+
+    /// <summary>
+    /// A question that includes audio content (e.g., music identification).
+    /// </summary>
+    [Description("Câu hỏi audio")]
+    Audio = 7
 }
 

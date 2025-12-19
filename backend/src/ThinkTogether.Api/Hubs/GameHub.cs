@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using ThinkTogether.Application.Handlers.GameSession.Commands.JoinGameSession;
 using ThinkTogether.Application.Handlers.GameSession.Commands.ReconnectPlayer;
@@ -12,15 +12,18 @@ public class GameHub : Hub<IGameHubClient>
     private readonly IMediator _mediator;
     private readonly ILogger<GameHub> _logger;
     private readonly IGameSessionStateService _stateService;
+    private readonly IQuestionTimerService _questionTimerService;
 
     public GameHub(
         IMediator mediator,
         ILogger<GameHub> logger,
-        IGameSessionStateService stateService)
+        IGameSessionStateService stateService,
+        IQuestionTimerService questionTimerService)
     {
         _mediator = mediator;
         _logger = logger;
         _stateService = stateService;
+        _questionTimerService = questionTimerService;
     }
 
     public async Task JoinGame(string pin, string nickname)
@@ -32,18 +35,31 @@ public class GameHub : Hub<IGameHubClient>
             var command = new JoinGameSessionCommand(pin, nickname);
             var player = await _mediator.Send(command);
 
+            // Check if this player already has an active connection (returning player)
+            // We check by player ID, not connection ID, to properly detect reconnects
+            var existingPlayerConnection = await _stateService.GetPlayerConnectionAsync(pin, player.Id);
+            var isNewPlayer = string.IsNullOrEmpty(existingPlayerConnection);
+
             await _stateService.AddPlayerConnectionAsync(pin, player.Id, Context.ConnectionId);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroup(pin));
 
-            var playerCount = await _stateService.GetPlayerCountAsync(pin);
+            // Only broadcast PlayerJoined for genuinely new players to avoid duplicates
+            if (isNewPlayer)
+            {
+                var playerCount = await _stateService.GetPlayerCountAsync(pin);
 
-            await Clients.Group(GetGameGroup(pin)).PlayerJoined(new PlayerJoinedMessage(
-                player.Id,
-                player.Nickname,
-                playerCount));
+                await Clients.Group(GetGameGroup(pin)).PlayerJoined(new PlayerJoinedMessage(
+                    player.Id,
+                    player.Nickname,
+                    playerCount));
 
-            _logger.LogInformation("Player {PlayerId} ({Nickname}) joined game {Pin}", player.Id, nickname, pin);
+                _logger.LogInformation("Player {PlayerId} ({Nickname}) joined game {Pin}", player.Id, nickname, pin);
+            }
+            else
+            {
+                _logger.LogInformation("Player {PlayerId} ({Nickname}) reconnected to game {Pin} (already had connection)", player.Id, nickname, pin);
+            }
         }
         catch (Exception ex)
         {
@@ -91,21 +107,22 @@ public class GameHub : Hub<IGameHubClient>
 
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroup(pin));
 
-            var playerCount = await _stateService.GetPlayerCountAsync(pin);
-
-            await Clients.Group(GetGameGroup(pin)).PlayerJoined(new PlayerJoinedMessage(
-                playerId,
-                result.Player?.Nickname ?? "Unknown",
-                playerCount));
+            // Note: Don't broadcast PlayerJoined for reconnecting players - they already exist in the game
+            // Only send updates to the reconnecting player themselves
 
             if (result.CurrentQuestion != null)
             {
+                // Get end time from timer service for time synchronization
+                var endTime = await _questionTimerService.GetQuestionEndTimeAsync(result.GameSession!.Id);
+                endTime ??= DateTime.UtcNow.AddSeconds(result.CurrentQuestion.TimeLimit);
+
                 await Clients.Caller.QuestionStarted(new QuestionStartedMessage(
                     result.CurrentQuestion.GameQuestionId,
                     result.CurrentQuestion.Id,
                     result.CurrentQuestion.Content,
                     result.CurrentQuestion.Type.ToString(),
                     result.CurrentQuestion.TimeLimit,
+                    endTime.Value,
                     result.CurrentQuestion.PositionInGame,
                     result.GameSession?.TotalQuestions ?? 0,
                     result.CurrentQuestion.VideoUrl,
@@ -182,6 +199,8 @@ public class GameHub : Hub<IGameHubClient>
             _logger.LogInformation("Player {PlayerId} leaving game {Pin}", playerId, pin);
 
             var nickname = await _stateService.GetPlayerNicknameAsync(pin, playerId);
+            
+            // Explicitly called leave, so we remove the player regardless of connection check
             await _stateService.RemovePlayerConnectionAsync(pin, playerId);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGameGroup(pin));
@@ -208,14 +227,18 @@ public class GameHub : Hub<IGameHubClient>
         var playerInfo = await _stateService.GetPlayerByConnectionIdAsync(Context.ConnectionId);
         if (playerInfo != null)
         {
-            await _stateService.RemovePlayerConnectionAsync(playerInfo.Pin, playerInfo.PlayerId);
+            // Only remove if this connection is the active one for the player
+            var removed = await _stateService.RemovePlayerConnectionAsync(playerInfo.Pin, playerInfo.PlayerId, Context.ConnectionId);
             
-            var playerCount = await _stateService.GetPlayerCountAsync(playerInfo.Pin);
-            
-            await Clients.Group(GetGameGroup(playerInfo.Pin)).PlayerLeft(new PlayerLeftMessage(
-                playerInfo.PlayerId,
-                playerInfo.Nickname,
-                playerCount));
+            if (removed)
+            {
+                var playerCount = await _stateService.GetPlayerCountAsync(playerInfo.Pin);
+                
+                await Clients.Group(GetGameGroup(playerInfo.Pin)).PlayerLeft(new PlayerLeftMessage(
+                    playerInfo.PlayerId,
+                    playerInfo.Nickname,
+                    playerCount));
+            }
         }
 
         await base.OnDisconnectedAsync(exception);

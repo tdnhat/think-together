@@ -27,26 +27,37 @@ export function PlayerQuestion({
   isSubmitting = false,
   className = '',
 }: Readonly<PlayerQuestionProps>) {
-  const [timeRemaining, setTimeRemaining] = useState(question.timeLimit)
+  // Calculate remaining time based on endTime for accurate sync across clients
+  const calculateRemainingTime = useCallback(() => {
+    if (!question.endTime) {
+      return question.timeLimit
+    }
+    const endTimeMs = new Date(question.endTime).getTime()
+    return Math.max(0, Math.floor((endTimeMs - Date.now()) / 1000))
+  }, [question.endTime, question.timeLimit])
 
+  const [timeRemaining, setTimeRemaining] = useState(calculateRemainingTime)
+
+  // Reset timer when question changes
   useEffect(() => {
-    setTimeRemaining(question.timeLimit)
-  }, [question])
+    setTimeRemaining(calculateRemainingTime())
+  }, [question.gameQuestionId, calculateRemainingTime])
 
+  // Timer countdown using endTime for synchronization
   useEffect(() => {
     if (hasAnswered || timeRemaining <= 0) return
 
     const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          return 0
-        }
-        return prev - 1
-      })
+      const remaining = calculateRemainingTime()
+      setTimeRemaining(remaining)
+
+      if (remaining <= 0) {
+        clearInterval(interval)
+      }
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [hasAnswered, timeRemaining])
+  }, [hasAnswered, calculateRemainingTime, timeRemaining])
 
   const getTimerColor = () => {
     if (timeRemaining <= GAME_PLAYER_CONSTANTS.TIMER.DANGER_THRESHOLD) {
