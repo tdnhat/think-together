@@ -18,6 +18,13 @@ export interface LeaderboardEntryDto {
   challengeId?: string
   challengeTitle?: string
   rank: number
+  // Homework/Class related fields
+  isHomework?: boolean
+  homeworkId?: string
+  homeworkTitle?: string
+  classId?: string
+  className?: string
+  submissionStatus?: 'Submitted' | 'Late'
 }
 
 // Leaderboard Query Parameters
@@ -29,6 +36,9 @@ export interface LeaderboardQueryParams {
   sortOrder?: 'asc' | 'desc'
   page?: number
   pageSize?: number
+  isHomework?: boolean
+  classId?: string
+  homeworkId?: string
 }
 
 // Leaderboard Response DTO
@@ -47,6 +57,9 @@ export interface LeaderboardFilters {
   timePeriod: 'today' | 'week' | 'month' | 'all'
   sortBy: 'score' | 'accuracy' | 'time' | 'completedAt'
   sortOrder: 'asc' | 'desc'
+  isHomework?: boolean // Filter by homework vs public challenge
+  classId?: string // Filter by class
+  homeworkId?: string // Filter by specific homework
 }
 
 // Leaderboard Statistics DTO

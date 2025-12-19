@@ -33,6 +33,9 @@ public class LeaderboardController : ControllerBase
         [FromQuery] string? sortOrder = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
+        [FromQuery] bool? isHomework = null,
+        [FromQuery] Guid? classId = null,
+        [FromQuery] Guid? homeworkId = null,
         CancellationToken cancellationToken = default)
     {
         var query = new GetLeaderboardQuery(
@@ -42,7 +45,10 @@ public class LeaderboardController : ControllerBase
             SortBy: sortBy,
             SortOrder: sortOrder,
             Page: page,
-            PageSize: pageSize);
+            PageSize: pageSize,
+            IsHomework: isHomework,
+            ClassId: classId,
+            HomeworkId: homeworkId);
 
         var result = await _mediator.Send(query, cancellationToken);
 

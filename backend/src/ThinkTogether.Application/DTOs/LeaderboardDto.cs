@@ -1,3 +1,5 @@
+using ThinkTogether.Domain.Enums;
+
 namespace ThinkTogether.Application.DTOs;
 
 /// <summary>
@@ -18,6 +20,14 @@ public class GlobalLeaderboardEntryDto
     public Guid? ChallengeId { get; set; }
     public string? ChallengeTitle { get; set; }
     public int Rank { get; set; }
+    
+    // Homework/Class related fields
+    public bool IsHomework { get; set; }
+    public Guid? HomeworkId { get; set; }
+    public string? HomeworkTitle { get; set; }
+    public Guid? ClassId { get; set; }
+    public string? ClassName { get; set; }
+    public SubmissionStatus? SubmissionStatus { get; set; }
 }
 
 /// <summary>

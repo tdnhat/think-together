@@ -82,6 +82,9 @@ export function useLeaderboard(
     params.sortOrder,
     params.page,
     params.pageSize,
+    params.isHomework,
+    params.classId,
+    params.homeworkId,
     enabled,
   ])
 

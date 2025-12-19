@@ -16,6 +16,7 @@ import {
   LEADERBOARD_CONSTANTS,
 } from '@/features/leaderboard'
 import { useQuizSets } from '@/features/quiz'
+import { useClasses } from '@/features/class'
 import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store'
 import type { LeaderboardFilters as LeaderboardFiltersType } from '@/features/leaderboard'
 
@@ -37,6 +38,20 @@ export default function LeaderboardPage() {
     page: 1,
     pageSize: 100, // Get all quiz sets for selector
   })
+
+  // Fetch classes for homework filter
+  const { data: classesData } = useClasses({
+    page: 1,
+    pageSize: 100, // Get all classes for selector
+  })
+  
+  // Extract classes from data
+  // Note: To get homeworks, we would need to load each class detail
+  // For now, we'll just use classes for filtering and load homeworks on-demand
+  const classes = classesData?.data || []
+  const homeworks: Array<{ id: string; classId: string; title: string }> = []
+  
+  // TODO: Load homeworks when a class is selected, or load all class details to get homeworks
 
   const { data, stats, isLoading, isLoadingStats, error } = useLeaderboard({
     params: {
@@ -123,6 +138,8 @@ export default function LeaderboardPage() {
                     />
                   ) : undefined
                 }
+                classes={classes}
+                homeworks={homeworks}
               />
             </section>
 

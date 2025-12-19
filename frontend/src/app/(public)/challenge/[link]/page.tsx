@@ -1,7 +1,7 @@
 'use client'
 
-import { Suspense } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Trophy, Users } from 'lucide-react'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { Card, CardContent } from '@/shared/ui/card'
@@ -12,24 +12,58 @@ import {
   useChallengeLinkResolver,
   useStartAttempt,
 } from '@/features/challenge'
+import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store'
 
 function ChallengeStartContent() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const shareLink = params.link as string
+  const homeworkId = searchParams.get('homeworkId')
+  const user = useAuthStore(selectUser)
 
   const { data: challenge, isLoading, error } = useChallengeLinkResolver(shareLink)
   const { mutate: startAttempt, isPending } = useStartAttempt()
+
+  // Auto-start if user is logged in and homeworkId is provided
+  useEffect(() => {
+    if (challenge && user?.id && homeworkId && !isPending) {
+      startAttempt(
+        {
+          challengeId: challenge.id,
+          nickname: user.fullName || user.email || 'Học sinh',
+          userId: user.id,
+          homeworkId: homeworkId,
+        },
+        {
+          onSuccess: (attempt) => {
+            // Navigate to taking page with attemptId and homeworkId
+            router.push(`/challenge/${shareLink}/take?attemptId=${attempt.id}&homeworkId=${homeworkId}`)
+          },
+        }
+      )
+    }
+  }, [challenge, user, homeworkId, isPending, startAttempt, shareLink, router])
 
   const handleStart = (nickname: string) => {
     if (!challenge) return
 
     startAttempt(
-      { challengeId: challenge.id, nickname },
+      { 
+        challengeId: challenge.id, 
+        nickname,
+        userId: user?.id,
+        homeworkId: homeworkId || undefined,
+      },
       {
         onSuccess: (attempt) => {
-          // Navigate to taking page with attemptId
-          router.push(`/challenge/${shareLink}/take?attemptId=${attempt.id}`)
+          // Navigate to taking page with attemptId and homeworkId if present
+          const queryParams = new URLSearchParams()
+          queryParams.set('attemptId', attempt.id)
+          if (homeworkId) {
+            queryParams.set('homeworkId', homeworkId)
+          }
+          router.push(`/challenge/${shareLink}/take?${queryParams.toString()}`)
         },
       }
     )

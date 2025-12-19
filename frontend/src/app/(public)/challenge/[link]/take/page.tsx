@@ -17,6 +17,7 @@ function ChallengeTakingContent() {
   const router = useRouter()
   const shareLink = params.link as string
   const attemptId = searchParams.get('attemptId')
+  const homeworkId = searchParams.get('homeworkId')
 
   const [startTime, setStartTime] = useState<number>(Date.now())
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -207,6 +208,7 @@ function ChallengeTakingContent() {
       {
         attemptId: attempt.id,
         answers: answersToSubmit,
+        homeworkId: homeworkId || undefined,
       },
       {
         onSuccess: (completedAttempt) => {
@@ -225,8 +227,13 @@ function ChallengeTakingContent() {
             })),
           })
           
-          // Navigate to results page
-          router.push(`/challenge/${shareLink}/results?attemptId=${attempt.id}`)
+          // Navigate to results page with homeworkId if present
+          const queryParams = new URLSearchParams()
+          queryParams.set('attemptId', attempt.id)
+          if (homeworkId) {
+            queryParams.set('homeworkId', homeworkId)
+          }
+          router.push(`/challenge/${shareLink}/results?${queryParams.toString()}`)
         },
         onError: () => {
           setIsSubmitting(false)

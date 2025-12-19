@@ -5,6 +5,8 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Specifications;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Shared.Common;
@@ -15,17 +17,20 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
 {
     private readonly IChallengeRepository _challengeRepository;
     private readonly IQuizSetRepository _quizSetRepository;
+    private readonly IClassRepository _classRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<SubmitAnswersCommandHandler> _logger;
 
     public SubmitAnswersCommandHandler(
         IChallengeRepository challengeRepository,
         IQuizSetRepository quizSetRepository,
+        IClassRepository classRepository,
         IUnitOfWork unitOfWork,
         ILogger<SubmitAnswersCommandHandler> logger)
     {
         _challengeRepository = challengeRepository;
         _quizSetRepository = quizSetRepository;
+        _classRepository = classRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -102,6 +107,32 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
         attempt.Complete(totalScore, correctAnswers, completionTimeMs);
 
         await _challengeRepository.UpdateAsync(challenge, cancellationToken);
+
+        // If this is a homework submission, create HomeworkSubmission record
+        if (request.HomeworkId.HasValue && attempt.UserId.HasValue)
+        {
+            var result = await _classRepository.GetClassAndHomeworkByHomeworkIdAsync(request.HomeworkId.Value, cancellationToken);
+            
+            if (result.HasValue)
+            {
+                var (homeworkClass, homework) = result.Value;
+                
+                var submission = HomeworkSubmission.Create(
+                    homeworkId: homework.Id,
+                    studentId: attempt.UserId.Value,
+                    challengeAttemptId: attempt.Id,
+                    score: totalScore,
+                    dueDate: homework.DueDate);
+
+                homework.AddSubmission(submission);
+                await _classRepository.UpdateAsync(homeworkClass, cancellationToken);
+
+                _logger.LogInformation(
+                    "Created homework submission for homework {HomeworkId}, attempt {AttemptId}, score {Score}",
+                    homework.Id, attempt.Id, totalScore);
+            }
+        }
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(

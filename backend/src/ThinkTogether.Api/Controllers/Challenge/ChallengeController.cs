@@ -109,7 +109,8 @@ public class ChallengeController : ControllerBase
         var command = new StartChallengeAttemptCommand(
             challengeId,
             request.Nickname,
-            request.UserId);
+            request.UserId,
+            request.HomeworkId);
 
         var result = await _mediator.Send(command, cancellationToken);
 
@@ -158,7 +159,7 @@ public class ChallengeController : ControllerBase
             a.OrderingItems
         )).ToList();
 
-        var command = new SubmitAnswersCommand(attemptId, answers);
+        var command = new SubmitAnswersCommand(attemptId, answers, request.HomeworkId);
         var result = await _mediator.Send(command, cancellationToken);
 
         return Ok(new ApiResponse<ChallengeAttemptDto>
@@ -197,11 +198,13 @@ public class StartChallengeAttemptRequest
 {
     public string Nickname { get; set; } = string.Empty;
     public Guid? UserId { get; set; }
+    public Guid? HomeworkId { get; set; }
 }
 
 public class SubmitAnswersRequest
 {
     public List<AnswerSubmissionItemDto> Answers { get; set; } = new();
+    public Guid? HomeworkId { get; set; }
 }
 
 public class AnswerSubmissionItemDto

@@ -10,4 +10,7 @@ public sealed record GetLeaderboardQuery(
     string? SortBy = null, // "score", "accuracy", "time", "completedAt"
     string? SortOrder = null, // "asc", "desc"
     int Page = 1,
-    int PageSize = 20) : IRequest<LeaderboardDto>;
+    int PageSize = 20,
+    bool? IsHomework = null, // Filter by homework vs public challenge
+    Guid? ClassId = null, // Filter by class
+    Guid? HomeworkId = null) : IRequest<LeaderboardDto>; // Filter by specific homework

@@ -20,8 +20,10 @@ import {
   useDeleteHomework,
   CLASS_CONSTANTS,
 } from '@/features/class'
+import { challengeService, useStartAttempt } from '@/features/challenge'
 import { ROUTES } from '@/config/routes'
 import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store'
+import { toast } from 'sonner'
 import type { HomeworkDto } from '@/features/class/types'
 
 export default function ClassDetailPage() {
@@ -40,6 +42,7 @@ export default function ClassDetailPage() {
   const createHomeworkMutation = useCreateHomework()
   const updateHomeworkMutation = useUpdateHomework()
   const deleteHomeworkMutation = useDeleteHomework()
+  const { mutate: startAttempt } = useStartAttempt()
 
   const handleCreateHomework = async (
     data: Parameters<typeof createHomeworkMutation.mutateAsync>[0]
@@ -84,8 +87,43 @@ export default function ClassDetailPage() {
     }
   }
 
-  const handleStartHomework = (homework: HomeworkDto) => {
-    router.push(ROUTES.game.challenge(homework.quizSetId))
+  const handleStartHomework = async (homework: HomeworkDto) => {
+    // First, try to get challenge by quiz set ID
+    try {
+      const challenge = await challengeService.getChallengeByQuizSetId(homework.quizSetId)
+      
+      if (challenge) {
+        // If user is logged in, auto-start with their name
+        if (user?.id) {
+          startAttempt(
+            {
+              challengeId: challenge.id,
+              nickname: user.fullName || user.email || 'Học sinh',
+              userId: user.id,
+              homeworkId: homework.id,
+            },
+            {
+              onSuccess: (attempt) => {
+                // Navigate directly to taking page
+                router.push(`/challenge/${challenge.shareLink}/take?attemptId=${attempt.id}&homeworkId=${homework.id}`)
+              },
+              onError: () => {
+                toast.error('Không thể bắt đầu làm bài. Vui lòng thử lại.')
+              },
+            }
+          )
+        } else {
+          // Not logged in, redirect to challenge page with homeworkId in query
+          router.push(`${ROUTES.game.challenge(challenge.shareLink)}?homeworkId=${homework.id}`)
+        }
+      } else {
+        // No challenge exists for this quiz set
+        toast.error('Chưa có thử thách cho bài tập này. Vui lòng liên hệ giáo viên.')
+      }
+    } catch (error) {
+      console.error('Failed to get challenge:', error)
+      toast.error('Không thể tải thử thách. Vui lòng thử lại.')
+    }
   }
 
   const handleCopyJoinCode = () => {

@@ -50,10 +50,19 @@ public sealed class StartChallengeAttemptCommandHandler : IRequestHandler<StartC
         // For now, we'll leave it as null (unlimited time per challenge)
         // If needed, can be calculated: totalTimeLimitMs = questions.Sum(q => q.TimeLimit) * 1000;
 
+        // Use user's name as nickname if UserId is provided and nickname is empty
+        var nickname = request.Nickname;
+        if (request.UserId.HasValue && string.IsNullOrWhiteSpace(nickname))
+        {
+            // This will be handled by the caller (frontend) to provide user's name
+            // But as fallback, we can use a default
+            nickname = "Học sinh";
+        }
+
         var attempt = ChallengeAttempt.Create(
             challenge.Id,
             request.UserId,
-            request.Nickname,
+            nickname,
             questions.Count,
             totalTimeLimitMs);
 

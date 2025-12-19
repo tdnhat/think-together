@@ -6,4 +6,5 @@ namespace ThinkTogether.Application.Handlers.Challenge.Commands.StartChallengeAt
 public sealed record StartChallengeAttemptCommand(
     Guid ChallengeId,
     string Nickname,
-    Guid? UserId = null) : IRequest<ChallengeAttemptDto>;
+    Guid? UserId = null,
+    Guid? HomeworkId = null) : IRequest<ChallengeAttemptDto>;

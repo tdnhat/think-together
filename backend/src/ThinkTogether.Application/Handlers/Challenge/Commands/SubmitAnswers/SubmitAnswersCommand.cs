@@ -5,7 +5,8 @@ namespace ThinkTogether.Application.Handlers.Challenge.Commands.SubmitAnswers;
 
 public sealed record SubmitAnswersCommand(
     Guid AttemptId,
-    List<AnswerSubmissionDto> Answers) : IRequest<ChallengeAttemptDto>;
+    List<AnswerSubmissionDto> Answers,
+    Guid? HomeworkId = null) : IRequest<ChallengeAttemptDto>;
 
 public sealed record AnswerSubmissionDto(
     Guid QuestionId,

@@ -2,6 +2,8 @@ using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Application.Handlers.Leaderboard.Queries.GetLeaderboard;
@@ -10,15 +12,21 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
 {
     private readonly IChallengeRepository _challengeRepository;
     private readonly IQuizSetRepository _quizSetRepository;
+    private readonly IClassRepository _classRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public GetLeaderboardQueryHandler(
         IChallengeRepository challengeRepository,
         IQuizSetRepository quizSetRepository,
+        IClassRepository classRepository,
+        IUserRepository userRepository,
         ICurrentUserService currentUserService)
     {
         _challengeRepository = challengeRepository;
         _quizSetRepository = quizSetRepository;
+        _classRepository = classRepository;
+        _userRepository = userRepository;
         _currentUserService = currentUserService;
     }
 
@@ -50,30 +58,89 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
         var quizSets = allQuizSets.Where(qs => quizSetIds.Contains(qs.Id)).ToList();
         var quizSetDict = quizSets.ToDictionary(qs => qs.Id, qs => qs.Title);
 
-        // Map to DTOs
-        var entries = allAttemptsData.Select(x =>
-        {
-            var attempt = x.Attempt;
-            var challenge = x.Challenge;
-            var quizSetTitle = quizSetDict.GetValueOrDefault(challenge.QuizSetId);
+        // Get all attempt IDs
+        var attemptIds = allAttemptsData.Select(x => x.Attempt.Id).ToList();
 
-            return new GlobalLeaderboardEntryDto
+        // Load homework submissions with homework and class info using repository
+        var submissionData = await _classRepository.GetHomeworkSubmissionsByAttemptIdsAsync(attemptIds, cancellationToken);
+        
+        var submissionDict = submissionData.ToDictionary(
+            x => x.Submission.ChallengeAttemptId,
+            x => (x.Submission, x.Homework, x.Class));
+
+        // Load users for homework submissions to get real names
+        var userIds = allAttemptsData
+            .Where(x => x.Attempt.UserId.HasValue && submissionDict.ContainsKey(x.Attempt.Id))
+            .Select(x => x.Attempt.UserId!.Value)
+            .Distinct()
+            .ToList();
+
+        var users = await _userRepository.GetByIdsAsync(userIds, cancellationToken);
+        var userDict = users.ToDictionary(u => u.Id, u => u.GetFullName());
+
+        // Map to DTOs
+        var entries = allAttemptsData
+            .Select(x =>
             {
-                AttemptId = attempt.Id,
-                UserId = attempt.UserId,
-                Nickname = attempt.Nickname,
-                Score = attempt.ScoreAchieved,
-                CorrectAnswers = attempt.CorrectAnswers,
-                TotalQuestions = attempt.TotalQuestions,
-                CompletionTimeMs = attempt.CompletionTimeMs,
-                CompletedAt = attempt.CompletedAt,
-                QuizSetId = challenge.QuizSetId,
-                QuizSetTitle = quizSetTitle,
-                ChallengeId = challenge.Id,
-                ChallengeTitle = challenge.Title,
-                Rank = 0 // Will be set after sorting
-            };
-        }).ToList();
+                var attempt = x.Attempt;
+                var challenge = x.Challenge;
+                var quizSetTitle = quizSetDict.GetValueOrDefault(challenge.QuizSetId);
+                var isHomework = submissionDict.ContainsKey(attempt.Id);
+
+                // For homework submissions, use user's real name if available
+                var nickname = attempt.Nickname;
+                if (isHomework && attempt.UserId.HasValue && userDict.TryGetValue(attempt.UserId.Value, out var fullName))
+                {
+                    nickname = fullName;
+                }
+
+                var entry = new GlobalLeaderboardEntryDto
+                {
+                    AttemptId = attempt.Id,
+                    UserId = attempt.UserId,
+                    Nickname = nickname,
+                    Score = attempt.ScoreAchieved,
+                    CorrectAnswers = attempt.CorrectAnswers,
+                    TotalQuestions = attempt.TotalQuestions,
+                    CompletionTimeMs = attempt.CompletionTimeMs,
+                    CompletedAt = attempt.CompletedAt,
+                    QuizSetId = challenge.QuizSetId,
+                    QuizSetTitle = quizSetTitle,
+                    ChallengeId = challenge.Id,
+                    ChallengeTitle = challenge.Title,
+                    Rank = 0, // Will be set after sorting
+                    IsHomework = isHomework,
+                };
+
+                if (submissionDict.TryGetValue(attempt.Id, out var submissionInfo))
+                {
+                    var (homeworkSubmission, homework, classEntity) = submissionInfo;
+                    entry.HomeworkId = homeworkSubmission.HomeworkId;
+                    entry.HomeworkTitle = homework.Title;
+                    entry.ClassId = homework.ClassId;
+                    entry.ClassName = classEntity.Name;
+                    entry.SubmissionStatus = homeworkSubmission.Status;
+                }
+
+                return entry;
+            })
+            .ToList();
+
+        // Apply filters
+        if (request.IsHomework.HasValue)
+        {
+            entries = entries.Where(e => e.IsHomework == request.IsHomework.Value).ToList();
+        }
+
+        if (request.ClassId.HasValue)
+        {
+            entries = entries.Where(e => e.ClassId == request.ClassId.Value).ToList();
+        }
+
+        if (request.HomeworkId.HasValue)
+        {
+            entries = entries.Where(e => e.HomeworkId == request.HomeworkId.Value).ToList();
+        }
 
         // Apply sorting
         entries = SortEntries(entries, request.SortBy ?? "score", request.SortOrder ?? "desc");

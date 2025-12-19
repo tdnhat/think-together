@@ -108,7 +108,25 @@ export function LeaderboardTable({
                   </div>
                 </td>
                 <td className="py-3 px-4 font-medium text-[var(--text-primary)]">
-                  {entry.nickname}
+                  <div className="flex items-center gap-2">
+                    <span>{entry.nickname}</span>
+                    {entry.isHomework && (
+                      <Badge variant="default" className="bg-purple-100 text-purple-700 text-xs">
+                        Bài tập
+                      </Badge>
+                    )}
+                    {entry.submissionStatus === 'Late' && (
+                      <Badge variant="warning" className="text-xs">
+                        Muộn
+                      </Badge>
+                    )}
+                  </div>
+                  {entry.isHomework && entry.className && (
+                    <div className="text-xs text-[var(--text-secondary)] mt-1">
+                      {entry.className}
+                      {entry.homeworkTitle && ` • ${entry.homeworkTitle}`}
+                    </div>
+                  )}
                 </td>
                 {showQuizSet && (
                   <td className="py-3 px-4 text-sm text-[var(--text-secondary)]">
@@ -159,11 +177,28 @@ export function LeaderboardTable({
                     <p className="text-sm text-[var(--text-secondary)]">
                       {entry.nickname}
                     </p>
+                    {entry.isHomework && entry.className && (
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">
+                        {entry.className}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <Badge variant="default" className="bg-blue-100 text-blue-700">
-                  {entry.score} điểm
-                </Badge>
+                <div className="flex flex-col items-end gap-1">
+                  <Badge variant="default" className="bg-blue-100 text-blue-700">
+                    {entry.score} điểm
+                  </Badge>
+                  {entry.isHomework && (
+                    <Badge variant="default" className="bg-purple-100 text-purple-700 text-xs">
+                      Bài tập
+                    </Badge>
+                  )}
+                  {entry.submissionStatus === 'Late' && (
+                    <Badge variant="warning" className="text-xs">
+                      Muộn
+                    </Badge>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent>

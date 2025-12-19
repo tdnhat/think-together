@@ -132,11 +132,12 @@ export const challengeService = {
       selectedOptionIndexes?: number[]
       matchingPairs?: Array<{ leftContent: string; rightContent: string }>
       orderingItems?: Array<{ content: string; position: number }>
-    }>
+    }>,
+    homeworkId?: string
   ): Promise<ChallengeAttemptApiDto> {
     const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}/submit-answers`,
-      { answers }
+      { answers, homeworkId }
     )
     return response.data!
   },

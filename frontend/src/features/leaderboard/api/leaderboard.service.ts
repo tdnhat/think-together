@@ -44,6 +44,18 @@ export async function getLeaderboard(
     queryParams.sortOrder = params.sortOrder
   }
 
+  if (params.isHomework !== undefined) {
+    queryParams.isHomework = params.isHomework
+  }
+
+  if (params.classId) {
+    queryParams.classId = params.classId
+  }
+
+  if (params.homeworkId) {
+    queryParams.homeworkId = params.homeworkId
+  }
+
   const queryString = buildQueryString(queryParams)
   const response = await api.get<ApiResponse<LeaderboardDto>>(
     `${LEADERBOARD_ENDPOINTS.GET_LEADERBOARD}${queryString}`

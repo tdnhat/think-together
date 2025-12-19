@@ -130,11 +130,20 @@ export function useStartAttempt() {
     mutationFn: async ({
       challengeId,
       nickname,
+      userId,
+      homeworkId,
     }: {
       challengeId: string
       nickname: string
+      userId?: string
+      homeworkId?: string
     }): Promise<ChallengeAttemptDto> => {
-      const apiAttempt = await challengeService.startAttempt(challengeId, { challengeId, nickname })
+      const apiAttempt = await challengeService.startAttempt(challengeId, { 
+        challengeId, 
+        nickname,
+        userId,
+        homeworkId,
+      })
       // Map API response to internal type with default frontend state
       return {
         ...apiAttempt,
@@ -196,6 +205,7 @@ export function useSubmitAnswers() {
     mutationFn: async ({
       attemptId,
       answers,
+      homeworkId,
     }: {
       attemptId: string
       answers: Array<{
@@ -204,8 +214,9 @@ export function useSubmitAnswers() {
         matchingPairs?: Array<{ leftContent: string; rightContent: string }>
         orderingItems?: Array<{ content: string; position: number }>
       }>
+      homeworkId?: string
     }): Promise<ChallengeAttemptApiDto> => {
-      return challengeService.submitAnswers(attemptId, answers)
+      return challengeService.submitAnswers(attemptId, answers, homeworkId)
     },
     onSuccess: (completedAttempt) => {
       // Map API response to match the ChallengeAttemptDto type expected by the cache

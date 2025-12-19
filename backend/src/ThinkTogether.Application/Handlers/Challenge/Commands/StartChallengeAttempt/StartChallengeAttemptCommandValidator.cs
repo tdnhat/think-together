@@ -9,8 +9,11 @@ public sealed class StartChallengeAttemptCommandValidator : AbstractValidator<St
         RuleFor(x => x.ChallengeId)
             .NotEmpty().WithMessage("ID thử thách không được trống");
 
+        // Nickname is required if UserId is not provided (anonymous user)
         RuleFor(x => x.Nickname)
-            .NotEmpty().WithMessage("Biệt danh không được trống")
+            .NotEmpty()
+            .When(x => !x.UserId.HasValue)
+            .WithMessage("Biệt danh không được trống")
             .MaximumLength(100).WithMessage("Biệt danh không được vượt quá 100 ký tự");
     }
 }

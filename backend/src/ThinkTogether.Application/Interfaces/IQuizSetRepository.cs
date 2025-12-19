@@ -9,5 +9,6 @@ public interface IQuizSetRepository : IRepository<QuizSet, Guid>
     Task<List<QuizSet>> GetPublishedAsync(CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     IQueryable<QuizSet> GetByCreatorIdQueryable(Guid creatorId);
+    Task<List<QuizSet>> GetByIdsAsync(List<Guid> ids, CancellationToken cancellationToken = default);
 }
 

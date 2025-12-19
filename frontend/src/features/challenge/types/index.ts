@@ -138,6 +138,8 @@ export interface UpdateChallengeRequest {
 export interface StartChallengeAttemptRequest {
   challengeId: string
   nickname: string
+  userId?: string
+  homeworkId?: string
 }
 
 export interface CompleteAttemptRequest {

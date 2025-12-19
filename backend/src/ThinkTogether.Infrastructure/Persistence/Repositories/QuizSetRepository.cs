@@ -53,5 +53,17 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
             await SaveChangesAsync(cancellationToken);
         }
     }
+
+    public async Task<List<QuizSet>> GetByIdsAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            return new List<QuizSet>();
+        }
+
+        return await _dbSet
+            .Where(q => ids.Contains(q.Id) && q.DeletedAt == null)
+            .ToListAsync(cancellationToken);
+    }
 }
 
