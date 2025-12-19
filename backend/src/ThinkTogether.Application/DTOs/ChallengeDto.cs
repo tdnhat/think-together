@@ -82,4 +82,7 @@ public class ChallengeLeaderboardDto
     public Guid ChallengeId { get; set; }
     public List<ChallengeLeaderboardEntryDto> Entries { get; set; } = new();
     public int TotalEntries { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public int TotalPages { get; set; }
 }

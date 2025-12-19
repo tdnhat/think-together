@@ -265,12 +265,30 @@ export function useAbandonAttempt() {
 /**
  * Hook for getting leaderboard
  */
-export function useLeaderboard(challengeId: string | undefined, limit: number = 50) {
+export function useLeaderboard(
+  challengeId: string | undefined,
+  page: number = 1,
+  pageSize: number = 20
+) {
   return useQuery({
-    queryKey: ['leaderboard', challengeId, limit],
+    queryKey: ['leaderboard', challengeId, page, pageSize],
     queryFn: () => {
       if (!challengeId) throw new Error('Challenge ID is required')
-      return challengeService.getLeaderboard(challengeId, limit)
+      return challengeService.getLeaderboard(challengeId, page, pageSize)
+    },
+    enabled: !!challengeId,
+  })
+}
+
+/**
+ * Hook for getting challenge statistics
+ */
+export function useChallengeStats(challengeId: string | undefined) {
+  return useQuery({
+    queryKey: ['challenge-stats', challengeId],
+    queryFn: () => {
+      if (!challengeId) throw new Error('Challenge ID is required')
+      return challengeService.getChallengeStats(challengeId)
     },
     enabled: !!challengeId,
   })

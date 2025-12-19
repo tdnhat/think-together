@@ -64,25 +64,7 @@ export function QuizPreviewQuestions({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <CardTitle className="text-lg">Xem trước câu hỏi</CardTitle>
-            <CardDescription>
-              {total} câu hỏi • Hiển thị {Math.min(maxPreview, total)}
-            </CardDescription>
-          </div>
-          {showViewAllButton && hasMore && (
-            <Button
-              variant="neutral"
-              size="sm"
-              onClick={onViewAll}
-              className="shrink-0"
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              Xem tất cả
-            </Button>
-          )}
-        </div>
+          <CardTitle className="text-lg">Xem trước câu hỏi</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-3">
@@ -95,18 +77,6 @@ export function QuizPreviewQuestions({
             />
           </div>
         ))}
-
-        {hasMore && (
-          <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-4">
-            <button
-              onClick={onViewAll}
-              className="flex items-center gap-2 text-sm font-medium text-[var(--brand-primary)] transition-colors hover:text-[var(--brand-primary-hover)]"
-            >
-              <span>Xem {total - maxPreview} câu hỏi còn lại</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        )}
       </CardContent>
     </Card>
   )

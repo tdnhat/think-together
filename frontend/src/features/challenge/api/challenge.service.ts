@@ -152,12 +152,25 @@ export const challengeService = {
   },
 
   // Get leaderboard
-  async getLeaderboard(challengeId: string, limit: number = 50): Promise<ChallengeLeaderboardDto> {
+  async getLeaderboard(
+    challengeId: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<ChallengeLeaderboardDto> {
     const params = new URLSearchParams()
-    params.append('limit', limit.toString())
+    params.append('page', page.toString())
+    params.append('pageSize', pageSize.toString())
 
     const response = await apiClient.get<ApiResponse<ChallengeLeaderboardDto>>(
       `${CHALLENGE_BASE_URL}/${challengeId}/leaderboard?${params.toString()}`
+    )
+    return response.data!
+  },
+
+  // Get challenge statistics
+  async getChallengeStats(challengeId: string): Promise<ChallengeStatsDto> {
+    const response = await apiClient.get<ApiResponse<ChallengeStatsDto>>(
+      `${CHALLENGE_BASE_URL}/${challengeId}/stats`
     )
     return response.data!
   },

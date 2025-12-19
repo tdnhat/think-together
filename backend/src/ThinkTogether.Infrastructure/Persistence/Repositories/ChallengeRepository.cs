@@ -13,6 +13,14 @@ public class ChallengeRepository : Repository<Challenge, Guid>, IChallengeReposi
     {
     }
 
+    public override async Task<Challenge?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(c => c.Id == id && c.DeletedAt == null)
+            .Include(c => c.Attempts.Where(a => a.DeletedAt == null))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<List<(ChallengeAttempt Attempt, Challenge Challenge)>> GetCompletedAttemptsWithChallengesAsync(
         Guid? quizSetId = null,
         Guid? challengeId = null,

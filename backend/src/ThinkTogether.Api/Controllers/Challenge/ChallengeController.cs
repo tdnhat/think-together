@@ -10,6 +10,7 @@ using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeAttempt;
 using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeByQuizSetId;
 using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeByShareLink;
 using ThinkTogether.Application.Handlers.Challenge.Queries.GetLeaderboard;
+using ThinkTogether.Application.Handlers.Challenge.Queries.GetChallengeStats;
 
 namespace ThinkTogether.Api.Controllers.Challenge;
 
@@ -186,6 +187,27 @@ public class ChallengeController : ControllerBase
         var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(new ApiResponse<ChallengeLeaderboardDto>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    /// <summary>
+    /// Get statistics for a challenge
+    /// </summary>
+    [HttpGet("{challengeId:guid}/stats")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<ChallengeStatsDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetChallengeStats(
+        Guid challengeId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetChallengeStatsQuery(challengeId);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<ChallengeStatsDto>
         {
             Success = true,
             Data = result

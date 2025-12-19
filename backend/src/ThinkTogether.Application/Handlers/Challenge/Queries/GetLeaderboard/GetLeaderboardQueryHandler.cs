@@ -32,6 +32,7 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
             .ToList();
 
         var totalEntries = completedAttempts.Count;
+        var totalPages = (int)Math.Ceiling((double)totalEntries / request.PageSize);
         var skip = (request.Page - 1) * request.PageSize;
         var pagedAttempts = completedAttempts.Skip(skip).Take(request.PageSize).ToList();
 
@@ -52,7 +53,10 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
         {
             ChallengeId = challenge.Id,
             Entries = entries,
-            TotalEntries = totalEntries
+            TotalEntries = totalEntries,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = totalPages
         };
     }
 }

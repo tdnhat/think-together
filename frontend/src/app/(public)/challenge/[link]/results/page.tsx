@@ -162,6 +162,7 @@ function ChallengeResultsContent() {
                 ) : (
                   <LeaderboardTable
                     entries={leaderboard.entries}
+                    highlightAttemptId={attemptId || undefined}
                   />
                 )}
               </div>

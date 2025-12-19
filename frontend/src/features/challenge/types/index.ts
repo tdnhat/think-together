@@ -119,6 +119,22 @@ export interface ChallengeLeaderboardDto {
   challengeId: string
   entries: ChallengeLeaderboardEntryDto[]
   totalEntries: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+// Challenge Stats DTO
+export interface ChallengeStatsDto {
+  challengeId: string
+  totalAttempts: number
+  completedAttempts: number
+  totalParticipants: number
+  averageScore: number
+  averageAccuracy: number
+  completionRate: number
+  topScore: number
+  recentActivityCount: number
 }
 
 // Request DTOs

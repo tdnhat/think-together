@@ -37,6 +37,7 @@ export {
   useSubmitAnswers,
   usePollAttemptCompletion,
   useLeaderboard,
+  useChallengeStats,
   useChallengeTimer,
 } from './hooks'
 
@@ -50,6 +51,11 @@ export {
   LeaderboardTable,
   ResultsSummary,
   StartChallengeForm,
+  ChallengeDetailHeader,
+  ChallengeShareCard,
+  ChallengeStatsCard,
+  ChallengeLeaderboardCard,
+  ChallengeStatsOverview,
 } from './components'
 
 // Types
@@ -62,6 +68,7 @@ export type {
   ChallengeAnswerDto,
   ChallengeLeaderboardEntryDto,
   ChallengeLeaderboardDto,
+  ChallengeStatsDto,
   ChallengeResultsSummary,
   CreateChallengeRequest,
   UpdateChallengeRequest,

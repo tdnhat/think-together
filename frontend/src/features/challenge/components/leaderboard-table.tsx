@@ -9,9 +9,14 @@ import type { ChallengeLeaderboardEntryDto } from '@/features/challenge/types'
 interface LeaderboardTableProps {
   entries: ChallengeLeaderboardEntryDto[]
   className?: string
+  highlightAttemptId?: string
 }
 
-export function LeaderboardTable({ entries, className = '' }: LeaderboardTableProps) {
+export function LeaderboardTable({ 
+  entries, 
+  className = '',
+  highlightAttemptId 
+}: LeaderboardTableProps) {
   if (!entries || entries.length === 0) {
     return (
       <Card className={className}>
@@ -62,10 +67,16 @@ export function LeaderboardTable({ entries, className = '' }: LeaderboardTablePr
             </tr>
           </thead>
           <tbody>
-            {entries.map((entry) => (
+            {entries.map((entry) => {
+              const isHighlighted = highlightAttemptId === entry.attemptId
+              return (
               <tr
                 key={entry.attemptId}
-                className="border-b border-border hover:bg-[var(--bg-surface-secondary)] transition-colors"
+                className={`border-b border-border transition-colors ${
+                  isHighlighted
+                    ? 'bg-[var(--brand-primary)]/10 border-[var(--brand-primary)]/30'
+                    : 'hover:bg-[var(--bg-surface-secondary)]'
+                }`}
               >
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-2">
@@ -76,7 +87,14 @@ export function LeaderboardTable({ entries, className = '' }: LeaderboardTablePr
                   </div>
                 </td>
                 <td className="py-3 px-4 font-medium text-[var(--text-primary)]">
-                  {entry.nickname}
+                  <div className="flex items-center gap-2">
+                    {entry.nickname}
+                    {isHighlighted && (
+                      <Badge variant="default" className="text-xs bg-[var(--brand-primary)] text-white">
+                        Bạn
+                      </Badge>
+                    )}
+                  </div>
                 </td>
                 <td className="py-3 px-4 text-center font-bold text-blue-600">
                   {entry.score}
@@ -91,15 +109,25 @@ export function LeaderboardTable({ entries, className = '' }: LeaderboardTablePr
                   {formatTime(entry.completionTimeMs)}
                 </td>
               </tr>
-            ))}
+              )
+            })}
           </tbody>
         </table>
       </div>
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-3">
-        {entries.map((entry) => (
-          <Card key={entry.attemptId} className="overflow-hidden">
+        {entries.map((entry) => {
+          const isHighlighted = highlightAttemptId === entry.attemptId
+          return (
+          <Card 
+            key={entry.attemptId} 
+            className={`overflow-hidden ${
+              isHighlighted
+                ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/5'
+                : ''
+            }`}
+          >
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -108,7 +136,14 @@ export function LeaderboardTable({ entries, className = '' }: LeaderboardTablePr
                   {entry.rank === 3 && <Trophy className="h-5 w-5 text-orange-600" />}
                   <div>
                     <p className="font-semibold text-[var(--text-primary)]">#{entry.rank}</p>
-                    <p className="text-sm text-[var(--text-secondary)]">{entry.nickname}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-[var(--text-secondary)]">{entry.nickname}</p>
+                      {isHighlighted && (
+                        <Badge variant="default" className="text-xs bg-[var(--brand-primary)] text-white">
+                          Bạn
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <Badge variant="default" className="bg-blue-100 text-blue-700">
@@ -144,7 +179,8 @@ export function LeaderboardTable({ entries, className = '' }: LeaderboardTablePr
               </div>
             </CardContent>
           </Card>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
