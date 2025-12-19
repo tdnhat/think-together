@@ -68,7 +68,9 @@ export function useAuth() {
           loginAction(user, accessToken)
           toastSuccess(AUTH.MESSAGES.LOGIN_SUCCESS)
           
-          if (user.role === 'Creator') {
+          if (user.role === 'Admin') {
+            router.push(ROUTES.admin.dashboard)
+          } else if (user.role === 'Creator') {
             router.push(ROUTES.quiz.list)
           } else {
             router.push(ROUTES.dashboard.home)
