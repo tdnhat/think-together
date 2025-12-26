@@ -7,8 +7,8 @@ import { Button } from '@/shared/ui/button'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
-import { 
-  HostLobby, 
+import {
+  HostLobby,
   HostGameScreen,
   HostPageLoading,
   HostPageError,
@@ -44,6 +44,7 @@ function HostPageContent() {
   )
 
   // Auto-create session if quizId is provided and no session exists
+  // The module-level guard in createSession prevents duplicate calls
   useEffect(() => {
     if (quizId && !session && !isLoading && !showResumeOption && !error) {
       createSession()
@@ -130,7 +131,7 @@ function HostPageContent() {
             Phòng chờ
           </h1>
         </div>
-        
+
         <HostLobby session={session} />
       </div>
     )

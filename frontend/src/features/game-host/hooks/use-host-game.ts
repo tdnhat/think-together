@@ -19,6 +19,9 @@ import {
   selectHostAnsweredCount,
   selectHostTotalPlayers,
   selectHostConnectionState,
+  selectHostIsLoading,
+  selectHostIsStarting,
+  selectHostIsLoadingNext,
   selectHostError,
   selectHostActions,
 } from '../store/host-game-store'
@@ -26,6 +29,16 @@ import { saveHostSession, clearStoredHostSession } from '../lib/session-storage'
 import { toastError, toastSuccess, toastInfo } from '@/lib/utils/toast'
 import { GAME_HOST_CONSTANTS } from '../constants'
 import { GameStatus, type GameSession } from '../types'
+
+// =============================================================================
+// MODULE-LEVEL GUARDS (survive React lifecycle)
+// =============================================================================
+
+// Track active operations to prevent duplicates across React remounts
+const activeOperations = {
+  resumingSessionId: null as string | null,
+  creatingForQuizId: null as string | null,
+}
 
 // =============================================================================
 // TYPES
@@ -72,11 +85,9 @@ export interface UseHostGameReturn {
 export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn {
   const { quizId, sessionId } = options
 
-  // Refs
-  const isInitializedRef = useRef(false)
-  const isLoadingRef = useRef(false)
-  const isStartingRef = useRef(false)
-  const isLoadingNextRef = useRef(false)
+  // Refs for connection tracking
+  const connectingSessionIdRef = useRef<string | null>(null)
+  const isConnectingRef = useRef(false)
 
   // Store selectors
   const session = useHostGameStore(selectHostSession)
@@ -86,6 +97,9 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
   const answeredCount = useHostGameStore(selectHostAnsweredCount)
   const totalPlayers = useHostGameStore(selectHostTotalPlayers)
   const connectionState = useHostGameStore(selectHostConnectionState)
+  const isLoading = useHostGameStore(selectHostIsLoading)
+  const isStarting = useHostGameStore(selectHostIsStarting)
+  const isLoadingNext = useHostGameStore(selectHostIsLoadingNext)
   const error = useHostGameStore(selectHostError)
   const actions = useHostGameStore(selectHostActions)
 
@@ -98,23 +112,18 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       actions.setConnectionState(state)
     },
     onPlayerJoined: (event) => {
-      console.log('[Host] Player joined:', event.nickname)
       actions.handlePlayerJoined(event)
     },
     onPlayerLeft: (event) => {
-      console.log('[Host] Player left:', event.nickname)
       actions.handlePlayerLeft(event)
     },
     onGameStarted: (event) => {
-      console.log('[Host] Game started')
       actions.handleGameStarted(event)
     },
     onQuestionStarted: (event) => {
-      console.log('[Host] Question started:', event.positionInGame)
       actions.handleQuestionStarted(event)
     },
     onQuestionEnded: (event) => {
-      console.log('[Host] Question ended')
       actions.handleQuestionEnded(event)
     },
     onAnswerReceived: (event) => {
@@ -124,12 +133,10 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       actions.handleLeaderboardUpdated(event)
     },
     onGameEnded: (event) => {
-      console.log('[Host] Game ended')
       actions.handleGameEnded(event)
       clearStoredHostSession()
     },
     onError: (event) => {
-      console.error('[Host] SignalR error:', event)
       actions.setError(event.message)
       toastError(event.message)
     },
@@ -140,18 +147,37 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
   // =============================================================================
 
   const connectAndJoin = useCallback(async (gameSession: GameSession) => {
+    // Prevent multiple simultaneous connection attempts for the same session
+    if (isConnectingRef.current && connectingSessionIdRef.current === gameSession.id) {
+      return
+    }
+
+    // If already connected to this session, skip
+    if (gameSignalR.isConnected() && connectingSessionIdRef.current === gameSession.id) {
+      return
+    }
+
+    isConnectingRef.current = true
+    connectingSessionIdRef.current = gameSession.id
+
     try {
       // Connect with event handlers
       await gameSignalR.connect(setupSignalREvents())
 
       // Join as host
       await gameSignalR.joinAsHost(gameSession.id, gameSession.pin)
-      console.log('[Host] Joined as host for session:', gameSession.id)
     } catch (err) {
-      console.error('[Host] Failed to connect:', err)
       const message = err instanceof Error ? err.message : GAME_HOST_CONSTANTS.ERRORS.CONNECTION_FAILED
       toastError(message)
+      // Reset connection refs on error so we can retry
+      isConnectingRef.current = false
+      connectingSessionIdRef.current = null
       throw err
+    } finally {
+      // Only reset if we're still connecting to this session
+      if (connectingSessionIdRef.current === gameSession.id) {
+        isConnectingRef.current = false
+      }
     }
   }, [setupSignalREvents])
 
@@ -165,13 +191,20 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       return
     }
 
-    isLoadingRef.current = true
+    // Module-level guard (survives React remounts)
+    if (activeOperations.creatingForQuizId === quizId) {
+      return
+    }
+
+    // Set module-level guard IMMEDIATELY
+    activeOperations.creatingForQuizId = quizId
+    actions.setIsLoading(true)
     actions.setError(null)
     toastInfo(GAME_HOST_CONSTANTS.MESSAGES.CREATING_SESSION)
 
     try {
       // Abandon any existing session first
-      await gameSessionService.abandonActiveSession().catch(() => {})
+      await gameSessionService.abandonActiveSession().catch(() => { })
 
       const response = await gameSessionService.createSession({ quizSetId: quizId })
 
@@ -196,12 +229,28 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       actions.setError(message)
       toastError(message)
     } finally {
-      isLoadingRef.current = false
+      activeOperations.creatingForQuizId = null
+      actions.setIsLoading(false)
     }
   }, [quizId, actions, connectAndJoin])
 
   const resumeSession = useCallback(async (resumeSessionId: string) => {
-    isLoadingRef.current = true
+    // Module-level guard (survives React remounts)
+    if (activeOperations.resumingSessionId === resumeSessionId) {
+      return
+    }
+
+    // Also check if store already has this session loaded
+    const currentSession = useHostGameStore.getState().session
+    if (currentSession?.id === resumeSessionId) {
+      return
+    }
+
+    // Set module-level guard IMMEDIATELY before any async work
+    activeOperations.resumingSessionId = resumeSessionId
+    
+    // Then update store state
+    actions.setIsLoading(true)
     actions.setError(null)
 
     try {
@@ -233,15 +282,16 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
 
       // Connect to SignalR
       await connectAndJoin(resumedSession)
-
       toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.SESSION_RESUMED)
     } catch (err) {
       const message = err instanceof Error ? err.message : GAME_HOST_CONSTANTS.ERRORS.RESUME_SESSION_FAILED
       actions.setError(message)
       toastError(message)
       clearStoredHostSession()
+      // Reset guard on error so user can retry
+      activeOperations.resumingSessionId = null
     } finally {
-      isLoadingRef.current = false
+      actions.setIsLoading(false)
     }
   }, [actions, connectAndJoin])
 
@@ -251,8 +301,8 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       clearStoredHostSession()
       actions.reset()
       toastInfo(GAME_HOST_CONSTANTS.MESSAGES.SESSION_ABANDONED)
-    } catch (err) {
-      console.error('[Host] Failed to abandon session:', err)
+    } catch {
+      // Silently ignore - session might already be abandoned
     }
   }, [actions])
 
@@ -263,7 +313,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
   const startGame = useCallback(async () => {
     if (!session) return
 
-    isStartingRef.current = true
+    actions.setIsStarting(true)
     toastInfo(GAME_HOST_CONSTANTS.MESSAGES.STARTING_GAME)
 
     try {
@@ -280,7 +330,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       actions.setError(message)
       toastError(message)
     } finally {
-      isStartingRef.current = false
+      actions.setIsStarting(false)
     }
   }, [session, actions])
 
@@ -295,14 +345,14 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
             actions.setLeaderboard(response.data)
           }
         })
-        .catch(console.error)
+        .catch(() => {})
     }
   }, [session, actions])
 
   const nextQuestion = useCallback(async () => {
     if (!session) return
 
-    isLoadingNextRef.current = true
+    actions.setIsLoadingNext(true)
 
     try {
       const response = await gameSessionService.nextQuestion(session.id)
@@ -329,7 +379,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       const message = err instanceof Error ? err.message : 'Không thể chuyển câu hỏi'
       toastError(message)
     } finally {
-      isLoadingNextRef.current = false
+      actions.setIsLoadingNext(false)
     }
   }, [session, actions])
 
@@ -366,6 +416,12 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     gameSignalR.disconnect()
     actions.reset()
     clearStoredHostSession()
+    // Reset module-level guards
+    activeOperations.resumingSessionId = null
+    activeOperations.creatingForQuizId = null
+    // Reset refs
+    isConnectingRef.current = false
+    connectingSessionIdRef.current = null
   }, [actions])
 
   // =============================================================================
@@ -373,27 +429,34 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
   // =============================================================================
 
   useEffect(() => {
-    if (isInitializedRef.current) return
-    isInitializedRef.current = true
-
     // Auto-resume if sessionId provided
+    // The module-level guard in resumeSession prevents duplicate calls
     if (sessionId) {
-      resumeSession(sessionId)
-    }
-    // Auto-create if quizId provided but no sessionId
-    else if (quizId && !session) {
-      // Don't auto-create - let user decide
+      // Check if already resuming this session (module-level check)
+      if (activeOperations.resumingSessionId === sessionId) {
+        return
+      }
+      
+      // Check if session already loaded in store
+      const currentSession = useHostGameStore.getState().session
+      if (currentSession?.id === sessionId) {
+        return
+      }
+
+      resumeSession(sessionId).catch(() => {})
     }
 
     return () => {
-      // Cleanup on unmount
+      // Cleanup on unmount - disconnect SignalR
       gameSignalR.disconnect()
     }
-  }, [sessionId, quizId, resumeSession, session])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]) // Only depend on sessionId
 
   // Update SignalR events when callbacks change
+  // Only update if connected and not currently connecting
   useEffect(() => {
-    if (gameSignalR.isConnected()) {
+    if (gameSignalR.isConnected() && !isConnectingRef.current) {
       gameSignalR.updateEvents(setupSignalREvents())
     }
   }, [setupSignalREvents])
@@ -414,9 +477,9 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     error,
 
     // Loading states
-    isLoading: isLoadingRef.current,
-    isStarting: isStartingRef.current,
-    isLoadingNext: isLoadingNextRef.current,
+    isLoading,
+    isStarting,
+    isLoadingNext,
 
     // Actions
     createSession,

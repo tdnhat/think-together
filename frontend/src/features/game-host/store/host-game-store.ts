@@ -54,6 +54,11 @@ export interface HostGameState {
   answeredCount: number
   totalPlayers: number
 
+  // Loading states
+  isLoading: boolean
+  isStarting: boolean
+  isLoadingNext: boolean
+
   // Error
   error: string | null
 }
@@ -75,6 +80,11 @@ interface HostGameActions {
   setLeaderboard: (leaderboard: LeaderboardEntry[]) => void
   setAnsweredCount: (count: number) => void
   setTotalPlayers: (count: number) => void
+
+  // Loading states
+  setIsLoading: (isLoading: boolean) => void
+  setIsStarting: (isStarting: boolean) => void
+  setIsLoadingNext: (isLoadingNext: boolean) => void
 
   // Error
   setError: (error: string | null) => void
@@ -109,6 +119,9 @@ const initialState: HostGameState = {
   leaderboard: [],
   answeredCount: 0,
   totalPlayers: 0,
+  isLoading: false,
+  isStarting: false,
+  isLoadingNext: false,
   error: null,
 }
 
@@ -159,6 +172,17 @@ export const useHostGameStore = create<HostGameStore>()(
 
         setTotalPlayers: (totalPlayers) => {
           set({ totalPlayers }, false, 'host/setTotalPlayers')
+        },
+
+        // Loading states
+        setIsLoading: (isLoading) => {
+          set({ isLoading }, false, 'host/setIsLoading')
+        },
+        setIsStarting: (isStarting) => {
+          set({ isStarting }, false, 'host/setIsStarting')
+        },
+        setIsLoadingNext: (isLoadingNext) => {
+          set({ isLoadingNext }, false, 'host/setIsLoadingNext')
         },
 
         // Error
@@ -307,6 +331,9 @@ export const selectHostCurrentQuestion = (s: HostGameStore) => s.currentQuestion
 export const selectHostLeaderboard = (s: HostGameStore) => s.leaderboard
 export const selectHostAnsweredCount = (s: HostGameStore) => s.answeredCount
 export const selectHostTotalPlayers = (s: HostGameStore) => s.totalPlayers
+export const selectHostIsLoading = (s: HostGameStore) => s.isLoading
+export const selectHostIsStarting = (s: HostGameStore) => s.isStarting
+export const selectHostIsLoadingNext = (s: HostGameStore) => s.isLoadingNext
 export const selectHostError = (s: HostGameStore) => s.error
 export const selectHostActions = (s: HostGameStore) => s.actions
 export const selectHostIsConnected = (s: HostGameStore) => s.connectionState === 'connected'
