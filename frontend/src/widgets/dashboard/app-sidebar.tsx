@@ -14,6 +14,8 @@ import {
   Star,
   TrendingUp,
   Users,
+  ChevronsLeft,
+  ChevronsRight,
   type LucideIcon,
 } from "lucide-react";
 
@@ -88,22 +90,21 @@ function SidebarHeaderContent() {
 }
 
 function SidebarFooterContent() {
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const isHydrated = useAuthStore(selectIsHydrated);
   const user = useAuthStore(selectUser);
   const isCollapsed = state === "collapsed";
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (!isHydrated || user?.role === "Creator") {
-    return null;
-  }
+  const showBecomeCreator = isHydrated && user?.role !== "Creator";
 
   return (
     <>
       <SidebarFooter>
-        {isCollapsed ? (
-          <SidebarMenu>
-            <SidebarMenuItem>
+        {showBecomeCreator && (
+          isCollapsed ? (
+            <SidebarMenu>
+              <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={() => setIsModalOpen(true)}
                   tooltip="Trở thành Người sáng tạo"
@@ -112,13 +113,28 @@ function SidebarFooterContent() {
                   <Sparkles className="h-4 w-4 group-data-[state=collapsed]:h-5 group-data-[state=collapsed]:w-5 transition-all duration-200" />
                   <span className="group-data-[state=collapsed]:hidden">Trở thành Người sáng tạo</span>
                 </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        ) : (
-          <BecomeCreatorButton className="w-full justify-start text-left" />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          ) : (
+            <BecomeCreatorButton className="w-full justify-start text-left" />
+          )
         )}
+
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={toggleSidebar}
+              tooltip={isCollapsed ? "Mở rộng" : "Thu gọn"}
+              className={cn("w-full transition-all", isCollapsed ? "justify-center" : "justify-start")}
+            >
+              {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+              <span className="group-data-[state=collapsed]:hidden">Thu gọn</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
-      {isCollapsed && (
+
+      {showBecomeCreator && isCollapsed && (
         <BecomeCreatorModal
           open={isModalOpen}
           onOpenChange={setIsModalOpen}

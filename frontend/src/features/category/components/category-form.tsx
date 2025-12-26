@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
+import { Checkbox } from '@/shared/ui/checkbox'
 import { Textarea } from '@/shared/ui/textarea'
 import {
   Form,
@@ -149,11 +150,9 @@ export function CategoryForm({
             render={({ field }) => (
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={field.value}
-                    onChange={field.onChange}
-                    className="h-4 w-4"
+                    onCheckedChange={field.onChange}
                   />
                 </FormControl>
                 <FormLabel className="!mt-0">Kích hoạt danh mục này</FormLabel>
@@ -166,7 +165,7 @@ export function CategoryForm({
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Đang xử lý...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
           </Button>
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          <Button type="button" variant="neutral" onClick={onCancel} disabled={isSubmitting}>
             Hủy
           </Button>
         </div>

@@ -20,7 +20,7 @@ export type {
   LeaderboardEntryDto,
   LeaderboardDto,
   LeaderboardQueryParams,
-  LeaderboardFilters,
+  LeaderboardFilters as LeaderboardFiltersType,
   LeaderboardStatsDto,
   QuizSetSummaryDto,
 } from './types'

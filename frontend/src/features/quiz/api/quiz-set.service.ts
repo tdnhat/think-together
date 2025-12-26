@@ -23,7 +23,7 @@ class QuizSetService {
       if (params?.page) queryParams.append('page', params.page.toString())
       if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString())
 
-      const url = queryParams.toString() 
+      const url = queryParams.toString()
         ? `${API_ENDPOINTS.QUIZ_SET.LIST_QUIZ_SETS}/public?${queryParams.toString()}`
         : `${API_ENDPOINTS.QUIZ_SET.LIST_QUIZ_SETS}/public`
 
@@ -55,7 +55,7 @@ class QuizSetService {
       if (params?.page) queryParams.append('page', params.page.toString())
       if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString())
 
-      const url = queryParams.toString() 
+      const url = queryParams.toString()
         ? `${API_ENDPOINTS.QUIZ_SET.LIST_QUIZ_SETS}?${queryParams.toString()}`
         : API_ENDPOINTS.QUIZ_SET.LIST_QUIZ_SETS
 
@@ -206,6 +206,7 @@ class QuizSetService {
     try {
       const response = await apiClient.get<Blob>(
         `${API_ENDPOINTS.QUIZ_SET.GET_QUIZ_SET(id)}/export-pdf`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { responseType: 'blob' } as any
       )
       return response

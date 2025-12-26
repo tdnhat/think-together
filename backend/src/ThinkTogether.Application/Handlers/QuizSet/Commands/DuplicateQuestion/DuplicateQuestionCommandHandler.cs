@@ -7,6 +7,7 @@ using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.ValueObjects;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.DuplicateQuestion;
 
@@ -14,13 +15,16 @@ public sealed class DuplicateQuestionCommandHandler : IRequestHandler<DuplicateQ
 {
     private readonly IQuizSetRepository _repository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public DuplicateQuestionCommandHandler(
         IQuizSetRepository repository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<QuestionDto> Handle(
@@ -95,7 +99,7 @@ public sealed class DuplicateQuestionCommandHandler : IRequestHandler<DuplicateQ
         }
 
         quizSet.AddQuestion(duplicatedQuestion);
-        await _repository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return duplicatedQuestion.Adapt<QuestionDto>();
     }

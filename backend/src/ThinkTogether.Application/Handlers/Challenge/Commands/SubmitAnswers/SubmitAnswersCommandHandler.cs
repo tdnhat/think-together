@@ -1,12 +1,14 @@
+using Mapster;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Services;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Specifications;
-using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Services;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
@@ -18,20 +20,23 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
 {
     private readonly IChallengeRepository _challengeRepository;
     private readonly IQuizSetRepository _quizSetRepository;
-    private readonly IClassRepository _classRepository;
+    private readonly IAnswerGradingService _gradingService;
+    private readonly IHomeworkSubmissionService _homeworkSubmissionService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<SubmitAnswersCommandHandler> _logger;
 
     public SubmitAnswersCommandHandler(
         IChallengeRepository challengeRepository,
         IQuizSetRepository quizSetRepository,
-        IClassRepository classRepository,
+        IAnswerGradingService gradingService,
+        IHomeworkSubmissionService homeworkSubmissionService,
         IUnitOfWork unitOfWork,
         ILogger<SubmitAnswersCommandHandler> logger)
     {
         _challengeRepository = challengeRepository;
         _quizSetRepository = quizSetRepository;
-        _classRepository = classRepository;
+        _gradingService = gradingService;
+        _homeworkSubmissionService = homeworkSubmissionService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -83,8 +88,12 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
                 }).ToList();
             }
 
-            // Grade the answer immediately
-            var (isCorrect, pointsEarned) = GradeAnswer(question, answerSubmission, matchingPairs, orderingItems);
+            // Grade the answer using domain service
+            var (isCorrect, pointsEarned) = _gradingService.GradeAnswer(
+                question,
+                answerSubmission.SelectedOptionIndexes,
+                matchingPairs,
+                orderingItems);
 
             var answer = ChallengeAnswer.Create(
                 attempt.Id,
@@ -109,29 +118,14 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
 
         await _challengeRepository.UpdateAsync(challenge, cancellationToken);
 
-        // If this is a homework submission, create HomeworkSubmission record
-        if (request.HomeworkId.HasValue && attempt.UserId.HasValue)
+        // If this is a homework submission, create HomeworkSubmission record using domain service
+        if (request.HomeworkId.HasValue)
         {
-            var result = await _classRepository.GetClassAndHomeworkByHomeworkIdAsync(request.HomeworkId.Value, cancellationToken);
-            
-            if (result.HasValue)
-            {
-                var (homeworkClass, homework) = result.Value;
-                
-                var submission = HomeworkSubmission.Create(
-                    homeworkId: homework.Id,
-                    studentId: attempt.UserId.Value,
-                    challengeAttemptId: attempt.Id,
-                    score: totalScore,
-                    dueDate: homework.DueDate);
-
-                homework.AddSubmission(submission);
-                await _classRepository.UpdateAsync(homeworkClass, cancellationToken);
-
-                _logger.LogInformation(
-                    "Created homework submission for homework {HomeworkId}, attempt {AttemptId}, score {Score}",
-                    homework.Id, attempt.Id, totalScore);
-            }
+            await _homeworkSubmissionService.CreateSubmissionFromAttemptAsync(
+                attempt,
+                request.HomeworkId.Value,
+                totalScore,
+                cancellationToken);
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -140,139 +134,44 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
             "Completed grading for attempt {AttemptId}: Score={Score}, Correct={Correct}/{Total}", 
             request.AttemptId, totalScore, correctAnswers, attempt.TotalQuestions);
 
-        // Return the completed attempt
-        return MapToDto(attempt, quizSet);
-    }
-
-    private static (bool IsCorrect, int PointsEarned) GradeAnswer(
-        Domain.Aggregates.QuizSetAggregate.Entities.Question question,
-        AnswerSubmissionDto answerSubmission,
-        List<AnswerMatchingPair>? matchingPairs,
-        List<AnswerOrderingItem>? orderingItems)
-    {
-        var isCorrect = false;
-
-        switch (question.Type)
+        // Return the completed attempt with correct answers shown
+        var attemptDto = attempt.Adapt<ChallengeAttemptDto>();
+        var questions = quizSet.Questions
+            .Where(q => q.DeletedAt == null)
+            .OrderBy(q => q.DisplayOrder)
+            .ToList();
+        
+        // Map questions and show correct answers for completed attempts
+        attemptDto.Questions = questions.Select(q =>
         {
-            case QuestionType.SingleChoice:
-            case QuestionType.MultipleChoice:
-            case QuestionType.TrueFalse:
-                if (answerSubmission.SelectedOptionIndexes == null || !answerSubmission.SelectedOptionIndexes.Any())
-                {
-                    isCorrect = false;
-                }
-                else
-                {
-                    var correctIndexes = question.Options
-                        .Select((o, index) => new { Option = o, Index = index })
-                        .Where(x => x.Option.IsCorrect)
-                        .Select(x => x.Index)
-                        .ToList();
-
-                    isCorrect = answerSubmission.SelectedOptionIndexes.Count == correctIndexes.Count &&
-                               answerSubmission.SelectedOptionIndexes.All(i => correctIndexes.Contains(i));
-                }
-                break;
-
-            case QuestionType.Matching:
-                if (matchingPairs == null || !matchingPairs.Any())
-                {
-                    isCorrect = false;
-                }
-                else
-                {
-                    var correctPairs = question.MatchingPairs.OrderBy(p => p.DisplayOrder).ToList();
-                    isCorrect = correctPairs.Count == matchingPairs.Count &&
-                               correctPairs.All(cp =>
-                                   matchingPairs.Any(sp =>
-                                       sp.LeftContent == cp.LeftContent &&
-                                       sp.RightContent == cp.RightContent));
-                }
-                break;
-
-            case QuestionType.Ordering:
-                if (orderingItems == null || !orderingItems.Any())
-                {
-                    isCorrect = false;
-                }
-                else
-                {
-                    var correctOrder = question.OrderingItems
-                        .OrderBy(i => i.CorrectPosition)
-                        .Select(i => i.Content)
-                        .ToList();
-
-                    var submittedOrder = orderingItems
-                        .OrderBy(i => i.Position)
-                        .Select(i => i.Content)
-                        .ToList();
-
-                    isCorrect = correctOrder.SequenceEqual(submittedOrder);
-                }
-                break;
-        }
-
-        var pointsEarned = isCorrect ? 10 : 0;
-        return (isCorrect, pointsEarned);
-    }
-
-    private static ChallengeAttemptDto MapToDto(
-        ChallengeAttempt attempt,
-        Domain.Aggregates.QuizSetAggregate.QuizSet quizSet)
-    {
-        var questionDtos = quizSet.Questions.OrderBy(q => q.DisplayOrder).Select(q =>
-        {
-            var answer = attempt.Answers.FirstOrDefault(a => a.QuestionId == q.Id);
-
-            return new ChallengeQuestionDto
+            var dto = q.Adapt<ChallengeQuestionDto>();
+            // Show correct answers after completion
+            if (dto.Options != null)
             {
-                Id = q.Id,
-                QuizSetId = q.QuizSetId,
-                Content = q.Content,
-                Type = q.Type,
-                TimeLimit = q.TimeLimit,
-                DisplayOrder = q.DisplayOrder,
-                VideoUrl = q.VideoUrl,
-                VideoTimestamp = q.VideoTimestamp,
-                AudioUrl = q.AudioUrl,
-                AudioTimestamp = q.AudioTimestamp,
-                Options = q.Options.OrderBy(o => o.DisplayOrder).Select(o => new QuestionOptionDto
+                foreach (var option in dto.Options)
                 {
-                    Content = o.Content,
-                    IsCorrect = answer != null, // Only show correct answers after completion
-                    DisplayOrder = o.DisplayOrder,
-                    ImageUrl = o.ImageUrl
-                }).ToList(),
-                MatchingPairs = q.MatchingPairs.OrderBy(p => p.DisplayOrder).Select(p => new MatchingPairDto
+                    var srcOption = q.Options.FirstOrDefault(o => o.Content == option.Content && o.DisplayOrder == option.DisplayOrder);
+                    if (srcOption != null)
+                    {
+                        option.IsCorrect = srcOption.IsCorrect;
+                    }
+                }
+            }
+            // Show correct ordering positions
+            if (dto.OrderingItems != null)
+            {
+                foreach (var item in dto.OrderingItems)
                 {
-                    LeftContent = p.LeftContent,
-                    RightContent = p.RightContent,
-                    DisplayOrder = p.DisplayOrder
-                }).ToList(),
-                OrderingItems = q.OrderingItems.OrderBy(i => i.CorrectPosition).Select(i => new OrderingItemDto
-                {
-                    Content = i.Content,
-                    CorrectPosition = i.CorrectPosition
-                }).ToList()
-            };
+                    var srcItem = q.OrderingItems.FirstOrDefault(i => i.Content == item.Content);
+                    if (srcItem != null)
+                    {
+                        item.CorrectPosition = srcItem.CorrectPosition;
+                    }
+                }
+            }
+            return dto;
         }).ToList();
-
-        return new ChallengeAttemptDto
-        {
-            Id = attempt.Id,
-            ChallengeId = attempt.ChallengeId,
-            UserId = attempt.UserId,
-            Nickname = attempt.Nickname,
-            ScoreAchieved = attempt.ScoreAchieved,
-            CorrectAnswers = attempt.CorrectAnswers,
-            TotalQuestions = attempt.TotalQuestions,
-            CompletionTimeMs = attempt.CompletionTimeMs,
-            CompletedAt = attempt.CompletedAt,
-            StartedAt = attempt.StartedAt,
-            Status = attempt.Status,
-            TimeLimitMs = attempt.TimeLimitMs,
-            RemainingTimeMs = attempt.GetRemainingTimeMs(),
-            Questions = questionDtos
-        };
+        
+        return attemptDto;
     }
 }

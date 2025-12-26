@@ -6,6 +6,7 @@ using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.Class.Commands.CreateHomework;
 
@@ -14,15 +15,18 @@ public sealed class CreateHomeworkCommandHandler : IRequestHandler<CreateHomewor
     private readonly IClassRepository _classRepository;
     private readonly IQuizSetRepository _quizSetRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateHomeworkCommandHandler(
         IClassRepository classRepository,
         IQuizSetRepository quizSetRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _classRepository = classRepository;
         _quizSetRepository = quizSetRepository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<HomeworkDto> Handle(
@@ -56,7 +60,7 @@ public sealed class CreateHomeworkCommandHandler : IRequestHandler<CreateHomewor
 
         classEntity.AddHomework(homework);
 
-        await _classRepository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var dto = homework.Adapt<HomeworkDto>();
         dto.QuizSetTitle = quizSet.Title;

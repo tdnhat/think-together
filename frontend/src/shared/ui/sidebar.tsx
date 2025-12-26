@@ -247,28 +247,28 @@ function Sidebar({
         )}
       />
       <div
-       data-slot="sidebar-container"
-       className={cn(
-         "fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-200 ease-linear md:flex",
-         side === "left"
-           ? "left-0"
-           : "right-0",
-         isOffcanvasMode && (side === "left"
-           ? "left-[calc(var(--sidebar-width)*-1)]"
-           : "right-[calc(var(--sidebar-width)*-1)]"),
-         variant === "floating" || variant === "inset"
-           ? "p-2"
-           : "group-data-[side=left]:border-r-2 border-r-border group-data-[side=right]:border-l-2 border-l-border",
-         className,
-       )}
-       style={{
-         width: isIconMode
-           ? (variant === "floating" || variant === "inset" 
-               ? "calc(var(--sidebar-width-icon) + 1rem + 2px)" 
-               : "var(--sidebar-width-icon)")
-           : "var(--sidebar-width)",
-       } as React.CSSProperties}
-       {...props}
+        data-slot="sidebar-container"
+        className={cn(
+          "fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-200 ease-linear md:flex",
+          side === "left"
+            ? "left-0"
+            : "right-0",
+          isOffcanvasMode && (side === "left"
+            ? "left-[calc(var(--sidebar-width)*-1)]"
+            : "right-[calc(var(--sidebar-width)*-1)]"),
+          variant === "floating" || variant === "inset"
+            ? "p-2"
+            : "group-data-[side=left]:border-r-2 border-r-border group-data-[side=right]:border-l-2 border-l-border",
+          className,
+        )}
+        style={{
+          width: isIconMode
+            ? (variant === "floating" || variant === "inset"
+              ? "calc(var(--sidebar-width-icon) + 1rem + 2px)"
+              : "var(--sidebar-width-icon)")
+            : "var(--sidebar-width)",
+        } as React.CSSProperties}
+        {...props}
       >
         <div
           data-sidebar="sidebar"
@@ -501,7 +501,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden outline-2 outline-transparent rounded-base p-2 text-left text-sm ring-ring transition-[width,height,padding] hover:bg-main hover:text-main-foreground hover:outline-border focus-visible:outline-border focus-visible:text-main-foreground focus-visible:bg-main disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[state=collapsed]:size-10! group-data-[state=collapsed]:justify-center! group-data-[state=collapsed]:items-center! group-data-[state=collapsed]:p-0! group-data-[state=collapsed]:gap-0! group-data-[state=collapsed]:text-center! group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 group-data-[state=collapsed]:[&>svg]:size-5 [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden outline-2 outline-transparent rounded-base p-2 text-left text-sm ring-ring transition-[width,height,padding] hover:bg-main hover:text-main-foreground hover:outline-border focus-visible:outline-border focus-visible:text-main-foreground focus-visible:bg-main data-[active=true]:bg-main data-[active=true]:text-main-foreground data-[active=true]:outline-border disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[state=collapsed]:size-10! group-data-[state=collapsed]:justify-center! group-data-[state=collapsed]:items-center! group-data-[state=collapsed]:p-0! group-data-[state=collapsed]:gap-0! group-data-[state=collapsed]:text-center! group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 group-data-[state=collapsed]:[&>svg]:size-5 [&>svg]:shrink-0",
   {
     variants: {
       size: {

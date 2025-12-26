@@ -7,6 +7,7 @@ import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { GAME_PLAYER_CONSTANTS } from '../constants'
 import type { QuestionStartedMessage } from '@/features/game-host/types'
+import { AnswerOption } from './answer-option'
 
 interface PlayerQuestionProps {
   question: QuestionStartedMessage
@@ -103,49 +104,16 @@ export function PlayerQuestion({
 
       {/* Answer Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {question.options.map((option, index) => {
-          const colorScheme = GAME_PLAYER_CONSTANTS.ANSWER_COLORS[index] || GAME_PLAYER_CONSTANTS.ANSWER_COLORS[0]
-          const isSelected = selectedAnswers.includes(option.index)
-          
-          return (
-            <button
-              key={option.index}
-              type="button"
-              onClick={() => !hasAnswered && onSelectAnswer(option.index)}
-              disabled={hasAnswered}
-              className={`
-                relative flex items-center gap-4 p-5 rounded-xl border-3 transition-all
-                ${isSelected 
-                  ? `${colorScheme.bg} border-[var(--color-border-main)] ring-4 ${colorScheme.ring} ${colorScheme.text}`
-                  : `bg-[var(--bg-surface)] border-[var(--color-border-light)] ${colorScheme.hover} hover:border-[var(--color-border-main)]`
-                }
-                ${hasAnswered ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'}
-              `}
-            >
-              {/* Letter indicator */}
-              <div className={`
-                flex h-10 w-10 items-center justify-center rounded-lg font-bold text-lg flex-shrink-0
-                ${isSelected ? 'bg-white/30' : colorScheme.bg + ' ' + colorScheme.text}
-              `}>
-                {String.fromCharCode(65 + index)}
-              </div>
-              
-              {/* Content */}
-              <span className={`flex-1 text-left font-medium ${isSelected ? colorScheme.text : 'text-[var(--text-primary)]'}`}>
-                {option.content}
-              </span>
-              
-              {/* Selection indicator */}
-              <div className="flex-shrink-0">
-                {isSelected ? (
-                  <CheckCircle className={`h-6 w-6 ${colorScheme.text}`} />
-                ) : (
-                  <Circle className="h-6 w-6 text-[var(--text-tertiary)]" />
-                )}
-              </div>
-            </button>
-          )
-        })}
+        {question.options.map((option, index) => (
+          <AnswerOption
+            key={option.index}
+            index={index}
+            content={option.content}
+            isSelected={selectedAnswers.includes(option.index)}
+            hasAnswered={hasAnswered}
+            onSelect={() => !hasAnswered && onSelectAnswer(option.index)}
+          />
+        ))}
       </div>
 
       {/* Submit Button */}

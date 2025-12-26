@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ThinkTogether.Application.Common;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
@@ -11,11 +12,10 @@ using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Commands.NextQuestion;
 
-public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCommand, NextQuestionResult>
+public sealed class NextQuestionCommandHandler : BaseHandler, IRequestHandler<NextQuestionCommand, NextQuestionResult>
 {
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IQuizSetRepository _quizSetRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IQuestionTimerService _questionTimerService;
     private readonly ILeaderboardService _leaderboardService;
     private readonly IGameQuestionMappingService _questionMappingService;
@@ -29,10 +29,10 @@ public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCom
         ILeaderboardService leaderboardService,
         IGameQuestionMappingService questionMappingService,
         IUnitOfWork unitOfWork)
+        : base(currentUserService)
     {
         _gameSessionRepository = gameSessionRepository;
         _quizSetRepository = quizSetRepository;
-        _currentUserService = currentUserService;
         _questionTimerService = questionTimerService;
         _leaderboardService = leaderboardService;
         _questionMappingService = questionMappingService;
@@ -101,16 +101,5 @@ public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCom
             HasMoreQuestions: true,
             Question: questionDto,
             Leaderboard: leaderboard);
-    }
-
-    private Guid GetCurrentHostUserId()
-    {
-        var userIdString = _currentUserService.UserId
-            ?? throw new UnauthorizedException("Người dùng chưa đăng nhập");
-
-        if (!Guid.TryParse(userIdString, out var hostUserId))
-            throw new UnauthorizedException("ID người dùng không hợp lệ");
-
-        return hostUserId;
     }
 }

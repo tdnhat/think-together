@@ -5,6 +5,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.UpdateQuizSet;
 
@@ -13,15 +14,18 @@ public sealed class UpdateQuizSetCommandHandler : IRequestHandler<UpdateQuizSetC
     private readonly IQuizSetRepository _repository;
     private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public UpdateQuizSetCommandHandler(
         IQuizSetRepository repository,
         IUserRepository userRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _userRepository = userRepository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<QuizSetDto> Handle(
@@ -50,7 +54,7 @@ public sealed class UpdateQuizSetCommandHandler : IRequestHandler<UpdateQuizSetC
             quizSet.SetCategory(request.CategoryId);
 
         await _repository.UpdateAsync(quizSet, cancellationToken);
-        await _repository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var creator = await _userRepository.GetByIdAsync(quizSet.CreatorId, cancellationToken);
 

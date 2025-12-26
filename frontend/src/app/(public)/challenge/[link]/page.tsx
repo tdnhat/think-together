@@ -31,7 +31,7 @@ function ChallengeStartContent() {
       startAttempt(
         {
           challengeId: challenge.id,
-          nickname: user.fullName || user.email || 'Học sinh',
+          nickname: user.name || user.email || 'Học sinh',
           userId: user.id,
           homeworkId: homeworkId,
         },
@@ -49,8 +49,8 @@ function ChallengeStartContent() {
     if (!challenge) return
 
     startAttempt(
-      { 
-        challengeId: challenge.id, 
+      {
+        challengeId: challenge.id,
         nickname,
         userId: user?.id,
         homeworkId: homeworkId || undefined,

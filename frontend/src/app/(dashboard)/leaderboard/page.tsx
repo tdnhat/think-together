@@ -18,7 +18,7 @@ import {
 import { useQuizSets } from '@/features/quiz'
 import { useClasses } from '@/features/class'
 import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store'
-import type { LeaderboardFilters as LeaderboardFiltersType } from '@/features/leaderboard'
+import type { LeaderboardFilters as LeaderboardFiltersType } from '@/features/leaderboard/types'
 
 export default function LeaderboardPage() {
   const user = useAuthStore(selectUser)
@@ -44,13 +44,13 @@ export default function LeaderboardPage() {
     page: 1,
     pageSize: 100, // Get all classes for selector
   })
-  
+
   // Extract classes from data
   // Note: To get homeworks, we would need to load each class detail
   // For now, we'll just use classes for filtering and load homeworks on-demand
   const classes = classesData?.data || []
-  const homeworks: Array<{ id: string; classId: string; title: string }> = []
-  
+  const homeworks: any[] = [] // eslint-disable-line @typescript-eslint/no-explicit-any
+
   // TODO: Load homeworks when a class is selected, or load all class details to get homeworks
 
   const { data, stats, isLoading, isLoadingStats, error } = useLeaderboard({
@@ -123,83 +123,83 @@ export default function LeaderboardPage() {
 
         {/* Main Content */}
         <div className="space-y-6">
-            {/* Filters Section */}
-            <section>
-              <LeaderboardFilters
-                filters={filters}
-                onFiltersChange={handleFiltersChange}
-                showQuizSetFilter={isCreator}
-                quizSetSelector={
-                  isCreator && quizSets.length > 0 ? (
-                    <QuizSetSelector
-                      quizSets={quizSets}
-                      selectedQuizSetId={filters.quizSetId}
-                      onQuizSetChange={handleQuizSetChange}
-                    />
-                  ) : undefined
-                }
-                classes={classes}
-                homeworks={homeworks}
-              />
-            </section>
-
-            {/* Leaderboard Table */}
-            <section>
-              {isLoading && (
-                <div className="flex h-40 items-center justify-center">
-                  <LoadingSpinner size="md" />
-                </div>
-              )}
-
-              {error && (
-                <Card className="border-red-200 bg-red-50">
-                  <CardContent className="py-8 text-center">
-                    <p className="text-red-600">{error}</p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {!isLoading && !error && data && (
-                <>
-                  <LeaderboardTable
-                    entries={data.entries}
-                    showQuizSet={isCreator && !filters.quizSetId}
-                    className="mb-6"
+          {/* Filters Section */}
+          <section>
+            <LeaderboardFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              showQuizSetFilter={isCreator}
+              quizSetSelector={
+                isCreator && quizSets.length > 0 ? (
+                  <QuizSetSelector
+                    quizSets={quizSets}
+                    selectedQuizSetId={filters.quizSetId}
+                    onQuizSetChange={handleQuizSetChange}
                   />
+                ) : undefined
+              }
+              classes={classes}
+              homeworks={homeworks}
+            />
+          </section>
 
-                  {/* Pagination */}
-                  {data.totalPages > 1 && (
-                    <div className="flex flex-col items-center gap-2">
-                      <PaginationControls
-                        page={data.page}
-                        pageSize={data.pageSize}
-                        total={data.totalEntries}
-                        onPageChange={handlePageChange}
-                      />
-                    </div>
-                  )}
+          {/* Leaderboard Table */}
+          <section>
+            {isLoading && (
+              <div className="flex h-40 items-center justify-center">
+                <LoadingSpinner size="md" />
+              </div>
+            )}
 
-                  {/* Results Info */}
-                  <div className="mt-4 text-center text-sm text-[var(--text-secondary)]">
-                    Hiển thị {data.entries.length} / {data.totalEntries} kết quả
+            {error && (
+              <Card className="border-red-200 bg-red-50">
+                <CardContent className="py-8 text-center">
+                  <p className="text-red-600">{error}</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {!isLoading && !error && data && (
+              <>
+                <LeaderboardTable
+                  entries={data.entries}
+                  showQuizSet={isCreator && !filters.quizSetId}
+                  className="mb-6"
+                />
+
+                {/* Pagination */}
+                {data.totalPages > 1 && (
+                  <div className="flex flex-col items-center gap-2">
+                    <PaginationControls
+                      page={data.page}
+                      pageSize={data.pageSize}
+                      total={data.totalEntries}
+                      onPageChange={handlePageChange}
+                    />
                   </div>
-                </>
-              )}
+                )}
 
-              {!isLoading && !error && data && data.entries.length === 0 && (
-                <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-                    <TrendingUp className="h-8 w-8 text-[var(--brand-primary)]" />
-                  </div>
-                  <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
-                    {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD}
-                  </h3>
-                  <p className="text-[var(--text-secondary)]">
-                    {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD_DESCRIPTION}
-                  </p>
-                </Card>
-              )}
-            </section>
+                {/* Results Info */}
+                <div className="mt-4 text-center text-sm text-[var(--text-secondary)]">
+                  Hiển thị {data.entries.length} / {data.totalEntries} kết quả
+                </div>
+              </>
+            )}
+
+            {!isLoading && !error && data && data.entries.length === 0 && (
+              <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
+                  <TrendingUp className="h-8 w-8 text-[var(--brand-primary)]" />
+                </div>
+                <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
+                  {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD}
+                </h3>
+                <p className="text-[var(--text-secondary)]">
+                  {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD_DESCRIPTION}
+                </p>
+              </Card>
+            )}
+          </section>
         </div>
       </div>
     </DashboardLayout>

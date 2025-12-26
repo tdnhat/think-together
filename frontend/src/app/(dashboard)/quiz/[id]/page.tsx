@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
+import { Button } from '@/shared/ui/button'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { useQuizSet } from '@/features/quiz/hooks/use-quiz-set'
 import { useQuestions } from '@/features/quiz/hooks/use-questions'
@@ -112,12 +113,12 @@ export default function QuizDetailPage() {
           <h2 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
             Không tìm thấy bộ trắc nghiệm
           </h2>
-          <button
+          <Button
             onClick={handleBack}
-            className="text-[var(--brand-primary)] hover:text-[var(--brand-primary-hover)] underline"
+            variant="neutral"
           >
             Quay lại
-          </button>
+          </Button>
         </div>
       </DashboardLayout>
     )

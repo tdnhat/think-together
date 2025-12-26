@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
+import { Button } from '@/shared/ui/button'
 import { DashboardLayout } from '@/widgets/dashboard'
 import {
   useChallengeByQuizSetId,
@@ -61,12 +62,12 @@ export default function ChallengeDetailsPage() {
           <p className="text-[var(--text-secondary)]">
             Bộ trắc nghiệm này chưa có thử thách nào.
           </p>
-          <button
+          <Button
             onClick={handleBack}
-            className="text-[var(--brand-primary)] hover:text-[var(--brand-primary-hover)] underline"
+            variant="neutral"
           >
             Quay lại
-          </button>
+          </Button>
         </div>
       </DashboardLayout>
     )

@@ -80,11 +80,11 @@ export default function ClassesPage() {
           pagination={
             data
               ? {
-                  total: data.total,
-                  page: data.page,
-                  pageSize: data.pageSize,
-                  totalPages: data.totalPages,
-                }
+                total: data.total,
+                page: data.page,
+                pageSize: data.pageSize,
+                totalPages: data.totalPages,
+              }
               : undefined
           }
           isLoading={isLoading}
@@ -104,7 +104,7 @@ export default function ClassesPage() {
               <DialogTitle>Tạo lớp học mới</DialogTitle>
             </DialogHeader>
             <ClassForm
-              onSubmit={handleCreate}
+              onSubmit={(data) => handleCreate(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
               onCancel={() => setIsCreateModalOpen(false)}
               isSubmitting={createClassMutation.isPending}
             />

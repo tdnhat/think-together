@@ -30,7 +30,7 @@ public sealed class GetClassByIdQueryHandler : IRequestHandler<GetClassByIdQuery
         GetClassByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var classEntity = await _classRepository.GetByIdWithDetailsAsync(request.ClassId, cancellationToken);
+        var classEntity = await _classRepository.GetByIdAsync(request.ClassId, cancellationToken);
         if (classEntity == null)
         {
             throw new EntityNotFoundException("Class", request.ClassId);

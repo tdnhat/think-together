@@ -3,8 +3,10 @@ using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Services;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 using ChallengeEntity = ThinkTogether.Domain.Aggregates.ChallengeAggregate.Challenge;
 
 namespace ThinkTogether.Application.Handlers.Challenge.Commands.CreateChallenge;
@@ -14,15 +16,24 @@ public sealed class CreateChallengeCommandHandler : IRequestHandler<CreateChalle
     private readonly IChallengeRepository _challengeRepository;
     private readonly IQuizSetRepository _quizSetRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IChallengeValidationService _validationService;
+    private readonly IShareLinkGeneratorService _shareLinkGeneratorService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateChallengeCommandHandler(
         IChallengeRepository challengeRepository,
         IQuizSetRepository quizSetRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IChallengeValidationService validationService,
+        IShareLinkGeneratorService shareLinkGeneratorService,
+        IUnitOfWork unitOfWork)
     {
         _challengeRepository = challengeRepository;
         _quizSetRepository = quizSetRepository;
         _currentUserService = currentUserService;
+        _validationService = validationService;
+        _shareLinkGeneratorService = shareLinkGeneratorService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<ChallengeDto> Handle(
@@ -31,31 +42,21 @@ public sealed class CreateChallengeCommandHandler : IRequestHandler<CreateChalle
     {
         var userId = Guid.Parse(_currentUserService.UserId!);
 
-        // Verify the quiz set exists and belongs to the user
+        // Verify the quiz set exists
         var quizSet = await _quizSetRepository.GetByIdAsync(request.QuizSetId, cancellationToken);
-        
         if (quizSet == null)
             throw new EntityNotFoundException("Bộ câu hỏi", request.QuizSetId);
 
-        if (quizSet.CreatorId != userId)
-            throw new ForbiddenException("Bạn không có quyền tạo thử thách từ bộ câu hỏi này");
+        // Validate quiz set for challenge creation
+        _validationService.ValidateQuizSetForChallenge(quizSet, userId);
 
-        if (!quizSet.IsPublished)
-            throw new ValidationException("Bộ câu hỏi phải được xuất bản trước khi tạo thử thách");
-
-        if (!quizSet.Questions.Any())
-            throw new ValidationException("Bộ câu hỏi phải có ít nhất một câu hỏi");
-
-        // Check if a challenge already exists for this creator and quiz set
-        var existingChallenge = await _challengeRepository.FindOneAsync(
-            c => c.CreatorId == userId && c.QuizSetId == request.QuizSetId && c.DeletedAt == null,
-            cancellationToken);
-
-        if (existingChallenge != null)
+        // Check if a challenge already exists
+        var challengeExists = await _validationService.ChallengeExistsAsync(userId, request.QuizSetId, cancellationToken);
+        if (challengeExists)
             throw new ValidationException("Bạn đã tạo một thử thách cho bộ câu hỏi này rồi. Mỗi bộ câu hỏi chỉ có thể tạo một thử thách.");
 
         // Generate a unique share link
-        var shareLink = GenerateShareLink();
+        var shareLink = _shareLinkGeneratorService.GenerateShareLink();
 
         // Create the challenge
         var challenge = ChallengeEntity.Create(
@@ -68,16 +69,9 @@ public sealed class CreateChallengeCommandHandler : IRequestHandler<CreateChalle
         challenge.SetShowLeaderboard(request.ShowLeaderboard);
 
         await _challengeRepository.AddAsync(challenge, cancellationToken);
-        await _challengeRepository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return challenge.Adapt<ChallengeDto>();
-    }
-
-    private string GenerateShareLink()
-    {
-        // Generate a short unique code for the share link
-        // Using 8 characters of a GUID for simplicity
-        return Guid.NewGuid().ToString("N")[..8];
     }
 }
 

@@ -80,11 +80,6 @@ public abstract class Repository<TAggregate, TId> : IRepository<TAggregate, TId>
         await Task.CompletedTask;
     }
 
-    public virtual async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.SaveChangesAsync(cancellationToken);
-    }
-
     protected virtual IQueryable<TAggregate> ApplySpecification(Specification<TAggregate> spec)
     {
         var query = _dbSet.AsQueryable();

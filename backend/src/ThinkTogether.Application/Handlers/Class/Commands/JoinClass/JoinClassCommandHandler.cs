@@ -5,6 +5,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.Class.Commands.JoinClass;
 
@@ -12,13 +13,16 @@ public sealed class JoinClassCommandHandler : IRequestHandler<JoinClassCommand, 
 {
     private readonly IClassRepository _classRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public JoinClassCommandHandler(
         IClassRepository classRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _classRepository = classRepository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<ClassDto> Handle(
@@ -36,7 +40,7 @@ public sealed class JoinClassCommandHandler : IRequestHandler<JoinClassCommand, 
         var member = ClassMember.Create(classEntity.Id, userId);
         classEntity.AddMember(member);
 
-        await _classRepository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var dto = classEntity.Adapt<ClassDto>();
         dto.MemberCount = classEntity.Members.Count(m => m.LeftAt == null);

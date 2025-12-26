@@ -1,3 +1,4 @@
+using Mapster;
 using MediatR;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
@@ -72,62 +73,9 @@ public sealed class StartChallengeAttemptCommandHandler : IRequestHandler<StartC
         await _challengeRepository.UpdateAsync(challenge, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return MapToDto(attempt, questions, challenge);
-    }
-
-    private static ChallengeAttemptDto MapToDto(
-        ChallengeAttempt attempt,
-        List<Domain.Aggregates.QuizSetAggregate.Entities.Question> questions,
-        Domain.Aggregates.ChallengeAggregate.Challenge challenge)
-    {
-        var questionDtos = questions.Select((q, index) => new ChallengeQuestionDto
-        {
-            Id = q.Id,
-            QuizSetId = q.QuizSetId,
-            Content = q.Content,
-            Type = q.Type,
-            TimeLimit = q.TimeLimit,
-            DisplayOrder = q.DisplayOrder,
-            VideoUrl = q.VideoUrl,
-            VideoTimestamp = q.VideoTimestamp,
-            AudioUrl = q.AudioUrl,
-            AudioTimestamp = q.AudioTimestamp,
-            Options = q.Options.Select(o => new QuestionOptionDto
-            {
-                Content = o.Content,
-                IsCorrect = false, // Don't show correct answers during attempt
-                DisplayOrder = o.DisplayOrder,
-                ImageUrl = o.ImageUrl
-            }).ToList(),
-            MatchingPairs = q.MatchingPairs.Select(p => new MatchingPairDto
-            {
-                LeftContent = p.LeftContent,
-                RightContent = p.RightContent,
-                DisplayOrder = p.DisplayOrder
-            }).ToList(),
-            OrderingItems = q.OrderingItems.Select(i => new OrderingItemDto
-            {
-                Content = i.Content,
-                CorrectPosition = 0 // Don't show correct position during attempt
-            }).ToList()
-        }).ToList();
-
-        return new ChallengeAttemptDto
-        {
-            Id = attempt.Id,
-            ChallengeId = attempt.ChallengeId,
-            UserId = attempt.UserId,
-            Nickname = attempt.Nickname,
-            ScoreAchieved = attempt.ScoreAchieved,
-            CorrectAnswers = attempt.CorrectAnswers,
-            TotalQuestions = attempt.TotalQuestions,
-            CompletionTimeMs = attempt.CompletionTimeMs,
-            CompletedAt = attempt.CompletedAt,
-            StartedAt = attempt.StartedAt,
-            Status = attempt.Status,
-            TimeLimitMs = attempt.TimeLimitMs,
-            RemainingTimeMs = attempt.GetRemainingTimeMs(),
-            Questions = questionDtos
-        };
+        var attemptDto = attempt.Adapt<ChallengeAttemptDto>();
+        attemptDto.Questions = questions.Adapt<List<ChallengeQuestionDto>>();
+        
+        return attemptDto;
     }
 }

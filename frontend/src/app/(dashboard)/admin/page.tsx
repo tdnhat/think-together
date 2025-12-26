@@ -92,7 +92,7 @@ export default function AdminDashboard() {
                 <div className="text-2xl font-bold text-[var(--text-primary)]">
                   {stat.value}
                 </div>
-                <Badge variant="outline" className="mt-2 text-xs">
+                <Badge variant="neutral" className="mt-2 text-xs">
                   <TrendingUp className="h-3 w-3 mr-1" />
                   {stat.change}
                 </Badge>

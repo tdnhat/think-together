@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 
 import {
   SidebarProvider,
-  SidebarTrigger,
 } from "@/shared/ui/sidebar";
 import { Separator } from "@/shared/ui/separator";
 import { DashboardNavbar } from "./dashboard-navbar";
@@ -18,7 +17,7 @@ export function DashboardLayout({ children }: Readonly<DashboardLayoutProps>) {
       <AppSidebar />
       <div className="flex w-full flex-col">
         <header className="relative flex h-16 shrink-0 items-center gap-2 bg-[var(--bg-page)]/95 backdrop-blur">
-          <SidebarTrigger className="-ml-1" />
+
           <DashboardNavbar />
           <Separator className="absolute bottom-0 left-0 right-0" />
         </header>

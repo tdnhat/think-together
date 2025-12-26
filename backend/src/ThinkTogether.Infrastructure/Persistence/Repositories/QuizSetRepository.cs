@@ -2,6 +2,7 @@ using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Specifications;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Shared.Primitives;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 
@@ -19,42 +20,6 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
         return await GetBySpecAsync(spec, cancellationToken);
     }
 
-    public async Task<List<QuizSet>> GetByCreatorIdAsync(Guid creatorId, CancellationToken cancellationToken = default)
-    {
-        return await _dbSet
-            .Where(q => q.CreatorId == creatorId && q.DeletedAt == null)
-            .Include(q => q.Questions)
-            .OrderByDescending(q => q.UpdatedAt)
-            .ToListAsync(cancellationToken);
-    }
-
-    public IQueryable<QuizSet> GetByCreatorIdQueryable(Guid creatorId)
-    {
-        return _dbSet
-            .Where(q => q.CreatorId == creatorId && q.DeletedAt == null)
-            .Include(q => q.Questions);
-    }
-
-    public async Task<List<QuizSet>> GetPublishedAsync(CancellationToken cancellationToken = default)
-    {
-        return await _dbSet
-            .Where(q => q.IsPublished && q.DeletedAt == null)
-            .Include(q => q.Questions)
-            .OrderByDescending(q => q.UpdatedAt)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var quizSet = await GetByIdAsync(id, cancellationToken);
-        if (quizSet != null)
-        {
-            quizSet.Delete();
-            await base.UpdateAsync(quizSet, cancellationToken);
-            await SaveChangesAsync(cancellationToken);
-        }
-    }
-
     public async Task<List<QuizSet>> GetByIdsAsync(List<Guid> ids, CancellationToken cancellationToken = default)
     {
         if (ids == null || ids.Count == 0)
@@ -65,6 +30,42 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
         return await _dbSet
             .Where(q => ids.Contains(q.Id) && q.DeletedAt == null)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<(List<QuizSet> Items, int TotalCount)> GetBySpecificationAsync(
+        Specification<QuizSet> spec,
+        CancellationToken cancellationToken = default)
+    {
+        // Get total count before pagination
+        var queryWithoutPaging = ApplySpecificationWithoutPaging(spec);
+        var totalCount = await queryWithoutPaging.CountAsync(cancellationToken);
+
+        // Get paginated results
+        var queryWithPaging = ApplySpecification(spec);
+        var items = await queryWithPaging.ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
+    private IQueryable<QuizSet> ApplySpecificationWithoutPaging(Specification<QuizSet> spec)
+    {
+        var query = _dbSet.AsQueryable();
+
+        query = query.Where(spec.Criteria);
+
+        query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
+
+        query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
+
+        if (spec.OrderBy != null)
+            query = query.OrderBy(spec.OrderBy);
+
+        if (spec.OrderByDescending != null)
+            query = query.OrderByDescending(spec.OrderByDescending);
+
+        // Don't apply pagination here - we need the total count
+
+        return query;
     }
 }
 

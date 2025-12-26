@@ -7,6 +7,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.CreateQuestion;
 
@@ -14,13 +15,16 @@ public sealed class CreateQuestionCommandHandler : IRequestHandler<CreateQuestio
 {
     private readonly IQuizSetRepository _repository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateQuestionCommandHandler(
         IQuizSetRepository repository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<QuestionDto> Handle(
@@ -127,7 +131,7 @@ public sealed class CreateQuestionCommandHandler : IRequestHandler<CreateQuestio
         }
 
         quizSet.AddQuestion(question);
-        await _repository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return question.Adapt<QuestionDto>();
     }
