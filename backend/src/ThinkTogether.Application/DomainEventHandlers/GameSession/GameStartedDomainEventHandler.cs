@@ -85,7 +85,7 @@ public class GameStartedDomainEventHandler : INotificationHandler<GameStartedDom
                 ?? DateTime.UtcNow.AddSeconds(question.TimeLimit);
 
             // Send GameStarted notification
-            await _notificationService.NotifyGameStartedAsync(gameSession.Id, questionDto);
+            await _notificationService.NotifyGameStartedAsync(gameSession.Id, questionDto, notification.TotalQuestions);
 
             // Also send QuestionStarted notification (for consistency)
             await _notificationService.NotifyQuestionStartedAsync(

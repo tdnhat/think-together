@@ -18,7 +18,7 @@ public class GameSessionNotificationService : IGameSessionNotificationService
         _stateService = stateService;
     }
 
-    public async Task NotifyGameStartedAsync(Guid gameSessionId, GameQuestionDto firstQuestion)
+    public async Task NotifyGameStartedAsync(Guid gameSessionId, GameQuestionDto firstQuestion, int totalQuestions)
     {
         var pin = await _stateService.GetPinByGameSessionIdAsync(gameSessionId);
         if (pin == null) return;
@@ -28,7 +28,7 @@ public class GameSessionNotificationService : IGameSessionNotificationService
 
         await _hubContext.Clients.Group($"game_{pin}").GameStarted(new GameStartedMessage(
             gameSessionId,
-            firstQuestion.PositionInGame + 1, // Approximate total questions from position
+            totalQuestions,
             playerCount));
 
         // QuestionStarted will be sent separately by QuestionStartedDomainEventHandler
