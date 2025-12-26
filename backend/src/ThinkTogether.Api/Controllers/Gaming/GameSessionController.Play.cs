@@ -20,7 +20,8 @@ public partial class GameSessionController
         var command = new StartGameCommand(id);
         var result = await _mediator.Send(command, cancellationToken);
 
-        _ = _notificationService.NotifyGameStartedAsync(id, result);
+        // Notifications are handled automatically by domain event handlers
+        // No need to call notification service here
 
         return Ok(new ApiResponse<GameQuestionDto>
         {
@@ -40,7 +41,8 @@ public partial class GameSessionController
         var command = new NextQuestionCommand(id);
         var result = await _mediator.Send(command, cancellationToken);
 
-        _ = _notificationService.NotifyNextQuestionAsync(id, result.Leaderboard, result.Question);
+        // Notifications are handled automatically by domain event handlers
+        // No need to call notification service here
 
         return Ok(new ApiResponse<NextQuestionResult>
         {
@@ -59,7 +61,8 @@ public partial class GameSessionController
         var command = new EndGameCommand(id);
         var result = await _mediator.Send(command, cancellationToken);
 
-        _ = _notificationService.NotifyGameEndedAsync(id, result);
+        // Notifications are handled automatically by domain event handlers
+        // No need to call notification service here
 
         return Ok(new ApiResponse<GameResultDto>
         {

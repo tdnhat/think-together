@@ -16,6 +16,7 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
 {
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IQuizSetRepository _quizSetRepository;
+    private readonly IGameAnswerGradingService _answerGradingService;
     private readonly IScoreCalculatorService _scoreCalculatorService;
     private readonly IQuestionTimerService _questionTimerService;
     private readonly IUnitOfWork _unitOfWork;
@@ -23,12 +24,14 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
     public SubmitAnswerCommandHandler(
         IGameSessionRepository gameSessionRepository,
         IQuizSetRepository quizSetRepository,
+        IGameAnswerGradingService answerGradingService,
         IScoreCalculatorService scoreCalculatorService,
         IQuestionTimerService questionTimerService,
         IUnitOfWork unitOfWork)
     {
         _gameSessionRepository = gameSessionRepository;
         _quizSetRepository = quizSetRepository;
+        _answerGradingService = answerGradingService;
         _scoreCalculatorService = scoreCalculatorService;
         _questionTimerService = questionTimerService;
         _unitOfWork = unitOfWork;
@@ -66,14 +69,8 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
         var question = quizSet.Questions.FirstOrDefault(q => q.Id == gameQuestion.QuestionId)
             ?? throw new EntityNotFoundException("Câu hỏi", gameQuestion.QuestionId);
 
-        var correctIndexes = question.Options
-            .Select((o, index) => new { Option = o, Index = index })
-            .Where(x => x.Option.IsCorrect)
-            .Select(x => x.Index)
-            .ToList();
-
-        var isCorrect = request.SelectedOptionIndexes.Count == correctIndexes.Count &&
-                        request.SelectedOptionIndexes.All(i => correctIndexes.Contains(i));
+        // Use domain service to determine if answer is correct
+        var isCorrect = _answerGradingService.IsAnswerCorrect(question, request.SelectedOptionIndexes);
 
         var timeLimitMs = question.TimeLimit * 1000;
         var pointsEarned = _scoreCalculatorService.CalculatePoints(isCorrect, request.ResponseTimeMs, timeLimitMs);
@@ -86,7 +83,12 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
             request.ResponseTimeMs,
             pointsEarned);
 
+        // Add answer to player's collection
         player.AddAnswer(playerAnswer);
+        
+        // Add answer to game session (fires AnswerSubmittedDomainEvent)
+        gameSession.AddPlayerAnswer(playerAnswer);
+        
         gameQuestion.RecordAnswer(isCorrect, request.ResponseTimeMs);
 
         var playerScore = gameSession.GetPlayerScore(request.PlayerId);
@@ -99,6 +101,9 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Domain events will be published and handled by event handlers
+        // SignalR notifications will be sent by AnswerSubmittedDomainEventHandler
 
         var currentRank = gameSession.Scores
             .OrderByDescending(s => s.TotalPoints)

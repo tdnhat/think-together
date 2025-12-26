@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ThinkTogether.Application.Common;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
@@ -9,11 +10,10 @@ using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Commands.StartGame;
 
-public sealed class StartGameCommandHandler : IRequestHandler<StartGameCommand, GameQuestionDto>
+public sealed class StartGameCommandHandler : BaseHandler, IRequestHandler<StartGameCommand, GameQuestionDto>
 {
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IQuizSetRepository _quizSetRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IQuestionTimerService _questionTimerService;
     private readonly IGameQuestionMappingService _questionMappingService;
     private readonly IUnitOfWork _unitOfWork;
@@ -25,10 +25,10 @@ public sealed class StartGameCommandHandler : IRequestHandler<StartGameCommand, 
         IQuestionTimerService questionTimerService,
         IGameQuestionMappingService questionMappingService,
         IUnitOfWork unitOfWork)
+        : base(currentUserService)
     {
         _gameSessionRepository = gameSessionRepository;
         _quizSetRepository = quizSetRepository;
-        _currentUserService = currentUserService;
         _questionTimerService = questionTimerService;
         _questionMappingService = questionMappingService;
         _unitOfWork = unitOfWork;
@@ -44,10 +44,14 @@ public sealed class StartGameCommandHandler : IRequestHandler<StartGameCommand, 
 
         gameSession.ValidateHostPermission(hostUserId);
         gameSession.InitializeScores(gameSession.GameQuestions.Count);
-        gameSession.Start();
+        gameSession.Start(); // This fires GameStartedDomainEvent which triggers QuestionStartedDomainEvent
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Domain events will be published and handled by event handlers
+        // Timer will be started in QuestionStartedDomainEventHandler
+        // SignalR notifications will be sent by event handlers
 
         var firstGameQuestion = gameSession.GetCurrentGameQuestion()
             ?? throw new InvalidOperationException("Không tìm thấy câu hỏi đầu tiên");
@@ -58,23 +62,7 @@ public sealed class StartGameCommandHandler : IRequestHandler<StartGameCommand, 
         var question = quizSet.Questions.FirstOrDefault(q => q.Id == firstGameQuestion.QuestionId)
             ?? throw new EntityNotFoundException("Câu hỏi", firstGameQuestion.QuestionId);
 
-        await _questionTimerService.StartTimerAsync(
-            gameSession.Id,
-            firstGameQuestion.Id,
-            question.TimeLimit,
-            cancellationToken);
-
+        // Return DTO for API response (notifications handled by event handlers)
         return _questionMappingService.MapToDto(firstGameQuestion, question);
-    }
-
-    private Guid GetCurrentHostUserId()
-    {
-        var userIdString = _currentUserService.UserId
-            ?? throw new UnauthorizedException("Người dùng chưa đăng nhập");
-
-        if (!Guid.TryParse(userIdString, out var hostUserId))
-            throw new UnauthorizedException("ID người dùng không hợp lệ");
-
-        return hostUserId;
     }
 }

@@ -6,6 +6,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.UploadCoverImage;
 
@@ -16,19 +17,22 @@ public sealed class UploadCoverImageCommandHandler : IRequestHandler<UploadCover
     private readonly IImageUploadService _imageUploadService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<UploadCoverImageCommandHandler> _logger;
+    private readonly IUnitOfWork _unitOfWork;
 
     public UploadCoverImageCommandHandler(
         IQuizSetRepository repository,
         IUserRepository userRepository,
         IImageUploadService imageUploadService,
         ICurrentUserService currentUserService,
-        ILogger<UploadCoverImageCommandHandler> logger)
+        ILogger<UploadCoverImageCommandHandler> logger,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _userRepository = userRepository;
         _imageUploadService = imageUploadService;
         _currentUserService = currentUserService;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<QuizSetDto> Handle(
@@ -82,7 +86,7 @@ public sealed class UploadCoverImageCommandHandler : IRequestHandler<UploadCover
         // Update quiz set with new image URL
         quizSet.UpdateCoverImageUrl(imageUrl);
 
-        await _repository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Cover image uploaded successfully for quiz set {QuizSetId}. Image URL: {ImageUrl}",
             request.QuizSetId, imageUrl);

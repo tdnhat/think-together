@@ -4,6 +4,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.Class.Commands.CreateClass;
 
@@ -12,15 +13,18 @@ public sealed class CreateClassCommandHandler : IRequestHandler<CreateClassComma
     private readonly IClassRepository _classRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateClassCommandHandler(
         IClassRepository classRepository,
         IUserRepository userRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _classRepository = classRepository;
         _userRepository = userRepository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<ClassDto> Handle(
@@ -40,7 +44,7 @@ public sealed class CreateClassCommandHandler : IRequestHandler<CreateClassComma
         }
 
         await _classRepository.AddAsync(classEntity, cancellationToken);
-        await _classRepository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var teacher = await _userRepository.GetByIdAsync(userId, cancellationToken);
 

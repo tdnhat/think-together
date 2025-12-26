@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ThinkTogether.Application.Common;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Entities;
@@ -11,12 +12,11 @@ using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Commands.CreateGameSession;
 
-public sealed class CreateGameSessionCommandHandler : IRequestHandler<CreateGameSessionCommand, GameSessionDto>
+public sealed class CreateGameSessionCommandHandler : BaseHandler, IRequestHandler<CreateGameSessionCommand, GameSessionDto>
 {
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IQuizSetRepository _quizSetRepository;
     private readonly IPinGeneratorService _pinGeneratorService;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateGameSessionCommandHandler(
@@ -25,11 +25,11 @@ public sealed class CreateGameSessionCommandHandler : IRequestHandler<CreateGame
         IPinGeneratorService pinGeneratorService,
         ICurrentUserService currentUserService,
         IUnitOfWork unitOfWork)
+        : base(currentUserService)
     {
         _gameSessionRepository = gameSessionRepository;
         _quizSetRepository = quizSetRepository;
         _pinGeneratorService = pinGeneratorService;
-        _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
     }
 
@@ -72,16 +72,5 @@ public sealed class CreateGameSessionCommandHandler : IRequestHandler<CreateGame
             EndedAt = gameSession.EndedAt,
             Players = new List<GamePlayerDto>()
         };
-    }
-
-    private Guid GetCurrentHostUserId()
-    {
-        var userIdString = _currentUserService.UserId
-            ?? throw new UnauthorizedException("Người dùng chưa đăng nhập");
-
-        if (!Guid.TryParse(userIdString, out var hostUserId))
-            throw new UnauthorizedException("ID người dùng không hợp lệ");
-
-        return hostUserId;
     }
 }

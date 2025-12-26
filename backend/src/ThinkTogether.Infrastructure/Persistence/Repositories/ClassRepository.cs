@@ -55,17 +55,6 @@ public class ClassRepository : Repository<Class, Guid>, IClassRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Class?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        // Use specification pattern but need to handle ThenInclude manually
-        // since Specification doesn't support ThenInclude directly
-        return await _dbSet
-            .Where(c => c.Id == id && c.DeletedAt == null)
-            .Include(c => c.Members.Where(m => m.LeftAt == null))
-            .Include(c => c.Homeworks.Where(h => h.DeletedAt == null))
-                .ThenInclude(h => h.Submissions)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
 
     public async Task<Homework?> GetHomeworkByQuizSetIdAsync(Guid quizSetId, CancellationToken cancellationToken = default)
     {

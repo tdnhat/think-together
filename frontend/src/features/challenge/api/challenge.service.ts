@@ -12,6 +12,7 @@ import type {
   CreateChallengeRequest,
   UpdateChallengeRequest,
   StartChallengeAttemptRequest,
+  ChallengeStatsDto,
 } from '../types'
 
 const CHALLENGE_BASE_URL = '/api/challenges'

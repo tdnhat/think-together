@@ -3,6 +3,7 @@ using ThinkTogether.Application.DTOs;
 using ThinkTogether.Domain.Aggregates.CategoryAggregate;
 using ThinkTogether.Domain.Aggregates.CategoryAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 using Mapster;
 
 namespace ThinkTogether.Application.Handlers.Category.Commands.CreateCategory;
@@ -10,10 +11,12 @@ namespace ThinkTogether.Application.Handlers.Category.Commands.CreateCategory;
 public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CreateCategoryCommandHandler(ICategoryRepository categoryRepository)
+    public CreateCategoryCommandHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
     {
         _categoryRepository = categoryRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -30,7 +33,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         await _categoryRepository.AddAsync(category, cancellationToken);
 
         // Save changes
-        await _categoryRepository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Return DTO
         return category.Adapt<CategoryDto>();

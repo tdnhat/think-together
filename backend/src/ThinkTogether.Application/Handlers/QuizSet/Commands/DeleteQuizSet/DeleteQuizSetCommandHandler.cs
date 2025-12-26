@@ -2,6 +2,7 @@ using MediatR;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.DeleteQuizSet;
 
@@ -9,13 +10,16 @@ public sealed class DeleteQuizSetCommandHandler : IRequestHandler<DeleteQuizSetC
 {
     private readonly IQuizSetRepository _repository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public DeleteQuizSetCommandHandler(
         IQuizSetRepository repository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(
@@ -31,7 +35,8 @@ public sealed class DeleteQuizSetCommandHandler : IRequestHandler<DeleteQuizSetC
         if (quizSet.CreatorId != Guid.Parse(_currentUserService.UserId!))
             throw new ForbiddenException("Bạn chỉ có thể xóa bộ câu hỏi của mình");
 
-        await _repository.DeleteAsync(request.Id, cancellationToken);
-        await _repository.SaveChangesAsync(cancellationToken);
+        quizSet.Delete();
+        await _repository.UpdateAsync(quizSet, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

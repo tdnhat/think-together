@@ -22,7 +22,7 @@ public class RedisGameSessionStateService : IGameSessionStateService
 
     private IDatabase GetDatabase() => _redis.GetDatabase();
 
-    public async Task AddPlayerConnectionAsync(string pin, Guid playerId, string connectionId)
+    public async Task AddPlayerConnectionAsync(string pin, Guid playerId, string connectionId, string nickname)
     {
         var db = GetDatabase();
         var expiry = TimeSpan.FromHours(ExpirationHours);
@@ -49,7 +49,7 @@ public class RedisGameSessionStateService : IGameSessionStateService
         await db.KeyExpireAsync(playerKey, expiry);
 
         var connectionKey = GetConnectionKey(connectionId);
-        var connectionData = new ConnectionData(pin, playerId, "");
+        var connectionData = new ConnectionData(pin, playerId, nickname);
         await db.StringSetAsync(connectionKey, JsonSerializer.Serialize(connectionData), expiry);
 
         _logger.LogDebug("Added player {PlayerId} to game {Pin} with connection {ConnectionId}", 
@@ -151,12 +151,7 @@ public class RedisGameSessionStateService : IGameSessionStateService
         return playerData?.ConnectionId;
     }
 
-    public Task<string?> GetPlayerNicknameAsync(string pin, Guid playerId)
-    {
-        return Task.FromResult<string?>(null);
-    }
-
-    public async Task<int> GetPlayerCountAsync(string pin)
+    public async Task<int> GetConnectedPlayerCountAsync(string pin)
     {
         var db = GetDatabase();
         var playerKey = GetPlayerKey(pin);
@@ -195,46 +190,7 @@ public class RedisGameSessionStateService : IGameSessionStateService
         return await db.StringGetAsync(mappingKey);
     }
 
-    public async Task SetTotalQuestionsAsync(Guid gameSessionId, int totalQuestions)
-    {
-        var db = GetDatabase();
-        var totalQuestionsKey = GetTotalQuestionsKey(gameSessionId);
-        await db.StringSetAsync(totalQuestionsKey, totalQuestions.ToString(), TimeSpan.FromHours(ExpirationHours));
-
-        _logger.LogDebug("Set total questions for game session {GameSessionId}: {TotalQuestions}", gameSessionId, totalQuestions);
-    }
-
-    public async Task<int> GetTotalQuestionsAsync(Guid gameSessionId)
-    {
-        var db = GetDatabase();
-        var totalQuestionsKey = GetTotalQuestionsKey(gameSessionId);
-        var value = await db.StringGetAsync(totalQuestionsKey);
-        return value.HasValue && int.TryParse(value.ToString(), out var count) ? count : 0;
-    }
-
-    public async Task<int> IncrementAnswerCountAsync(string pin, Guid gameQuestionId)
-    {
-        var db = GetDatabase();
-        var answerKey = GetAnswerCountKey(pin, gameQuestionId);
-        var count = await db.StringIncrementAsync(answerKey);
-        await db.KeyExpireAsync(answerKey, TimeSpan.FromHours(ExpirationHours));
-        return (int)count;
-    }
-
-    public async Task ResetAnswerCountAsync(string pin, Guid gameQuestionId)
-    {
-        var db = GetDatabase();
-        var answerKey = GetAnswerCountKey(pin, gameQuestionId);
-        await db.KeyDeleteAsync(answerKey);
-    }
-
-    public async Task<int> GetAnswerCountAsync(string pin, Guid gameQuestionId)
-    {
-        var db = GetDatabase();
-        var answerKey = GetAnswerCountKey(pin, gameQuestionId);
-        var value = await db.StringGetAsync(answerKey);
-        return value.HasValue ? (int)value : 0;
-    }
+    // Business state methods removed - use domain aggregates instead
 
     public async Task CleanupGameSessionAsync(string pin)
     {
@@ -256,8 +212,6 @@ public class RedisGameSessionStateService : IGameSessionStateService
     private static string GetHostKey(string pin) => $"{KeyPrefix}{pin}:host";
     private static string GetConnectionKey(string connectionId) => $"{KeyPrefix}conn:{connectionId}";
     private static string GetSessionMappingKey(Guid sessionId) => $"{KeyPrefix}session:{sessionId}";
-    private static string GetTotalQuestionsKey(Guid sessionId) => $"{KeyPrefix}session:{sessionId}:totalQuestions";
-    private static string GetAnswerCountKey(string pin, Guid questionId) => $"{KeyPrefix}{pin}:answers:{questionId}";
 
     private sealed record PlayerData(Guid PlayerId, string ConnectionId, DateTime JoinedAt);
     private sealed record ConnectionData(string Pin, Guid PlayerId, string Nickname);

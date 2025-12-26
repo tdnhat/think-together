@@ -2,6 +2,7 @@ using MediatR;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
+using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.QuizSet.Commands.ReorderQuestions;
 
@@ -9,13 +10,16 @@ public sealed class ReorderQuestionsCommandHandler : IRequestHandler<ReorderQues
 {
     private readonly IQuizSetRepository _repository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public ReorderQuestionsCommandHandler(
         IQuizSetRepository repository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(
@@ -37,6 +41,6 @@ public sealed class ReorderQuestionsCommandHandler : IRequestHandler<ReorderQues
             question.UpdateDisplayOrder(order.DisplayOrder);
         }
 
-        await _repository.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

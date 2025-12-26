@@ -1,27 +1,28 @@
 namespace ThinkTogether.Application.Interfaces;
 
+/// <summary>
+/// Service for tracking ephemeral connection state (not business state).
+/// Business state should be obtained from domain aggregates.
+/// </summary>
 public interface IGameSessionStateService
 {
-    Task AddPlayerConnectionAsync(string pin, Guid playerId, string connectionId);
+    // Player connection tracking
+    Task AddPlayerConnectionAsync(string pin, Guid playerId, string connectionId, string nickname);
     Task RemovePlayerConnectionAsync(string pin, Guid playerId);
     Task<bool> RemovePlayerConnectionAsync(string pin, Guid playerId, string connectionId);
     Task<PlayerConnectionInfo?> GetPlayerByConnectionIdAsync(string connectionId);
     Task<string?> GetPlayerConnectionAsync(string pin, Guid playerId);
-    Task<string?> GetPlayerNicknameAsync(string pin, Guid playerId);
-    Task<int> GetPlayerCountAsync(string pin);
+    Task<int> GetConnectedPlayerCountAsync(string pin); // Count of currently connected players
     
+    // Host connection tracking
     Task SetHostConnectionAsync(string pin, string connectionId);
     Task<string?> GetHostConnectionAsync(string pin);
     
+    // PIN mapping (needed to map game session ID to PIN for SignalR groups)
     Task SetGameSessionPinMappingAsync(Guid gameSessionId, string pin);
     Task<string?> GetPinByGameSessionIdAsync(Guid gameSessionId);
-    Task SetTotalQuestionsAsync(Guid gameSessionId, int totalQuestions);
-    Task<int> GetTotalQuestionsAsync(Guid gameSessionId);
     
-    Task<int> IncrementAnswerCountAsync(string pin, Guid gameQuestionId);
-    Task ResetAnswerCountAsync(string pin, Guid gameQuestionId);
-    Task<int> GetAnswerCountAsync(string pin, Guid gameQuestionId);
-    
+    // Cleanup
     Task CleanupGameSessionAsync(string pin);
 }
 

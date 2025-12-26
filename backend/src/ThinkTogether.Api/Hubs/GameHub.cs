@@ -32,34 +32,18 @@ public class GameHub : Hub<IGameHubClient>
         {
             _logger.LogInformation("Player {Nickname} attempting to join game with PIN {Pin}", nickname, pin);
 
+            // Send command to join game session (fires PlayerJoinedGameDomainEvent)
             var command = new JoinGameSessionCommand(pin, nickname);
             var player = await _mediator.Send(command);
 
-            // Check if this player already has an active connection (returning player)
-            // We check by player ID, not connection ID, to properly detect reconnects
-            var existingPlayerConnection = await _stateService.GetPlayerConnectionAsync(pin, player.Id);
-            var isNewPlayer = string.IsNullOrEmpty(existingPlayerConnection);
+            // Track connection for this player
+            await _stateService.AddPlayerConnectionAsync(pin, player.Id, Context.ConnectionId, player.Nickname);
 
-            await _stateService.AddPlayerConnectionAsync(pin, player.Id, Context.ConnectionId);
-
+            // Add to game group for receiving broadcasts
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroup(pin));
 
-            // Only broadcast PlayerJoined for genuinely new players to avoid duplicates
-            if (isNewPlayer)
-            {
-                var playerCount = await _stateService.GetPlayerCountAsync(pin);
-
-                await Clients.Group(GetGameGroup(pin)).PlayerJoined(new PlayerJoinedMessage(
-                    player.Id,
-                    player.Nickname,
-                    playerCount));
-
-                _logger.LogInformation("Player {PlayerId} ({Nickname}) joined game {Pin}", player.Id, nickname, pin);
-            }
-            else
-            {
-                _logger.LogInformation("Player {PlayerId} ({Nickname}) reconnected to game {Pin} (already had connection)", player.Id, nickname, pin);
-            }
+            // PlayerJoined notification will be sent by PlayerJoinedGameDomainEventHandler
+            _logger.LogInformation("Player {PlayerId} ({Nickname}) joined game {Pin}", player.Id, nickname, pin);
         }
         catch (Exception ex)
         {
@@ -103,7 +87,9 @@ public class GameHub : Hub<IGameHubClient>
                 return;
             }
 
-            await _stateService.AddPlayerConnectionAsync(pin, playerId, Context.ConnectionId);
+            // Track connection with nickname from result
+            var nickname = result.Player?.Nickname ?? "";
+            await _stateService.AddPlayerConnectionAsync(pin, playerId, Context.ConnectionId, nickname);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroup(pin));
 
@@ -156,6 +142,7 @@ public class GameHub : Hub<IGameHubClient>
         {
             _logger.LogInformation("Player {PlayerId} submitting answer for question {QuestionId}", playerId, gameQuestionId);
 
+            // Send command to submit answer (fires AnswerSubmittedDomainEvent)
             var command = new SubmitAnswerCommand(
                 gameSessionId,
                 playerId,
@@ -165,23 +152,7 @@ public class GameHub : Hub<IGameHubClient>
 
             var result = await _mediator.Send(command);
 
-            var pin = await _stateService.GetPinByGameSessionIdAsync(gameSessionId);
-            if (pin != null)
-            {
-                var answeredCount = await _stateService.IncrementAnswerCountAsync(pin, gameQuestionId);
-                var totalPlayers = await _stateService.GetPlayerCountAsync(pin);
-
-                await Clients.Group(GetHostGroup(pin)).AnswerReceived(new AnswerReceivedMessage(
-                    playerId,
-                    answeredCount,
-                    totalPlayers));
-            }
-
-            await Clients.Caller.AnswerReceived(new AnswerReceivedMessage(
-                playerId,
-                1,
-                1));
-
+            // AnswerReceived notification will be sent by AnswerSubmittedDomainEventHandler
             _logger.LogInformation("Player {PlayerId} submitted answer: {IsCorrect}, Points: {Points}", 
                 playerId, result.IsCorrect, result.PointsEarned);
         }
@@ -198,18 +169,20 @@ public class GameHub : Hub<IGameHubClient>
         {
             _logger.LogInformation("Player {PlayerId} leaving game {Pin}", playerId, pin);
 
-            var nickname = await _stateService.GetPlayerNicknameAsync(pin, playerId);
-            
+            // Get player info before removing connection
+            var playerInfo = await _stateService.GetPlayerByConnectionIdAsync(Context.ConnectionId);
+            var nickname = playerInfo?.Nickname ?? "Unknown";
+
             // Explicitly called leave, so we remove the player regardless of connection check
             await _stateService.RemovePlayerConnectionAsync(pin, playerId);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGameGroup(pin));
 
-            var playerCount = await _stateService.GetPlayerCountAsync(pin);
+            var playerCount = await _stateService.GetConnectedPlayerCountAsync(pin);
 
             await Clients.Group(GetGameGroup(pin)).PlayerLeft(new PlayerLeftMessage(
                 playerId,
-                nickname ?? "Unknown",
+                nickname,
                 playerCount));
 
             _logger.LogInformation("Player {PlayerId} left game {Pin}", playerId, pin);
@@ -232,7 +205,7 @@ public class GameHub : Hub<IGameHubClient>
             
             if (removed)
             {
-                var playerCount = await _stateService.GetPlayerCountAsync(playerInfo.Pin);
+                var playerCount = await _stateService.GetConnectedPlayerCountAsync(playerInfo.Pin);
                 
                 await Clients.Group(GetGameGroup(playerInfo.Pin)).PlayerLeft(new PlayerLeftMessage(
                     playerInfo.PlayerId,

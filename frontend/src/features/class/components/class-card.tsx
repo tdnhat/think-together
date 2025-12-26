@@ -1,11 +1,10 @@
 'use client'
 
 import { Users, BookOpen, Calendar, MoreVertical, Edit, Trash2, Eye, Copy } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu'
-import { SafeImage } from '@/shared/components'
+import ImageCard from '@/shared/ui/image-card'
 import { CLASS_CONSTANTS } from '../constants'
 import type { ClassDto } from '../types'
 
@@ -36,77 +35,71 @@ export function ClassCard({
     })
   }
 
-  return (
-    <Card className={`group relative overflow-hidden transition-all duration-200 hover:shadow-lg ${className}`}>
-      {/* Cover Image */}
-      <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
-        <SafeImage
-          src={coverImage}
-          alt={classData.name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-
-        {/* Actions Menu */}
-        <div className="absolute top-3 right-3 flex gap-2">
+  const overlay = (
+    <div className="absolute top-3 right-3 flex gap-2">
+      {onView && (
+        <Button
+          variant="neutral"
+          size="icon"
+          onClick={() => onView(classData)}
+          className="bg-[var(--bg-surface)] hover:bg-[var(--bg-surface)]"
+          title="Xem chi tiết"
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
+      )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="neutral"
+            size="icon"
+            className="bg-[var(--bg-surface)] hover:bg-[var(--bg-surface)]"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
           {onView && (
-            <Button
-              variant="neutral"
-              size="icon"
-              onClick={() => onView(classData)}
-              className="bg-[var(--bg-surface)]/95 hover:bg-[var(--bg-surface)]"
-              title="Xem chi tiết"
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
+            <DropdownMenuItem onClick={() => onView(classData)}>
+              <Eye className="mr-2 h-4 w-4" />
+              Xem chi tiết
+            </DropdownMenuItem>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="neutral"
-                size="icon"
-                className="bg-[var(--bg-surface)]/95 hover:bg-[var(--bg-surface)]"
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {onView && (
-                <DropdownMenuItem onClick={() => onView(classData)}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Xem chi tiết
-                </DropdownMenuItem>
-              )}
-              {onEdit && (
-                <DropdownMenuItem onClick={() => onEdit(classData)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Chỉnh sửa
-                </DropdownMenuItem>
-              )}
-              {onCopyJoinCode && (
-                <DropdownMenuItem onClick={() => onCopyJoinCode(classData.joinCode)}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Sao chép mã tham gia
-                </DropdownMenuItem>
-              )}
-              {onDelete && (
-                <DropdownMenuItem
-                  onClick={() => onDelete(classData)}
-                  className="text-red-600 focus:text-red-600"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Xóa lớp học
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+          {onEdit && (
+            <DropdownMenuItem onClick={() => onEdit(classData)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Chỉnh sửa
+            </DropdownMenuItem>
+          )}
+          {onCopyJoinCode && (
+            <DropdownMenuItem onClick={() => onCopyJoinCode(classData.joinCode)}>
+              <Copy className="mr-2 h-4 w-4" />
+              Sao chép mã tham gia
+            </DropdownMenuItem>
+          )}
+          {onDelete && (
+            <DropdownMenuItem
+              onClick={() => onDelete(classData)}
+              className="text-red-600 focus:text-red-600"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Xóa lớp học
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
 
-      {/* Content */}
-      <CardHeader className="pb-3">
+  return (
+    <ImageCard
+      imageUrl={coverImage}
+      imageAlt={classData.name}
+      className={`group transition-all duration-200 hover:shadow-lg ${className}`}
+      aspectRatio="aspect-video"
+      imageOverlay={overlay}
+    >
+      <div className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h3 className="font-heading text-lg font-semibold text-[var(--text-primary)] truncate">
@@ -119,47 +112,47 @@ export function ClassCard({
             )}
           </div>
         </div>
-      </CardHeader>
 
-      <CardContent className="pt-0">
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-sm text-[var(--text-secondary)]">
-          <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
-            <span>{classData.memberCount || 0} thành viên</span>
+        <div className="pt-0">
+          {/* Stats */}
+          <div className="flex items-center gap-4 text-sm text-[var(--text-secondary)]">
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              <span>{classData.memberCount || 0} thành viên</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <BookOpen className="h-4 w-4" />
+              <span>{classData.homeworkCount || 0} bài tập</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <BookOpen className="h-4 w-4" />
-            <span>{classData.homeworkCount || 0} bài tập</span>
+
+          {/* Join Code */}
+          <div className="mt-3 flex items-center justify-between rounded-lg border-2 border-border bg-[var(--bg-surface-secondary)] p-2">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-[var(--text-secondary)]" />
+              <span className="text-xs text-[var(--text-secondary)]">Mã tham gia:</span>
+              <code className="font-mono font-bold text-[var(--brand-primary)]">
+                {classData.joinCode}
+              </code>
+            </div>
+            {onCopyJoinCode && (
+              <Button
+                variant="neutral"
+                size="sm"
+                onClick={() => onCopyJoinCode(classData.joinCode)}
+                className="h-7 px-2"
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+
+          {/* Created Date */}
+          <div className="mt-2 text-xs text-[var(--text-tertiary)]">
+            Tạo lúc: {formatDate(classData.createdAt)}
           </div>
         </div>
-
-        {/* Join Code */}
-        <div className="mt-3 flex items-center justify-between rounded-lg border-2 border-border bg-[var(--bg-surface-secondary)] p-2">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-[var(--text-secondary)]" />
-            <span className="text-xs text-[var(--text-secondary)]">Mã tham gia:</span>
-            <code className="font-mono font-bold text-[var(--brand-primary)]">
-              {classData.joinCode}
-            </code>
-          </div>
-          {onCopyJoinCode && (
-            <Button
-              variant="neutral"
-              size="sm"
-              onClick={() => onCopyJoinCode(classData.joinCode)}
-              className="h-7 px-2"
-            >
-              <Copy className="h-3 w-3" />
-            </Button>
-          )}
-        </div>
-
-        {/* Created Date */}
-        <div className="mt-2 text-xs text-[var(--text-tertiary)]">
-          Tạo lúc: {formatDate(classData.createdAt)}
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </ImageCard>
   )
 }

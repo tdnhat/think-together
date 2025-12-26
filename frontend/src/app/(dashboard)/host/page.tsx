@@ -7,8 +7,8 @@ import { Button } from '@/shared/ui/button'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
-import { 
-  HostLobby, 
+import {
+  HostLobby,
   HostGameScreen,
   HostPageLoading,
   HostPageError,
@@ -16,10 +16,6 @@ import {
   HostPageNoQuiz,
   useHostGame,
   getStoredHostSession,
-} from '@/features/game-host'
-import type { 
-  GameEndedMessage,
-  StartGameResponse,
 } from '@/features/game-host'
 import { ROUTES } from '@/config/routes'
 import { useRouter } from 'next/navigation'
@@ -48,6 +44,7 @@ function HostPageContent() {
   )
 
   // Auto-create session if quizId is provided and no session exists
+  // The module-level guard in createSession prevents duplicate calls
   useEffect(() => {
     if (quizId && !session && !isLoading && !showResumeOption && !error) {
       createSession()
@@ -65,14 +62,6 @@ function HostPageContent() {
     }
   }
 
-  const handleGameStart = async (_data: StartGameResponse) => {
-    // Game start is handled by useHostGame via SignalR
-    // The phase will automatically transition
-  }
-
-  const handleGameEnd = (_result: GameEndedMessage) => {
-    // Game end is handled by useHostGame via SignalR
-  }
 
   // Loading state
   if (isLoading) {
@@ -142,12 +131,8 @@ function HostPageContent() {
             Phòng chờ
           </h1>
         </div>
-        
-        <HostLobby
-          session={session}
-          onGameStart={handleGameStart}
-          onGameEnd={handleGameEnd}
-        />
+
+        <HostLobby session={session} />
       </div>
     )
   }

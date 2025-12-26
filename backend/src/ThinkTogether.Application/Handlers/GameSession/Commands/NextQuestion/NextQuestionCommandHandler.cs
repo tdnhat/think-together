@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ThinkTogether.Application.Common;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
@@ -11,11 +12,10 @@ using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Commands.NextQuestion;
 
-public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCommand, NextQuestionResult>
+public sealed class NextQuestionCommandHandler : BaseHandler, IRequestHandler<NextQuestionCommand, NextQuestionResult>
 {
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IQuizSetRepository _quizSetRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IQuestionTimerService _questionTimerService;
     private readonly ILeaderboardService _leaderboardService;
     private readonly IGameQuestionMappingService _questionMappingService;
@@ -29,10 +29,10 @@ public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCom
         ILeaderboardService leaderboardService,
         IGameQuestionMappingService questionMappingService,
         IUnitOfWork unitOfWork)
+        : base(currentUserService)
     {
         _gameSessionRepository = gameSessionRepository;
         _quizSetRepository = quizSetRepository;
-        _currentUserService = currentUserService;
         _questionTimerService = questionTimerService;
         _leaderboardService = leaderboardService;
         _questionMappingService = questionMappingService;
@@ -54,6 +54,7 @@ public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCom
 
         await _questionTimerService.StopTimerAsync(request.GameSessionId, cancellationToken);
 
+        // Build leaderboard before moving to next question (for QuestionEnded event)
         var leaderboard = _leaderboardService.BuildLeaderboard(gameSession)
             .Select(e => new LeaderboardEntryDto
             {
@@ -75,11 +76,18 @@ public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCom
                 Leaderboard: leaderboard);
         }
 
+        // MoveToNextQuestion() fires QuestionEndedDomainEvent and QuestionStartedDomainEvent
+        // Event handlers will send SignalR notifications and start timer
         gameSession.MoveToNextQuestion();
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Domain events will be published and handled by event handlers
+        // Timer will be started in QuestionStartedDomainEventHandler
+        // SignalR notifications will be sent by event handlers
+
+        // Return DTOs for API response
         var nextGameQuestion = gameSession.GetCurrentGameQuestion()
             ?? throw new InvalidOperationException("Không tìm thấy câu hỏi tiếp theo");
 
@@ -89,28 +97,11 @@ public sealed class NextQuestionCommandHandler : IRequestHandler<NextQuestionCom
         var question = quizSet.Questions.FirstOrDefault(q => q.Id == nextGameQuestion.QuestionId)
             ?? throw new EntityNotFoundException("Câu hỏi", nextGameQuestion.QuestionId);
 
-        await _questionTimerService.StartTimerAsync(
-            gameSession.Id,
-            nextGameQuestion.Id,
-            question.TimeLimit,
-            cancellationToken);
-
         var questionDto = _questionMappingService.MapToDto(nextGameQuestion, question);
 
         return new NextQuestionResult(
             HasMoreQuestions: true,
             Question: questionDto,
             Leaderboard: leaderboard);
-    }
-
-    private Guid GetCurrentHostUserId()
-    {
-        var userIdString = _currentUserService.UserId
-            ?? throw new UnauthorizedException("Người dùng chưa đăng nhập");
-
-        if (!Guid.TryParse(userIdString, out var hostUserId))
-            throw new UnauthorizedException("ID người dùng không hợp lệ");
-
-        return hostUserId;
     }
 }

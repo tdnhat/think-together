@@ -30,7 +30,5 @@ public interface IRepository<TAggregate, in TId>
     Task UpdateAsync(TAggregate aggregate, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(TAggregate aggregate, CancellationToken cancellationToken = default);
-
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 

@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using ThinkTogether.Application.Common;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Specifications;
@@ -8,10 +9,9 @@ using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Commands.AbandonActiveSession;
 
-public sealed class AbandonActiveSessionCommandHandler : IRequestHandler<AbandonActiveSessionCommand, bool>
+public sealed class AbandonActiveSessionCommandHandler : BaseHandler, IRequestHandler<AbandonActiveSessionCommand, bool>
 {
     private readonly IGameSessionRepository _gameSessionRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<AbandonActiveSessionCommandHandler> _logger;
 
@@ -20,9 +20,9 @@ public sealed class AbandonActiveSessionCommandHandler : IRequestHandler<Abandon
         ICurrentUserService currentUserService,
         IUnitOfWork unitOfWork,
         ILogger<AbandonActiveSessionCommandHandler> logger)
+        : base(currentUserService)
     {
         _gameSessionRepository = gameSessionRepository;
-        _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -44,16 +44,5 @@ public sealed class AbandonActiveSessionCommandHandler : IRequestHandler<Abandon
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return true;
-    }
-
-    private Guid GetCurrentHostUserId()
-    {
-        var userIdString = _currentUserService.UserId
-            ?? throw new UnauthorizedException("Người dùng chưa đăng nhập");
-
-        if (!Guid.TryParse(userIdString, out var hostUserId))
-            throw new UnauthorizedException("ID người dùng không hợp lệ");
-
-        return hostUserId;
     }
 }

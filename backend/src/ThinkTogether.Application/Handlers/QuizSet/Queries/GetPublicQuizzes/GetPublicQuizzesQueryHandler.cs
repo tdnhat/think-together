@@ -1,9 +1,8 @@
 using Mapster;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using ThinkTogether.Application.DTOs;
-using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Specifications;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Shared.Common;
 
@@ -24,37 +23,13 @@ public sealed class GetPublicQuizzesQueryHandler : IRequestHandler<GetPublicQuiz
         GetPublicQuizzesQuery request,
         CancellationToken cancellationToken)
     {
-        // Get all published quizzes (public discovery)
-        var publishedQuizzes = await _repository.GetPublishedAsync(cancellationToken);
-        var query = publishedQuizzes.AsQueryable();
+        var spec = new PublishedQuizSetsSpecification(
+            request.Search,
+            request.SortBy,
+            request.Page,
+            request.PageSize);
 
-        // Search filter
-        if (!string.IsNullOrWhiteSpace(request.Search))
-        {
-            var searchLower = request.Search.ToLower();
-            query = query.Where(q =>
-                q.Title.ToLower().Contains(searchLower) ||
-                (q.Description != null && q.Description.ToLower().Contains(searchLower)));
-        }
-
-        // Get total count before pagination
-        var total = query.Count();
-
-        // Sorting
-        query = request.SortBy switch
-        {
-            "oldest" => query.OrderBy(q => q.CreatedAt),
-            "title" => query.OrderBy(q => q.Title),
-            "questions" => query.OrderByDescending(q => q.Questions.Count),
-            _ => query.OrderByDescending(q => q.UpdatedAt),
-        };
-
-        // Pagination
-        var skip = (request.Page - 1) * request.PageSize;
-        var quizSets = query
-            .Skip(skip)
-            .Take(request.PageSize)
-            .ToList();
+        var (quizSets, total) = await _repository.GetBySpecificationAsync(spec, cancellationToken);
 
         // Get creator information for the quiz sets
         var creatorIds = quizSets.Select(q => q.CreatorId).Distinct().ToList();

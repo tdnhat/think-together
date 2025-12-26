@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ThinkTogether.Application.Common;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
@@ -10,10 +11,9 @@ using ThinkTogether.Shared.Common;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Commands.EndGame;
 
-public sealed class EndGameCommandHandler : IRequestHandler<EndGameCommand, GameResultDto>
+public sealed class EndGameCommandHandler : BaseHandler, IRequestHandler<EndGameCommand, GameResultDto>
 {
     private readonly IGameSessionRepository _gameSessionRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IQuestionTimerService _questionTimerService;
     private readonly ILeaderboardService _leaderboardService;
     private readonly IUnitOfWork _unitOfWork;
@@ -24,9 +24,9 @@ public sealed class EndGameCommandHandler : IRequestHandler<EndGameCommand, Game
         IQuestionTimerService questionTimerService,
         ILeaderboardService leaderboardService,
         IUnitOfWork unitOfWork)
+        : base(currentUserService)
     {
         _gameSessionRepository = gameSessionRepository;
-        _currentUserService = currentUserService;
         _questionTimerService = questionTimerService;
         _leaderboardService = leaderboardService;
         _unitOfWork = unitOfWork;
@@ -72,16 +72,5 @@ public sealed class EndGameCommandHandler : IRequestHandler<EndGameCommand, Game
             Duration = (gameSession.EndedAt ?? DateTime.UtcNow) - (gameSession.StartedAt ?? DateTime.UtcNow),
             FinalLeaderboard = finalLeaderboard
         };
-    }
-
-    private Guid GetCurrentHostUserId()
-    {
-        var userIdString = _currentUserService.UserId
-            ?? throw new UnauthorizedException("Người dùng chưa đăng nhập");
-
-        if (!Guid.TryParse(userIdString, out var hostUserId))
-            throw new UnauthorizedException("ID người dùng không hợp lệ");
-
-        return hostUserId;
     }
 }

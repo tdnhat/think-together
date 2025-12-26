@@ -57,13 +57,13 @@ export function DashboardNavbar() {
   }, [logout, router]);
 
   return (
-    <div className="flex flex-1 items-center justify-between gap-6 px-6">
+    <div className="flex flex-1 items-center justify-between gap-4 px-4">
       <div className="flex flex-1 justify-center">
         <SearchInput
           className="w-full max-w-xl"
           placeholder="Tìm kiếm bộ câu hỏi..."
           value=""
-          onChange={() => {}}
+          onChange={() => { }}
           iconColor="text-[var(--text-secondary)]/40"
         />
       </div>

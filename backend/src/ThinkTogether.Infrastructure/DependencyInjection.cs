@@ -136,16 +136,25 @@ public static class DependencyInjection
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         services.AddHostedService<QueuedHostedService>();
 
-        // Domain Services
+        // Domain Services - User Aggregate
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
         services.AddScoped<IEmailService, EmailService>();
         
+        // Domain Services - Challenge Aggregate
+        services.AddScoped<ThinkTogether.Domain.Aggregates.ChallengeAggregate.Services.IAnswerGradingService, AnswerGradingService>();
+        services.AddScoped<ThinkTogether.Domain.Aggregates.ChallengeAggregate.Services.IShareLinkGeneratorService, ShareLinkGeneratorService>();
+        services.AddScoped<ThinkTogether.Domain.Aggregates.ChallengeAggregate.Services.IChallengeValidationService, ChallengeValidationService>();
+        
+        // Domain Services - Class Aggregate
+        services.AddScoped<ThinkTogether.Domain.Aggregates.ClassAggregate.Services.IHomeworkSubmissionService, HomeworkSubmissionService>();
+        
         // Gaming Services
         services.AddScoped<IPinGeneratorService, PinGeneratorService>();
         services.AddScoped<IScoreCalculatorService, ScoreCalculatorService>();
+        services.AddScoped<ThinkTogether.Domain.Aggregates.GamingAggregate.Services.IGameAnswerGradingService, GameAnswerGradingService>();
         services.AddScoped<IQuestionTimerService, QuestionTimerService>();
         services.AddScoped<ILeaderboardService, LeaderboardService>();
         services.AddScoped<IGameQuestionMappingService, GameQuestionMappingService>();

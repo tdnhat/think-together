@@ -9,7 +9,6 @@ public class AnswerSubmittedDomainEvent : IDomainEvent
     public Guid GameQuestionId { get; }
     public bool IsCorrect { get; }
     public int PointsEarned { get; }
-    public int ResponseTimeMs { get; }
     public DateTime OccurredOn => DateTime.UtcNow;
 
     public AnswerSubmittedDomainEvent(
@@ -17,15 +16,12 @@ public class AnswerSubmittedDomainEvent : IDomainEvent
         Guid playerId,
         Guid gameQuestionId,
         bool isCorrect,
-        int pointsEarned,
-        int responseTimeMs)
+        int pointsEarned)
     {
         GameSessionId = gameSessionId;
         PlayerId = playerId;
         GameQuestionId = gameQuestionId;
         IsCorrect = isCorrect;
         PointsEarned = pointsEarned;
-        ResponseTimeMs = responseTimeMs;
     }
 }
-

@@ -91,14 +91,14 @@ export default function ClassDetailPage() {
     // First, try to get challenge by quiz set ID
     try {
       const challenge = await challengeService.getChallengeByQuizSetId(homework.quizSetId)
-      
+
       if (challenge) {
         // If user is logged in, auto-start with their name
         if (user?.id) {
           startAttempt(
             {
               challengeId: challenge.id,
-              nickname: user.fullName || user.email || 'Học sinh',
+              nickname: user.name || user.email || 'Học sinh',
               userId: user.id,
               homeworkId: homework.id,
             },
@@ -376,7 +376,7 @@ export default function ClassDetailPage() {
             </DialogHeader>
             <HomeworkForm
               classId={classId}
-              onSubmit={handleCreateHomework}
+              onSubmit={(data) => handleCreateHomework(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
               onCancel={() => setIsCreateHomeworkModalOpen(false)}
               isSubmitting={createHomeworkMutation.isPending}
             />
@@ -393,7 +393,7 @@ export default function ClassDetailPage() {
               <HomeworkForm
                 classId={classId}
                 homework={editingHomework}
-                onSubmit={handleUpdateHomework}
+                onSubmit={(data) => handleUpdateHomework(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
                 onCancel={() => setEditingHomework(null)}
                 isSubmitting={updateHomeworkMutation.isPending}
               />

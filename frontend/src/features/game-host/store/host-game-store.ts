@@ -1,8 +1,8 @@
 /**
- * Host Game Store (v2)
+ * Host Game Store
  *
- * Clean, simple Zustand store for host game state.
- * Single source of truth for UI state.
+ * Event-driven state management for game host.
+ * Reacts to backend SignalR events for state changes.
  */
 
 import { create } from 'zustand'
@@ -11,16 +11,17 @@ import type {
   GameSession,
   GameQuestion,
   LeaderboardEntry,
-  QuestionEndedMessage,
+  QuestionType,
 } from '../types'
 import type {
   PlayerJoinedEvent,
   PlayerLeftEvent,
+  GameStartedEvent,
   QuestionStartedEvent,
   QuestionEndedEvent,
   AnswerReceivedEvent,
-  GameEndedEvent,
   LeaderboardUpdatedEvent,
+  GameEndedEvent,
   ConnectionState,
 } from '../services/signalr.service'
 
@@ -31,7 +32,7 @@ import type {
 export type HostPhase =
   | 'idle'        // Initial state
   | 'lobby'       // Waiting for players
-  | 'starting'    // Game is starting
+  | 'starting'    // Game is starting (brief transition)
   | 'question'    // Showing question
   | 'leaderboard' // Showing leaderboard between questions
   | 'ended'       // Game ended
@@ -47,12 +48,16 @@ export interface HostGameState {
   // Game flow
   phase: HostPhase
   currentQuestion: GameQuestion | null
-  questionResult: QuestionEndedMessage | null
+  leaderboard: LeaderboardEntry[]
 
   // Stats
-  leaderboard: LeaderboardEntry[]
   answeredCount: number
   totalPlayers: number
+
+  // Loading states
+  isLoading: boolean
+  isStarting: boolean
+  isLoadingNext: boolean
 
   // Error
   error: string | null
@@ -70,11 +75,16 @@ interface HostGameActions {
 
   // Question
   setCurrentQuestion: (question: GameQuestion | null) => void
-  setQuestionResult: (result: QuestionEndedMessage | null) => void
 
   // Stats
   setLeaderboard: (leaderboard: LeaderboardEntry[]) => void
   setAnsweredCount: (count: number) => void
+  setTotalPlayers: (count: number) => void
+
+  // Loading states
+  setIsLoading: (isLoading: boolean) => void
+  setIsStarting: (isStarting: boolean) => void
+  setIsLoadingNext: (isLoadingNext: boolean) => void
 
   // Error
   setError: (error: string | null) => void
@@ -82,7 +92,7 @@ interface HostGameActions {
   // Event handlers (called from SignalR)
   handlePlayerJoined: (event: PlayerJoinedEvent) => void
   handlePlayerLeft: (event: PlayerLeftEvent) => void
-  handleGameStarted: () => void
+  handleGameStarted: (event: GameStartedEvent) => void
   handleQuestionStarted: (event: QuestionStartedEvent) => void
   handleQuestionEnded: (event: QuestionEndedEvent) => void
   handleAnswerReceived: (event: AnswerReceivedEvent) => void
@@ -106,10 +116,12 @@ const initialState: HostGameState = {
   session: null,
   phase: 'idle',
   currentQuestion: null,
-  questionResult: null,
   leaderboard: [],
   answeredCount: 0,
   totalPlayers: 0,
+  isLoading: false,
+  isStarting: false,
+  isLoadingNext: false,
   error: null,
 }
 
@@ -145,13 +157,8 @@ export const useHostGameStore = create<HostGameStore>()(
         setCurrentQuestion: (currentQuestion) => {
           set({
             currentQuestion,
-            answeredCount: 0,
-            questionResult: null,
+            answeredCount: 0, // Reset answered count for new question
           }, false, 'host/setCurrentQuestion')
-        },
-
-        setQuestionResult: (questionResult) => {
-          set({ questionResult }, false, 'host/setQuestionResult')
         },
 
         // Stats
@@ -161,6 +168,21 @@ export const useHostGameStore = create<HostGameStore>()(
 
         setAnsweredCount: (answeredCount) => {
           set({ answeredCount }, false, 'host/setAnsweredCount')
+        },
+
+        setTotalPlayers: (totalPlayers) => {
+          set({ totalPlayers }, false, 'host/setTotalPlayers')
+        },
+
+        // Loading states
+        setIsLoading: (isLoading) => {
+          set({ isLoading }, false, 'host/setIsLoading')
+        },
+        setIsStarting: (isStarting) => {
+          set({ isStarting }, false, 'host/setIsStarting')
+        },
+        setIsLoadingNext: (isLoadingNext) => {
+          set({ isLoadingNext }, false, 'host/setIsLoadingNext')
         },
 
         // Error
@@ -207,7 +229,8 @@ export const useHostGameStore = create<HostGameStore>()(
           }, false, 'host/playerLeft')
         },
 
-        handleGameStarted: () => {
+        handleGameStarted: (event) => {
+          // Brief transition to 'starting', will move to 'question' when QuestionStarted arrives
           set({ phase: 'starting' }, false, 'host/gameStarted')
         },
 
@@ -216,7 +239,7 @@ export const useHostGameStore = create<HostGameStore>()(
             id: event.questionId,
             gameQuestionId: event.gameQuestionId,
             content: event.content,
-            type: parseInt(event.questionType) as 1 | 2 | 3 | 4 | 5,
+            type: parseInt(event.questionType) as QuestionType,
             timeLimit: event.timeLimit,
             positionInGame: event.positionInGame,
             videoUrl: event.videoUrl,
@@ -231,30 +254,23 @@ export const useHostGameStore = create<HostGameStore>()(
           set({
             currentQuestion: question,
             phase: 'question',
-            answeredCount: 0,
-            questionResult: null,
+            answeredCount: 0, // Reset for new question
           }, false, 'host/questionStarted')
         },
 
         handleQuestionEnded: (event) => {
-          const result: QuestionEndedMessage = {
-            gameQuestionId: event.gameQuestionId,
-            correctOptionIndexes: event.correctOptionIndexes,
-            correctAnswerCount: event.correctAnswerCount,
-            wrongAnswerCount: event.wrongAnswerCount,
-            topPlayers: event.topPlayers.map(p => ({
-              playerId: p.playerId,
-              nickname: p.nickname,
-              totalPoints: p.totalPoints,
-              correctAnswers: p.correctAnswers,
-              rank: p.rank,
-              accuracyPercentage: 0, // Backend doesn't send this for QuestionEnded
-            })),
-          }
+          const leaderboard: LeaderboardEntry[] = event.topPlayers.map(p => ({
+            playerId: p.playerId,
+            nickname: p.nickname,
+            totalPoints: p.totalPoints,
+            correctAnswers: p.correctAnswers,
+            rank: p.rank,
+            accuracyPercentage: 0, // Backend doesn't send this
+          }))
 
           set({
-            questionResult: result,
-            leaderboard: result.topPlayers,
+            phase: 'leaderboard',
+            leaderboard,
           }, false, 'host/questionEnded')
         },
 
@@ -312,11 +328,12 @@ export const selectHostConnectionState = (s: HostGameStore) => s.connectionState
 export const selectHostSession = (s: HostGameStore) => s.session
 export const selectHostPhase = (s: HostGameStore) => s.phase
 export const selectHostCurrentQuestion = (s: HostGameStore) => s.currentQuestion
-export const selectHostQuestionResult = (s: HostGameStore) => s.questionResult
 export const selectHostLeaderboard = (s: HostGameStore) => s.leaderboard
 export const selectHostAnsweredCount = (s: HostGameStore) => s.answeredCount
 export const selectHostTotalPlayers = (s: HostGameStore) => s.totalPlayers
+export const selectHostIsLoading = (s: HostGameStore) => s.isLoading
+export const selectHostIsStarting = (s: HostGameStore) => s.isStarting
+export const selectHostIsLoadingNext = (s: HostGameStore) => s.isLoadingNext
 export const selectHostError = (s: HostGameStore) => s.error
 export const selectHostActions = (s: HostGameStore) => s.actions
 export const selectHostIsConnected = (s: HostGameStore) => s.connectionState === 'connected'
-

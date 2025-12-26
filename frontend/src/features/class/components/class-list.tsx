@@ -64,7 +64,7 @@ export function ClassList({
             <SearchInput
               placeholder="Tìm kiếm lớp học..."
               value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(value) => onSearchChange(value)}
               className="max-w-md"
             />
           )}
