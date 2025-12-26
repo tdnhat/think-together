@@ -51,7 +51,6 @@ public class GameStartedDomainEventHandler : INotificationHandler<GameStartedDom
                 return;
             }
 
-            var pin = gameSession.PIN;
             var firstGameQuestion = gameSession.GetCurrentGameQuestion();
             if (firstGameQuestion == null)
             {
@@ -81,18 +80,12 @@ public class GameStartedDomainEventHandler : INotificationHandler<GameStartedDom
                 cancellationToken);
 
             var questionDto = _questionMappingService.MapToDto(firstGameQuestion, question);
-            var endTime = await _questionTimerService.GetQuestionEndTimeAsync(gameSession.Id, cancellationToken)
-                ?? DateTime.UtcNow.AddSeconds(question.TimeLimit);
 
             // Send GameStarted notification
             await _notificationService.NotifyGameStartedAsync(gameSession.Id, questionDto, notification.TotalQuestions);
 
-            // Also send QuestionStarted notification (for consistency)
-            await _notificationService.NotifyQuestionStartedAsync(
-                pin,
-                questionDto,
-                notification.TotalQuestions,
-                endTime);
+            // Note: QuestionStarted notification will be sent by QuestionStartedDomainEventHandler
+            // when StartQuestion() fires QuestionStartedDomainEvent, so we don't send it here to avoid duplicates
 
             _logger.LogInformation("GameStarted event processed successfully for session {GameSessionId}", notification.GameSessionId);
         }
