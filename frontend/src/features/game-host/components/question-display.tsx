@@ -30,11 +30,14 @@ export function QuestionDisplay({
 }: Readonly<QuestionDisplayProps>) {
   // Calculate remaining time based on endTime for accurate sync
   const calculateRemainingTime = useCallback(() => {
-    // Check if question has endTime (QuestionStartedMessage)
+    // Check if question has endTime (from SignalR QuestionStarted event)
     if ('endTime' in question && question.endTime) {
       const endTimeMs = new Date(question.endTime).getTime()
-      return Math.max(0, Math.floor((endTimeMs - Date.now()) / 1000))
+      const now = Date.now()
+      const remaining = Math.max(0, Math.floor((endTimeMs - now) / 1000))
+      return remaining
     }
+    // Fallback to timeLimit if no endTime (shouldn't happen in event-driven flow)
     return question.timeLimit
   }, [question])
 

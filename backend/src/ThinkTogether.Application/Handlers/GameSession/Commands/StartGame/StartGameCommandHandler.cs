@@ -44,10 +44,14 @@ public sealed class StartGameCommandHandler : BaseHandler, IRequestHandler<Start
 
         gameSession.ValidateHostPermission(hostUserId);
         gameSession.InitializeScores(gameSession.GameQuestions.Count);
-        gameSession.Start();
+        gameSession.Start(); // This fires GameStartedDomainEvent which triggers QuestionStartedDomainEvent
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Domain events will be published and handled by event handlers
+        // Timer will be started in QuestionStartedDomainEventHandler
+        // SignalR notifications will be sent by event handlers
 
         var firstGameQuestion = gameSession.GetCurrentGameQuestion()
             ?? throw new InvalidOperationException("Không tìm thấy câu hỏi đầu tiên");
@@ -58,12 +62,7 @@ public sealed class StartGameCommandHandler : BaseHandler, IRequestHandler<Start
         var question = quizSet.Questions.FirstOrDefault(q => q.Id == firstGameQuestion.QuestionId)
             ?? throw new EntityNotFoundException("Câu hỏi", firstGameQuestion.QuestionId);
 
-        await _questionTimerService.StartTimerAsync(
-            gameSession.Id,
-            firstGameQuestion.Id,
-            question.TimeLimit,
-            cancellationToken);
-
+        // Return DTO for API response (notifications handled by event handlers)
         return _questionMappingService.MapToDto(firstGameQuestion, question);
     }
 }

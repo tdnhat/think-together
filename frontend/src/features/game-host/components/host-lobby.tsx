@@ -1,50 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Play, StopCircle, Loader2, AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert'
 import { PinDisplay } from './pin-display'
 import { PlayerList } from './player-list'
-import { toastSuccess, toastError, toastInfo } from '@/lib/utils/toast'
+import { toastError } from '@/lib/utils/toast'
 import { GAME_HOST_CONSTANTS } from '../constants'
-import { gameSessionService } from '../api/game-session.service'
-import { useHostGameStore, selectHostSession, selectHostPhase, selectHostActions, selectHostError, selectHostIsConnected } from '../store/host-game-store'
-import type { GameSession, GameEndedMessage, StartGameResponse } from '../types'
+import { useHostGame } from '../hooks/use-host-game'
+import { useHostGameStore, selectHostSession, selectHostError, selectHostIsConnected } from '../store/host-game-store'
+import type { GameSession } from '../types'
 
 interface HostLobbyProps {
   session: GameSession
-  onGameStart?: (data: StartGameResponse) => void
-  onGameEnd?: (result: GameEndedMessage) => void
   className?: string
 }
 
 export function HostLobby({
   session: initialSession,
-  onGameStart,
-  onGameEnd,
   className = '',
 }: Readonly<HostLobbyProps>) {
-  const [isStarting, setIsStarting] = useState(false)
-  const [isEnding, setIsEnding] = useState(false)
-
+  const { startGame, endGame, isStarting } = useHostGame({ sessionId: initialSession.id })
   const session = useHostGameStore(selectHostSession) || initialSession
-  const phase = useHostGameStore(selectHostPhase)
   const error = useHostGameStore(selectHostError)
   const isConnected = useHostGameStore(selectHostIsConnected)
-  const { 
-    setSession, 
-    setPhase, 
-    setError, 
-    handleGameEnded,
-  } = useHostGameStore(selectHostActions)
-
-  // Initialize session
-  useEffect(() => {
-    setSession(initialSession)
-    setPhase('lobby')
-  }, [initialSession, setSession, setPhase])
 
   const handleStartGame = async () => {
     if (!session) return
@@ -54,59 +35,12 @@ export function HostLobby({
       return
     }
 
-    setIsStarting(true)
-    toastInfo(GAME_HOST_CONSTANTS.MESSAGES.STARTING_GAME)
-
-    try {
-      const response = await gameSessionService.startGame(session.id)
-      
-      if (response.success && response.data) {
-        toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.GAME_STARTED)
-        // Phase will be updated by parent via onGameStart
-        onGameStart?.(response.data)
-      } else {
-        toastError(response.message || 'Không thể bắt đầu trò chơi')
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Không thể bắt đầu trò chơi'
-      toastError(errorMessage)
-    } finally {
-      setIsStarting(false)
-    }
+    await startGame()
   }
 
   const handleEndGame = async () => {
     if (!session) return
-
-    setIsEnding(true)
-    toastInfo(GAME_HOST_CONSTANTS.MESSAGES.ENDING_GAME)
-
-    try {
-      const response = await gameSessionService.endGame(session.id)
-      
-      if (response.success && response.data) {
-        toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.GAME_ENDED)
-        handleGameEnded({
-          gameSessionId: session.id,
-          totalQuestions: response.data.totalQuestions,
-          totalPlayers: response.data.totalPlayers,
-          duration: response.data.duration,
-          finalLeaderboard: response.data.finalLeaderboard,
-        })
-        onGameEnd?.({
-          gameSessionId: session.id,
-          totalQuestions: response.data.totalQuestions,
-          totalPlayers: response.data.totalPlayers,
-          duration: response.data.duration,
-          finalLeaderboard: response.data.finalLeaderboard,
-        })
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Không thể kết thúc trò chơi'
-      toastError(errorMessage)
-    } finally {
-      setIsEnding(false)
-    }
+    await endGame()
   }
 
   const playerCount = session?.players.length || 0
@@ -177,14 +111,10 @@ export function HostLobby({
                 variant="neutral"
                 size="lg"
                 onClick={handleEndGame}
-                disabled={isEnding}
+                disabled={isStarting}
                 className="gap-2"
               >
-                {isEnding ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <StopCircle className="h-5 w-5" />
-                )}
+                <StopCircle className="h-5 w-5" />
                 Hủy
               </Button>
             </div>

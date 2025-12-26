@@ -73,6 +73,14 @@ public sealed partial class GameSession : AggregateRoot
 
         _playerAnswers.Add(answer);
         UpdatedAt = DateTime.UtcNow;
+
+        // Fire AnswerSubmittedDomainEvent
+        AddDomainEvent(new AnswerSubmittedDomainEvent(
+            Id,
+            answer.GamePlayerId,
+            answer.GameQuestionId,
+            answer.IsCorrect,
+            answer.PointsEarned));
     }
 
     public void Start()
@@ -91,6 +99,9 @@ public sealed partial class GameSession : AggregateRoot
         UpdatedAt = DateTime.UtcNow;
 
         AddDomainEvent(new GameStartedDomainEvent(Id, _gameQuestions.Count, _players.Count));
+
+        // Start the first question
+        StartQuestion();
     }
 
     public void End()
@@ -112,8 +123,45 @@ public sealed partial class GameSession : AggregateRoot
         if (!HasMoreQuestions())
             throw new ConflictException("Không còn câu hỏi nào");
 
+        // End current question
+        EndCurrentQuestion();
+
+        // Move to next question
         CurrentQuestionIndex++;
         UpdatedAt = DateTime.UtcNow;
+
+        // Start the next question
+        StartQuestion();
+    }
+
+    public void StartQuestion()
+    {
+        if (Status != GameStatus.InProgress)
+            throw new ConflictException("Chỉ có thể bắt đầu câu hỏi khi trò chơi đang diễn ra");
+
+        var currentQuestion = GetCurrentGameQuestion();
+        if (currentQuestion == null)
+            throw new InvalidOperationException("Không tìm thấy câu hỏi hiện tại");
+
+        AddDomainEvent(new QuestionStartedDomainEvent(
+            Id,
+            currentQuestion.Id,
+            currentQuestion.PositionInGame));
+    }
+
+    public void EndCurrentQuestion()
+    {
+        if (Status != GameStatus.InProgress)
+            throw new ConflictException("Chỉ có thể kết thúc câu hỏi khi trò chơi đang diễn ra");
+
+        var currentQuestion = GetCurrentGameQuestion();
+        if (currentQuestion == null)
+            return; // No current question to end
+
+        AddDomainEvent(new QuestionEndedDomainEvent(
+            Id,
+            currentQuestion.Id,
+            currentQuestion.PositionInGame));
     }
 
     private void CalculateFinalRanks()

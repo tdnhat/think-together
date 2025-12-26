@@ -17,10 +17,6 @@ import {
   useHostGame,
   getStoredHostSession,
 } from '@/features/game-host'
-import type { 
-  GameEndedMessage,
-  StartGameResponse,
-} from '@/features/game-host'
 import { ROUTES } from '@/config/routes'
 import { useRouter } from 'next/navigation'
 
@@ -65,14 +61,6 @@ function HostPageContent() {
     }
   }
 
-  const handleGameStart = async (_data: StartGameResponse) => {
-    // Game start is handled by useHostGame via SignalR
-    // The phase will automatically transition
-  }
-
-  const handleGameEnd = (_result: GameEndedMessage) => {
-    // Game end is handled by useHostGame via SignalR
-  }
 
   // Loading state
   if (isLoading) {
@@ -143,11 +131,7 @@ function HostPageContent() {
           </h1>
         </div>
         
-        <HostLobby
-          session={session}
-          onGameStart={handleGameStart}
-          onGameEnd={handleGameEnd}
-        />
+        <HostLobby session={session} />
       </div>
     )
   }

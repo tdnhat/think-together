@@ -15,7 +15,6 @@ import {
   selectHostSession,
   selectHostPhase,
   selectHostCurrentQuestion,
-  selectHostQuestionResult,
   selectHostLeaderboard,
   selectHostAnsweredCount,
   selectHostTotalPlayers,
@@ -44,7 +43,6 @@ export interface UseHostGameReturn {
   session: GameSession | null
   phase: ReturnType<typeof selectHostPhase>
   currentQuestion: ReturnType<typeof selectHostCurrentQuestion>
-  questionResult: ReturnType<typeof selectHostQuestionResult>
   leaderboard: ReturnType<typeof selectHostLeaderboard>
   answeredCount: number
   totalPlayers: number
@@ -84,7 +82,6 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
   const session = useHostGameStore(selectHostSession)
   const phase = useHostGameStore(selectHostPhase)
   const currentQuestion = useHostGameStore(selectHostCurrentQuestion)
-  const questionResult = useHostGameStore(selectHostQuestionResult)
   const leaderboard = useHostGameStore(selectHostLeaderboard)
   const answeredCount = useHostGameStore(selectHostAnsweredCount)
   const totalPlayers = useHostGameStore(selectHostTotalPlayers)
@@ -108,9 +105,9 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       console.log('[Host] Player left:', event.nickname)
       actions.handlePlayerLeft(event)
     },
-    onGameStarted: () => {
+    onGameStarted: (event) => {
       console.log('[Host] Game started')
-      actions.handleGameStarted()
+      actions.handleGameStarted(event)
     },
     onQuestionStarted: (event) => {
       console.log('[Host] Question started:', event.positionInGame)
@@ -410,7 +407,6 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     session,
     phase,
     currentQuestion,
-    questionResult,
     leaderboard,
     answeredCount,
     totalPlayers,

@@ -101,12 +101,16 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
     },
     onGameStarted: (event) => {
       console.log('[Player] Game started:', event.totalQuestions, 'questions')
-      actions.handleGameStarted(event.totalQuestions)
+      actions.handleGameStarted({ totalQuestions: event.totalQuestions })
       toastSuccess(GAME_PLAYER_CONSTANTS.MESSAGES.GAME_STARTED)
     },
     onQuestionStarted: (event) => {
       console.log('[Player] Question started:', event.positionInGame, '/', event.totalQuestions)
       actions.handleQuestionStarted(event)
+    },
+    onQuestionEnded: (event) => {
+      console.log('[Player] Question ended')
+      actions.handleQuestionEnded(event)
     },
     onLeaderboardUpdated: (event) => {
       console.log('[Player] Leaderboard updated')

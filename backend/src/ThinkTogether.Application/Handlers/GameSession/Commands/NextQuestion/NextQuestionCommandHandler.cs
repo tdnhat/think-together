@@ -54,6 +54,7 @@ public sealed class NextQuestionCommandHandler : BaseHandler, IRequestHandler<Ne
 
         await _questionTimerService.StopTimerAsync(request.GameSessionId, cancellationToken);
 
+        // Build leaderboard before moving to next question (for QuestionEnded event)
         var leaderboard = _leaderboardService.BuildLeaderboard(gameSession)
             .Select(e => new LeaderboardEntryDto
             {
@@ -75,11 +76,18 @@ public sealed class NextQuestionCommandHandler : BaseHandler, IRequestHandler<Ne
                 Leaderboard: leaderboard);
         }
 
+        // MoveToNextQuestion() fires QuestionEndedDomainEvent and QuestionStartedDomainEvent
+        // Event handlers will send SignalR notifications and start timer
         gameSession.MoveToNextQuestion();
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Domain events will be published and handled by event handlers
+        // Timer will be started in QuestionStartedDomainEventHandler
+        // SignalR notifications will be sent by event handlers
+
+        // Return DTOs for API response
         var nextGameQuestion = gameSession.GetCurrentGameQuestion()
             ?? throw new InvalidOperationException("Không tìm thấy câu hỏi tiếp theo");
 
@@ -88,12 +96,6 @@ public sealed class NextQuestionCommandHandler : BaseHandler, IRequestHandler<Ne
 
         var question = quizSet.Questions.FirstOrDefault(q => q.Id == nextGameQuestion.QuestionId)
             ?? throw new EntityNotFoundException("Câu hỏi", nextGameQuestion.QuestionId);
-
-        await _questionTimerService.StartTimerAsync(
-            gameSession.Id,
-            nextGameQuestion.Id,
-            question.TimeLimit,
-            cancellationToken);
 
         var questionDto = _questionMappingService.MapToDto(nextGameQuestion, question);
 

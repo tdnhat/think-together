@@ -1,8 +1,9 @@
 /**
- * Player Game Store (v2)
+ * Player Game Store
  *
- * Clean Zustand store for player game state.
- * Persists essential data for reconnection.
+ * Event-driven state management for game player.
+ * Reacts to backend SignalR events for state changes.
+ * Persists player identity for reconnection.
  */
 
 import { create } from 'zustand'
@@ -10,6 +11,7 @@ import { devtools, persist } from 'zustand/middleware'
 import type {
   ConnectionState,
   QuestionStartedEvent,
+  QuestionEndedEvent,
   GameEndedEvent,
   LeaderboardUpdatedEvent
 } from '@/features/game-host/services/signalr.service'
@@ -22,9 +24,9 @@ export type PlayerPhase =
   | 'idle'       // Initial state
   | 'joining'    // Joining game
   | 'lobby'      // Waiting in lobby
-  | 'starting'   // Game starting
+  | 'starting'   // Game starting (brief transition)
   | 'question'   // Answering question
-  | 'answered'   // Submitted answer, waiting
+  | 'answered'   // Submitted answer, waiting for results
   | 'leaderboard'// Viewing leaderboard
   | 'ended'      // Game ended
   | 'error'      // Error state
@@ -44,7 +46,7 @@ export interface PlayerQuestion {
   content: string
   questionType: string
   timeLimit: number
-  endTime: string
+  endTime: string // ISO string from server for synchronization
   positionInGame: number
   totalQuestions: number
   videoUrl: string | null
@@ -69,7 +71,7 @@ export interface PlayerGameState {
   // Answer state
   selectedAnswers: number[]
   hasAnswered: boolean
-  answerStartTime: number | null
+  answerStartTime: number | null // Timestamp when question started (for response time)
 
   // Results
   leaderboard: LeaderboardEntry[]
@@ -102,8 +104,9 @@ interface PlayerGameActions {
   setError: (error: string | null) => void
 
   // Event handlers
-  handleGameStarted: (totalQuestions: number) => void
+  handleGameStarted: (event: { totalQuestions: number }) => void
   handleQuestionStarted: (event: QuestionStartedEvent) => void
+  handleQuestionEnded: (event: QuestionEndedEvent) => void
   handleLeaderboardUpdated: (event: LeaderboardUpdatedEvent) => void
   handleGameEnded: (event: GameEndedEvent) => void
 
@@ -175,13 +178,15 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
 
           // Answer selection
           selectAnswer: (index) => {
-            const { currentQuestion, selectedAnswers } = get()
-            if (!currentQuestion) return
+            const { currentQuestion, selectedAnswers, hasAnswered } = get()
+            if (!currentQuestion || hasAnswered) return
 
             // Determine if single choice
             const questionType = currentQuestion.questionType
             const isSingleChoice = questionType === '1' ||
                                    questionType === 'SingleChoice' ||
+                                   questionType === '6' || // Video
+                                   questionType === '7' || // Audio
                                    questionType === '3' ||
                                    questionType === 'TrueFalse'
 
@@ -217,34 +222,57 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
           },
 
           // Event handlers
-          handleGameStarted: (totalQuestions) => {
+          handleGameStarted: (event) => {
             set({
               phase: 'starting',
-              totalQuestions,
+              totalQuestions: event.totalQuestions,
             }, false, 'player/gameStarted')
           },
 
           handleQuestionStarted: (event) => {
+            const question: PlayerQuestion = {
+              gameQuestionId: event.gameQuestionId,
+              questionId: event.questionId,
+              content: event.content,
+              questionType: event.questionType,
+              timeLimit: event.timeLimit,
+              endTime: event.endTime, // ISO string from server
+              positionInGame: event.positionInGame,
+              totalQuestions: event.totalQuestions,
+              videoUrl: event.videoUrl,
+              videoTimestamp: event.videoTimestamp,
+              options: event.options,
+            }
+
             set({
-              currentQuestion: {
-                gameQuestionId: event.gameQuestionId,
-                questionId: event.questionId,
-                content: event.content,
-                questionType: event.questionType,
-                timeLimit: event.timeLimit,
-                endTime: event.endTime,
-                positionInGame: event.positionInGame,
-                totalQuestions: event.totalQuestions,
-                videoUrl: event.videoUrl,
-                videoTimestamp: event.videoTimestamp,
-                options: event.options,
-              },
+              currentQuestion: question,
               phase: 'question',
               selectedAnswers: [],
               hasAnswered: false,
               answerStartTime: Date.now(),
               totalQuestions: event.totalQuestions,
             }, false, 'player/questionStarted')
+          },
+
+          handleQuestionEnded: (event) => {
+            // Question ended - transition to leaderboard phase
+            const { playerId } = get()
+            const mappedLeaderboard: LeaderboardEntry[] = event.topPlayers.map(e => ({
+              playerId: e.playerId,
+              nickname: e.nickname,
+              totalPoints: e.totalPoints,
+              correctAnswers: e.correctAnswers,
+              rank: e.rank,
+              accuracyPercentage: 0,
+            }))
+            const playerEntry = mappedLeaderboard.find(e => e.playerId === playerId)
+
+            set({
+              phase: 'leaderboard',
+              leaderboard: mappedLeaderboard,
+              totalPoints: playerEntry?.totalPoints ?? get().totalPoints,
+              currentRank: playerEntry?.rank ?? get().currentRank,
+            }, false, 'player/questionEnded')
           },
 
           handleLeaderboardUpdated: (event) => {
@@ -255,7 +283,7 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
               totalPoints: e.totalPoints,
               correctAnswers: e.correctAnswers,
               rank: e.rank,
-              accuracyPercentage: 0, // Backend doesn't send this
+              accuracyPercentage: 0,
             }))
             const playerEntry = mappedLeaderboard.find(e => e.playerId === playerId)
 
@@ -275,7 +303,7 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
               totalPoints: e.totalPoints,
               correctAnswers: e.correctAnswers,
               rank: e.rank,
-              accuracyPercentage: 0, // Backend doesn't send this
+              accuracyPercentage: 0,
             }))
             const playerEntry = mappedLeaderboard.find(e => e.playerId === playerId)
 
@@ -342,4 +370,3 @@ export const selectPlayerTotalQuestions = (s: PlayerGameStore) => s.totalQuestio
 export const selectPlayerError = (s: PlayerGameStore) => s.error
 export const selectPlayerActions = (s: PlayerGameStore) => s.actions
 export const selectPlayerIsConnected = (s: PlayerGameStore) => s.connectionState === 'connected'
-

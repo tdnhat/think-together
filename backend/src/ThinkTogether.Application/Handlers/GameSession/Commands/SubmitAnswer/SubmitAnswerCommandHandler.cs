@@ -83,7 +83,12 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
             request.ResponseTimeMs,
             pointsEarned);
 
+        // Add answer to player's collection
         player.AddAnswer(playerAnswer);
+        
+        // Add answer to game session (fires AnswerSubmittedDomainEvent)
+        gameSession.AddPlayerAnswer(playerAnswer);
+        
         gameQuestion.RecordAnswer(isCorrect, request.ResponseTimeMs);
 
         var playerScore = gameSession.GetPlayerScore(request.PlayerId);
@@ -96,6 +101,9 @@ public sealed class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCom
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Domain events will be published and handled by event handlers
+        // SignalR notifications will be sent by AnswerSubmittedDomainEventHandler
 
         var currentRank = gameSession.Scores
             .OrderByDescending(s => s.TotalPoints)

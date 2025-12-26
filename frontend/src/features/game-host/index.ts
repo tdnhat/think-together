@@ -41,7 +41,6 @@ export {
   selectHostPhase,
   selectHostSession,
   selectHostCurrentQuestion,
-  selectHostQuestionResult,
   selectHostLeaderboard,
   selectHostAnsweredCount,
   selectHostTotalPlayers,

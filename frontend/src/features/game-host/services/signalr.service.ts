@@ -103,7 +103,7 @@ export interface GameEndedEvent {
   gameSessionId: string
   totalQuestions: number
   totalPlayers: number
-  duration: string
+  duration: string // TimeSpan from backend as string (e.g., "00:05:30")
   finalLeaderboard: Array<{
     playerId: string
     nickname: string
@@ -160,94 +160,58 @@ class GameSignalRService {
     if (this.startPromise) {
       try {
         await this.startPromise
-        // After waiting, check again (connection state may have changed)
         if (this.isConnected()) {
           return
         }
       } catch {
-        // Previous connection attempt failed, continue to try again
+        // Previous attempt failed, continue
       }
     }
 
-    // Create new connection if needed or if connection is null/disconnected
+    // Create connection if needed
     if (!this.connection || this.connection.state === signalR.HubConnectionState.Disconnected) {
       this.createConnection()
     }
 
-    // After createConnection, connection should not be null
     if (!this.connection) {
       throw new Error('Failed to create SignalR connection')
     }
 
-    // Handle different connection states
-    let connectionState = this.connection.state
-
-    // If already connected, we're good
-    if (connectionState === signalR.HubConnectionState.Connected) {
+    // If already connected, return
+    if (this.connection.state === signalR.HubConnectionState.Connected) {
       this.updateState('connected')
       return
     }
 
-    // If connecting/reconnecting, wait a bit for state to settle
-    if (connectionState === signalR.HubConnectionState.Connecting ||
-        connectionState === signalR.HubConnectionState.Reconnecting) {
+    // Wait if connecting/reconnecting
+    if (this.connection.state === signalR.HubConnectionState.Connecting ||
+        this.connection.state === signalR.HubConnectionState.Reconnecting) {
       await new Promise(resolve => setTimeout(resolve, 500))
-
-      // Check again
       if (this.isConnected()) {
         this.updateState('connected')
         return
       }
-      connectionState = this.connection.state
     }
 
-    // If disconnecting, wait for it to complete
-    if (connectionState === signalR.HubConnectionState.Disconnecting) {
-      await new Promise(resolve => setTimeout(resolve, 200))
-      connectionState = this.connection.state
-    }
-
-    // If still not in disconnected or connected state, recreate connection
-    if (connectionState !== signalR.HubConnectionState.Disconnected &&
-        connectionState !== signalR.HubConnectionState.Connected) {
-      console.warn(`[SignalR] Recreating connection from state: ${connectionState}`)
-      this.connection = null
-      this.createConnection()
-
-      if (!this.connection) {
-        throw new Error('Failed to create SignalR connection')
+    // Start connection
+    if (this.connection.state === signalR.HubConnectionState.Disconnected) {
+      this.updateState('connecting')
+      try {
+        this.startPromise = this.connection.start()
+        await this.startPromise
+        this.updateState('connected')
+        console.log('[SignalR] Connected successfully')
+      } catch (error) {
+        // Ignore "stopped during negotiation" errors (React strict mode)
+        if (error instanceof Error && error.message.includes('stopped during negotiation')) {
+          console.debug('[SignalR] Connection stopped during negotiation')
+          return
+        }
+        this.updateState('disconnected')
+        throw error
+      } finally {
+        this.startPromise = null
       }
-    }
-
-    // If we're now connected after all the waiting, return
-    if (this.isConnected()) {
-      this.updateState('connected')
-      return
-    }
-
-    // Only proceed if in disconnected state
-    if (this.connection.state !== signalR.HubConnectionState.Disconnected) {
-      console.warn(`[SignalR] Cannot start connection in state: ${this.connection.state}`)
-      return
-    }
-
-    this.updateState('connecting')
-
-    try {
-      this.startPromise = this.connection.start()
-      await this.startPromise
-      this.updateState('connected')
-      console.log('[SignalR] Connected successfully')
-    } catch (error) {
-      // Ignore "stopped during negotiation" errors (React strict mode)
-      if (error instanceof Error && error.message.includes('stopped during negotiation')) {
-        console.debug('[SignalR] Connection stopped during negotiation')
-        return
-      }
-      this.updateState('disconnected')
-      throw error
-    } finally {
-      this.startPromise = null
     }
   }
 
