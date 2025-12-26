@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.SignalR;
 using ThinkTogether.Api.Hubs;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.GamingAggregate.Specifications;
 
 namespace ThinkTogether.Api.Services;
 
@@ -9,13 +11,16 @@ public class GameSessionNotificationService : IGameSessionNotificationService
 {
     private readonly IHubContext<GameHub, IGameHubClient> _hubContext;
     private readonly IGameSessionStateService _stateService;
+    private readonly IGameSessionRepository _gameSessionRepository;
 
     public GameSessionNotificationService(
         IHubContext<GameHub, IGameHubClient> hubContext,
-        IGameSessionStateService stateService)
+        IGameSessionStateService stateService,
+        IGameSessionRepository gameSessionRepository)
     {
         _hubContext = hubContext;
         _stateService = stateService;
+        _gameSessionRepository = gameSessionRepository;
     }
 
     public async Task NotifyGameStartedAsync(Guid gameSessionId, GameQuestionDto firstQuestion, int totalQuestions)
@@ -55,7 +60,12 @@ public class GameSessionNotificationService : IGameSessionNotificationService
         if (nextQuestion != null)
         {
             var endTime = DateTime.UtcNow.AddSeconds(nextQuestion.TimeLimit);
-            await NotifyQuestionStartedAsync(pin, nextQuestion, nextQuestion.PositionInGame + 1, endTime);
+            // totalQuestions must represent the total number of questions in the session
+            var spec = new GameSessionWithFullDetailsSpec(gameSessionId);
+            var gameSession = await _gameSessionRepository.GetBySpecAsync(spec);
+            var totalQuestions = gameSession?.GameQuestions.Count ?? 0;
+
+            await NotifyQuestionStartedAsync(pin, nextQuestion, totalQuestions, endTime);
         }
     }
 
