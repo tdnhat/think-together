@@ -196,6 +196,24 @@ class QuizSetService {
       }
     }
   }
+
+  /**
+   * Export quiz set to PDF
+   * @param id Quiz set ID
+   * @returns Blob data
+   */
+  async exportPdf(id: string): Promise<Blob | null> {
+    try {
+      const response = await apiClient.get<Blob>(
+        `${API_ENDPOINTS.QUIZ_SET.GET_QUIZ_SET(id)}/export-pdf`,
+        { responseType: 'blob' } as any
+      )
+      return response
+    } catch (error) {
+      console.error('Error exporting quiz set:', error)
+      return null
+    }
+  }
 }
 
 export const quizSetService = new QuizSetService()

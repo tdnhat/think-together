@@ -5,15 +5,17 @@ import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { useQuizSet } from '@/features/quiz/hooks/use-quiz-set'
 import { useQuestions } from '@/features/quiz/hooks/use-questions'
-import { 
-  QuizDetailHeader, 
-  QuizInfoStats, 
+import {
+  QuizDetailHeader,
+  QuizInfoStats,
   QuizPreviewQuestions,
-  QuizActions 
+  QuizActions
 } from '@/features/quiz/components'
 import { useCreateChallenge, useChallengeByQuizSetId } from '@/features/challenge'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
+import { quizSetService } from '@/features/quiz/api/quiz-set.service'
+import { useState } from 'react'
 
 export default function QuizDetailPage() {
   const params = useParams()
@@ -25,6 +27,7 @@ export default function QuizDetailPage() {
   const { questions, isLoadingQuestions } = useQuestions(quizSetId, { pageSize: 10 })
   const { data: existingChallenge, isLoading: isLoadingChallenge } = useChallengeByQuizSetId(quizSetId)
   const { mutate: createChallenge, isPending: isCreatingChallenge } = useCreateChallenge()
+  const [isExporting, setIsExporting] = useState(false)
 
   const handleBack = () => {
     router.back()
@@ -64,6 +67,32 @@ export default function QuizDetailPage() {
   const handleViewAllQuestions = () => {
     // Navigate to edit page or questions page (to be implemented)
     console.log('View all questions', quizSetId)
+  }
+
+  const handleExportPdf = async () => {
+    if (!quizSet) return
+    setIsExporting(true)
+    try {
+      const blob = await quizSetService.exportPdf(quizSet.id)
+      if (blob) {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${quizSet.title}-export.pdf`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        a.remove()
+        toast.success('Đã xuất file PDF thành công')
+      } else {
+        toast.error('Không thể xuất file PDF')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Có lỗi xảy ra khi xuất file')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   if (isLoadingQuizSet) {
@@ -121,7 +150,7 @@ export default function QuizDetailPage() {
             <QuizInfoStats quizSet={quizSet} />
 
             {/* Action Card */}
-            <QuizActions 
+            <QuizActions
               quizSet={quizSet}
               challenge={existingChallenge}
               onStart={handleStart}
@@ -129,6 +158,8 @@ export default function QuizDetailPage() {
               onViewChallenge={handleViewChallenge}
               isCreatingChallenge={isCreatingChallenge}
               isLoadingChallenge={isLoadingChallenge}
+              onExportPdf={handleExportPdf}
+              isExportingPdf={isExporting}
             />
           </div>
         </div>

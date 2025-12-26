@@ -48,4 +48,13 @@ public interface IPdfExportService
         ChallengeStatsDto statsDto,
         string challengeTitle,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Export a quiz set as a PDF for paper examination.
+    /// Includes questions, options, and QR codes for media.
+    /// </summary>
+    /// <param name="quizSetId">The quiz set ID</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>PDF file as byte array</returns>
+    Task<byte[]> ExportQuizSetAsync(Guid quizSetId, CancellationToken cancellationToken = default);
 }

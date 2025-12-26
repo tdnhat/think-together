@@ -6,108 +6,59 @@ internal static class WelcomeEmailTemplate
 {
     internal static string Build(string recipientName)
     {
-        const string template = """
+        string template = """
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {{ font-family: 'Be Vietnam Pro', Arial, sans-serif; color: #003459; background-color: #f8fafc; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ 
-            background: #ffffff; 
-            border: 2px solid #00171f; 
-            border-radius: 12px; 
-            padding: 30px; 
-            text-align: center; 
-            box-shadow: 6px 6px 0 #00171f;
-            margin-bottom: 20px;
-        }}
-        .header h1 {{ 
-            font-family: 'Raleway', Arial, sans-serif;
-            font-size: 28px; 
-            font-weight: 700; 
-            margin: 0 0 10px 0; 
-            color: #003459;
-        }}
-        .logo {{ font-size: 32px; margin-bottom: 10px; }}
-        .content {{ 
-            background: #ffffff; 
-            border: 2px solid #00171f; 
-            border-radius: 12px; 
-            padding: 30px; 
-            box-shadow: 6px 6px 0 #00171f;
-            margin-bottom: 20px;
-        }}
-        .content p {{ 
-            font-size: 16px; 
-            line-height: 1.6; 
-            margin: 15px 0; 
-            color: #334155;
-        }}
-        .content strong {{ color: #003459; }}
-        .content ul {{ 
-            margin: 15px 0; 
-            padding-left: 20px; 
-            color: #334155;
-        }}
-        .content li {{ margin: 8px 0; }}
-        .button {{ 
-            display: inline-block; 
-            background: #ffe066; 
-            color: #003459; 
-            padding: 14px 28px; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            font-weight: 600;
-            font-family: 'Quicksand', Arial, sans-serif;
-            border: 2px solid #00171f;
-            box-shadow: 4px 4px 0 #00171f;
-            margin-top: 20px;
-            transition: all 0.2s ease;
-            display: inline-block;
-        }}
-        .button:hover {{ 
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #00171f;
-        }}
-        .footer {{ 
-            text-align: center; 
-            color: #334155; 
-            font-size: 13px; 
-            margin-top: 20px;
-            padding: 20px;
-            border-top: 2px solid #00171f;
-        }}
-        .highlight {{ color: #00a8e8; font-weight: 600; }}
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+        body { font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; background-color: #f1f5f9; margin: 0; padding: 0; line-height: 1.6; }
+        .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .header { background: #ffffff; padding: 40px 40px 20px 40px; text-align: center; }
+        .logo { font-size: 48px; margin-bottom: 16px; display: inline-block; }
+        .title { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.025em; }
+        .content { padding: 20px 40px 40px 40px; font-size: 16px; color: #334155; }
+        .content p { margin: 16px 0; }
+        .content strong { color: #0f172a; font-weight: 600; }
+        .content ul { list-style: none; padding: 0; margin: 24px 0; }
+        .content li { margin: 12px 0; padding-left: 0; }
+        .button-container { text-align: center; margin: 32px 0; }
+        .button { display: inline-block; background-color: #eab308; color: #ffffff; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 50px; transition: background-color 0.2s; box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.2); }
+        .button:hover { background-color: #ca8a04; }
+        .footer { background-color: #f8fafc; padding: 32px 24px; text-align: center; font-size: 13px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        @media only screen and (max-width: 600px) {
+            .container { margin: 0; border-radius: 0; }
+            .content { padding: 20px; }
+            .header { padding: 30px 20px 20px 20px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="logo">🧠</div>
-            <h1>Welcome to ThinkTogether!</h1>
+            <h1 class="title">Chào mừng đến với ThinkTogether!</h1>
         </div>
         <div class="content">
-            <p>Hi <strong>{0}</strong>,</p>
-            <p>Thank you for registering with ThinkTogether! We're excited to have you on board. 🎉</p>
-            <p>ThinkTogether is an interactive quiz platform designed to make learning engaging and fun. Create custom quizzes, challenge friends, and track your progress all in one place.</p>
-            <p><strong>What you can do now:</strong></p>
+            <p>Xin chào <strong>{0}</strong>,</p>
+            <p>Cảm ơn bạn đã đăng ký tài khoản! Chúng tôi rất vui mừng được chào đón bạn gia nhập cộng đồng. 🎉</p>
+            <p>ThinkTogether là nền tảng câu đố tương tác giúp việc học và giải trí trở nên thú vị hơn bao giờ hết. Tại đây bạn có thể:</p>
             <ul>
-                <li>✨ Create your own quiz sets</li>
-                <li>🎮 Host live games and invite others</li>
-                <li>📊 Track your performance and statistics</li>
-                <li>🏆 Compete with friends and colleagues</li>
+                <li>✨ Tạo bộ câu đố của riêng bạn</li>
+                <li>🎮 Tổ chức trò chơi trực tiếp mời bạn bè</li>
+                <li>📊 Theo dõi kết quả và thống kê chi tiết</li>
+                <li>🏆 Thi đấu và leo bảng xếp hạng</li>
             </ul>
-            <p>Get started by logging in to your account and creating your first quiz!</p>
-            <div style="text-align: center;">
-                <a href="#" class="button">Get Started</a>
+            <p>Hãy bắt đầu hành trình của bạn bằng cách tạo câu đố đầu tiên ngay hôm nay!</p>
+            <div class="button-container">
+                <a href="#" class="button">Bắt đầu ngay</a>
             </div>
         </div>
         <div class="footer">
-            <p>© 2025 ThinkTogether. All rights reserved.</p>
-            <p>If you have any questions, please don't hesitate to contact us.</p>
+            <p style="margin: 0 0 8px 0;">© 2025 ThinkTogether. Bảo lưu mọi quyền.</p>
+            <p style="margin: 0;">Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi.</p>
         </div>
     </div>
 </body>

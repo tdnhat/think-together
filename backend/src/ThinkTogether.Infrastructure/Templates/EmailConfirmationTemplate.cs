@@ -6,107 +6,53 @@ internal static class EmailConfirmationTemplate
 {
     internal static string Build(string recipientName, string confirmationLink)
     {
-        const string template = """
+        string template = """
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {{ font-family: 'Be Vietnam Pro', Arial, sans-serif; color: #003459; background-color: #f8fafc; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ 
-            background: #ffffff; 
-            border: 2px solid #00171f; 
-            border-radius: 12px; 
-            padding: 30px; 
-            text-align: center; 
-            box-shadow: 6px 6px 0 #00171f;
-            margin-bottom: 20px;
-        }}
-        .header h1 {{ 
-            font-family: 'Raleway', Arial, sans-serif;
-            font-size: 28px; 
-            font-weight: 700; 
-            margin: 0; 
-            color: #003459;
-        }}
-        .logo {{ font-size: 32px; margin-bottom: 10px; }}
-        .content {{ 
-            background: #ffffff; 
-            border: 2px solid #00171f; 
-            border-radius: 12px; 
-            padding: 30px; 
-            box-shadow: 6px 6px 0 #00171f;
-            margin-bottom: 20px;
-        }}
-        .content p {{ 
-            font-size: 16px; 
-            line-height: 1.6; 
-            margin: 15px 0; 
-            color: #334155;
-        }}
-        .content strong {{ color: #003459; }}
-        .button {{ 
-            display: inline-block; 
-            background: #00a8e8; 
-            color: white; 
-            padding: 14px 28px; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            font-weight: 600;
-            font-family: 'Quicksand', Arial, sans-serif;
-            border: 2px solid #00171f;
-            box-shadow: 4px 4px 0 #00171f;
-            margin-top: 20px;
-            transition: all 0.2s ease;
-            display: inline-block;
-        }}
-        .button:hover {{ 
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #00171f;
-        }}
-        .link-box {{
-            background: #f8fafc;
-            border: 2px dashed #00a8e8;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 15px 0;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 13px;
-            color: #334155;
-        }}
-        .footer {{ 
-            text-align: center; 
-            color: #334155; 
-            font-size: 13px; 
-            margin-top: 20px;
-            padding: 20px;
-            border-top: 2px solid #00171f;
-        }}
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+        body { font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; background-color: #f1f5f9; margin: 0; padding: 0; line-height: 1.6; }
+        .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .header { background: #ffffff; padding: 40px 40px 20px 40px; text-align: center; }
+        .logo { font-size: 48px; margin-bottom: 16px; display: inline-block; }
+        .title { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.025em; }
+        .content { padding: 20px 40px 40px 40px; font-size: 16px; color: #334155; }
+        .content p { margin: 16px 0; }
+        .content strong { color: #0f172a; font-weight: 600; }
+        .button-container { text-align: center; margin: 32px 0; }
+        .button { display: inline-block; background-color: #2563eb; color: #ffffff; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 50px; transition: background-color 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+        .button:hover { background-color: #1d4ed8; }
+        .link-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 13px; color: #64748b; word-break: break-all; margin-top: 24px; }
+        .footer { background-color: #f8fafc; padding: 32px 24px; text-align: center; font-size: 13px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        @media only screen and (max-width: 600px) {
+            .container { margin: 0; border-radius: 0; }
+            .content { padding: 20px; }
+            .header { padding: 30px 20px 20px 20px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🧠</div>
-            <h1>Confirm Your Email</h1>
+            <div class="logo">🎉</div>
+            <h1 class="title">Xác thực tài khoản</h1>
         </div>
         <div class="content">
-            <p>Hi <strong>{0}</strong>,</p>
-            <p>Welcome to ThinkTogether! 🎉 Please confirm your email address to complete your registration.</p>
-            <p>Click the button below to verify your email:</p>
-            <div style="text-align: center;">
-                <a href="{1}" class="button">✓ Confirm Email</a>
+            <p>Xin chào <strong>{0}</strong>,</p>
+            <p>Chào mừng bạn đến với ThinkTogether! Cảm ơn bạn đã đăng ký tài khoản. Để bắt đầu sử dụng, vui lòng xác thực địa chỉ email của bạn.</p>
+            <div class="button-container">
+                <a href="{1}" class="button">Xác thực Email ngay</a>
             </div>
-            <p>If the button above doesn't work, copy and paste this link into your browser:</p>
+            <p>Nếu nút trên không hoạt động, bạn có thể sao chép và dán liên kết sau vào trình duyệt của mình:</p>
             <div class="link-box">{1}</div>
-            <p>Didn't create this account? You can safely ignore this email.</p>
+            <p style="margin-top: 24px; font-size: 14px; color: #64748b;">Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
         </div>
         <div class="footer">
-            <p>© 2025 ThinkTogether. All rights reserved.</p>
-            <p>This is an automated email. Please don't reply to this message.</p>
+            <p style="margin: 0 0 8px 0;">© 2025 ThinkTogether. Bảo lưu mọi quyền.</p>
+            <p style="margin: 0;">Đây là email tự động, vui lòng không trả lời.</p>
         </div>
     </div>
 </body>
