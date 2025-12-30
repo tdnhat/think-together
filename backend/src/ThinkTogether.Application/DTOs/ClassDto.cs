@@ -48,6 +48,8 @@ public class HomeworkDto
     public DateTime AssignedAt { get; set; }
     public int? SubmissionCount { get; set; }
     public bool IsOverdue { get; set; }
+    public bool? HasSubmission { get; set; }
+    public Guid? SubmissionId { get; set; }
 }
 
 /// <summary>
@@ -104,4 +106,51 @@ public class HomeworkResponseDto
     public int Page { get; set; }
     public int PageSize { get; set; }
     public int TotalPages { get; set; }
+}
+
+/// <summary>
+/// Homework Submission Detail DTO (includes challenge attempt with questions and answers)
+/// </summary>
+public class HomeworkSubmissionDetailDto
+{
+    public HomeworkSubmissionDto Submission { get; set; } = null!;
+    public ChallengeAttemptDto Attempt { get; set; } = null!;
+    public HomeworkDto Homework { get; set; } = null!;
+}
+
+/// <summary>
+/// Per-question statistics for homework
+/// </summary>
+public class QuestionStatisticsDto
+{
+    public Guid QuestionId { get; set; }
+    public string QuestionContent { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
+    public int CorrectAnswerCount { get; set; }
+    public int WrongAnswerCount { get; set; }
+    public double CorrectPercentage { get; set; }
+    public int TotalAnswers { get; set; }
+}
+
+/// <summary>
+/// Homework Statistics DTO (for teachers)
+/// </summary>
+public class HomeworkStatisticsDto
+{
+    public HomeworkDto Homework { get; set; } = null!;
+    
+    // Overall statistics
+    public int TotalStudents { get; set; }
+    public int SubmittedCount { get; set; }
+    public int NotSubmittedCount { get; set; }
+    public double CompletionRate { get; set; }
+    public double AverageScore { get; set; }
+    public int HighestScore { get; set; }
+    public int LowestScore { get; set; }
+    
+    // Per-question statistics
+    public List<QuestionStatisticsDto> QuestionStatistics { get; set; } = new();
+    
+    // Student submissions list
+    public List<HomeworkSubmissionDto> StudentSubmissions { get; set; } = new();
 }

@@ -29,7 +29,7 @@ import type { HomeworkDto } from '@/features/class/types'
 export default function ClassDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const classId = params.id as string
+  const classId = params.classId as string
   const user = useAuthStore(selectUser)
   const isTeacher = user?.role === 'Creator' || user?.role === 'Administrator'
 
@@ -88,6 +88,12 @@ export default function ClassDetailPage() {
   }
 
   const handleStartHomework = async (homework: HomeworkDto) => {
+    // Check if student already has a submission
+    if (homework.hasSubmission) {
+      handleViewHomeworkDetails(homework)
+      return
+    }
+
     // First, try to get challenge by quiz set ID
     try {
       const challenge = await challengeService.getChallengeByQuizSetId(homework.quizSetId)
@@ -123,6 +129,16 @@ export default function ClassDetailPage() {
     } catch (error) {
       console.error('Failed to get challenge:', error)
       toast.error('Không thể tải thử thách. Vui lòng thử lại.')
+    }
+  }
+
+  const handleViewHomeworkDetails = (homework: HomeworkDto) => {
+    if (isTeacher && homework.isOverdue) {
+      // Teacher viewing expired homework -> show statistics
+      router.push(ROUTES.classes.homeworkStatistics(classId, homework.id))
+    } else if (homework.hasSubmission) {
+      // Student viewing their submission -> show submission details
+      router.push(ROUTES.classes.homeworkSubmission(classId, homework.id))
     }
   }
 
@@ -353,6 +369,7 @@ export default function ClassDetailPage() {
                   onEdit={isTeacher ? setEditingHomework : undefined}
                   onDelete={isTeacher ? handleDeleteHomework : undefined}
                   onStart={handleStartHomework}
+                  onViewDetails={handleViewHomeworkDetails}
                 />
               </div>
             </TabsContent>

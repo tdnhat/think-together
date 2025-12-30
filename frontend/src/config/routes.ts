@@ -78,6 +78,8 @@ const routes = {
     list: '/classes',
     detail: (id: string) => `/classes/${id}` as const,
     join: '/classes/join',
+    homeworkSubmission: (classId: string, homeworkId: string) => `/classes/${classId}/homeworks/${homeworkId}/submission` as const,
+    homeworkStatistics: (classId: string, homeworkId: string) => `/classes/${classId}/homeworks/${homeworkId}/statistics` as const,
   },
   
   // ========== CREATOR ROUTES ==========

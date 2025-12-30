@@ -15,15 +15,18 @@ public sealed class GetClassByIdQueryHandler : IRequestHandler<GetClassByIdQuery
     private readonly IClassRepository _classRepository;
     private readonly IUserRepository _userRepository;
     private readonly IQuizSetRepository _quizSetRepository;
+    private readonly ICurrentUserService _currentUserService;
 
     public GetClassByIdQueryHandler(
         IClassRepository classRepository,
         IUserRepository userRepository,
-        IQuizSetRepository quizSetRepository)
+        IQuizSetRepository quizSetRepository,
+        ICurrentUserService currentUserService)
     {
         _classRepository = classRepository;
         _userRepository = userRepository;
         _quizSetRepository = quizSetRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ClassDetailDto> Handle(
@@ -82,7 +85,14 @@ public sealed class GetClassByIdQueryHandler : IRequestHandler<GetClassByIdQuery
         var quizSetsList = await _quizSetRepository.GetByIdsAsync(quizSetIds, cancellationToken);
         var quizSets = quizSetsList.ToDictionary(q => q.Id);
 
-        // Map homeworks with quiz set info
+        // Get current user ID if authenticated
+        Guid? currentUserId = null;
+        if (_currentUserService.UserId != null && Guid.TryParse(_currentUserService.UserId, out var userId))
+        {
+            currentUserId = userId;
+        }
+
+        // Map homeworks with quiz set info and submission status
         dto.Homeworks = classEntity.Homeworks
             .Where(h => h.DeletedAt == null)
             .Select(h =>
@@ -94,6 +104,22 @@ public sealed class GetClassByIdQueryHandler : IRequestHandler<GetClassByIdQuery
                 {
                     homeworkDto.QuizSetTitle = quizSet.Title;
                 }
+
+                // Check if current user has a submission
+                if (currentUserId.HasValue)
+                {
+                    var userSubmission = h.Submissions.FirstOrDefault(s => s.StudentId == currentUserId.Value);
+                    if (userSubmission != null)
+                    {
+                        homeworkDto.HasSubmission = true;
+                        homeworkDto.SubmissionId = userSubmission.Id;
+                    }
+                    else
+                    {
+                        homeworkDto.HasSubmission = false;
+                    }
+                }
+
                 return homeworkDto;
             })
             .OrderByDescending(h => h.AssignedAt)

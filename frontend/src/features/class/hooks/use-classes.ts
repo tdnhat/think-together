@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getClasses, getClassById, createClass, updateClass, deleteClass, joinClass, leaveClass } from '../api/class.service'
+import { getClasses, getClassById, createClass, updateClass, deleteClass, joinClass, leaveClass, getHomeworkSubmission, getHomeworkStatistics } from '../api/class.service'
 import { CLASS_CONSTANTS } from '../constants'
 import type { ClassQueryParams, CreateClassRequest, UpdateClassRequest, JoinClassRequest } from '../types'
 
@@ -77,5 +77,21 @@ export function useLeaveClass() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] })
     },
+  })
+}
+
+export function useHomeworkSubmission(classId: string, homeworkId: string) {
+  return useQuery({
+    queryKey: ['homework-submission', classId, homeworkId],
+    queryFn: () => getHomeworkSubmission(classId, homeworkId),
+    enabled: !!classId && !!homeworkId,
+  })
+}
+
+export function useHomeworkStatistics(classId: string, homeworkId: string) {
+  return useQuery({
+    queryKey: ['homework-statistics', classId, homeworkId],
+    queryFn: () => getHomeworkStatistics(classId, homeworkId),
+    enabled: !!classId && !!homeworkId,
   })
 }

@@ -17,6 +17,8 @@ import type {
   UpdateClassRequest,
   JoinClassRequest,
   ClassResponseDto,
+  HomeworkSubmissionDetailDto,
+  HomeworkStatisticsDto,
 } from '../types'
 
 /**
@@ -138,4 +140,40 @@ export async function leaveClass(classId: string): Promise<void> {
   if (!response.success) {
     throw new Error(response.message || 'Không thể rời khỏi lớp học')
   }
+}
+
+/**
+ * Get student's homework submission details
+ */
+export async function getHomeworkSubmission(
+  classId: string,
+  homeworkId: string
+): Promise<HomeworkSubmissionDetailDto> {
+  const response = await api.get<ApiResponse<HomeworkSubmissionDetailDto>>(
+    CLASS_ENDPOINTS.GET_HOMEWORK_SUBMISSION(classId, homeworkId)
+  )
+
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Không thể tải chi tiết bài nộp')
+  }
+
+  return response.data
+}
+
+/**
+ * Get homework statistics (teacher only)
+ */
+export async function getHomeworkStatistics(
+  classId: string,
+  homeworkId: string
+): Promise<HomeworkStatisticsDto> {
+  const response = await api.get<ApiResponse<HomeworkStatisticsDto>>(
+    CLASS_ENDPOINTS.GET_HOMEWORK_STATISTICS(classId, homeworkId)
+  )
+
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Không thể tải thống kê bài tập')
+  }
+
+  return response.data
 }

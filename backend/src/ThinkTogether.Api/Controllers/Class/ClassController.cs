@@ -9,6 +9,8 @@ using ThinkTogether.Application.Handlers.Class.Commands.JoinClass;
 using ThinkTogether.Application.Handlers.Class.Queries.GetClassById;
 using ThinkTogether.Application.Handlers.Class.Queries.GetClasses;
 using ThinkTogether.Application.Handlers.Class.Queries.GetHomeworks;
+using ThinkTogether.Application.Handlers.Class.Queries.GetHomeworkSubmission;
+using ThinkTogether.Application.Handlers.Class.Queries.GetHomeworkStatistics;
 
 namespace ThinkTogether.Api.Controllers.Class;
 
@@ -47,46 +49,6 @@ public class ClassController : ControllerBase
             Success = true,
             Data = result
         });
-    }
-
-    /// <summary>
-    /// Get class by ID
-    /// </summary>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<ClassDetailDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetClassById(
-        [FromRoute] Guid id,
-        CancellationToken cancellationToken = default)
-    {
-        var query = new GetClassByIdQuery(ClassId: id);
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return Ok(new ApiResponse<ClassDetailDto>
-        {
-            Success = true,
-            Data = result
-        });
-    }
-
-    /// <summary>
-    /// Create a new class
-    /// </summary>
-    [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<ClassDto>), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateClass(
-        [FromBody] CreateClassCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return CreatedAtAction(
-            nameof(GetClassById),
-            new { id = result.Id },
-            new ApiResponse<ClassDto>
-            {
-                Success = true,
-                Data = result
-            });
     }
 
     /// <summary>
@@ -133,6 +95,52 @@ public class ClassController : ControllerBase
     }
 
     /// <summary>
+    /// Get student's homework submission details
+    /// </summary>
+    [HttpGet("{classId}/homeworks/{homeworkId}/submission")]
+    [ProducesResponseType(typeof(ApiResponse<HomeworkSubmissionDetailDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHomeworkSubmission(
+        [FromRoute] Guid classId,
+        [FromRoute] Guid homeworkId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetHomeworkSubmissionQuery(
+            ClassId: classId,
+            HomeworkId: homeworkId);
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<HomeworkSubmissionDetailDto>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    /// <summary>
+    /// Get homework statistics (teacher only)
+    /// </summary>
+    [HttpGet("{classId}/homeworks/{homeworkId}/statistics")]
+    [ProducesResponseType(typeof(ApiResponse<HomeworkStatisticsDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHomeworkStatistics(
+        [FromRoute] Guid classId,
+        [FromRoute] Guid homeworkId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetHomeworkStatisticsQuery(
+            ClassId: classId,
+            HomeworkId: homeworkId);
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<HomeworkStatisticsDto>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    /// <summary>
     /// Create homework for a class
     /// </summary>
     [HttpPost("{classId}/homeworks")]
@@ -154,6 +162,46 @@ public class ClassController : ControllerBase
             nameof(GetHomeworks),
             new { classId },
             new ApiResponse<HomeworkDto>
+            {
+                Success = true,
+                Data = result
+            });
+    }
+
+    /// <summary>
+    /// Get class by ID
+    /// </summary>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ApiResponse<ClassDetailDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetClassById(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetClassByIdQuery(ClassId: id);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponse<ClassDetailDto>
+        {
+            Success = true,
+            Data = result
+        });
+    }
+
+    /// <summary>
+    /// Create a new class
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(ApiResponse<ClassDto>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateClass(
+        [FromBody] CreateClassCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetClassById),
+            new { id = result.Id },
+            new ApiResponse<ClassDto>
             {
                 Success = true,
                 Data = result

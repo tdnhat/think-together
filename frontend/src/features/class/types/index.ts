@@ -40,6 +40,8 @@ export interface HomeworkDto {
   assignedAt: string
   submissionCount?: number
   isOverdue?: boolean
+  hasSubmission?: boolean
+  submissionId?: string
 }
 
 // Homework Submission DTO
@@ -128,4 +130,89 @@ export interface ClassDetailDto extends ClassDto {
 // Homework Detail DTO (includes submissions)
 export interface HomeworkDetailDto extends HomeworkDto {
   submissions: HomeworkSubmissionDto[]
+}
+
+// Homework Submission Question DTO (extends QuestionDto with student answer)
+export interface HomeworkSubmissionQuestionDto {
+  id: string
+  quizSetId: string
+  content: string
+  type: import('@/types/api').QuestionType
+  timeLimit: number
+  displayOrder: number
+  createdAt: string
+  updatedAt?: string
+
+  // Type-specific data
+  options?: import('@/types/api').QuestionOptionDto[]
+  matchingPairs?: import('@/types/api').MatchingPairDto[]
+  orderingItems?: import('@/types/api').OrderingItemDto[]
+  videoUrl?: string
+  videoTimestamp?: number
+  audioUrl?: string
+  audioTimestamp?: number
+
+  // Student's answer
+  studentAnswer?: StudentAnswerDto
+}
+
+// Student Answer DTO for homework submissions
+export interface StudentAnswerDto {
+  answerId: string
+  isCorrect: boolean
+  pointsEarned: number
+  submissionTimeMs: number
+  selectedOptionIndexes?: number[]
+  matchingPairs?: import('@/features/challenge/types').AnswerMatchingPairDto[]
+  orderingItems?: import('@/features/challenge/types').AnswerOrderingItemDto[]
+}
+
+// Homework Submission Attempt DTO (modified version with submission questions)
+export interface HomeworkSubmissionAttemptDto {
+  id: string
+  challengeId: string
+  userId?: string
+  nickname: string
+  scoreAchieved: number
+  correctAnswers: number
+  totalQuestions: number
+  completionTimeMs?: number
+  completedAt: string
+  startedAt: string
+  status: import('@/features/challenge/types').AttemptStatus
+  timeLimitMs?: number
+  remainingTimeMs?: number
+  questions: HomeworkSubmissionQuestionDto[]
+}
+
+// Homework Submission Detail DTO (includes challenge attempt with questions and answers)
+export interface HomeworkSubmissionDetailDto {
+  submission: HomeworkSubmissionDto
+  attempt: HomeworkSubmissionAttemptDto
+  homework: HomeworkDto
+}
+
+// Per-question statistics for homework
+export interface QuestionStatisticsDto {
+  questionId: string
+  questionContent: string
+  displayOrder: number
+  correctAnswerCount: number
+  wrongAnswerCount: number
+  correctPercentage: number
+  totalAnswers: number
+}
+
+// Homework Statistics DTO (for teachers)
+export interface HomeworkStatisticsDto {
+  homework: HomeworkDto
+  totalStudents: number
+  submittedCount: number
+  notSubmittedCount: number
+  completionRate: number
+  averageScore: number
+  highestScore: number
+  lowestScore: number
+  questionStatistics: QuestionStatisticsDto[]
+  studentSubmissions: HomeworkSubmissionDto[]
 }

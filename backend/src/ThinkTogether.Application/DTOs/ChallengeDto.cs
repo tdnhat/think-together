@@ -50,6 +50,9 @@ public class ChallengeQuestionDto
     public List<QuestionOptionDto>? Options { get; set; }
     public List<MatchingPairDto>? MatchingPairs { get; set; }
     public List<OrderingItemDto>? OrderingItems { get; set; }
+
+    // Student's answer for this question
+    public StudentAnswerDto? StudentAnswer { get; set; }
 }
 
 public class AnswerMatchingPairDto
@@ -62,6 +65,23 @@ public class AnswerOrderingItemDto
 {
     public string Content { get; set; } = string.Empty;
     public int Position { get; set; }
+}
+
+public class StudentAnswerDto
+{
+    public Guid AnswerId { get; set; }
+    public bool IsCorrect { get; set; }
+    public int PointsEarned { get; set; }
+    public int SubmissionTimeMs { get; set; }
+
+    // For multiple choice, single choice, true/false
+    public List<int>? SelectedOptionIndexes { get; set; }
+
+    // For matching questions
+    public List<AnswerMatchingPairDto>? MatchingPairs { get; set; }
+
+    // For ordering questions
+    public List<AnswerOrderingItemDto>? OrderingItems { get; set; }
 }
 
 public class ChallengeLeaderboardEntryDto

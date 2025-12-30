@@ -3,6 +3,7 @@ using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Services;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Entities;
+using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Infrastructure.Services;
 
@@ -40,6 +41,16 @@ public class HomeworkSubmissionService : IHomeworkSubmissionService
         }
 
         var (homeworkClass, homework) = result.Value;
+
+        // Check if student already has a submission for this homework
+        var existingSubmission = homework.Submissions.FirstOrDefault(s => s.StudentId == attempt.UserId.Value);
+        if (existingSubmission != null)
+        {
+            _logger.LogWarning(
+                "Student {StudentId} already has a submission {SubmissionId} for homework {HomeworkId}",
+                attempt.UserId.Value, existingSubmission.Id, homework.Id);
+            throw new ConflictException("Học sinh đã nộp bài tập này rồi. Mỗi học sinh chỉ được nộp một lần.");
+        }
 
         var submission = HomeworkSubmission.Create(
             homeworkId: homework.Id,

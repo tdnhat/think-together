@@ -16,6 +16,7 @@ interface HomeworkCardProps {
   onEdit?: (homework: HomeworkDto) => void
   onDelete?: (homework: HomeworkDto) => void
   onStart?: (homework: HomeworkDto) => void
+  onViewDetails?: (homework: HomeworkDto) => void
   className?: string
 }
 
@@ -25,6 +26,7 @@ export function HomeworkCard({
   onEdit,
   onDelete,
   onStart,
+  onViewDetails,
   className = '',
 }: Readonly<HomeworkCardProps>) {
   const isOverdue = homework.isOverdue || false
@@ -160,7 +162,17 @@ export function HomeworkCard({
         </div>
 
         {/* Action Button */}
-        {onStart && (
+        {homework.hasSubmission && onViewDetails ? (
+          <div className="mt-4">
+            <Button
+              onClick={() => onViewDetails(homework)}
+              className="w-full"
+              variant="default"
+            >
+              Xem chi tiết
+            </Button>
+          </div>
+        ) : onStart ? (
           <div className="mt-4">
             <Button
               onClick={() => onStart(homework)}
@@ -170,7 +182,7 @@ export function HomeworkCard({
               {isOverdue ? 'Xem bài tập' : 'Làm bài ngay'}
             </Button>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   )

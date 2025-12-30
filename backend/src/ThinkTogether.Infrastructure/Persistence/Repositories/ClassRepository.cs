@@ -71,6 +71,7 @@ public class ClassRepository : Repository<Class, Guid>, IClassRepository
         var classEntity = await _dbSet
             .Where(c => c.DeletedAt == null)
             .Include(c => c.Homeworks.Where(h => h.DeletedAt == null))
+                .ThenInclude(h => h.Submissions)
             .FirstOrDefaultAsync(c => c.Homeworks.Any(h => h.Id == homeworkId && h.DeletedAt == null), cancellationToken);
 
         if (classEntity == null)

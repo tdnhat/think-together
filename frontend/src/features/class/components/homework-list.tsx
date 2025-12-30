@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { Plus, BookOpen } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Skeleton } from '@/shared/ui/skeleton'
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { PaginationControls } from '@/shared/components/pagination-controls'
 import { HomeworkCard } from './homework-card'
 import { CLASS_CONSTANTS } from '../constants'
@@ -25,6 +27,7 @@ interface HomeworkListProps {
   onEdit?: (homework: HomeworkDto) => void
   onDelete?: (homework: HomeworkDto) => void
   onStart?: (homework: HomeworkDto) => void
+  onViewDetails?: (homework: HomeworkDto) => void
   className?: string
 }
 
@@ -37,8 +40,19 @@ export function HomeworkList({
   onEdit,
   onDelete,
   onStart,
+  onViewDetails,
   className = '',
 }: Readonly<HomeworkListProps>) {
+  const [filter, setFilter] = useState<'all' | 'not-done' | 'done'>('all')
+
+  // Filter homeworks based on selected filter
+  const filteredHomeworks = homeworks.filter((homework) => {
+    if (filter === 'all') return true
+    if (filter === 'done') return homework.hasSubmission === true
+    if (filter === 'not-done') return homework.hasSubmission !== true
+    return true
+  })
+
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
@@ -52,6 +66,17 @@ export function HomeworkList({
             Tạo bài tập mới
           </Button>
         </div>
+      )}
+
+      {/* Filter Tabs */}
+      {!onCreateNew && homeworks.length > 0 && (
+        <Tabs value={filter} onValueChange={(value) => setFilter(value as typeof filter)}>
+          <TabsList>
+            <TabsTrigger value="all">Tất cả</TabsTrigger>
+            <TabsTrigger value="not-done">Chưa làm</TabsTrigger>
+            <TabsTrigger value="done">Đã làm</TabsTrigger>
+          </TabsList>
+        </Tabs>
       )}
 
       {/* Loading State */}
@@ -71,10 +96,10 @@ export function HomeworkList({
       )}
 
       {/* Homeworks Grid */}
-      {!isLoading && homeworks.length > 0 && (
+      {!isLoading && filteredHomeworks.length > 0 && (
         <>
           <div className="grid gap-4 md:grid-cols-2">
-            {homeworks.map((homework) => (
+            {filteredHomeworks.map((homework) => (
               <HomeworkCard
                 key={homework.id}
                 homework={homework}
@@ -82,6 +107,7 @@ export function HomeworkList({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onStart={onStart}
+                onViewDetails={onViewDetails}
               />
             ))}
           </div>
@@ -103,16 +129,24 @@ export function HomeworkList({
       )}
 
       {/* Empty State */}
-      {!isLoading && homeworks.length === 0 && (
+      {!isLoading && filteredHomeworks.length === 0 && (
         <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
             <BookOpen className="h-8 w-8 text-[var(--brand-primary)]" />
           </div>
           <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
-            {CLASS_CONSTANTS.MESSAGES.NO_HOMEWORKS}
+            {filter === 'all'
+              ? CLASS_CONSTANTS.MESSAGES.NO_HOMEWORKS
+              : filter === 'done'
+                ? 'Chưa có bài tập đã làm'
+                : 'Chưa có bài tập chưa làm'}
           </h3>
           <p className="text-[var(--text-secondary)]">
-            {CLASS_CONSTANTS.MESSAGES.NO_HOMEWORKS_DESCRIPTION}
+            {filter === 'all'
+              ? CLASS_CONSTANTS.MESSAGES.NO_HOMEWORKS_DESCRIPTION
+              : filter === 'done'
+                ? 'Bạn chưa hoàn thành bài tập nào'
+                : 'Tất cả bài tập đã được hoàn thành'}
           </p>
           {onCreateNew && (
             <Button onClick={onCreateNew} className="mt-4 gap-2">

@@ -166,6 +166,8 @@ export const CLASS_ENDPOINTS = {
   // Homework Submissions
   GET_HOMEWORK_SUBMISSIONS: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submissions`,
   SUBMIT_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submit`,
+  GET_HOMEWORK_SUBMISSION: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submission`,
+  GET_HOMEWORK_STATISTICS: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/statistics`,
 } as const;
 
 // ============================================================================
