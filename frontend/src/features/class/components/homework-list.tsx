@@ -22,6 +22,7 @@ interface HomeworkListProps {
   homeworks: HomeworkDto[]
   pagination?: PaginationInfo
   isLoading?: boolean
+  isTeacher?: boolean
   onCreateNew?: () => void
   onView?: (homework: HomeworkDto) => void
   onEdit?: (homework: HomeworkDto) => void
@@ -35,6 +36,7 @@ export function HomeworkList({
   homeworks,
   pagination,
   isLoading = false,
+  isTeacher = false,
   onCreateNew,
   onView,
   onEdit,
@@ -103,6 +105,7 @@ export function HomeworkList({
               <HomeworkCard
                 key={homework.id}
                 homework={homework}
+                isTeacher={isTeacher}
                 onView={onView}
                 onEdit={onEdit}
                 onDelete={onDelete}

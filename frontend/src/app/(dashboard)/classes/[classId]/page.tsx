@@ -365,6 +365,7 @@ export default function ClassDetailPage() {
                 <HomeworkList
                   homeworks={classData.homeworks || []}
                   isLoading={false}
+                  isTeacher={isTeacher}
                   onCreateNew={isTeacher ? () => setIsCreateHomeworkModalOpen(true) : undefined}
                   onEdit={isTeacher ? setEditingHomework : undefined}
                   onDelete={isTeacher ? handleDeleteHomework : undefined}

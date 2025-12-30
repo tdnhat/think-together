@@ -12,6 +12,7 @@ import type { HomeworkDto } from '../types'
 
 interface HomeworkCardProps {
   homework: HomeworkDto
+  isTeacher?: boolean
   onView?: (homework: HomeworkDto) => void
   onEdit?: (homework: HomeworkDto) => void
   onDelete?: (homework: HomeworkDto) => void
@@ -22,6 +23,7 @@ interface HomeworkCardProps {
 
 export function HomeworkCard({
   homework,
+  isTeacher = false,
   onView,
   onEdit,
   onDelete,
@@ -162,7 +164,19 @@ export function HomeworkCard({
         </div>
 
         {/* Action Button */}
-        {homework.hasSubmission && onViewDetails ? (
+        {/* For teachers viewing overdue homework, show results/stats */}
+        {isTeacher && isOverdue && onViewDetails ? (
+          <div className="mt-4">
+            <Button
+              onClick={() => onViewDetails(homework)}
+              className="w-full"
+              variant="neutral"
+            >
+              Xem kết quả
+            </Button>
+          </div>
+        ) : homework.hasSubmission && onViewDetails ? (
+          /* Students with submissions can view their details */
           <div className="mt-4">
             <Button
               onClick={() => onViewDetails(homework)}
@@ -173,6 +187,7 @@ export function HomeworkCard({
             </Button>
           </div>
         ) : onStart ? (
+          /* Default action: start/do homework */
           <div className="mt-4">
             <Button
               onClick={() => onStart(homework)}
