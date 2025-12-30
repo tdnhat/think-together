@@ -108,7 +108,7 @@ export default function HomeworkStatisticsPage() {
 
         <section className="space-y-4">
           <h2 className="font-semibold text-lg text-[var(--text-primary)]">Danh sách bài nộp</h2>
-          <StatisticsStudentTable submissions={studentSubmissions} />
+          <StatisticsStudentTable submissions={studentSubmissions} classId={classId} homeworkId={homeworkId} />
         </section>
 
         {/* Removed redundant Full Width Table section since it's now in the grid */}

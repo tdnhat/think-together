@@ -66,11 +66,30 @@ public sealed class GetHomeworkSubmissionQueryHandler : IRequestHandler<GetHomew
             throw new ValidationException("Class ID không khớp với homework");
         }
 
-        // Find submission for current user
-        var submission = homework.Submissions.FirstOrDefault(s => s.StudentId == userId);
+        // Determine which student's submission to fetch
+        Guid targetStudentId;
+        
+        if (request.StudentId.HasValue)
+        {
+            // Teacher is requesting a specific student's submission
+            // Verify the current user is the teacher of this class
+            if (classEntity.TeacherId != userId)
+            {
+                throw new UnauthorizedException("Chỉ giáo viên của lớp mới có thể xem bài nộp của học sinh khác");
+            }
+            targetStudentId = request.StudentId.Value;
+        }
+        else
+        {
+            // Student is requesting their own submission
+            targetStudentId = userId;
+        }
+
+        // Find submission for target student
+        var submission = homework.Submissions.FirstOrDefault(s => s.StudentId == targetStudentId);
         if (submission == null)
         {
-            throw new EntityNotFoundException("Bài nộp của học sinh cho bài tập", $"{userId}/{request.HomeworkId}");
+            throw new EntityNotFoundException("Bài nộp của học sinh cho bài tập", $"{targetStudentId}/{request.HomeworkId}");
         }
 
         // Load challenge attempt with answers

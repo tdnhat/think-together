@@ -80,10 +80,10 @@ export function useLeaveClass() {
   })
 }
 
-export function useHomeworkSubmission(classId: string, homeworkId: string) {
+export function useHomeworkSubmission(classId: string, homeworkId: string, studentId?: string) {
   return useQuery({
-    queryKey: ['homework-submission', classId, homeworkId],
-    queryFn: () => getHomeworkSubmission(classId, homeworkId),
+    queryKey: ['homework-submission', classId, homeworkId, studentId],
+    queryFn: () => getHomeworkSubmission(classId, homeworkId, studentId),
     enabled: !!classId && !!homeworkId,
   })
 }

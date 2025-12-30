@@ -144,14 +144,22 @@ export async function leaveClass(classId: string): Promise<void> {
 
 /**
  * Get student's homework submission details
+ * @param classId - The class ID
+ * @param homeworkId - The homework ID
+ * @param studentId - Optional student ID (for teachers to view specific student's submission)
  */
 export async function getHomeworkSubmission(
   classId: string,
-  homeworkId: string
+  homeworkId: string,
+  studentId?: string
 ): Promise<HomeworkSubmissionDetailDto> {
-  const response = await api.get<ApiResponse<HomeworkSubmissionDetailDto>>(
-    CLASS_ENDPOINTS.GET_HOMEWORK_SUBMISSION(classId, homeworkId)
-  )
+  let url = CLASS_ENDPOINTS.GET_HOMEWORK_SUBMISSION(classId, homeworkId)
+
+  if (studentId) {
+    url += `?studentId=${studentId}`
+  }
+
+  const response = await api.get<ApiResponse<HomeworkSubmissionDetailDto>>(url)
 
   if (!response.success || !response.data) {
     throw new Error(response.message || 'Không thể tải chi tiết bài nộp')

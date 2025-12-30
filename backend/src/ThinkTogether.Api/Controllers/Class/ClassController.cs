@@ -102,11 +102,13 @@ public class ClassController : ControllerBase
     public async Task<IActionResult> GetHomeworkSubmission(
         [FromRoute] Guid classId,
         [FromRoute] Guid homeworkId,
+        [FromQuery] Guid? studentId = null,
         CancellationToken cancellationToken = default)
     {
         var query = new GetHomeworkSubmissionQuery(
             ClassId: classId,
-            HomeworkId: homeworkId);
+            HomeworkId: homeworkId,
+            StudentId: studentId);
 
         var result = await _mediator.Send(query, cancellationToken);
 

@@ -5,5 +5,6 @@ namespace ThinkTogether.Application.Handlers.Class.Queries.GetHomeworkSubmission
 
 public sealed record GetHomeworkSubmissionQuery(
     Guid ClassId,
-    Guid HomeworkId) : IRequest<HomeworkSubmissionDetailDto>;
+    Guid HomeworkId,
+    Guid? StudentId = null) : IRequest<HomeworkSubmissionDetailDto>;
 
