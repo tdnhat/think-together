@@ -103,7 +103,7 @@ export function LeaderboardTable({
         header: ({ column }) => {
           return (
             <Button
-              variant="noShadow"
+              variant="outline"
               size="sm"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
               className="h-auto px-2 py-1 font-heading"
@@ -133,7 +133,7 @@ export function LeaderboardTable({
         header: ({ column }) => {
           return (
             <Button
-              variant="noShadow"
+              variant="outline"
               size="sm"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
               className="h-auto px-2 py-1 font-heading"
@@ -161,7 +161,7 @@ export function LeaderboardTable({
                 )}
                 {entry.submissionStatus === 'Late' && (
                   <Badge
-                    variant="neutral"
+                    variant="outline"
                     className="bg-yellow-100 text-yellow-700 text-xs border-yellow-300"
                   >
                     Muộn
@@ -200,7 +200,7 @@ export function LeaderboardTable({
           return (
             <div className="text-center">
               <Button
-                variant="noShadow"
+                variant="outline"
                 size="sm"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 className="h-auto px-2 py-1 font-heading"
@@ -224,7 +224,7 @@ export function LeaderboardTable({
           return (
             <div className="text-center">
               <Button
-                variant="noShadow"
+                variant="outline"
                 size="sm"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 className="h-auto px-2 py-1 font-heading"
@@ -255,7 +255,7 @@ export function LeaderboardTable({
           return (
             <div className="text-center">
               <Button
-                variant="noShadow"
+                variant="outline"
                 size="sm"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 className="h-auto px-2 py-1 font-heading"
@@ -281,7 +281,7 @@ export function LeaderboardTable({
           return (
             <div className="text-center">
               <Button
-                variant="noShadow"
+                variant="outline"
                 size="sm"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 className="h-auto px-2 py-1 font-heading"
@@ -305,7 +305,7 @@ export function LeaderboardTable({
           return (
             <div className="text-center">
               <Button
-                variant="noShadow"
+                variant="outline"
                 size="sm"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 className="h-auto px-2 py-1 font-heading"
@@ -361,7 +361,7 @@ export function LeaderboardTable({
         <div className="flex items-center py-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="noShadow" className="ml-auto">
+              <Button variant="outline" className="ml-auto">
                 Cột <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -477,7 +477,7 @@ export function LeaderboardTable({
                   )}
                   {entry.submissionStatus === 'Late' && (
                     <Badge
-                      variant="neutral"
+                      variant="outline"
                       className="bg-yellow-100 text-yellow-700 text-xs"
                     >
                       Muộn

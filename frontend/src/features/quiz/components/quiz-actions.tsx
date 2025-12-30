@@ -56,7 +56,7 @@ export function QuizActions({
 
         {hasChallenge && onViewChallenge ? (
           <Button
-            variant="neutral"
+            variant="outline"
             size="lg"
             className="w-full"
             onClick={onViewChallenge}
@@ -66,7 +66,7 @@ export function QuizActions({
           </Button>
         ) : onCreateChallenge && (
           <Button
-            variant="neutral"
+            variant="outline"
             size="lg"
             className="w-full"
             onClick={onCreateChallenge}
@@ -80,7 +80,7 @@ export function QuizActions({
         {/* More Options */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="neutral" size="lg" className="w-full">
+            <Button variant="outline" size="lg" className="w-full">
               <MoreHorizontal className="mr-2 h-5 w-5" />
               Tùy chọn khác
             </Button>

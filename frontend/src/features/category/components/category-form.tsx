@@ -165,7 +165,7 @@ export function CategoryForm({
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Đang xử lý...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
           </Button>
-          <Button type="button" variant="neutral" onClick={onCancel} disabled={isSubmitting}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Hủy
           </Button>
         </div>

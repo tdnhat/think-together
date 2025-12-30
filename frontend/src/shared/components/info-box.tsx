@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Card } from "@/shared/ui/card";
 import { cn } from "@/lib/utils";
 
 type InfoBoxVariant = "default" | "dashed" | "countdown";
@@ -9,14 +10,8 @@ interface InfoBoxProps {
   className?: string;
 }
 
-const variantStyles: Record<InfoBoxVariant, string> = {
-  default: "rounded-2xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-4",
-  dashed: "rounded-2xl border border-dashed border-[var(--color-border-main)] bg-[var(--bg-surface)] p-4",
-  countdown: "rounded-xl border border-dashed border-[var(--color-border-main)] bg-[var(--bg-surface)] px-4 py-2 text-sm text-[var(--text-secondary)]/80",
-};
-
 /**
- * Reusable info box with neo-brutalist styling
+ * Reusable info box component
  * Used for informational messages, instructions, countdowns
  */
 export function InfoBox({
@@ -24,10 +19,24 @@ export function InfoBox({
   variant = "default",
   className,
 }: Readonly<InfoBoxProps>) {
+  if (variant === "countdown") {
+    return (
+      <div className={cn("rounded-xl border border-dashed border-border bg-muted px-4 py-2 text-sm text-muted-foreground", className)}>
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <div className={cn(variantStyles[variant], className)}>
+    <Card 
+      className={cn(
+        "p-4",
+        variant === "dashed" && "border-dashed",
+        className
+      )}
+    >
       {children}
-    </div>
+    </Card>
   );
 }
 

@@ -64,7 +64,7 @@ export function ConfirmEmailForm() {
         <>
           <XCircle className="h-12 w-12 text-[var(--color-error)]" />
           <p className="text-center text-lg font-medium text-[var(--color-error)]">{message}</p>
-          <Button asChild variant="neutral" className="mt-4">
+          <Button asChild variant="outline" className="mt-4">
             <Link href={ROUTES.auth.verifyEmail}>Gửi lại email xác nhận</Link>
           </Button>
         </>

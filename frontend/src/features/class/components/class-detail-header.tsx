@@ -46,12 +46,12 @@ export function ClassDetailHeader({
         {/* Back Button */}
         <div className="absolute left-4 top-4">
           <Button
-            variant="neutral"
+            variant="outline"
             size="icon"
             onClick={handleBack}
-            className="bg-white/10 backdrop-blur-sm hover:bg-white/20"
+            className="bg-background hover:bg-accent hover:text-accent-foreground"
           >
-            <ArrowLeft className="h-4 w-4 text-white" />
+            <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
 
@@ -60,22 +60,22 @@ export function ClassDetailHeader({
           <div className="absolute right-4 top-4 flex gap-2">
             {onEdit && (
               <Button
-                variant="neutral"
+                variant="outline"
                 size="icon"
                 onClick={onEdit}
-                className="bg-white/10 backdrop-blur-sm hover:bg-white/20"
+                className="bg-background hover:bg-accent hover:text-accent-foreground"
               >
-                <Edit className="h-4 w-4 text-white" />
+                <Edit className="h-4 w-4" />
               </Button>
             )}
             {onDelete && (
               <Button
-                variant="neutral"
+                variant="outline"
                 size="icon"
                 onClick={onDelete}
-                className="bg-white/10 backdrop-blur-sm hover:bg-white/20"
+                className="bg-background hover:bg-accent hover:text-accent-foreground"
               >
-                <Trash2 className="h-4 w-4 text-white" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -83,7 +83,7 @@ export function ClassDetailHeader({
       </div>
 
       {/* Class Info */}
-      <div className="relative -mt-16 rounded-t-2xl bg-[var(--bg-surface)] px-6 pb-6 pt-8 shadow-lg">
+      <div className="relative -mt-16 rounded-t-2xl bg-background px-6 pb-6 pt-8 shadow-lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex-1">
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
@@ -111,7 +111,7 @@ export function ClassDetailHeader({
                   </code>
                   {onCopyJoinCode && (
                     <Button
-                      variant="neutral"
+                      variant="outline"
                       size="icon"
                       onClick={onCopyJoinCode}
                       className="h-6 w-6"

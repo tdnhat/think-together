@@ -69,7 +69,7 @@ export function ResetPasswordForm() {
     return (
       <div className="text-center">
         <p className="text-[var(--color-error)] font-base">Liên kết không hợp lệ hoặc đã hết hạn</p>
-        <Button asChild variant="neutral" className="mt-4">
+        <Button asChild variant="outline" className="mt-4">
           <Link href={ROUTES.auth.forgotPassword}>Yêu cầu link mới</Link>
         </Button>
       </div>

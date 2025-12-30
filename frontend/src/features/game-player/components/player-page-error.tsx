@@ -44,7 +44,7 @@ export function PlayerPageError({ error, onGoBack }: PlayerPageErrorProps) {
           <AlertTitle>Lỗi</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-        <Button variant="neutral" onClick={handleGoBack} className="mt-4 gap-2">
+        <Button variant="outline" onClick={handleGoBack} className="mt-4 gap-2">
           <ArrowLeft className="h-5 w-5" />
           Quay lại
         </Button>

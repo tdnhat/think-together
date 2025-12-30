@@ -53,7 +53,7 @@ export function MatchingFields() {
                 </Label>
                 <Button
                     type="button"
-                    variant="neutral"
+                    variant="outline"
                     size="sm"
                     onClick={handleAddMatchingPair}
                     disabled={!canAddMatchingPair}
@@ -67,7 +67,7 @@ export function MatchingFields() {
                 {matchingPairs && matchingPairs.length > 0 ? (
                     matchingPairs.map((pair, index) => (
                         <div key={index} className="flex items-start gap-2 rounded-lg border border-[var(--border-secondary)] p-3">
-                            <Badge variant="neutral" className="mt-1 flex-shrink-0">
+                            <Badge variant="outline" className="mt-1 flex-shrink-0">
                                 {index + 1}
                             </Badge>
 
@@ -117,7 +117,7 @@ export function MatchingFields() {
                             {canRemoveMatchingPair && (
                                 <Button
                                     type="button"
-                                    variant="neutral"
+                                    variant="outline"
                                     size="icon"
                                     onClick={() => handleRemoveMatchingPair(index)}
                                     className="mt-1 flex-shrink-0"

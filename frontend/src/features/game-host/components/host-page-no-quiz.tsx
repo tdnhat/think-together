@@ -61,7 +61,7 @@ export function HostPageNoQuiz({ error, onRejoinByPin }: HostPageNoQuizProps) {
               <span className="w-full border-t border-[var(--color-border-light)]" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[var(--bg-surface)] px-2 text-[var(--text-tertiary)]">
+              <span className="bg-card px-2 text-[var(--text-tertiary)]">
                 hoặc kết nối lại
               </span>
             </div>
@@ -81,8 +81,8 @@ export function HostPageNoQuiz({ error, onRejoinByPin }: HostPageNoQuizProps) {
                 onChange={(e) => setRejoinPin(e.target.value.replaceAll(/\D/g, ''))}
                 className="text-center text-xl tracking-widest font-bold"
               />
-              <Button 
-                variant="neutral" 
+              <Button
+                variant="outline"
                 onClick={handleRejoin}
                 disabled={rejoinPin.length !== GAME_HOST_CONSTANTS.PIN_DISPLAY.PIN_LENGTH}
               >

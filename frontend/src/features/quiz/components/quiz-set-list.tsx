@@ -154,7 +154,7 @@ export function QuizSetList({
               </Badge>
             )}
             {draftCount !== undefined && (
-              <Badge variant="neutral" className="px-3 py-1">
+              <Badge variant="outline" className="px-3 py-1">
                 Nháp: {draftCount}
               </Badge>
             )}
@@ -178,7 +178,7 @@ export function QuizSetList({
               <Filter className="h-4 w-4 text-[var(--text-tertiary)]" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="neutral" className="w-36 justify-between">
+                  <Button variant="outline" className="w-36 justify-between">
                     {sortBy === 'newest' && 'Mới nhất'}
                     {sortBy === 'oldest' && 'Cũ nhất'}
                     {sortBy === 'title' && 'Tên A-Z'}
@@ -206,7 +206,7 @@ export function QuizSetList({
             {/* Filter */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="neutral" className="w-36 justify-between">
+                <Button variant="outline" className="w-36 justify-between">
                   {filterBy === 'all' && 'Tất cả'}
                   {filterBy === 'published' && 'Đã xuất bản'}
                   {filterBy === 'draft' && 'Nháp'}

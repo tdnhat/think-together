@@ -65,7 +65,7 @@ export function HostPageResumeOption({
               )}
             </Button>
             <Button 
-              variant="neutral" 
+              variant="outline" 
               onClick={onStartFresh}
               disabled={isLoading}
               className="w-full gap-2"

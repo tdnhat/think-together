@@ -49,7 +49,7 @@ export function PlayerWaiting({
               {formattedPin}
             </Badge>
             {playerCount > 0 && (
-              <Badge variant="neutral" className="gap-1.5">
+              <Badge variant="outline" className="gap-1.5">
                 <Users className="h-4 w-4" />
                 {playerCount} người
               </Badge>

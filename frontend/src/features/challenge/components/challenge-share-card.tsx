@@ -5,7 +5,7 @@ import { Copy, ExternalLink, Share2, QrCode } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
-import { toast } from 'sonner'
+import { toast } from '@/lib/utils/toast'
 import type { ChallengeDto } from '../types'
 
 interface ChallengeShareCardProps {
@@ -67,7 +67,7 @@ export function ChallengeShareCard({ challenge, shareUrl }: ChallengeShareCardPr
             readOnly
             className="font-mono text-sm"
           />
-          <Button variant="neutral" size="icon" onClick={handleCopyLink}>
+          <Button variant="outline" size="icon" onClick={handleCopyLink}>
             <Copy className="h-4 w-4" />
           </Button>
         </div>
@@ -76,12 +76,12 @@ export function ChallengeShareCard({ challenge, shareUrl }: ChallengeShareCardPr
             <Share2 className="h-4 w-4" />
             Chia sẻ
           </Button>
-          <Button variant="neutral" onClick={handleOpenChallenge} className="gap-2">
+          <Button variant="outline" onClick={handleOpenChallenge} className="gap-2">
             <ExternalLink className="h-4 w-4" />
             Mở thử thách
           </Button>
           <Button
-            variant="neutral"
+            variant="outline"
             onClick={() => setShowQRCode(!showQRCode)}
             className="gap-2"
           >

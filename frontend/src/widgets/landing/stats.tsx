@@ -32,7 +32,7 @@ export function Stats() {
             </p>
             
             <div className="flex flex-wrap gap-4">
-              <Badge variant="neutral" className="px-4 py-2">
+              <Badge variant="outline" className="px-4 py-2">
                 <Zap className="h-5 w-5 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]" />
                 <span>Nhanh chóng</span>
               </Badge>

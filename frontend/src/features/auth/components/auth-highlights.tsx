@@ -28,7 +28,7 @@ export function AuthHighlights({ heading = 'Những gì bạn nhận được b�
       className={cn('px-6 py-5', className)}
     >
       <header className="mb-4 space-y-2">
-        <Badge variant="neutral">
+        <Badge variant="outline">
           🚀 Được học sinh cung cấp
         </Badge>
         <div>

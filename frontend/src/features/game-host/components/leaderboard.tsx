@@ -86,7 +86,7 @@ export function Leaderboard({
             {title}
           </CardTitle>
           {entries.length > 0 && (
-            <Badge variant="neutral" className="text-sm">
+            <Badge variant="outline" className="text-sm">
               {entries.length} người chơi
             </Badge>
           )}
@@ -123,14 +123,14 @@ export function Leaderboard({
                       </span>
                       {showStats && (
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <Badge variant="neutral" className="text-xs">
+                          <Badge variant="outline" className="text-xs">
                             {entry.correctAnswers ?? 0} đúng
                           </Badge>
-                          <Badge variant="neutral" className="text-xs">
+                          <Badge variant="outline" className="text-xs">
                             {formatAccuracy(entry.accuracyPercentage)}
                           </Badge>
                           {entry.totalTimeSpentMs != null && (
-                            <Badge variant="neutral" className="text-xs flex items-center gap-1">
+                            <Badge variant="outline" className="text-xs flex items-center gap-1">
                               <Clock className="h-3 w-3" />
                               {formatDuration(entry.totalTimeSpentMs)}
                             </Badge>

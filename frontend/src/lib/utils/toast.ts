@@ -1,9 +1,9 @@
 /**
  * Toast utility with duplicate prevention
- * Uses Sonner for consistent toast notifications
+ * Uses UI Store with AnimatedList for toast notifications
  */
 
-import { toast as sonnerToast } from 'sonner'
+import { useUIStore } from '@/stores/ui.store'
 
 // Track recent toast messages to prevent duplicates
 const recentToasts = new Map<string, number>()
@@ -47,7 +47,12 @@ export function toastSuccess(message: string, options?: { id?: string; duration?
     return id
   }
   
-  sonnerToast.success(message, { id, duration: options?.duration })
+  const store = useUIStore.getState()
+  store.actions.addToast({
+    type: 'success',
+    message,
+    duration: options?.duration,
+  })
   return id
 }
 
@@ -61,7 +66,31 @@ export function toastError(message: string, options?: { id?: string; duration?: 
     return id
   }
   
-  sonnerToast.error(message, { id, duration: options?.duration })
+  const store = useUIStore.getState()
+  store.actions.addToast({
+    type: 'error',
+    message,
+    duration: options?.duration,
+  })
+  return id
+}
+
+/**
+ * Show warning toast with duplicate prevention
+ */
+export function toastWarning(message: string, options?: { id?: string; duration?: number }): string {
+  const id = options?.id || getToastId(message, 'warning')
+  
+  if (!shouldShowToast(id)) {
+    return id
+  }
+  
+  const store = useUIStore.getState()
+  store.actions.addToast({
+    type: 'warning',
+    message,
+    duration: options?.duration,
+  })
   return id
 }
 
@@ -75,9 +104,78 @@ export function toastInfo(message: string, options?: { id?: string; duration?: n
     return id
   }
   
-  sonnerToast(message, { id, duration: options?.duration })
+  const store = useUIStore.getState()
+  store.actions.addToast({
+    type: 'info',
+    message,
+    duration: options?.duration,
+  })
   return id
 }
 
-// Re-export sonner toast for other uses
-export { toast } from 'sonner'
+/**
+ * Show loading toast
+ */
+export function toastLoading(message: string, options?: { id?: string; duration?: number }): string {
+  const id = options?.id || getToastId(message, 'loading')
+  
+  const store = useUIStore.getState()
+  store.actions.addToast({
+    type: 'info',
+    message,
+    duration: options?.duration || 0, // Loading toasts don't auto-dismiss
+  })
+  return id
+}
+
+/**
+ * Dismiss a toast by id
+ */
+export function toastDismiss(id: string): void {
+  const store = useUIStore.getState()
+  store.actions.removeToast(id)
+}
+
+/**
+ * Generic toast function (for compatibility with sonner API)
+ */
+function createToast(type: 'success' | 'error' | 'warning' | 'info', message: string, options?: { duration?: number; id?: string }): string {
+  const id = options?.id || getToastId(message, type)
+  
+  if (!shouldShowToast(id)) {
+    return id
+  }
+  
+  const store = useUIStore.getState()
+  store.actions.addToast({
+    type,
+    message,
+    duration: options?.duration,
+  })
+  return id
+}
+
+/**
+ * Toast function with methods matching sonner API
+ */
+function toastFn(message: string, options?: { type?: 'success' | 'error' | 'warning' | 'info'; duration?: number; id?: string }): string {
+  const type = options?.type || 'info'
+  return createToast(type, message, options)
+}
+
+// Add methods to the function object
+toastFn.success = (message: string, options?: { duration?: number; id?: string }) => createToast('success', message, options)
+toastFn.error = (message: string, options?: { duration?: number; id?: string }) => createToast('error', message, options)
+toastFn.warning = (message: string, options?: { duration?: number; id?: string }) => createToast('warning', message, options)
+toastFn.info = (message: string, options?: { duration?: number; id?: string }) => createToast('info', message, options)
+toastFn.loading = (message: string, options?: { duration?: number; id?: string }) => createToast('info', message, { ...options, duration: options?.duration || 0 })
+toastFn.dismiss = toastDismiss
+
+export const toast = toastFn as typeof toastFn & {
+  success: (message: string, options?: { duration?: number; id?: string }) => string
+  error: (message: string, options?: { duration?: number; id?: string }) => string
+  warning: (message: string, options?: { duration?: number; id?: string }) => string
+  info: (message: string, options?: { duration?: number; id?: string }) => string
+  loading: (message: string, options?: { duration?: number; id?: string }) => string
+  dismiss: (id: string) => void
+}

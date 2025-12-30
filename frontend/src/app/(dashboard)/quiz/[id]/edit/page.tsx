@@ -201,7 +201,7 @@ export default function QuizEditorPage() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4 flex-1 min-w-0">
               <Button 
-                variant="neutral" 
+                variant="outline" 
                 size="icon" 
                 onClick={handleBack}
                 className="shrink-0"
@@ -218,7 +218,7 @@ export default function QuizEditorPage() {
                       Đã xuất bản
                     </Badge>
                   ) : (
-                    <Badge variant="neutral" className="shrink-0">
+                    <Badge variant="outline" className="shrink-0">
                       Bản nháp
                     </Badge>
                   )}
@@ -232,10 +232,10 @@ export default function QuizEditorPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-              <Button variant="neutral" size="icon" onClick={handleSettings} className="shrink-0">
+              <Button variant="outline" size="icon" onClick={handleSettings} className="shrink-0">
                 <Settings className="h-4 w-4" />
               </Button>
-              <Button variant="neutral" onClick={handlePreview} className="shrink-0">
+              <Button variant="outline" onClick={handlePreview} className="shrink-0">
                 <Eye className="h-4 w-4" />
                 Xem trước
               </Button>

@@ -49,7 +49,7 @@ export function GameEnded({
               <Badge variant="default" className="text-lg py-2 px-4">
                 {winner.totalPoints.toLocaleString('vi-VN')} điểm
               </Badge>
-              <Badge variant="neutral" className="text-lg py-2 px-4">
+              <Badge variant="outline" className="text-lg py-2 px-4">
                 {winner.correctAnswers}/{result.totalQuestions} đúng
               </Badge>
             </div>
@@ -166,12 +166,12 @@ export function GameEnded({
           </Button>
         )}
         
-        <Button variant="neutral" size="lg" onClick={handleGoHome} className="gap-2 w-full sm:w-auto">
+        <Button variant="outline" size="lg" onClick={handleGoHome} className="gap-2 w-full sm:w-auto">
           <Home className="h-5 w-5" />
           Về trang chủ
         </Button>
 
-        <Button variant="neutral" size="lg" disabled className="gap-2 w-full sm:w-auto" title="Tính năng sẽ sớm ra mắt">
+        <Button variant="outline" size="lg" disabled className="gap-2 w-full sm:w-auto" title="Tính năng sẽ sớm ra mắt">
           <Download className="h-5 w-5" />
           Xuất kết quả
         </Button>

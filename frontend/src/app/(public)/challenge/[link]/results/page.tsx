@@ -133,11 +133,11 @@ function ChallengeResultsContent() {
             <Button variant="default" onClick={handleRetry} className="gap-2">
               Thử lại
             </Button>
-            <Button variant="neutral" onClick={handleShare} className="gap-2">
+            <Button variant="outline" onClick={handleShare} className="gap-2">
               <Share2 className="h-4 w-4" />
               Chia sẻ
             </Button>
-            <Button variant="neutral" onClick={handleHome} className="gap-2">
+            <Button variant="outline" onClick={handleHome} className="gap-2">
               <Home className="h-4 w-4" />
               Về trang chủ
             </Button>

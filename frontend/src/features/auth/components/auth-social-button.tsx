@@ -24,7 +24,7 @@ export function AuthSocialButton({
   return (
     <Button
       type="button"
-      variant="neutral"
+      variant="outline"
       size="lg"
       className={cn(
         'w-full justify-start gap-4',

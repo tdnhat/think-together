@@ -145,10 +145,10 @@ export function PlayerResults({
                         )}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="neutral" className="text-xs">
+                        <Badge variant="outline" className="text-xs">
                           {entry.correctAnswers} đúng
                         </Badge>
-                        <Badge variant="neutral" className="text-xs">
+                        <Badge variant="outline" className="text-xs">
                           {entry.accuracyPercentage.toFixed(0)}%
                         </Badge>
                       </div>

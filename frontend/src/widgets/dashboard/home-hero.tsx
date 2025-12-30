@@ -34,7 +34,7 @@ export function HomeHero() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="neutral" className="rounded-xl text-lg">
+          <Button asChild size="lg" variant="outline" className="rounded-xl text-lg">
             <Link href={ROUTES.reports.list}>Xem báo cáo</Link>
           </Button>
         </div>

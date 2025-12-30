@@ -41,7 +41,7 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
       <div className="flex justify-between gap-3 pt-4">
         <Button
           type="button"
-          variant="neutral"
+          variant="outline"
           onClick={onBack}
           disabled={isActivating}
         >

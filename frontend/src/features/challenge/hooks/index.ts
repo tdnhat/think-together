@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { toast } from '@/lib/utils/toast'
 import { challengeService } from '../api/challenge.service'
 import { useChallengeStore } from '../store/challenge.store'
 import { CHALLENGE_CONSTANTS } from '../constants'

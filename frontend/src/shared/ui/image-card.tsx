@@ -22,11 +22,11 @@ export default function ImageCard({
   return (
     <figure
       className={cn(
-        "w-full overflow-hidden rounded-base border-2 border-border bg-main font-base shadow-shadow",
+        "w-full overflow-hidden rounded-lg border bg-card shadow-sm",
         className,
       )}
     >
-      <div className={cn("relative w-full overflow-hidden border-b-2 border-border", aspectRatio)}>
+      <div className={cn("relative w-full overflow-hidden border-b", aspectRatio)}>
         <SafeImage
           src={imageUrl}
           alt={imageAlt}
@@ -41,7 +41,7 @@ export default function ImageCard({
         )}
       </div>
       {children && (
-        <figcaption className="p-4 bg-main text-main-foreground">
+        <figcaption className="p-4 bg-card text-card-foreground">
           {children}
         </figcaption>
       )}

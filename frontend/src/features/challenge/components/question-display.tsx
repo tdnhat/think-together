@@ -81,7 +81,7 @@ export function QuestionDisplay({ onAnswerChange, className = '' }: QuestionDisp
           <CardAction>
             <Button
               type="button"
-              variant="neutral"
+              variant="outline"
               size="icon"
               className="size-10"
               onClick={() => toggleFlagQuestion(question.id)}
@@ -188,7 +188,7 @@ function RenderChoiceOptions({
 
   const getVariant = (index: number) => {
     const isSelected = selectedIndexes.includes(index)
-    return isSelected ? 'default' : 'neutral'
+    return isSelected ? 'default' : 'outline'
   }
 
   const getClassName = (index: number) => {
@@ -332,7 +332,7 @@ function RenderTrueFalseOptions({
     return correctOption ?? -1
   }
 
-  const getVariant = (index: number) => (selectedIndex === index ? 'default' : 'neutral')
+  const getVariant = (index: number) => (selectedIndex === index ? 'default' : 'outline')
 
   const getClassName = (index: number) => {
     const isSelected = selectedIndex === index
@@ -1157,7 +1157,7 @@ function AudioPlayer({ src, startTime = 0 }: { src: string; startTime?: number }
           <div className="flex items-center gap-2">
             <Button
               type="button"
-              variant="neutral"
+              variant="outline"
               size="icon"
               className="size-10"
               onClick={toggleMute}

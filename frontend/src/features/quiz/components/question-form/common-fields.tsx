@@ -57,7 +57,7 @@ export function CommonFields() {
                                     <Button
                                         key={preset}
                                         type="button"
-                                        variant="neutral"
+                                        variant="outline"
                                         size="sm"
                                         onClick={() => field.onChange(preset)}
                                         className={timeLimit === preset ? 'border-[var(--brand-primary)]' : ''}

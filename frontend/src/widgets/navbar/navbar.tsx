@@ -55,7 +55,7 @@ export function Navbar() {
               <>
                 <Button
                   asChild
-                  variant="neutral"
+                  variant="outline"
                   className="rounded-xl"
                 >
                   <Link href={ROUTES.auth.login}>Đăng nhập</Link>
@@ -74,9 +74,9 @@ export function Navbar() {
           {/* Mobile menu button */}
           <Button
             type="button"
-            variant="neutral"
+            variant="outline"
             size="icon"
-            className="md:hidden rounded-xl border-none bg-transparent p-2 text-[var(--text-primary)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[var(--bg-surface)] hover:shadow-none"
+            className="md:hidden rounded-xl border-none bg-transparent p-2 text-[var(--text-primary)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-accent hover:shadow-none"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -132,7 +132,7 @@ export function Navbar() {
                   <>
                     <Button
                       asChild
-                      variant="neutral"
+                      variant="outline"
                       className="rounded-xl"
                     >
                       <Link href={ROUTES.auth.login} onClick={() => setMobileMenuOpen(false)}>Đăng nhập</Link>

@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 import { pdfExportService } from '../api/pdf-export.service'
-import { toast } from 'sonner'
+import { toast } from '@/lib/utils/toast'
 
 export function usePdfExport() {
   const [isLoading, setIsLoading] = useState(false)

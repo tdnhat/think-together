@@ -49,7 +49,7 @@ export const FLOATING_STATIONERY_ITEMS = [
     id: 'sparkles',
     icon: Star,
     className: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-    colors: 'bg-[var(--bg-surface)]/70 text-[var(--brand-primary)] backdrop-blur',
+    colors: 'bg-background/70 text-[var(--brand-primary)] backdrop-blur',
     size: 'h-14 w-14',
     float: { rotate: [-8, 8, -6] as number[], x: [0, 10, -10, 0] as number[], y: [0, -12, 12, 0] as number[] },
     delay: 3,

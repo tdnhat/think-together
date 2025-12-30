@@ -13,7 +13,7 @@ import {
   QuizActions
 } from '@/features/quiz/components'
 import { useCreateChallenge, useChallengeByQuizSetId } from '@/features/challenge'
-import { toast } from 'sonner'
+import { toast } from '@/lib/utils/toast'
 import { useQueryClient } from '@tanstack/react-query'
 import { quizSetService } from '@/features/quiz/api/quiz-set.service'
 import { useState } from 'react'
@@ -115,7 +115,7 @@ export default function QuizDetailPage() {
           </h2>
           <Button
             onClick={handleBack}
-            variant="neutral"
+            variant="outline"
           >
             Quay lại
           </Button>

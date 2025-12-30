@@ -174,7 +174,7 @@ export function QuestionList({
               Thử tìm kiếm với từ khóa khác hoặc thay đổi bộ lọc
             </p>
             <Button
-              variant="neutral"
+              variant="outline"
               onClick={() => {
                 onSearchChange?.('')
                 onFilterChange?.('all')

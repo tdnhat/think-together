@@ -39,10 +39,10 @@ export function ClassCard({
     <div className="absolute top-3 right-3 flex gap-2">
       {onView && (
         <Button
-          variant="neutral"
+          variant="outline"
           size="icon"
           onClick={() => onView(classData)}
-          className="bg-[var(--bg-surface)] hover:bg-[var(--bg-surface)]"
+          className="bg-background hover:bg-accent hover:text-accent-foreground"
           title="Xem chi tiết"
         >
           <Eye className="h-4 w-4" />
@@ -51,9 +51,9 @@ export function ClassCard({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="neutral"
+            variant="outline"
             size="icon"
-            className="bg-[var(--bg-surface)] hover:bg-[var(--bg-surface)]"
+            className="bg-background hover:bg-accent hover:text-accent-foreground"
           >
             <MoreVertical className="h-4 w-4" />
           </Button>
@@ -137,7 +137,7 @@ export function ClassCard({
             </div>
             {onCopyJoinCode && (
               <Button
-                variant="neutral"
+                variant="outline"
                 size="sm"
                 onClick={() => onCopyJoinCode(classData.joinCode)}
                 className="h-7 px-2"

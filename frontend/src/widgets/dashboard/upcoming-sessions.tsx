@@ -22,7 +22,7 @@ export function UpcomingSessions() {
               </p>
               <p className="text-sm">Bắt đầu lúc 19:30 tối nay</p>
             </div>
-            <Button asChild size="sm" variant="neutral" className="rounded-lg">
+            <Button asChild size="sm" variant="outline" className="rounded-lg">
               <Link href={ROUTES.game.play}>Nhắc tôi</Link>
             </Button>
           </Card>

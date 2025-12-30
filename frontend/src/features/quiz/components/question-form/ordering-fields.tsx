@@ -74,7 +74,7 @@ export function OrderingFields() {
                 </div>
                 <Button
                     type="button"
-                    variant="neutral"
+                    variant="outline"
                     size="sm"
                     onClick={handleAddOrderingItem}
                     disabled={!canAddOrderingItem}
@@ -88,7 +88,7 @@ export function OrderingFields() {
                 {orderingItems && orderingItems.length > 0 ? (
                     orderingItems.map((item, index) => (
                         <div key={index} className="flex items-start gap-2 rounded-lg border border-[var(--border-secondary)] p-3">
-                            <Badge variant="neutral" className="mt-1 flex-shrink-0 min-w-fit">
+                            <Badge variant="outline" className="mt-1 flex-shrink-0 min-w-fit">
                                 {index + 1}
                             </Badge>
 
@@ -113,7 +113,7 @@ export function OrderingFields() {
                                 {/* Move Up */}
                                 <Button
                                     type="button"
-                                    variant="neutral"
+                                    variant="outline"
                                     size="icon"
                                     onClick={() => handleMoveOrderingItem(index, 'up')}
                                     disabled={index === 0}
@@ -125,7 +125,7 @@ export function OrderingFields() {
                                 {/* Move Down */}
                                 <Button
                                     type="button"
-                                    variant="neutral"
+                                    variant="outline"
                                     size="icon"
                                     onClick={() => handleMoveOrderingItem(index, 'down')}
                                     disabled={index === orderingItems.length - 1}
@@ -138,7 +138,7 @@ export function OrderingFields() {
                                 {canRemoveOrderingItem && (
                                     <Button
                                         type="button"
-                                        variant="neutral"
+                                        variant="outline"
                                         size="icon"
                                         onClick={() => handleRemoveOrderingItem(index)}
                                         title="Xóa"

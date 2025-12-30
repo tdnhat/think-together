@@ -12,7 +12,7 @@ interface FeatureCardProps {
 }
 
 /**
- * Feature card with neo-brutalist style and colored shadow
+ * Feature card component
  * Used in Features section of landing page
  */
 export function FeatureCard({
@@ -24,8 +24,8 @@ export function FeatureCard({
 }: Readonly<FeatureCardProps>) {
   const iconThemeClass =
     variant === "primary"
-      ? "bg-gradient-to-br from-[var(--brand-primary)] to-[var(--accent-purple)] text-white"
-      : "bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--accent-orange)] text-[var(--text-primary)]";
+      ? "bg-gradient-to-br from-primary to-purple-500 text-primary-foreground"
+      : "bg-gradient-to-br from-accent to-orange-500 text-foreground";
 
   return (
     <Card
@@ -33,21 +33,18 @@ export function FeatureCard({
     >
       <div
         className={cn(
-          "mb-5 flex h-16 w-16 items-center justify-center rounded-xl border",
-          variant === "primary" 
-            ? "border-[var(--brand-primary-hover)]"
-            : "border-[var(--brand-secondary-hover)]",
+          "mb-5 flex h-16 w-16 items-center justify-center rounded-xl",
           iconThemeClass
         )}
       >
         <Icon className="h-8 w-8" strokeWidth={2.5} />
       </div>
       
-      <h3 className="mb-3 font-heading font-bold text-xl text-[var(--text-primary)]">
+      <h3 className="mb-3 font-heading font-bold text-xl text-foreground">
         {title}
       </h3>
       
-      <p className="text-base leading-relaxed text-[var(--text-secondary)]">
+      <p className="text-base leading-relaxed text-muted-foreground">
         {description}
       </p>
     </Card>

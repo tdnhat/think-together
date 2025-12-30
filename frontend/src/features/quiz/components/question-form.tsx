@@ -258,7 +258,7 @@ export function QuestionForm({
         <div className="space-y-4 pt-4">
           <Separator />
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="neutral" onClick={onCancel} disabled={isSubmitting}>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
               Hủy
             </Button>
             <Button type="submit" variant="default" disabled={isSubmitting}>

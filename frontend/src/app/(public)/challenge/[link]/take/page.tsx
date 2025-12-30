@@ -287,7 +287,7 @@ function ChallengeTakingContent() {
             {/* Time warning */}
             {remainingTimeMs <= CHALLENGE_CONSTANTS.TIMER.WARNING_THRESHOLD &&
               remainingTimeMs > 0 && (
-                <Alert variant="warning">
+                <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     {CHALLENGE_CONSTANTS.MESSAGES.TIME_RUNNING_OUT}
@@ -299,7 +299,7 @@ function ChallengeTakingContent() {
             <Card className="py-4 gap-0">
               <CardContent className="flex items-center justify-between">
                 <Button
-                  variant="neutral"
+                  variant="outline"
                   onClick={goToPreviousQuestion}
                   disabled={currentQuestionIndex === 0}
                 >
@@ -316,7 +316,7 @@ function ChallengeTakingContent() {
                   </Button>
                 ) : (
                   <Button
-                    variant="neutral"
+                    variant="outline"
                     onClick={goToNextQuestion}
                     disabled={currentQuestionIndex === totalQuestions - 1}
                   >

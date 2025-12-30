@@ -101,14 +101,14 @@ export function QuestionDisplay({
 
         <div className="flex items-center gap-4">
           {totalPlayers > 0 && (
-            <Badge variant="neutral" className="gap-1">
+            <Badge variant="outline" className="gap-1">
               <Users className="h-4 w-4" />
               {answeredCount}/{totalPlayers}
             </Badge>
           )}
 
           {showTimer && (
-            <Badge variant="neutral" className={`gap-1 text-lg font-bold ${getTimerColor()}`}>
+            <Badge variant="outline" className={`gap-1 text-lg font-bold ${getTimerColor()}`}>
               <Timer className="h-5 w-5" />
               {timeRemaining}s
             </Badge>

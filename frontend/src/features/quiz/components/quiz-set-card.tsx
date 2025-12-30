@@ -48,7 +48,7 @@ export function QuizSetCard({
       {/* Status Badge */}
       <div className="absolute top-3 left-3">
         <Badge
-          variant={quizSet.isPublished ? 'default' : 'neutral'}
+          variant={quizSet.isPublished ? 'default' : 'outline'}
           className="text-xs font-semibold"
         >
           {quizSet.isPublished ? 'Đã xuất bản' : 'Nháp'}
@@ -59,10 +59,10 @@ export function QuizSetCard({
       <div className="absolute top-3 right-3 flex gap-2">
         {onView && (
           <Button
-            variant="neutral"
+            variant="outline"
             size="icon"
             onClick={() => onView(quizSet)}
-            className="bg-[var(--bg-surface)] transition-all duration-200"
+            className="bg-background hover:bg-accent hover:text-accent-foreground transition-all duration-200"
             title="Xem chi tiết"
           >
             <Eye className="h-4 w-4" />
@@ -71,9 +71,9 @@ export function QuizSetCard({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant="neutral"
+              variant="outline"
               size="icon"
-              className="bg-[var(--bg-surface)] transition-all duration-200"
+              className="bg-background hover:bg-accent hover:text-accent-foreground transition-all duration-200"
             >
               <MoreVertical className="h-4 w-4" />
             </Button>
@@ -149,7 +149,7 @@ export function QuizSetCard({
           {/* Category Badge */}
           {quizSet.categoryName && (
             <div className="flex items-center gap-2">
-              <Badge variant="neutral" className="text-xs">
+              <Badge variant="outline" className="text-xs">
                 {quizSet.categoryName}
               </Badge>
             </div>

@@ -119,7 +119,7 @@ export function ClassMembersList({
                 </div>
                 {isTeacher && onRemoveMember && (
                   <Button
-                    variant="neutral"
+                    variant="outline"
                     size="sm"
                     onClick={() => onRemoveMember(member.id)}
                     className="shrink-0"

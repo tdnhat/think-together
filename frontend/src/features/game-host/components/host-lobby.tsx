@@ -108,7 +108,7 @@ export function HostLobby({
               </Button>
 
               <Button
-                variant="neutral"
+                variant="outline"
                 size="lg"
                 onClick={handleEndGame}
                 disabled={isStarting}

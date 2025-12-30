@@ -37,7 +37,7 @@ export function HomeworkCard({
   const getStatusBadge = () => {
     if (isOverdue) {
       return (
-        <Badge variant="destructive" className="gap-1">
+        <Badge variant="secondary" className="gap-1">
           <AlertCircle className="h-3 w-3" />
           Quá hạn
         </Badge>
@@ -47,7 +47,7 @@ export function HomeworkCard({
       const daysUntilDue = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
       if (daysUntilDue <= 1) {
         return (
-          <Badge variant="warning" className="gap-1">
+          <Badge variant="secondary" className="gap-1">
             <Clock className="h-3 w-3" />
             Sắp đến hạn
           </Badge>
@@ -79,7 +79,7 @@ export function HomeworkCard({
           {isTeacher && (onEdit || onDelete) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="neutral" size="icon" className="shrink-0">
+                <Button variant="outline" size="icon" className="shrink-0">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -162,7 +162,7 @@ export function HomeworkCard({
             <Button
               onClick={() => onViewDetails(homework)}
               className="w-full"
-              variant="neutral"
+              variant="outline"
             >
               Xem kết quả
             </Button>
@@ -180,7 +180,7 @@ export function HomeworkCard({
             <Button
               onClick={() => onStart(homework)}
               className="w-full"
-              variant={isOverdue ? 'neutral' : 'default'}
+              variant={isOverdue ? 'outline' : 'default'}
             >
               {isOverdue ? 'Xem bài tập' : 'Làm bài ngay'}
             </Button>

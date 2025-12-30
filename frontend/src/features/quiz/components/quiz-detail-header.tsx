@@ -22,7 +22,7 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
       {/* Navigation */}
       <div className="flex items-center gap-4">
         <Button
-          variant="neutral"
+          variant="outline"
           size="icon"
           onClick={onBack}
           className="shrink-0"
@@ -50,9 +50,9 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
               {quizSet.isPublished ? (
                 <Badge variant="default" className="bg-green-400 text-black">Đã xuất bản</Badge>
               ) : (
-                <Badge variant="neutral">Bản nháp</Badge>
+                <Badge variant="outline">Bản nháp</Badge>
               )}
-              <Badge variant="neutral" className="text-[var(--text-secondary)]">
+              <Badge variant="outline" className="text-[var(--text-secondary)]">
                 <Calendar className="mr-1 h-3 w-3" />
                 {format(new Date(quizSet.createdAt), 'dd/MM/yyyy', { locale: vi })}
               </Badge>

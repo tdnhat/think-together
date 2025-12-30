@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import * as React from "react"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -14,8 +14,6 @@ import {
   Star,
   TrendingUp,
   Users,
-  ChevronsLeft,
-  ChevronsRight,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,27 +38,30 @@ import {
   useSidebar,
 } from "@/shared/ui/sidebar";
 
-interface SidebarItem {
-  icon: LucideIcon;
-  label: string;
-  href: string;
-  badge?: string;
-}
-
-const mainMenuItems: SidebarItem[] = [
-  { icon: Home, label: "Trang chủ", href: ROUTES.dashboard.home },
-  { icon: BookOpen, label: "Bộ câu hỏi", href: ROUTES.quiz.list },
-  { icon: GraduationCap, label: "Lớp học", href: ROUTES.classes.list },
-  { icon: TrendingUp, label: "Bảng xếp hạng", href: ROUTES.leaderboard },
-  { icon: Activity, label: "Tiến trình", href: "/progress" },
-];
-
-const otherMenuItems: SidebarItem[] = [
-  { icon: Star, label: "Bài đã lưu", href: "/saved" },
-  { icon: Clock, label: "Lịch sử", href: "/history" },
-  { icon: Users, label: "Cộng đồng", href: "/community" },
-  { icon: Settings, label: "Cài đặt", href: "/settings" },
-];
+// Data structure
+const data = {
+  navMain: [
+    {
+      title: "Menu chính",
+      items: [
+        { title: "Trang chủ", url: ROUTES.dashboard.home, icon: Home },
+        { title: "Bộ câu hỏi", url: ROUTES.quiz.list, icon: BookOpen },
+        { title: "Lớp học", url: ROUTES.classes.list, icon: GraduationCap },
+        { title: "Bảng xếp hạng", url: ROUTES.leaderboard, icon: TrendingUp },
+        { title: "Tiến trình", url: "/progress", icon: Activity },
+      ],
+    },
+    {
+      title: "Khác",
+      items: [
+        { title: "Bài đã lưu", url: "/saved", icon: Star },
+        { title: "Lịch sử", url: "/history", icon: Clock },
+        { title: "Cộng đồng", url: "/community", icon: Users },
+        { title: "Cài đặt", url: "/settings", icon: Settings },
+      ],
+    },
+  ],
+};
 
 function SidebarHeaderContent() {
   const { state } = useSidebar();
@@ -90,125 +91,78 @@ function SidebarHeaderContent() {
 }
 
 function SidebarFooterContent() {
-  const { state, toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
   const isHydrated = useAuthStore(selectIsHydrated);
   const user = useAuthStore(selectUser);
   const isCollapsed = state === "collapsed";
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const showBecomeCreator = isHydrated && user?.role !== "Creator";
+
+  if (!showBecomeCreator) return null;
 
   return (
     <>
       <SidebarFooter>
-        {showBecomeCreator && (
-          isCollapsed ? (
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setIsModalOpen(true)}
-                  tooltip="Trở thành Người sáng tạo"
-                  className="group-data-[state=collapsed]:justify-center"
-                >
-                  <Sparkles className="h-4 w-4 group-data-[state=collapsed]:h-5 group-data-[state=collapsed]:w-5 transition-all duration-200" />
-                  <span className="group-data-[state=collapsed]:hidden">Trở thành Người sáng tạo</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          ) : (
-            <BecomeCreatorButton className="w-full justify-start text-left" />
-          )
+        {isCollapsed ? (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => setIsModalOpen(true)}
+                tooltip="Trở thành Người sáng tạo"
+                className="group-data-[state=collapsed]:justify-center"
+              >
+                <Sparkles className="h-4 w-4 group-data-[state=collapsed]:h-5 group-data-[state=collapsed]:w-5 transition-all duration-200" />
+                <span className="group-data-[state=collapsed]:hidden">Trở thành Người sáng tạo</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : (
+          <BecomeCreatorButton className="w-full justify-start text-left" />
         )}
-
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={toggleSidebar}
-              tooltip={isCollapsed ? "Mở rộng" : "Thu gọn"}
-              className={cn("w-full transition-all", isCollapsed ? "justify-center" : "justify-start")}
-            >
-              {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
-              <span className="group-data-[state=collapsed]:hidden">Thu gọn</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
       </SidebarFooter>
 
-      {showBecomeCreator && isCollapsed && (
-        <BecomeCreatorModal
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-        />
-      )}
+      <BecomeCreatorModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </>
   );
 }
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarHeaderContent />
       </SidebarHeader>
-
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu chính</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainMenuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    <Link href={item.href} className="flex items-center justify-start gap-2 group-data-[state=collapsed]:gap-0 group-data-[state=collapsed]:justify-center">
-                      <item.icon className="h-4 w-4 group-data-[state=collapsed]:h-5 group-data-[state=collapsed]:w-5 transition-all duration-200" />
-                      <span className="group-data-[state=collapsed]:hidden">{item.label}</span>
-                      {item.badge && (
-                        <Badge variant="neutral" className="ml-auto group-data-[state=collapsed]:hidden">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Khác</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {otherMenuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    <Link href={item.href} className="flex items-center justify-start gap-2 group-data-[state=collapsed]:gap-0 group-data-[state=collapsed]:justify-center">
-                      <item.icon className="h-4 w-4 group-data-[state=collapsed]:h-5 group-data-[state=collapsed]:w-5 transition-all duration-200" />
-                      <span className="group-data-[state=collapsed]:hidden">{item.label}</span>
-                      {item.badge && (
-                        <Badge variant="neutral" className="ml-auto group-data-[state=collapsed]:hidden">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {data.navMain.map((group) => (
+          <SidebarGroup key={group.title}>
+            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      tooltip={item.title}
+                    >
+                      <Link href={item.url}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
-
       <SidebarFooterContent />
       <SidebarRail />
     </Sidebar>

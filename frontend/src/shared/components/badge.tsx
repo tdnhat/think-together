@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-
+import { Card } from "@/shared/ui/card";
 import { cn } from "@/lib/utils";
 
 interface BrandBadgeProps {
@@ -10,7 +10,7 @@ interface BrandBadgeProps {
 }
 
 /**
- * Neo-brutalist badge component with colored shadow
+ * Badge component with standard card style
  * Usage: Announcements, tags, labels
  */
 export function BrandBadge({
@@ -20,22 +20,20 @@ export function BrandBadge({
   className
 }: Readonly<BrandBadgeProps>) {
   const variantStyles = variant === "primary" 
-    ? "bg-[var(--brand-primary-light)]" 
-    : "bg-[var(--brand-secondary-light)]";
+    ? "bg-primary/10 border-primary/20" 
+    : "bg-accent/10 border-accent/20";
 
   return (
-    <div
+    <Card
       className={cn(
-        "inline-flex items-center gap-2 px-5 py-2.5",
-        "rounded-full border-2 border-[var(--color-border-main)]",
+        "inline-flex items-center gap-2 px-5 py-2.5 rounded-full border",
         "text-sm font-bold uppercase tracking-wide",
-        "transition-all hover:-translate-y-0.5",
         variantStyles,
         className
       )}
     >
       {icon && <span className="flex-shrink-0">{icon}</span>}
       <span>{children}</span>
-    </div>
+    </Card>
   );
 }

@@ -138,7 +138,7 @@ export function ImageUpload({
                 <Button
                   type="button"
                   size="sm"
-                  variant="neutral"
+                  variant="outline"
                   onClick={handleRemoveImage}
                   disabled={disabled || isUploading}
                 >
@@ -171,7 +171,7 @@ export function ImageUpload({
 
       {/* Empty State */}
       {!showPreview && (
-        <div className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] transition-colors hover:border-[var(--brand-primary)] hover:bg-[var(--bg-surface)]">
+        <div className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] transition-colors hover:border-[var(--brand-primary)] hover:bg-background">
           <Upload className="h-12 w-12 text-[var(--text-tertiary)]" />
           <p className="mt-3 text-center text-sm text-[var(--text-secondary)]">
             Click để tải ảnh bìa
@@ -199,7 +199,7 @@ export function ImageUpload({
           <AlertDescription className="flex-1">{error}</AlertDescription>
           <Button
             type="button"
-            variant="neutral"
+            variant="outline"
             size="icon"
             onClick={clearError}
             className="h-5 w-5 shrink-0"

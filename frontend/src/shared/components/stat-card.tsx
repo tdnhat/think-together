@@ -9,7 +9,7 @@ interface StatCardProps {
 }
 
 /**
- * Stat card for displaying metrics with neo-brutalist style
+ * Stat card for displaying metrics
  * Used in Stats/Hero sections
  */
 export function StatCard({
@@ -21,10 +21,10 @@ export function StatCard({
     <Card 
       className={cn("p-6 text-center", className)}
     >
-      <div className="mb-2 text-4xl font-heading text-[var(--brand-primary)]">
+      <div className="mb-2 text-4xl font-heading text-primary">
         {value}
       </div>
-      <div className="text-sm text-[var(--text-secondary)]">
+      <div className="text-sm text-muted-foreground">
         {label}
       </div>
     </Card>

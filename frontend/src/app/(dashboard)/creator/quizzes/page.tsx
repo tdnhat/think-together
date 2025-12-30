@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/shared/ui/alert-dialog'
 import { Button } from '@/shared/ui/button'
-import { toast } from 'sonner'
+import { toast } from '@/lib/utils/toast'
 
 import { QuizSetList, QuizSetModal, useQuizSets } from '@/features/quiz'
 import { useCreateChallenge, type ChallengeDto } from '@/features/challenge'
@@ -259,7 +259,7 @@ function CreatorQuizzesContent() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel asChild>
-                <Button variant="neutral">Hủy</Button>
+                <Button variant="outline">Hủy</Button>
               </AlertDialogCancel>
               <AlertDialogAction asChild>
                 <Button variant="default" onClick={handleDeleteConfirm}>
@@ -281,7 +281,7 @@ function CreatorQuizzesContent() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel asChild>
-                <Button variant="neutral">Hủy</Button>
+                <Button variant="outline">Hủy</Button>
               </AlertDialogCancel>
               <AlertDialogAction asChild>
                 <Button variant="default" onClick={handlePublishConfirm}>

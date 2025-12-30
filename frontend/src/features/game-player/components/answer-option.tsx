@@ -23,7 +23,7 @@ export function AnswerOption({
     return (
         <Button
             type="button"
-            variant="neutral" // Use neutral as base, but we will override heavily
+            variant="outline" // Use neutral as base, but we will override heavily
             onClick={onSelect}
             disabled={hasAnswered}
             className={cn(

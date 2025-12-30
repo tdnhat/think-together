@@ -71,7 +71,7 @@ export function DashboardNavbar() {
       <div className="flex shrink-0 items-center gap-3">
         <Button
           type="button"
-          variant="neutral"
+          variant="outline"
           size="icon"
           className="relative h-10 w-10 rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5"
           aria-label="Notifications"

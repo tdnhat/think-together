@@ -164,7 +164,7 @@ export function LeaderboardFilters({
               key={value}
               type="button"
               size="sm"
-              variant={filters.timePeriod === value ? 'default' : 'neutral'}
+              variant={filters.timePeriod === value ? 'default' : 'outline'}
               onClick={() =>
                 handleTimePeriodChange(value as LeaderboardFilters['timePeriod'])
               }
@@ -185,7 +185,7 @@ export function LeaderboardFilters({
             key={value}
             type="button"
             size="sm"
-            variant={filters.sortBy === value ? 'default' : 'neutral'}
+            variant={filters.sortBy === value ? 'default' : 'outline'}
             onClick={() =>
               handleSortChange(value as LeaderboardFilters['sortBy'])
             }
@@ -197,7 +197,7 @@ export function LeaderboardFilters({
         <Button
           type="button"
           size="sm"
-          variant="neutral"
+          variant="outline"
           onClick={handleSortOrderToggle}
           className="rounded-full"
         >

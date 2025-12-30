@@ -46,7 +46,7 @@ export function Hero() {
             <Button
               asChild
               size="lg"
-              variant="neutral"
+              variant="outline"
             >
               <Link href={ROUTES.public.about}>Tìm hiểu thêm</Link>
             </Button>

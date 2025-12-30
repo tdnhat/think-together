@@ -79,7 +79,7 @@ export function JoinClassForm({
             {onCancel && (
               <Button
                 type="button"
-                variant="neutral"
+                variant="outline"
                 onClick={onCancel}
                 disabled={isSubmitting}
               >

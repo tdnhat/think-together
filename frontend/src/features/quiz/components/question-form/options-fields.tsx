@@ -66,7 +66,7 @@ export function OptionsFields() {
                 {type !== QuestionType.TRUE_FALSE && (
                     <Button
                         type="button"
-                        variant="neutral"
+                        variant="outline"
                         size="sm"
                         onClick={handleAddOption}
                         disabled={!canAddOption}
@@ -81,7 +81,7 @@ export function OptionsFields() {
                 {options && options.length > 0 ? (
                     options.map((option, index) => (
                         <div key={index} className="flex items-start gap-2">
-                            <Badge variant="neutral" className="mt-2 flex-shrink-0">
+                            <Badge variant="outline" className="mt-2 flex-shrink-0">
                                 {String.fromCharCode(65 + index)}
                             </Badge>
 
@@ -108,7 +108,7 @@ export function OptionsFields() {
                                             <TooltipTrigger asChild>
                                                 <Button
                                                     type="button"
-                                                    variant={field.value ? 'default' : 'neutral'}
+                                                    variant={field.value ? 'default' : 'outline'}
                                                     size="icon"
                                                     onClick={() => {
                                                         if (type === QuestionType.SINGLE_CHOICE) {
@@ -135,7 +135,7 @@ export function OptionsFields() {
                             {canRemoveOption && type !== QuestionType.TRUE_FALSE && (
                                 <Button
                                     type="button"
-                                    variant="neutral"
+                                    variant="outline"
                                     size="icon"
                                     onClick={() => handleRemoveOption(index)}
                                 >

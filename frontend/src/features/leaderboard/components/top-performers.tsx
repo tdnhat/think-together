@@ -38,7 +38,7 @@ export function TopPerformers({
   const getRankBadge = (rank: number) => {
     if (rank <= 3) return null
     return (
-      <Badge variant="neutral" className="ml-auto">
+      <Badge variant="outline" className="ml-auto">
         #{rank}
       </Badge>
     )

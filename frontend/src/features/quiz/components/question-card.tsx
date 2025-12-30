@@ -1,10 +1,10 @@
 'use client'
 
-import { 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  Copy, 
+import {
+  MoreVertical,
+  Edit,
+  Trash2,
+  Copy,
   GripVertical,
   CircleDot,
   CheckCircle,
@@ -58,14 +58,14 @@ const questionTypeIcons: Record<QuestionType, typeof CircleDot> = {
   [QuestionType.AUDIO]: Volume2,
 }
 
-const questionTypeColors: Record<QuestionType, 'default' | 'neutral'> = {
+const questionTypeColors: Record<QuestionType, 'default' | 'outline'> = {
   [QuestionType.SINGLE_CHOICE]: 'default',
   [QuestionType.TRUE_FALSE]: 'default',
-  [QuestionType.MULTIPLE_CHOICE]: 'neutral',
+  [QuestionType.MULTIPLE_CHOICE]: 'outline',
   [QuestionType.MATCHING]: 'default',
-  [QuestionType.ORDERING]: 'neutral',
+  [QuestionType.ORDERING]: 'outline',
   [QuestionType.VIDEO]: 'default',
-  [QuestionType.AUDIO]: 'neutral',
+  [QuestionType.AUDIO]: 'outline',
 }
 
 export function QuestionCard({
@@ -122,7 +122,7 @@ export function QuestionCard({
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
         <div className="flex items-start gap-3 flex-1 min-w-0">
           {/* Question Number */}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)] font-heading text-sm font-bold">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--brand-primary-shadow)] bg-background font-heading text-sm font-bold">
             {index + 1}
           </div>
 
@@ -135,11 +135,11 @@ export function QuestionCard({
               <Icon className="h-3 w-3" />
               {typeInfo.label}
             </Badge>
-            
+
             <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 my-2">
               {question.content}
             </p>
-            
+
             <p className="text-xs text-[var(--text-tertiary)]">
               {getQuestionSummary()}
             </p>

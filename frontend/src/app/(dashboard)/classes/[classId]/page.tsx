@@ -23,7 +23,7 @@ import {
 import { challengeService, useStartAttempt } from '@/features/challenge'
 import { ROUTES } from '@/config/routes'
 import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store'
-import { toast } from 'sonner'
+import { toast } from '@/lib/utils/toast'
 import type { HomeworkDto } from '@/features/class/types'
 
 export default function ClassDetailPage() {
@@ -297,7 +297,7 @@ export default function ClassDetailPage() {
                                   )}
                                 </div>
                                 <Button
-                                  variant="neutral"
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => handleUpcomingHomeworkAction(homework)}
                                 >

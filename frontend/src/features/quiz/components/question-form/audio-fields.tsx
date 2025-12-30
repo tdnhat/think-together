@@ -138,7 +138,7 @@ export function AudioFields() {
                                             </p>
                                             <Button
                                                 type="button"
-                                                variant="neutral"
+                                                variant="outline"
                                                 size="sm"
                                                 onClick={() => field.onChange('')}
                                             >
@@ -169,7 +169,7 @@ export function AudioFields() {
                                         </div>
                                         <Button
                                             type="button"
-                                            variant="neutral"
+                                            variant="outline"
                                             size="icon"
                                             className="size-6 shrink-0"
                                             onClick={() => setAudioUploadError(null)}

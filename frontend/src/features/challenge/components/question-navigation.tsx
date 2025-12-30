@@ -36,7 +36,7 @@ export function QuestionNavigation({ onPrevious, onNext, className = '' }: Quest
       {/* Flagged questions indicator */}
       {flaggedQuestions.size > 0 && (
         <div className="flex items-center gap-2">
-          <Badge variant="neutral" className="bg-orange-100 text-orange-700">
+          <Badge variant="outline" className="bg-orange-100 text-orange-700">
             {flaggedQuestions.size} câu được đánh dấu
           </Badge>
         </div>
@@ -45,7 +45,7 @@ export function QuestionNavigation({ onPrevious, onNext, className = '' }: Quest
       {/* Navigation buttons */}
       <div className="flex items-center justify-between gap-3">
         <Button
-          variant="neutral"
+          variant="outline"
           onClick={handlePrevious}
           disabled={!canGoPrevious}
           className="flex-1"
@@ -61,7 +61,7 @@ export function QuestionNavigation({ onPrevious, onNext, className = '' }: Quest
         </div>
 
         <Button
-          variant="neutral"
+          variant="outline"
           onClick={handleNext}
           disabled={!canGoNext}
           className="flex-1"

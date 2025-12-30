@@ -18,7 +18,7 @@ export function ChallengeDetailHeader({
 }: ChallengeDetailHeaderProps) {
   return (
     <div className="flex items-center gap-4">
-      <Button variant="neutral" size="icon" onClick={onBack}>
+      <Button variant="outline" size="icon" onClick={onBack}>
         <ArrowLeft className="h-5 w-5" />
       </Button>
       <div className="flex-1">
@@ -31,7 +31,7 @@ export function ChallengeDetailHeader({
           </p>
         )}
       </div>
-      <Badge variant={challenge.status === 'Active' ? 'default' : 'neutral'}>
+      <Badge variant={challenge.status === 'Active' ? 'default' : 'outline'}>
         {challenge.status === 'Active' ? 'Đang hoạt động' : 'Đã đóng'}
       </Badge>
     </div>

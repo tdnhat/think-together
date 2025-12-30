@@ -17,7 +17,7 @@ export function PageLayout({
 }: Readonly<PageLayoutProps>) {
   return (
     <div className={cn(
-      "min-h-screen bg-[var(--bg-page)] flex flex-col",
+      "min-h-screen bg-background flex flex-col",
       className
     )}>
       {children}
@@ -47,8 +47,8 @@ export function PageHeader({
     <header className={cn(
       "py-6 px-4",
       sticky && "sticky top-0 z-10 shadow-sm",
-      bordered && "border-b border-[var(--border)]",
-      background === 'surface' && "bg-[var(--bg-surface)]",
+      bordered && "border-b border-border",
+      background === 'surface' && "bg-muted",
       className
     )}>
       <div className="container mx-auto flex items-center justify-center">
@@ -99,7 +99,7 @@ export function PageFooter({
 }: Readonly<PageFooterProps>) {
   return (
     <footer className={cn(
-      "py-4 text-center text-sm text-[var(--text-tertiary)]",
+      "py-4 text-center text-sm text-muted-foreground",
       className
     )}>
       {children}

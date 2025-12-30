@@ -82,7 +82,7 @@ export default function HomePage() {
                     key={tab.id}
                     type="button"
                     size="sm"
-                    variant={isActive ? 'default' : 'neutral'}
+                    variant={isActive ? 'default' : 'outline'}
                     onClick={() =>
                       setFilterBy(tab.id as 'all' | 'popular' | 'newest')
                     }
@@ -93,7 +93,7 @@ export default function HomePage() {
                 )
               })}
             </div>
-            <Button variant="neutral" size="sm" className="gap-2 self-start sm:self-auto">
+            <Button variant="outline" size="sm" className="gap-2 self-start sm:self-auto">
               <Filter className="h-4 w-4" />
               Bộ lọc
             </Button>

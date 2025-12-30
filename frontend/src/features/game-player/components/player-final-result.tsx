@@ -191,7 +191,7 @@ export function PlayerFinalResult({
           Chơi tiếp
         </Button>
         <Button 
-          variant="neutral" 
+          variant="outline" 
           size="lg" 
           onClick={handleShare}
           className="flex-1 gap-2"
@@ -200,7 +200,7 @@ export function PlayerFinalResult({
           Chia sẻ
         </Button>
         <Button 
-          variant="neutral" 
+          variant="outline" 
           size="lg" 
           onClick={handleGoHome}
           className="flex-1 gap-2"

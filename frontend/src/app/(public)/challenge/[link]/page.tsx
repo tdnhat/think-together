@@ -114,12 +114,12 @@ function ChallengeStartContent() {
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-3">
-                  <Badge variant="neutral" className="gap-1.5">
+                  <Badge variant="outline" className="gap-1.5">
                     <Users className="h-3.5 w-3.5" />
                     {challenge.playCount} người đã thử
                   </Badge>
                   {challenge.showLeaderboard && (
-                    <Badge variant="neutral" className="gap-1.5">
+                    <Badge variant="outline" className="gap-1.5">
                       <Trophy className="h-3.5 w-3.5" />
                       Có bảng xếp hạng
                     </Badge>

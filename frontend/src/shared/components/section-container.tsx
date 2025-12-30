@@ -20,7 +20,7 @@ export function SectionContainer({
   return (
     <section className={cn(
       "px-4 py-16 md:py-20 sm:px-6 lg:px-8",
-      background === "gray" && "bg-[var(--bg-surface)]",
+      background === "gray" && "bg-muted",
       className
     )}>
       <div className="mx-auto max-w-7xl">

@@ -19,7 +19,7 @@ export function SearchInput({
   onChange,
   placeholder = 'Tìm kiếm...',
   className,
-  iconColor = 'text-[var(--text-secondary)]',
+  iconColor = 'text-muted-foreground',
 }: SearchInputProps) {
   return (
     <div className={cn('relative', className)}>

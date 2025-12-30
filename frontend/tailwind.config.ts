@@ -13,31 +13,67 @@ export default {
   theme: {
     extend: {
       colors: {
-        main: 'var(--main)',
-        background: 'var(--background)',
-        'secondary-background': 'var(--secondary-background)',
-        foreground: 'var(--foreground)',
-        'main-foreground': 'var(--main-foreground)',
         border: 'var(--border)',
-        overlay: 'var(--overlay)',
+        input: 'var(--input)',
         ring: 'var(--ring)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        sidebar: {
+          DEFAULT: 'var(--sidebar)',
+          foreground: 'var(--sidebar-foreground)',
+          primary: 'var(--sidebar-primary)',
+          'primary-foreground': 'var(--sidebar-primary-foreground)',
+          accent: 'var(--sidebar-accent)',
+          'accent-foreground': 'var(--sidebar-accent-foreground)',
+          border: 'var(--sidebar-border)',
+          ring: 'var(--sidebar-ring)',
+        },
         'chart-1': 'var(--chart-1)',
         'chart-2': 'var(--chart-2)',
         'chart-3': 'var(--chart-3)',
         'chart-4': 'var(--chart-4)',
         'chart-5': 'var(--chart-5)',
-      },
-      spacing: {
-        'box-shadow-x': '2px',
-        'box-shadow-y': '2px',
-        'reverse-box-shadow-x': '-2px',
-        'reverse-box-shadow-y': '-2px',
+        main: 'var(--main)',
+        'secondary-background': 'var(--secondary-background)',
+        'main-foreground': 'var(--main-foreground)',
+        overlay: 'var(--overlay)',
       },
       borderRadius: {
-        base: '5px',
-      },
-      boxShadow: {
-        shadow: '2px 2px 0px 0px var(--border)',
+        sm: 'calc(var(--radius) - 4px)',
+        md: 'calc(var(--radius) - 2px)',
+        lg: 'var(--radius)',
+        xl: 'calc(var(--radius) + 4px)',
+        '2xl': 'calc(var(--radius) + 8px)',
+        '3xl': 'calc(var(--radius) + 12px)',
+        '4xl': 'calc(var(--radius) + 16px)',
       },
       fontWeight: {
         base: '500',
@@ -47,6 +83,27 @@ export default {
         sans: ['var(--font-be-vietnam-pro)', 'sans-serif'],
         heading: ['var(--font-quicksand)', 'sans-serif'],
         base: ['var(--font-be-vietnam-pro)', 'sans-serif'],
+      },
+      keyframes: {
+        'background-position-spin': {
+          '0%': { backgroundPosition: '0% 50%' },
+          '100%': { backgroundPosition: '100% 50%' },
+        },
+        'shimmer-slide': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        'spin-around': {
+          '0%': { transform: 'translateZ(0) rotate(0deg)' },
+          '15%, 35%': { transform: 'translateZ(0) rotate(90deg)' },
+          '65%, 85%': { transform: 'translateZ(0) rotate(270deg)' },
+          '100%': { transform: 'translateZ(0) rotate(360deg)' },
+        },
+      },
+      animation: {
+        'background-position-spin': 'background-position-spin 3s linear infinite',
+        'shimmer-slide': 'shimmer-slide var(--speed) ease-in-out infinite',
+        'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
       },
     },
   },

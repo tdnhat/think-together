@@ -145,7 +145,7 @@ function SidebarLink({ item, isActive, variant }: Readonly<SidebarLinkProps>) {
       />
       <span>{item.label}</span>
       {item.badge && (
-        <Badge variant="neutral" className="ml-auto">
+        <Badge variant="outline" className="ml-auto">
           {item.badge}
         </Badge>
       )}

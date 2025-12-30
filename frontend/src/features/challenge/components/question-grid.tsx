@@ -61,7 +61,7 @@ export function QuestionGrid({
               const questionIndex = rowIndex * 5 + colIndex
               const { isAnswered, isFlagged, isCurrent } = getQuestionStatus(question, questionIndex)
 
-              const variant = isCurrent ? 'default' : 'neutral'
+              const variant = isCurrent ? 'default' : 'outline'
               const stateClass = isFlagged
                 ? 'bg-[var(--brand-secondary-light)]'
                 : isAnswered

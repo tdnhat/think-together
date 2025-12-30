@@ -65,7 +65,7 @@ export function PinDisplay({ pin, className = '' }: Readonly<PinDisplayProps>) {
           </Button>
           
           <Button
-            variant="neutral"
+            variant="outline"
             size="lg"
             className="gap-2"
             disabled

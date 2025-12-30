@@ -53,7 +53,7 @@ export function FeaturesStep({ onNext, onBack }: Readonly<FeaturesStepProps>) {
       <div className="flex justify-between gap-3 pt-4">
         <Button
           type="button"
-          variant="neutral"
+          variant="outline"
           onClick={onBack}
         >
           <ArrowLeft className="mr-2 h-5 w-5" strokeWidth={3} />

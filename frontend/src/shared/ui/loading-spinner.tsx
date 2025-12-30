@@ -16,7 +16,7 @@ export function LoadingSpinner({ className, size = "md" }: LoadingSpinnerProps) 
     <div
       data-slot="loading-spinner"
       className={cn(
-        "animate-spin rounded-full border-[var(--brand-primary)] border-t-transparent",
+        "animate-spin rounded-full border-primary border-t-transparent",
         sizeClasses[size],
         className
       )}

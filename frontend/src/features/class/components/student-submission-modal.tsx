@@ -118,7 +118,7 @@ export function StudentSubmissionModal({
                                 </p>
                                 <p className="text-sm text-[var(--text-secondary)]">
                                     {data.submission.status === 'Late' ? (
-                                        <Badge variant="destructive" className="mt-1">Nộp muộn</Badge>
+                                        <Badge variant="secondary" className="mt-1">Nộp muộn</Badge>
                                     ) : (
                                         <Badge variant="default" className="mt-1">Đúng hạn</Badge>
                                     )}

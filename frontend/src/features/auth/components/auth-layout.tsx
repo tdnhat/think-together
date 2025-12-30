@@ -37,7 +37,7 @@ export function AuthLayout({
   const hasSideContent = Boolean(sideContent)
   const normalizedBadge =
     typeof badge === 'string' ? (
-      <Badge variant="neutral">
+      <Badge variant="outline">
         {badge}
       </Badge>
     ) : (
@@ -57,7 +57,7 @@ export function AuthLayout({
       <div className={cn('relative z-10 mx-auto flex w-full flex-col items-center gap-6', hasSideContent ? 'max-w-6xl' : 'max-w-md')}>
         <Card
           className={cn(
-            'relative w-full overflow-hidden bg-background/95 px-7 py-8 backdrop-blur-sm sm:px-10 sm:py-10',
+            'relative w-full overflow-hidden px-7 py-8 sm:px-10 sm:py-10',
             className,
           )}
         >

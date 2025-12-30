@@ -73,7 +73,7 @@ export function VerifyEmailForm() {
         </div>
 
         <Button
-          variant="neutral"
+          variant="outline"
           size="lg"
           className="w-full"
           onClick={() => setPendingEmail(null)}
