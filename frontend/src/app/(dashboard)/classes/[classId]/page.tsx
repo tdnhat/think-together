@@ -31,13 +31,13 @@ export default function ClassDetailPage() {
   const router = useRouter()
   const classId = params.classId as string
   const user = useAuthStore(selectUser)
-  const isTeacher = user?.role === 'Creator' || user?.role === 'Administrator'
 
   const [activeTab, setActiveTab] = useState('home')
   const [isCreateHomeworkModalOpen, setIsCreateHomeworkModalOpen] = useState(false)
   const [editingHomework, setEditingHomework] = useState<HomeworkDto | null>(null)
 
   const { data: classData, isLoading: isLoadingClass, error } = useClass(classId)
+  const isTeacher = classData ? user?.id === classData.teacherId : false
 
   const createHomeworkMutation = useCreateHomework()
   const updateHomeworkMutation = useUpdateHomework()
@@ -142,6 +142,43 @@ export default function ClassDetailPage() {
     }
   }
 
+  const getUpcomingHomeworkButtonText = (homework: HomeworkDto) => {
+    if (isTeacher) {
+      return 'Xem kết quả'
+    }
+
+    const isOverdue = homework.isOverdue || (homework.dueDate && new Date(homework.dueDate) < new Date())
+
+    if (isOverdue) {
+      return homework.hasSubmission ? 'Xem chi tiết' : 'Đã quá hạn'
+    }
+
+    return 'Làm bài'
+  }
+
+  const handleUpcomingHomeworkAction = async (homework: HomeworkDto) => {
+    if (isTeacher) {
+      // Teachers always see statistics
+      router.push(ROUTES.classes.homeworkStatistics(classId, homework.id))
+      return
+    }
+
+    const isOverdue = homework.isOverdue || (homework.dueDate && new Date(homework.dueDate) < new Date())
+
+    if (isOverdue) {
+      // Overdue homework - show submission details if student has one
+      if (homework.hasSubmission) {
+        router.push(ROUTES.classes.homeworkSubmission(classId, homework.id))
+      } else {
+        toast.info('Bài tập đã quá hạn nộp.')
+      }
+      return
+    }
+
+    // Doable homework - start the homework
+    await handleStartHomework(homework)
+  }
+
   const handleCopyJoinCode = () => {
     if (classData?.joinCode) {
       navigator.clipboard.writeText(classData.joinCode)
@@ -221,24 +258,10 @@ export default function ClassDetailPage() {
                   {/* Upcoming Homeworks */}
                   <Card>
                     <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="mb-4">
                         <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
                           Bài tập sắp đến hạn
                         </h2>
-                        {isTeacher && (
-                          <Button
-                            variant="neutral"
-                            size="sm"
-                            onClick={() => {
-                              setIsCreateHomeworkModalOpen(true)
-                              setActiveTab('classwork')
-                            }}
-                            className="gap-2"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Tạo bài tập
-                          </Button>
-                        )}
                       </div>
                       {classData.homeworks && classData.homeworks.length > 0 ? (
                         <div className="space-y-3">
@@ -276,9 +299,9 @@ export default function ClassDetailPage() {
                                 <Button
                                   variant="neutral"
                                   size="sm"
-                                  onClick={() => handleStartHomework(homework)}
+                                  onClick={() => handleUpcomingHomeworkAction(homework)}
                                 >
-                                  Làm bài
+                                  {getUpcomingHomeworkButtonText(homework)}
                                 </Button>
                               </div>
                             ))}
@@ -323,17 +346,6 @@ export default function ClassDetailPage() {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-[var(--text-secondary)]">
-                            Đã nộp
-                          </span>
-                          <span className="font-semibold text-[var(--text-primary)]">
-                            {classData.homeworks?.reduce(
-                              (sum, h) => sum + (h.submissionCount || 0),
-                              0
-                            ) || 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-[var(--text-secondary)]">
                             Thành viên
                           </span>
                           <span className="font-semibold text-[var(--text-primary)]">
@@ -349,30 +361,16 @@ export default function ClassDetailPage() {
 
             {/* Classwork Tab */}
             <TabsContent value="classwork" className="mt-6">
-              <div className="space-y-6">
-                {isTeacher && (
-                  <div className="flex items-center justify-between">
-                    <h2 className="font-heading text-2xl font-semibold text-[var(--text-primary)]">
-                      Bài tập về nhà
-                    </h2>
-                    <Button onClick={() => setIsCreateHomeworkModalOpen(true)} className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Tạo bài tập mới
-                    </Button>
-                  </div>
-                )}
-
-                <HomeworkList
-                  homeworks={classData.homeworks || []}
-                  isLoading={false}
-                  isTeacher={isTeacher}
-                  onCreateNew={isTeacher ? () => setIsCreateHomeworkModalOpen(true) : undefined}
-                  onEdit={isTeacher ? setEditingHomework : undefined}
-                  onDelete={isTeacher ? handleDeleteHomework : undefined}
-                  onStart={handleStartHomework}
-                  onViewDetails={handleViewHomeworkDetails}
-                />
-              </div>
+              <HomeworkList
+                homeworks={classData.homeworks || []}
+                isLoading={false}
+                isTeacher={isTeacher}
+                onCreateNew={isTeacher ? () => setIsCreateHomeworkModalOpen(true) : undefined}
+                onEdit={isTeacher ? setEditingHomework : undefined}
+                onDelete={isTeacher ? handleDeleteHomework : undefined}
+                onStart={handleStartHomework}
+                onViewDetails={handleViewHomeworkDetails}
+              />
             </TabsContent>
 
             {/* People Tab */}

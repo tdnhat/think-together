@@ -58,7 +58,7 @@ export function HomeworkCard({
   }
 
   return (
-    <Card className={`group transition-all duration-200 hover:shadow-md ${className}`}>
+    <Card className={`group transition-all duration-200 hover:shadow-md h-full flex flex-col ${className}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
@@ -75,47 +75,39 @@ export function HomeworkCard({
             )}
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="neutral" size="icon" className="shrink-0">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {onView && (
-                <DropdownMenuItem onClick={() => onView(homework)}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Xem chi tiết
-                </DropdownMenuItem>
-              )}
-              {onStart && (
-                <DropdownMenuItem onClick={() => onStart(homework)}>
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Làm bài
-                </DropdownMenuItem>
-              )}
-              {onEdit && (
-                <DropdownMenuItem onClick={() => onEdit(homework)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Chỉnh sửa
-                </DropdownMenuItem>
-              )}
-              {onDelete && (
-                <DropdownMenuItem
-                  onClick={() => onDelete(homework)}
-                  className="text-red-600 focus:text-red-600"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Xóa
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Teacher-only dropdown menu */}
+          {isTeacher && (onEdit || onDelete) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="neutral" size="icon" className="shrink-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {onEdit && (
+                  <DropdownMenuItem onClick={() => onEdit(homework)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Chỉnh sửa
+                  </DropdownMenuItem>
+                )}
+                {onDelete && (
+                  <DropdownMenuItem
+                    onClick={() => onDelete(homework)}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Xóa
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <div className="space-y-2">
+      <CardContent className="pt-0 flex flex-col h-full">
+        {/* Main content that grows */}
+        <div className="flex-1 space-y-2">
           {/* Due Date */}
           {dueDate && (
             <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
@@ -163,10 +155,10 @@ export function HomeworkCard({
           </div>
         </div>
 
-        {/* Action Button */}
-        {/* For teachers, always show results/stats */}
-        {isTeacher && onViewDetails ? (
-          <div className="mt-4">
+        {/* Action Button - sticks to bottom */}
+        <div className="mt-4">
+          {/* For teachers, always show results/stats */}
+          {isTeacher && onViewDetails ? (
             <Button
               onClick={() => onViewDetails(homework)}
               className="w-full"
@@ -174,10 +166,8 @@ export function HomeworkCard({
             >
               Xem kết quả
             </Button>
-          </div>
-        ) : homework.hasSubmission && onViewDetails ? (
-          /* Students with submissions can view their details */
-          <div className="mt-4">
+          ) : homework.hasSubmission && onViewDetails ? (
+            /* Students with submissions can view their details */
             <Button
               onClick={() => onViewDetails(homework)}
               className="w-full"
@@ -185,10 +175,8 @@ export function HomeworkCard({
             >
               Xem chi tiết
             </Button>
-          </div>
-        ) : onStart ? (
-          /* Default action: start/do homework */
-          <div className="mt-4">
+          ) : onStart ? (
+            /* Default action: start/do homework */
             <Button
               onClick={() => onStart(homework)}
               className="w-full"
@@ -196,8 +184,8 @@ export function HomeworkCard({
             >
               {isOverdue ? 'Xem bài tập' : 'Làm bài ngay'}
             </Button>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </CardContent>
     </Card>
   )

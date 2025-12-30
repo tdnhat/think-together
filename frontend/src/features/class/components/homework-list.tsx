@@ -85,12 +85,26 @@ export function HomeworkList({
       {isLoading && (
         <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-4 space-y-3">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-10 w-full" />
+            <Card key={i} className="h-full flex flex-col">
+              <CardContent className="p-4 flex flex-col h-full">
+                {/* Header skeleton */}
+                <div className="pb-3 border-b border-border mb-3">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+
+                {/* Main content skeleton */}
+                <div className="flex-1 space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-4/5" />
+                  <Skeleton className="h-4 w-3/5" />
+                  <Skeleton className="h-3 w-2/5 mt-2" />
+                </div>
+
+                {/* Button skeleton at bottom */}
+                <div className="mt-4">
+                  <Skeleton className="h-10 w-full" />
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -100,7 +114,7 @@ export function HomeworkList({
       {/* Homeworks Grid */}
       {!isLoading && filteredHomeworks.length > 0 && (
         <>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 items-stretch">
             {filteredHomeworks.map((homework) => (
               <HomeworkCard
                 key={homework.id}
