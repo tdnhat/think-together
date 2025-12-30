@@ -54,6 +54,9 @@ export interface HomeworkSubmissionDto {
   score: number
   submittedAt: string
   status: 'NotSubmitted' | 'Submitted' | 'Late'
+  correctAnswers?: number
+  totalQuestions?: number
+  completionTimeMs?: number
 }
 
 // Class Query Parameters

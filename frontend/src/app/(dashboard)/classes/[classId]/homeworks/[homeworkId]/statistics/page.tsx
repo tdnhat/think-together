@@ -30,10 +30,14 @@ export default function HomeworkStatisticsPage() {
     router.push(ROUTES.classes.detail(classId))
   }
 
-  const handleViewStudentSubmission = (studentId: string) => {
-    // Navigate to student submission detail (if needed)
-    // For now, we'll just show the statistics
+  const formatTime = (ms?: number) => {
+    if (!ms) return '-'
+    const minutes = Math.floor(ms / 60000)
+    const seconds = Math.floor((ms % 60000) / 1000)
+    return `${minutes} phút ${seconds} giây`
   }
+
+  // Teachers should never view individual submissions - only aggregate statistics
 
   if (isLoading) {
     return (
@@ -65,6 +69,10 @@ export default function HomeworkStatisticsPage() {
   }
 
   const { homework, totalStudents, submittedCount, notSubmittedCount, completionRate, averageScore, highestScore, lowestScore, questionStatistics, studentSubmissions } = data
+
+  // Ensure non-negative values
+  const safeNotSubmittedCount = Math.max(0, notSubmittedCount)
+  const safeCompletionRate = Math.max(0, Math.min(100, completionRate))
 
   return (
     <DashboardLayout>
@@ -110,7 +118,7 @@ export default function HomeworkStatisticsPage() {
               <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-orange-50">
                 <XCircle className="h-6 w-6 text-orange-600" />
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-orange-600">{notSubmittedCount}</p>
+                  <p className="text-2xl font-bold text-orange-600">{safeNotSubmittedCount}</p>
                   <p className="text-xs text-[var(--text-secondary)]">Chưa nộp bài</p>
                 </div>
               </div>
@@ -118,7 +126,7 @@ export default function HomeworkStatisticsPage() {
               <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-purple-50">
                 <TrendingUp className="h-6 w-6 text-purple-600" />
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-purple-600">{completionRate.toFixed(1)}%</p>
+                  <p className="text-2xl font-bold text-purple-600">{safeCompletionRate.toFixed(1)}%</p>
                   <p className="text-xs text-[var(--text-secondary)]">Tỷ lệ hoàn thành</p>
                 </div>
               </div>
@@ -154,7 +162,7 @@ export default function HomeworkStatisticsPage() {
               <div className="h-3 w-full rounded-full bg-[var(--bg-surface-secondary)] overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-300"
-                  style={{ width: `${completionRate}%` }}
+                  style={{ width: `${safeCompletionRate}%` }}
                 />
               </div>
             </div>
@@ -254,8 +262,6 @@ export default function HomeworkStatisticsPage() {
                   studentSubmissions.map((submission) => (
                     <TableRow
                       key={submission.id}
-                      className="cursor-pointer hover:bg-[var(--bg-surface-secondary)]"
-                      onClick={() => handleViewStudentSubmission(submission.studentId)}
                     >
                       <TableCell className="font-medium">
                         {submission.studentName || 'Học sinh'}
@@ -264,12 +270,16 @@ export default function HomeworkStatisticsPage() {
                         {submission.score}
                       </TableCell>
                       <TableCell className="text-center">
-                        {/* Note: This would need to be calculated from attempt data */}
-                        -
+                        {submission.correctAnswers !== undefined && submission.totalQuestions !== undefined
+                          ? `${submission.correctAnswers}/${submission.totalQuestions}`
+                          : '-'
+                        }
                       </TableCell>
                       <TableCell className="text-center text-sm text-[var(--text-secondary)]">
-                        {/* Note: This would need to be calculated from attempt data */}
-                        -
+                        {submission.completionTimeMs !== undefined
+                          ? formatTime(submission.completionTimeMs)
+                          : '-'
+                        }
                       </TableCell>
                       <TableCell className="text-center text-sm text-[var(--text-secondary)]">
                         {new Date(submission.submittedAt).toLocaleDateString('vi-VN', {

@@ -5,6 +5,7 @@ using ThinkTogether.Application.Interfaces;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Specifications;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
+using ThinkTogether.Domain.Aggregates.ClassAggregate.Specifications;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.UserAggregate.Repositories;
 using ThinkTogether.Domain.Exceptions;
@@ -44,19 +45,24 @@ public sealed class GetHomeworkStatisticsQueryHandler : IRequestHandler<GetHomew
         if (!Guid.TryParse(userIdString, out var userId))
             throw new UnauthorizedException("ID người dùng không hợp lệ");
 
-        // Get class and homework
-        var result = await _classRepository.GetClassAndHomeworkByHomeworkIdAsync(request.HomeworkId, cancellationToken);
-        if (!result.HasValue)
+        // Get class and homework using specification
+        var spec = new ClassWithHomeworkStatisticsSpec(request.HomeworkId);
+        var classEntity = await _classRepository.GetBySpecAsync(spec, cancellationToken);
+        if (classEntity == null)
         {
             throw new EntityNotFoundException("Bài tập về nhà", request.HomeworkId);
         }
-
-        var (classEntity, homework) = result.Value;
 
         // Verify class ID matches
         if (classEntity.Id != request.ClassId)
         {
             throw new ValidationException("Class ID không khớp với homework");
+        }
+
+        var homework = classEntity.Homeworks.FirstOrDefault(h => h.Id == request.HomeworkId && h.DeletedAt == null);
+        if (homework == null)
+        {
+            throw new EntityNotFoundException("Bài tập về nhà", request.HomeworkId);
         }
 
         // Verify user is the teacher
@@ -74,40 +80,49 @@ public sealed class GetHomeworkStatisticsQueryHandler : IRequestHandler<GetHomew
             .OrderBy(q => q.DisplayOrder)
             .ToList();
 
-        // Get all class members (students)
+        // Get all class members (students) - exclude teacher and inactive members
         var totalStudents = classEntity.Members.Count(m => m.LeftAt == null && m.UserId != classEntity.TeacherId);
 
         // Get all submissions
         var submissions = homework.Submissions.ToList();
         var submittedCount = submissions.Count;
-        var notSubmittedCount = totalStudents - submittedCount;
-        var completionRate = totalStudents > 0 ? (double)submittedCount / totalStudents * 100 : 0;
+        var notSubmittedCount = Math.Max(0, totalStudents - submittedCount); // Ensure non-negative
+        var completionRate = totalStudents > 0 ? Math.Round((double)submittedCount / totalStudents * 100, 1) : 0;
 
         // Calculate overall statistics
         var scores = submissions.Select(s => s.Score).ToList();
-        var averageScore = scores.Any() ? scores.Average() : 0;
+        var averageScore = scores.Any() ? Math.Round(scores.Average(), 1) : 0;
         var highestScore = scores.Any() ? scores.Max() : 0;
         var lowestScore = scores.Any() ? scores.Min() : 0;
 
         // Load challenge attempts for all submissions to get per-question statistics
-        var attemptIds = submissions.Select(s => s.ChallengeAttemptId).ToList();
+        var attemptIds = submissions.Select(s => s.ChallengeAttemptId).Distinct().ToList();
         var questionStatistics = new List<QuestionStatisticsDto>();
+
+        // Batch load all attempts to avoid N+1 queries
+        var attempts = new List<Domain.Aggregates.ChallengeAggregate.Entities.ChallengeAttempt>();
+        foreach (var attemptId in attemptIds)
+        {
+            var challengeSpec = new ChallengeByAttemptIdSpec(attemptId);
+            var challenge = await _challengeRepository.GetBySpecAsync(challengeSpec, cancellationToken);
+            if (challenge != null)
+            {
+                var attempt = challenge.Attempts.FirstOrDefault(a => a.Id == attemptId);
+                if (attempt != null)
+                {
+                    attempts.Add(attempt);
+                }
+            }
+        }
 
         foreach (var question in questions)
         {
             var correctCount = 0;
             var wrongCount = 0;
 
-            // Load attempts and check answers for this question
-            foreach (var attemptId in attemptIds)
+            // Check answers for this question across all attempts
+            foreach (var attempt in attempts)
             {
-                var spec = new ChallengeByAttemptIdSpec(attemptId);
-                var challenge = await _challengeRepository.GetBySpecAsync(spec, cancellationToken);
-                if (challenge == null) continue;
-
-                var attempt = challenge.Attempts.FirstOrDefault(a => a.Id == attemptId);
-                if (attempt == null) continue;
-
                 var answer = attempt.Answers.FirstOrDefault(a => a.QuestionId == question.Id);
                 if (answer != null)
                 {
@@ -119,7 +134,7 @@ public sealed class GetHomeworkStatisticsQueryHandler : IRequestHandler<GetHomew
             }
 
             var totalAnswers = correctCount + wrongCount;
-            var correctPercentage = totalAnswers > 0 ? (double)correctCount / totalAnswers * 100 : 0;
+            var correctPercentage = totalAnswers > 0 ? Math.Round((double)correctCount / totalAnswers * 100, 1) : 0;
 
             questionStatistics.Add(new QuestionStatisticsDto
             {
@@ -138,18 +153,40 @@ public sealed class GetHomeworkStatisticsQueryHandler : IRequestHandler<GetHomew
         var studentsList = await _userRepository.GetByIdsAsync(studentIds, cancellationToken);
         var students = studentsList.ToDictionary(u => u.Id);
 
-        // Map submissions with student names
-        var submissionDtos = submissions.Select(s =>
+        // Map submissions with student names and attempt data
+        var submissionDtos = new List<HomeworkSubmissionDto>();
+
+        foreach (var submission in submissions)
         {
-            var dto = s.Adapt<HomeworkSubmissionDto>();
-            if (students.TryGetValue(s.StudentId, out var student))
+            var dto = submission.Adapt<HomeworkSubmissionDto>();
+
+            // Load attempt data for this submission
+            var attemptSpec = new ChallengeByAttemptIdSpec(submission.ChallengeAttemptId);
+            var challenge = await _challengeRepository.GetBySpecAsync(attemptSpec, cancellationToken);
+            if (challenge != null)
+            {
+                var attempt = challenge.Attempts.FirstOrDefault(a => a.Id == submission.ChallengeAttemptId);
+                if (attempt != null)
+                {
+                    dto.CorrectAnswers = attempt.CorrectAnswers;
+                    dto.TotalQuestions = attempt.TotalQuestions;
+                    dto.CompletionTimeMs = attempt.CompletionTimeMs;
+                }
+            }
+
+            // Set student name
+            if (students.TryGetValue(submission.StudentId, out var student))
             {
                 dto.StudentName = student.GetFullName();
             }
-            return dto;
-        }).OrderByDescending(s => s.Score)
-          .ThenByDescending(s => s.SubmittedAt)
-          .ToList();
+
+            submissionDtos.Add(dto);
+        }
+
+        submissionDtos = submissionDtos
+            .OrderByDescending(s => s.Score)
+            .ThenByDescending(s => s.SubmittedAt)
+            .ToList();
 
         // Map homework DTO
         var homeworkDto = homework.Adapt<HomeworkDto>();

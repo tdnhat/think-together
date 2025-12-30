@@ -65,6 +65,9 @@ public class HomeworkSubmissionDto
     public int Score { get; set; }
     public DateTime SubmittedAt { get; set; }
     public SubmissionStatus Status { get; set; }
+    public int? CorrectAnswers { get; set; }
+    public int? TotalQuestions { get; set; }
+    public int? CompletionTimeMs { get; set; }
 }
 
 /// <summary>

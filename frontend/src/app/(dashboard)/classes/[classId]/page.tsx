@@ -133,11 +133,11 @@ export default function ClassDetailPage() {
   }
 
   const handleViewHomeworkDetails = (homework: HomeworkDto) => {
-    if (isTeacher && homework.isOverdue) {
-      // Teacher viewing expired homework -> show statistics
+    if (isTeacher) {
+      // Teachers always see statistics, never submission details
       router.push(ROUTES.classes.homeworkStatistics(classId, homework.id))
     } else if (homework.hasSubmission) {
-      // Student viewing their submission -> show submission details
+      // Students with submissions can view their details
       router.push(ROUTES.classes.homeworkSubmission(classId, homework.id))
     }
   }

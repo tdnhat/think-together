@@ -164,8 +164,8 @@ export function HomeworkCard({
         </div>
 
         {/* Action Button */}
-        {/* For teachers viewing overdue homework, show results/stats */}
-        {isTeacher && isOverdue && onViewDetails ? (
+        {/* For teachers, always show results/stats */}
+        {isTeacher && onViewDetails ? (
           <div className="mt-4">
             <Button
               onClick={() => onViewDetails(homework)}
