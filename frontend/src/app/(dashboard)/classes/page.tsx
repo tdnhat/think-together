@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
 import { DashboardLayout } from '@/widgets/dashboard'
 import {
   ClassList,
@@ -102,6 +102,9 @@ export default function ClassesPage() {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Tạo lớp học mới</DialogTitle>
+              <DialogDescription>
+                Tạo một lớp học mới để quản lý học sinh và bài tập về nhà.
+              </DialogDescription>
             </DialogHeader>
             <ClassForm
               onSubmit={(data) => handleCreate(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any

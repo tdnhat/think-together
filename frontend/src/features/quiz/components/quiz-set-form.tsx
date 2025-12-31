@@ -20,6 +20,7 @@ interface QuizSetFormProps {
   onCancel?: () => void
   isSubmitting?: boolean
   className?: string
+  showActions?: boolean
 }
 
 export function QuizSetForm({
@@ -28,6 +29,7 @@ export function QuizSetForm({
   onCancel,
   isSubmitting = false,
   className = '',
+  showActions = true,
 }: QuizSetFormProps) {
   const isEditing = !!quizSet
   const [uploadSuccess, setUploadSuccess] = useState(false)
@@ -89,7 +91,7 @@ export function QuizSetForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className={`space-y-6 ${className}`}>
+    <form id="quiz-set-form" onSubmit={handleSubmit(handleFormSubmit)} className={`space-y-6 ${className}`}>
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title" className="text-sm font-semibold">
@@ -174,25 +176,27 @@ export function QuizSetForm({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4">
-        {onCancel && (
+      {showActions && (
+        <div className="flex justify-end gap-3 pt-4">
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Hủy
+            </Button>
+          )}
           <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
+            type="submit"
+            variant="default"
             disabled={isSubmitting}
           >
-            Hủy
+            {isSubmitting ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo bộ trắc nghiệm'}
           </Button>
-        )}
-        <Button
-          type="submit"
-          variant="default"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo bộ trắc nghiệm'}
-        </Button>
-      </div>
+        </div>
+      )}
     </form>
   )
 }

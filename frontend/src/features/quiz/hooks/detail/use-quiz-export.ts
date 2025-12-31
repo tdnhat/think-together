@@ -3,7 +3,7 @@ import { quizSetService } from '@/features/quiz/api/quiz-set.service';
 import { toast } from '@/lib/utils/toast';
 import type { QuizSetDto } from '@/types/api';
 
-export function useQuizExport(quizSet: QuizSetDto | null) {
+export function useQuizExport(quizSet: QuizSetDto | null | undefined) {
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExportPdf = useCallback(async () => {

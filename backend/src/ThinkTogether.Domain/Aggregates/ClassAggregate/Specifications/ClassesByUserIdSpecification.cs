@@ -2,12 +2,6 @@ using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.ClassAggregate.Specifications;
 
-/// <summary>
-/// Specification to get classes where user is either teacher or member.
-/// Note: This specification works with a pre-filtered list since we need to check both teacher and member relationships.
-/// The actual filtering by userId should be done via repository methods GetByTeacherIdAsync/GetByMemberIdAsync,
-/// then this specification can be applied for search and pagination.
-/// </summary>
 public sealed class ClassesByUserIdSpecification : Specification<Class>
 {
     public ClassesByUserIdSpecification(

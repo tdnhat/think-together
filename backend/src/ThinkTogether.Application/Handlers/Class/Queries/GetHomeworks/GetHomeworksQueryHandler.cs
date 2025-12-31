@@ -28,7 +28,7 @@ public sealed class GetHomeworksQueryHandler : IRequestHandler<GetHomeworksQuery
         var classEntity = await _classRepository.GetByIdAsync(request.ClassId, cancellationToken);
         if (classEntity == null)
         {
-            throw new EntityNotFoundException("Class", request.ClassId);
+            throw new EntityNotFoundException(nameof(Class), request.ClassId);
         }
 
         // Filter out deleted homeworks

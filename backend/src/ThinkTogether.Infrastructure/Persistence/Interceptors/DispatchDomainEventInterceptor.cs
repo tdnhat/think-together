@@ -29,22 +29,22 @@ public class DispatchDomainEventInterceptor(IPublisher publisher) : SaveChangesI
         if (context is null)
             return;
 
-        // Get all aggregate roots that have domain events
-        var aggregateRoots = context.ChangeTracker
-            .Entries<AggregateRoot>()
+        // Get all entities that have domain events
+        var entities = context.ChangeTracker
+            .Entries<Entity>()
             .Where(entry => entry.Entity.DomainEvents.Count > 0)
             .Select(entry => entry.Entity)
             .ToList();
 
         // Collect all domain events
-        var domainEvents = aggregateRoots
-            .SelectMany(aggregateRoot => aggregateRoot.DomainEvents)
+        var domainEvents = entities
+            .SelectMany(entity => entity.DomainEvents)
             .ToList();
 
-        // Clear domain events from aggregate roots
-        foreach (var aggregateRoot in aggregateRoots)
+        // Clear domain events from entities
+        foreach (var entity in entities)
         {
-            aggregateRoot.ClearDomainEvents();
+            entity.ClearDomainEvents();
         }
 
         // Dispatch each domain event through MediatR
@@ -59,22 +59,22 @@ public class DispatchDomainEventInterceptor(IPublisher publisher) : SaveChangesI
         if (context is null)
             return;
 
-        // Get all aggregate roots that have domain events
-        var aggregateRoots = context.ChangeTracker
-            .Entries<AggregateRoot>()
+        // Get all entities that have domain events
+        var entities = context.ChangeTracker
+            .Entries<Entity>()
             .Where(entry => entry.Entity.DomainEvents.Count > 0)
             .Select(entry => entry.Entity)
             .ToList();
 
         // Collect all domain events
-        var domainEvents = aggregateRoots
-            .SelectMany(aggregateRoot => aggregateRoot.DomainEvents)
+        var domainEvents = entities
+            .SelectMany(entity => entity.DomainEvents)
             .ToList();
 
-        // Clear domain events from aggregate roots
-        foreach (var aggregateRoot in aggregateRoots)
+        // Clear domain events from entities
+        foreach (var entity in entities)
         {
-            aggregateRoot.ClearDomainEvents();
+            entity.ClearDomainEvents();
         }
 
         // Dispatch each domain event through MediatR asynchronously

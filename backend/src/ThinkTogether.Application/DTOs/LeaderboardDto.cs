@@ -2,9 +2,6 @@ using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Application.DTOs;
 
-/// <summary>
-/// Global leaderboard entry DTO
-/// </summary>
 public class GlobalLeaderboardEntryDto
 {
     public Guid AttemptId { get; set; }
@@ -30,9 +27,6 @@ public class GlobalLeaderboardEntryDto
     public SubmissionStatus? SubmissionStatus { get; set; }
 }
 
-/// <summary>
-/// Paginated leaderboard response DTO
-/// </summary>
 public class LeaderboardDto
 {
     public List<GlobalLeaderboardEntryDto> Entries { get; set; } = new();
@@ -42,9 +36,6 @@ public class LeaderboardDto
     public int TotalPages { get; set; }
 }
 
-/// <summary>
-/// Leaderboard statistics DTO
-/// </summary>
 public class LeaderboardStatsDto
 {
     public int TotalAttempts { get; set; }

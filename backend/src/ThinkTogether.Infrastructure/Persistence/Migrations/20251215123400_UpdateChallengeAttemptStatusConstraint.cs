@@ -4,10 +4,8 @@
 
 namespace ThinkTogether.Infrastructure.Persistence.Migrations
 {
-    /// <inheritdoc />
     public partial class UpdateChallengeAttemptStatusConstraint : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropCheckConstraint(
@@ -20,7 +18,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 sql: "trangThai IN (1, 2, 3, 4)");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropCheckConstraint(

@@ -15,7 +15,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
     [Migration("20251219201031_AddCategoryEntity")]
     partial class AddCategoryEntity
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

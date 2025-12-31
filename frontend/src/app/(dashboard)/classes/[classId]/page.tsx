@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { Home, BookOpen, Users, Plus, Copy } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent } from '@/shared/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
@@ -389,6 +389,9 @@ export default function ClassDetailPage() {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Tạo bài tập về nhà mới</DialogTitle>
+              <DialogDescription>
+                Tạo một bài tập về nhà mới cho lớp học của bạn.
+              </DialogDescription>
             </DialogHeader>
             <HomeworkForm
               classId={classId}
@@ -400,10 +403,13 @@ export default function ClassDetailPage() {
         </Dialog>
 
         {/* Edit Homework Modal */}
-        <Dialog open={!!editingHomework} onOpenChange={(open) => !open && setEditingHomework(null)}>
+        <Dialog open={!!editingHomework} onOpenChange={(open: boolean) => !open && setEditingHomework(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Chỉnh sửa bài tập về nhà</DialogTitle>
+              <DialogDescription>
+                Cập nhật thông tin bài tập về nhà của bạn.
+              </DialogDescription>
             </DialogHeader>
             {editingHomework && (
               <HomeworkForm

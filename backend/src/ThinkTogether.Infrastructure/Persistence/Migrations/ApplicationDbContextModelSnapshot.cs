@@ -289,6 +289,9 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ngayXoa");
 
+                    b.Property<Guid?>("HomeworkId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Nickname")
                         .IsRequired()
                         .HasMaxLength(100)

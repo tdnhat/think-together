@@ -15,7 +15,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
     [Migration("20251219201412_AddCategoryFKToQuizSet")]
     partial class AddCategoryFKToQuizSet
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

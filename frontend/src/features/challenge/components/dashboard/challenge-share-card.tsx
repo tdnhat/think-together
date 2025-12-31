@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { toast } from '@/lib/utils/toast'
-import type { ChallengeDto } from '../types'
+import type { ChallengeDto } from '@/features/challenge/types'
 
 interface ChallengeShareCardProps {
   challenge: ChallengeDto
@@ -95,7 +95,7 @@ export function ChallengeShareCard({ challenge, shareUrl }: ChallengeShareCardPr
             {/* Simple QR code placeholder - you can integrate a QR library */}
             <div className="w-48 h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
               <p className="text-sm text-gray-500 text-center px-4">
-                QR Code cho<br/>{challenge.shareLink}
+                QR Code cho<br />{challenge.shareLink}
               </p>
             </div>
           </div>

@@ -56,9 +56,6 @@ public partial class GameSessionController
         });
     }
 
-    /// <summary>
-    /// Sync game session state. Used for state recovery after browser refresh or reconnection.
-    /// </summary>
     [HttpGet("{id:guid}/sync")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<SyncGameSessionResult>), StatusCodes.Status200OK)]

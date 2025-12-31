@@ -29,9 +29,6 @@ public class ChallengeController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Create a new challenge from a quiz set
-    /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<ChallengeDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -54,9 +51,6 @@ public class ChallengeController : ControllerBase
             });
     }
 
-    /// <summary>
-    /// Get challenge by share link
-    /// </summary>
     [HttpGet("by-link/{shareLink}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ChallengeDto>), StatusCodes.Status200OK)]
@@ -75,9 +69,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get challenge by quiz set ID
-    /// </summary>
     [HttpGet("by-quiz/{quizSetId:guid}")]
     [ProducesResponseType(typeof(ApiResponse<ChallengeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<ChallengeDto>), StatusCodes.Status204NoContent)]
@@ -100,9 +91,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Start a new challenge attempt
-    /// </summary>
     [HttpPost("{challengeId:guid}/attempts")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ChallengeAttemptDto>), StatusCodes.Status200OK)]
@@ -126,9 +114,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get challenge attempt details
-    /// </summary>
     [HttpGet("attempts/{attemptId:guid}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ChallengeAttemptDto>), StatusCodes.Status200OK)]
@@ -146,9 +131,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Submit all answers for a challenge attempt at once
-    /// </summary>
     [HttpPost("attempts/{attemptId:guid}/submit-answers")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ChallengeAttemptDto>), StatusCodes.Status200OK)]
@@ -175,9 +157,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get leaderboard for a challenge
-    /// </summary>
     [HttpGet("{challengeId:guid}/leaderboard")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ChallengeLeaderboardDto>), StatusCodes.Status200OK)]
@@ -197,9 +176,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get statistics for a challenge
-    /// </summary>
     [HttpGet("{challengeId:guid}/stats")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ChallengeStatsDto>), StatusCodes.Status200OK)]
@@ -218,9 +194,6 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Export a challenge attempt as PDF
-    /// </summary>
     [HttpGet("attempts/{attemptId:guid}/export/pdf")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
@@ -250,9 +223,6 @@ public class ChallengeController : ControllerBase
         return File(pdfData, "application/pdf", fileName);
     }
 
-    /// <summary>
-    /// Export challenge leaderboard as PDF
-    /// </summary>
     [HttpGet("{challengeId:guid}/leaderboard/export/pdf")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
@@ -280,9 +250,6 @@ public class ChallengeController : ControllerBase
         return File(pdfData, "application/pdf", fileName);
     }
 
-    /// <summary>
-    /// Export challenge statistics as PDF
-    /// </summary>
     [HttpGet("{challengeId:guid}/stats/export/pdf")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]

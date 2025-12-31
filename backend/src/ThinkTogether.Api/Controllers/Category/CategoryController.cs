@@ -23,9 +23,6 @@ public class CategoryController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all active categories
-    /// </summary>
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(
@@ -37,9 +34,6 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Get category by ID
-    /// </summary>
     [HttpGet("{id:guid}")]
     [AllowAnonymous]
     public async Task<ActionResult<CategoryDto>> GetById(
@@ -51,9 +45,6 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Create new category (Admin only)
-    /// </summary>
     [HttpPost]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<CategoryDto>> Create(
@@ -71,9 +62,6 @@ public class CategoryController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    /// <summary>
-    /// Update category (Admin only)
-    /// </summary>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<CategoryDto>> Update(
@@ -94,9 +82,6 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Delete category (Admin only)
-    /// </summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Delete(
@@ -108,9 +93,6 @@ public class CategoryController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Search categories by name
-    /// </summary>
     [HttpGet("search")]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> Search(

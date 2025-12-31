@@ -33,9 +33,6 @@ public partial class GameSessionController
         });
     }
 
-    /// <summary>
-    /// Reconnect a player to an ongoing game session.
-    /// </summary>
     [HttpPost("reconnect")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<ReconnectPlayerResult>), StatusCodes.Status200OK)]

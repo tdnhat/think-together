@@ -3,7 +3,7 @@ using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 
-public sealed partial class QuestionStatistic : Entity
+public sealed partial class QuestionStatistic : AggregateRoot
 {
     private QuestionStatistic()
     {
@@ -41,5 +41,6 @@ public sealed partial class QuestionStatistic : Entity
             UpdatedAt = DateTime.UtcNow
         };
     }
+
 }
 

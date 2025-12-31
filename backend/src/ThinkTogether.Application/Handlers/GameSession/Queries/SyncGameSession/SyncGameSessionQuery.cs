@@ -1,12 +1,13 @@
 using MediatR;
 using ThinkTogether.Application.DTOs;
+using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Application.Handlers.GameSession.Queries.SyncGameSession;
 
 public sealed record SyncGameSessionQuery(Guid GameSessionId, Guid? PlayerId = null) : IRequest<SyncGameSessionResult>;
 
 public sealed record SyncGameSessionResult(
-    string Status, // LOBBY, IN_PROGRESS, FINISHED
+    GameSessionSyncStatus Status,
     SyncCurrentQuestionDto? CurrentQuestion,
     List<SyncPlayerDto> Players,
     bool IsHost,

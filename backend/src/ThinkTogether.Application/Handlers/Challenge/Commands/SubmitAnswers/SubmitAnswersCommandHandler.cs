@@ -8,7 +8,6 @@ using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Repositories;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Services;
 using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Specifications;
 using ThinkTogether.Domain.Aggregates.ClassAggregate.Repositories;
-using ThinkTogether.Domain.Aggregates.ClassAggregate.Services;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Repositories;
 using ThinkTogether.Domain.Enums;
 using ThinkTogether.Domain.Exceptions;
@@ -21,7 +20,6 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
     private readonly IChallengeRepository _challengeRepository;
     private readonly IQuizSetRepository _quizSetRepository;
     private readonly IAnswerGradingService _gradingService;
-    private readonly IHomeworkSubmissionService _homeworkSubmissionService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<SubmitAnswersCommandHandler> _logger;
 
@@ -29,14 +27,12 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
         IChallengeRepository challengeRepository,
         IQuizSetRepository quizSetRepository,
         IAnswerGradingService gradingService,
-        IHomeworkSubmissionService homeworkSubmissionService,
         IUnitOfWork unitOfWork,
         ILogger<SubmitAnswersCommandHandler> logger)
     {
         _challengeRepository = challengeRepository;
         _quizSetRepository = quizSetRepository;
         _gradingService = gradingService;
-        _homeworkSubmissionService = homeworkSubmissionService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -117,16 +113,6 @@ public sealed class SubmitAnswersCommandHandler : IRequestHandler<SubmitAnswersC
         attempt.Complete(totalScore, correctAnswers, completionTimeMs);
 
         await _challengeRepository.UpdateAsync(challenge, cancellationToken);
-
-        // If this is a homework submission, create HomeworkSubmission record using domain service
-        if (request.HomeworkId.HasValue)
-        {
-            await _homeworkSubmissionService.CreateSubmissionFromAttemptAsync(
-                attempt,
-                request.HomeworkId.Value,
-                totalScore,
-                cancellationToken);
-        }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

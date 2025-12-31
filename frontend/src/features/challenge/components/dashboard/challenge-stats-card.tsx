@@ -3,7 +3,7 @@
 import { Users, Calendar } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Separator } from '@/shared/ui/separator'
-import type { ChallengeDto } from '../types'
+import type { ChallengeDto } from '@/features/challenge/types'
 
 interface ChallengeStatsCardProps {
   challenge: ChallengeDto

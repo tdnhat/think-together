@@ -76,9 +76,6 @@ public sealed partial class QuizSet : AggregateRoot
         return question;
     }
 
-    /// <summary>
-    /// Set the category for this quiz set
-    /// </summary>
     public void SetCategory(Guid? categoryId)
     {
         if (categoryId == Guid.Empty)

@@ -26,9 +26,6 @@ public class ClassController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all classes for current user
-    /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<ClassResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetClasses(
@@ -51,9 +48,6 @@ public class ClassController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Join class by join code
-    /// </summary>
     [HttpPost("join")]
     [ProducesResponseType(typeof(ApiResponse<ClassDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> JoinClass(
@@ -69,9 +63,6 @@ public class ClassController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get homeworks for a class
-    /// </summary>
     [HttpGet("{classId}/homeworks")]
     [ProducesResponseType(typeof(ApiResponse<HomeworkResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetHomeworks(
@@ -94,9 +85,6 @@ public class ClassController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get student's homework submission details
-    /// </summary>
     [HttpGet("{classId}/homeworks/{homeworkId}/submission")]
     [ProducesResponseType(typeof(ApiResponse<HomeworkSubmissionDetailDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetHomeworkSubmission(
@@ -119,9 +107,6 @@ public class ClassController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get homework statistics (teacher only)
-    /// </summary>
     [HttpGet("{classId}/homeworks/{homeworkId}/statistics")]
     [ProducesResponseType(typeof(ApiResponse<HomeworkStatisticsDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetHomeworkStatistics(
@@ -142,9 +127,6 @@ public class ClassController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Create homework for a class
-    /// </summary>
     [HttpPost("{classId}/homeworks")]
     [ProducesResponseType(typeof(ApiResponse<HomeworkDto>), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateHomework(
@@ -170,9 +152,6 @@ public class ClassController : ControllerBase
             });
     }
 
-    /// <summary>
-    /// Get class by ID
-    /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ApiResponse<ClassDetailDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetClassById(
@@ -189,9 +168,6 @@ public class ClassController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Create a new class
-    /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<ClassDto>), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateClass(
@@ -211,9 +187,6 @@ public class ClassController : ControllerBase
     }
 }
 
-/// <summary>
-/// Request DTO for creating homework
-/// </summary>
 public record CreateHomeworkRequest(
     Guid QuizSetId,
     string Title,

@@ -37,11 +37,11 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
         CancellationToken cancellationToken = default)
     {
         // Get total count before pagination
-        var queryWithoutPaging = ApplySpecificationWithoutPaging(spec);
+        var queryWithoutPaging = ApplySpecificationWithoutPaging(spec).AsNoTracking();
         var totalCount = await queryWithoutPaging.CountAsync(cancellationToken);
 
         // Get paginated results
-        var queryWithPaging = ApplySpecification(spec);
+        var queryWithPaging = ApplySpecification(spec).AsNoTracking();
         var items = await queryWithPaging.ToListAsync(cancellationToken);
 
         return (items, totalCount);

@@ -26,7 +26,7 @@ public sealed class GetQuizSetByIdQueryHandler : IRequestHandler<GetQuizSetByIdQ
         var quizSet = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (quizSet == null)
-            throw new EntityNotFoundException("QuizSet", request.Id);
+            throw new EntityNotFoundException(nameof(QuizSet), request.Id);
 
         var creator = await _userRepository.GetByIdAsync(quizSet.CreatorId, cancellationToken);
 

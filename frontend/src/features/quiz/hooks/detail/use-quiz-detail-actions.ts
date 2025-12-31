@@ -5,7 +5,7 @@ import { useCreateChallenge } from '@/features/challenge';
 import { toast } from '@/lib/utils/toast';
 import type { QuizSetDto } from '@/types/api';
 
-export function useQuizDetailActions(quizSetId: string, quizSet: QuizSetDto | null) {
+export function useQuizDetailActions(quizSetId: string, quizSet: QuizSetDto | null | undefined) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutate: createChallenge, isPending: isCreatingChallenge } = useCreateChallenge();

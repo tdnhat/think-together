@@ -2,9 +2,6 @@ using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.ClassAggregate.Specifications;
 
-/// <summary>
-/// Specification to get class with specific homework and its submissions by homework ID
-/// </summary>
 public sealed class ClassWithHomeworkAndSubmissionsSpec : Specification<Class>
 {
     public ClassWithHomeworkAndSubmissionsSpec(Guid homeworkId)
@@ -19,9 +16,6 @@ public sealed class ClassWithHomeworkAndSubmissionsSpec : Specification<Class>
     }
 }
 
-/// <summary>
-/// Specification to get class with all members and homework statistics by homework ID
-/// </summary>
 public sealed class ClassWithHomeworkStatisticsSpec : Specification<Class>
 {
     public ClassWithHomeworkStatisticsSpec(Guid homeworkId)

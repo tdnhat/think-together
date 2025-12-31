@@ -4,10 +4,8 @@
 
 namespace ThinkTogether.Infrastructure.Persistence.Migrations
 {
-    /// <inheritdoc />
     public partial class AddUniqueChallengeLinkContraint : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // Step 1: Soft delete duplicate challenges (keep the most recent one per creator per quiz)
@@ -39,7 +37,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 filter: "ngayXoa IS NULL");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(

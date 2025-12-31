@@ -14,10 +14,11 @@ public sealed class PublishedQuizSetsSpecification : Specification<QuizSet>
 
         // Base criteria: published and not deleted, with optional search
         Criteria = quizSet => 
-            QuizSetSpecifications.IsPublished.Compile()(quizSet)
-            && QuizSetSpecifications.IsActive.Compile()(quizSet)
+            quizSet.IsPublished
+            && quizSet.DeletedAt == null
             && (string.IsNullOrWhiteSpace(search) ||
-                QuizSetSpecifications.ContainsText(search).Compile()(quizSet));
+                (quizSet.Title.ToLower().Contains(searchLower!) 
+                 || (quizSet.Description != null && quizSet.Description.ToLower().Contains(searchLower!))));
 
         // Sorting
         switch (sortBy?.ToLower())
@@ -41,4 +42,3 @@ public sealed class PublishedQuizSetsSpecification : Specification<QuizSet>
         ApplyPaging(skip, pageSize);
     }
 }
-

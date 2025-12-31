@@ -3,6 +3,8 @@ using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 using ThinkTogether.Domain.Enums;
 
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Events;
+
 namespace ThinkTogether.Domain.Aggregates.ChallengeAggregate;
 
 public sealed partial class Challenge : AggregateRoot
@@ -15,6 +17,12 @@ public sealed partial class Challenge : AggregateRoot
         _attempts.Add(attempt);
         PlayCount++;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new ChallengeAttemptStartedDomainEvent(
+            Id,
+            attempt.Id,
+            attempt.UserId,
+            attempt.Nickname));
     }
 
     public void UpdateTitle(string title)
@@ -45,11 +53,15 @@ public sealed partial class Challenge : AggregateRoot
     {
         Status = ChallengeStatus.Archived;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new ChallengeArchivedDomainEvent(Id));
     }
 
     public void Activate()
     {
         Status = ChallengeStatus.Active;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new ChallengeActivatedDomainEvent(Id));
     }
 }

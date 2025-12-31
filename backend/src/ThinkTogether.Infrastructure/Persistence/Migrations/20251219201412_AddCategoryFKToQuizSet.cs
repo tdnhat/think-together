@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ThinkTogether.Infrastructure.Persistence.Migrations
 {
-    /// <inheritdoc />
     public partial class AddCategoryFKToQuizSet : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
@@ -31,7 +29,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 onDelete: ReferentialAction.SetNull);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

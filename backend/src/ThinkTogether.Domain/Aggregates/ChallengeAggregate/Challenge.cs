@@ -3,6 +3,8 @@ using ThinkTogether.Domain.Exceptions;
 using Shared.Primitives;
 using ThinkTogether.Domain.Enums;
 
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Events;
+
 namespace ThinkTogether.Domain.Aggregates.ChallengeAggregate;
 
 
@@ -59,7 +61,7 @@ public sealed partial class Challenge : AggregateRoot
         if (shareLink.Length > 500)
             throw new ValidationException("Liên kết chia sẻ không được vượt quá 500 ký tự");
 
-        return new Challenge
+        var challenge = new Challenge
         {
             Id = Guid.NewGuid(),
             CreatorId = creatorId,
@@ -73,5 +75,14 @@ public sealed partial class Challenge : AggregateRoot
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        challenge.AddDomainEvent(new ChallengeCreatedDomainEvent(
+            challenge.Id,
+            challenge.CreatorId,
+            challenge.QuizSetId,
+            challenge.Title,
+            challenge.ShareLink));
+
+        return challenge;
     }
 }

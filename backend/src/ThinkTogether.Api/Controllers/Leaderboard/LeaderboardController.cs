@@ -5,6 +5,7 @@ using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.Leaderboard.Queries.GetLeaderboard;
 using ThinkTogether.Application.Handlers.Leaderboard.Queries.GetLeaderboardStats;
+using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Api.Controllers.Leaderboard;
 
@@ -20,16 +21,13 @@ public class LeaderboardController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get global leaderboard with filtering and sorting options
-    /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<LeaderboardDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLeaderboard(
         [FromQuery] Guid? quizSetId = null,
         [FromQuery] Guid? challengeId = null,
-        [FromQuery] string? timePeriod = null,
-        [FromQuery] string? sortBy = null,
+        [FromQuery] LeaderboardTimePeriod? timePeriod = null,
+        [FromQuery] LeaderboardSortBy? sortBy = null,
         [FromQuery] string? sortOrder = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -59,15 +57,12 @@ public class LeaderboardController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Get leaderboard statistics
-    /// </summary>
     [HttpGet("stats")]
     [ProducesResponseType(typeof(ApiResponse<LeaderboardStatsDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLeaderboardStats(
         [FromQuery] Guid? quizSetId = null,
         [FromQuery] Guid? challengeId = null,
-        [FromQuery] string? timePeriod = null,
+        [FromQuery] LeaderboardTimePeriod? timePeriod = null,
         CancellationToken cancellationToken = default)
     {
         var query = new GetLeaderboardStatsQuery(

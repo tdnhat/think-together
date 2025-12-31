@@ -16,13 +16,14 @@ public sealed class QuizSetsByCreatorIdSpecification : Specification<QuizSet>
 
         // Build criteria with all conditions combined
         Criteria = quizSet => 
-            QuizSetSpecifications.CreatedBy(creatorId).Compile()(quizSet)
-            && QuizSetSpecifications.IsActive.Compile()(quizSet)
+            quizSet.CreatorId == creatorId
+            && quizSet.DeletedAt == null
             && (string.IsNullOrWhiteSpace(search) || 
-                QuizSetSpecifications.ContainsText(search).Compile()(quizSet))
+                (quizSet.Title.ToLower().Contains(searchLower!) 
+                 || (quizSet.Description != null && quizSet.Description.ToLower().Contains(searchLower!))))
             && (filterBy == null || filterBy == "all" ||
-                (filterBy == "published" && QuizSetSpecifications.IsPublished.Compile()(quizSet)) ||
-                (filterBy == "draft" && !QuizSetSpecifications.IsPublished.Compile()(quizSet)));
+                (filterBy == "published" && quizSet.IsPublished) ||
+                (filterBy == "draft" && !quizSet.IsPublished));
 
         // Sorting
         switch (sortBy?.ToLower())
@@ -46,4 +47,3 @@ public sealed class QuizSetsByCreatorIdSpecification : Specification<QuizSet>
         ApplyPaging(skip, pageSize);
     }
 }
-

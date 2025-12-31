@@ -2,9 +2,6 @@ using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Application.DTOs;
 
-/// <summary>
-/// Class DTO
-/// </summary>
 public class ClassDto
 {
     public Guid Id { get; set; }
@@ -20,9 +17,6 @@ public class ClassDto
     public DateTime? UpdatedAt { get; set; }
 }
 
-/// <summary>
-/// Class Member DTO
-/// </summary>
 public class ClassMemberDto
 {
     public Guid Id { get; set; }
@@ -34,9 +28,6 @@ public class ClassMemberDto
     public DateTime? LeftAt { get; set; }
 }
 
-/// <summary>
-/// Homework DTO
-/// </summary>
 public class HomeworkDto
 {
     public Guid Id { get; set; }
@@ -52,9 +43,6 @@ public class HomeworkDto
     public Guid? SubmissionId { get; set; }
 }
 
-/// <summary>
-/// Homework Submission DTO
-/// </summary>
 public class HomeworkSubmissionDto
 {
     public Guid Id { get; set; }
@@ -70,26 +58,17 @@ public class HomeworkSubmissionDto
     public int? CompletionTimeMs { get; set; }
 }
 
-/// <summary>
-/// Class Detail DTO (includes members and homeworks)
-/// </summary>
 public class ClassDetailDto : ClassDto
 {
     public List<ClassMemberDto> Members { get; set; } = new();
     public List<HomeworkDto> Homeworks { get; set; } = new();
 }
 
-/// <summary>
-/// Homework Detail DTO (includes submissions)
-/// </summary>
 public class HomeworkDetailDto : HomeworkDto
 {
     public List<HomeworkSubmissionDto> Submissions { get; set; } = new();
 }
 
-/// <summary>
-/// Paginated Class Response DTO
-/// </summary>
 public class ClassResponseDto
 {
     public List<ClassDto> Data { get; set; } = new();
@@ -99,9 +78,6 @@ public class ClassResponseDto
     public int TotalPages { get; set; }
 }
 
-/// <summary>
-/// Paginated Homework Response DTO
-/// </summary>
 public class HomeworkResponseDto
 {
     public List<HomeworkDto> Data { get; set; } = new();
@@ -111,9 +87,6 @@ public class HomeworkResponseDto
     public int TotalPages { get; set; }
 }
 
-/// <summary>
-/// Homework Submission Detail DTO (includes challenge attempt with questions and answers)
-/// </summary>
 public class HomeworkSubmissionDetailDto
 {
     public HomeworkSubmissionDto Submission { get; set; } = null!;
@@ -121,9 +94,6 @@ public class HomeworkSubmissionDetailDto
     public HomeworkDto Homework { get; set; } = null!;
 }
 
-/// <summary>
-/// Per-question statistics for homework
-/// </summary>
 public class QuestionStatisticsDto
 {
     public Guid QuestionId { get; set; }
@@ -135,9 +105,6 @@ public class QuestionStatisticsDto
     public int TotalAnswers { get; set; }
 }
 
-/// <summary>
-/// Homework Statistics DTO (for teachers)
-/// </summary>
 public class HomeworkStatisticsDto
 {
     public HomeworkDto Homework { get; set; } = null!;

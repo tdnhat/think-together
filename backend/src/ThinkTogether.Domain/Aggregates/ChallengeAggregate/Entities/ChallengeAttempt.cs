@@ -17,6 +17,8 @@ public sealed partial class ChallengeAttempt : Entity
 
     public Guid ChallengeId { get; private set; }
 
+    public Guid? HomeworkId { get; private set; }
+
     public Guid? UserId { get; private set; }
 
     public string Nickname { get; private set; } = string.Empty;
@@ -48,7 +50,8 @@ public sealed partial class ChallengeAttempt : Entity
         Guid? userId,
         string nickname,
         int totalQuestions,
-        int? timeLimitMs = null)
+        int? timeLimitMs = null,
+        Guid? homeworkId = null)
     {
         if (challengeId == Guid.Empty)
             throw new ValidationException("ID thử thách không được trống");
@@ -69,6 +72,7 @@ public sealed partial class ChallengeAttempt : Entity
         {
             Id = Guid.NewGuid(),
             ChallengeId = challengeId,
+            HomeworkId = homeworkId,
             UserId = userId,
             Nickname = nickname.Trim(),
             ScoreAchieved = 0,

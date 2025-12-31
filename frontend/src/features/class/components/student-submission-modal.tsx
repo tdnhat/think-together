@@ -1,6 +1,6 @@
 'use client'
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { Badge } from '@/shared/ui/badge'
 import { Progress } from '@/shared/ui/progress'
@@ -38,21 +38,23 @@ export function StudentSubmissionModal({
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
-                            {studentName?.[0]?.toUpperCase() || 'U'}
-                        </div>
-                        <div>
-                            <span className="text-xl">{studentName}</span>
-                            <p className="text-sm font-normal text-muted-foreground">
-                                Chi tiết bài nộp
-                            </p>
-                        </div>
-                    </DialogTitle>
+                    <DialogTitle>Chi tiết bài nộp - {studentName}</DialogTitle>
+                    <DialogDescription>
+                        Xem chi tiết bài làm và kết quả của học sinh.
+                    </DialogDescription>
                 </DialogHeader>
+
+                <div className="flex items-center gap-3 -mt-2">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                        {studentName?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                    <div>
+                        <span className="font-semibold">{studentName}</span>
+                    </div>
+                </div>
 
                 {isLoading && (
                     <div className="flex items-center justify-center py-12">

@@ -38,7 +38,7 @@ public sealed class CreateHomeworkCommandHandler : IRequestHandler<CreateHomewor
         var classEntity = await _classRepository.GetByIdAsync(request.ClassId, cancellationToken);
         if (classEntity == null)
         {
-            throw new EntityNotFoundException("Class", request.ClassId);
+            throw new EntityNotFoundException(nameof(Class), request.ClassId);
         }
 
         if (classEntity.TeacherId != userId)
@@ -49,7 +49,7 @@ public sealed class CreateHomeworkCommandHandler : IRequestHandler<CreateHomewor
         var quizSet = await _quizSetRepository.GetByIdAsync(request.QuizSetId, cancellationToken);
         if (quizSet == null)
         {
-            throw new EntityNotFoundException("QuizSet", request.QuizSetId);
+            throw new EntityNotFoundException(nameof(QuizSet), request.QuizSetId);
         }
 
         var homework = Homework.Create(

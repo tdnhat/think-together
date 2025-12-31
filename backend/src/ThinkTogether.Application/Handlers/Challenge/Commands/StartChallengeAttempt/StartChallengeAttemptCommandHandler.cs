@@ -66,7 +66,8 @@ public sealed class StartChallengeAttemptCommandHandler : IRequestHandler<StartC
             request.UserId,
             nickname,
             questions.Count,
-            totalTimeLimitMs);
+            totalTimeLimitMs,
+            request.HomeworkId);
 
         challenge.AddAttempt(attempt);
 

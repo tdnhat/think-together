@@ -35,13 +35,13 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
     {
         // Calculate cutoff date for time period filter
         DateTime? completedAfter = null;
-        if (!string.IsNullOrEmpty(request.TimePeriod) && request.TimePeriod != "all")
+        if (request.TimePeriod.HasValue && request.TimePeriod != LeaderboardTimePeriod.All)
         {
             completedAfter = request.TimePeriod switch
             {
-                "today" => DateTime.UtcNow.Date,
-                "week" => DateTime.UtcNow.AddDays(-7),
-                "month" => DateTime.UtcNow.AddMonths(-1),
+                LeaderboardTimePeriod.Today => DateTime.UtcNow.Date,
+                LeaderboardTimePeriod.Week => DateTime.UtcNow.AddDays(-7),
+                LeaderboardTimePeriod.Month => DateTime.UtcNow.AddMonths(-1),
                 _ => null
             };
         }
@@ -144,7 +144,7 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
         }
 
         // Apply sorting
-        entries = SortEntries(entries, request.SortBy ?? "score", request.SortOrder ?? "desc");
+        entries = SortEntries(entries, request.SortBy ?? LeaderboardSortBy.Score, request.SortOrder ?? "desc");
 
         // Calculate ranks
         for (int i = 0; i < entries.Count; i++)
@@ -175,20 +175,20 @@ public sealed class GetLeaderboardQueryHandler : IRequestHandler<GetLeaderboardQ
 
     private static List<GlobalLeaderboardEntryDto> SortEntries(
         List<GlobalLeaderboardEntryDto> entries,
-        string sortBy,
+        LeaderboardSortBy sortBy,
         string sortOrder)
     {
         var isAscending = sortOrder?.ToLower() == "asc";
 
-        return sortBy?.ToLower() switch
+        return sortBy switch
         {
-            "accuracy" => isAscending
+            LeaderboardSortBy.Accuracy => isAscending
                 ? entries.OrderBy(e => e.TotalQuestions > 0 ? (double)e.CorrectAnswers / e.TotalQuestions : 0).ToList()
                 : entries.OrderByDescending(e => e.TotalQuestions > 0 ? (double)e.CorrectAnswers / e.TotalQuestions : 0).ToList(),
-            "time" => isAscending
+            LeaderboardSortBy.Time => isAscending
                 ? entries.OrderBy(e => e.CompletionTimeMs ?? int.MaxValue).ToList()
                 : entries.OrderByDescending(e => e.CompletionTimeMs ?? int.MaxValue).ToList(),
-            "completedAt" => isAscending
+            LeaderboardSortBy.CompletedAt => isAscending
                 ? entries.OrderBy(e => e.CompletedAt).ToList()
                 : entries.OrderByDescending(e => e.CompletedAt).ToList(),
             _ => isAscending // Default: score

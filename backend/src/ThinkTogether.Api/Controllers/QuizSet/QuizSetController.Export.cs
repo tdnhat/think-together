@@ -4,12 +4,6 @@ namespace ThinkTogether.Api.Controllers.QuizSet;
 
 public partial class QuizSetController
 {
-    /// <summary>
-    /// Export quiz set to PDF for paper examination
-    /// </summary>
-    /// <param name="id">Quiz set ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>PDF file</returns>
     [HttpGet("{id}/export-pdf")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> ExportToPdf(Guid id, CancellationToken cancellationToken)

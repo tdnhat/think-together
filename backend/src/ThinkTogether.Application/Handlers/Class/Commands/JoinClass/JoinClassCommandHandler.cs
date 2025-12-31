@@ -34,7 +34,7 @@ public sealed class JoinClassCommandHandler : IRequestHandler<JoinClassCommand, 
         var classEntity = await _classRepository.GetByJoinCodeAsync(request.JoinCode, cancellationToken);
         if (classEntity == null)
         {
-            throw new EntityNotFoundException("Class", request.JoinCode);
+            throw new EntityNotFoundException(nameof(Class), request.JoinCode);
         }
 
         var member = ClassMember.Create(classEntity.Id, userId);

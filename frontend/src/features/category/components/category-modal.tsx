@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog'
@@ -47,6 +48,9 @@ export function CategoryModal({
           <DialogTitle className="font-heading text-xl font-bold text-foreground">
             {modalTitle}
           </DialogTitle>
+          <DialogDescription>
+            {isEditing ? 'Cập nhật thông tin danh mục của bạn.' : 'Tạo một danh mục mới để tổ chức các bộ trắc nghiệm.'}
+          </DialogDescription>
         </DialogHeader>
         <div className="max-h-[calc(90vh-120px)] overflow-y-auto px-6 py-6">
           <CategoryForm

@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ThinkTogether.Infrastructure.Persistence.Migrations
 {
-    /// <inheritdoc />
     public partial class AddCategoryEntity : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -47,7 +45,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 filter: "[ngayXoa] IS NULL");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

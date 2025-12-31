@@ -13,7 +13,6 @@ export {
   AuthField,
   AuthSocialButton,
   PasswordToggle,
-  ConfirmEmailForm,
   VerifyEmailForm,
   ResetPasswordForm,
   FloatingStationery,

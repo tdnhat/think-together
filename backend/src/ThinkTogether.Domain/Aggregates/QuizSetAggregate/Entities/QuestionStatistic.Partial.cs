@@ -3,7 +3,7 @@ using ThinkTogether.Domain.Exceptions;
 
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 
-public sealed partial class QuestionStatistic : Entity
+public sealed partial class QuestionStatistic
 {
     public void RecordAttempt(bool isCorrect, int responseTimeMs)
     {

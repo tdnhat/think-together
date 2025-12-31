@@ -23,13 +23,13 @@ public sealed class GetLeaderboardStatsQueryHandler : IRequestHandler<GetLeaderb
     {
         // Calculate cutoff date for time period filter
         DateTime? startedAfter = null;
-        if (!string.IsNullOrEmpty(request.TimePeriod) && request.TimePeriod != "all")
+        if (request.TimePeriod.HasValue && request.TimePeriod != LeaderboardTimePeriod.All)
         {
             startedAfter = request.TimePeriod switch
             {
-                "today" => DateTime.UtcNow.Date,
-                "week" => DateTime.UtcNow.AddDays(-7),
-                "month" => DateTime.UtcNow.AddMonths(-1),
+                LeaderboardTimePeriod.Today => DateTime.UtcNow.Date,
+                LeaderboardTimePeriod.Week => DateTime.UtcNow.AddDays(-7),
+                LeaderboardTimePeriod.Month => DateTime.UtcNow.AddMonths(-1),
                 _ => null
             };
         }
@@ -47,13 +47,14 @@ public sealed class GetLeaderboardStatsQueryHandler : IRequestHandler<GetLeaderb
             .ToList();
 
         // Apply time period filter for completed attempts (if not already filtered)
-        if (!string.IsNullOrEmpty(request.TimePeriod) && request.TimePeriod != "all")
+        // Apply time period filter for completed attempts (if not already filtered)
+        if (request.TimePeriod.HasValue && request.TimePeriod != LeaderboardTimePeriod.All)
         {
             var cutoffDate = request.TimePeriod switch
             {
-                "today" => DateTime.UtcNow.Date,
-                "week" => DateTime.UtcNow.AddDays(-7),
-                "month" => DateTime.UtcNow.AddMonths(-1),
+                LeaderboardTimePeriod.Today => DateTime.UtcNow.Date,
+                LeaderboardTimePeriod.Week => DateTime.UtcNow.AddDays(-7),
+                LeaderboardTimePeriod.Month => DateTime.UtcNow.AddMonths(-1),
                 _ => DateTime.MinValue
             };
 

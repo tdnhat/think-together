@@ -15,7 +15,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
     [Migration("20251213050617_InitialCreate")]
     partial class InitialCreate
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

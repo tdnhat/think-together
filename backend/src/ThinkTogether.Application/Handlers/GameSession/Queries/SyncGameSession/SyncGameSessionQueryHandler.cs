@@ -74,14 +74,14 @@ public sealed class SyncGameSessionQueryHandler : IRequestHandler<SyncGameSessio
         return userId == hostUserId;
     }
 
-    private static string MapStatus(GameStatus status)
+    private static GameSessionSyncStatus MapStatus(GameStatus status)
     {
         return status switch
         {
-            GameStatus.Waiting => "LOBBY",
-            GameStatus.InProgress => "IN_PROGRESS",
-            GameStatus.Ended => "FINISHED",
-            _ => "UNKNOWN"
+            GameStatus.Waiting => GameSessionSyncStatus.Lobby,
+            GameStatus.InProgress => GameSessionSyncStatus.InProgress,
+            GameStatus.Ended => GameSessionSyncStatus.Finished,
+            _ => GameSessionSyncStatus.Unknown
         };
     }
 

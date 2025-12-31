@@ -46,9 +46,6 @@ public sealed partial class GamePlayer : Entity
         };
     }
 
-    /// <summary>
-    /// Checks if this player has already answered a specific question.
-    /// </summary>
     public bool HasAnswered(Guid gameQuestionId)
     {
         return _answers.Any(a => a.GameQuestionId == gameQuestionId);

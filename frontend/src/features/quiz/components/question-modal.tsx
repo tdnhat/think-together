@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog'
@@ -48,6 +49,9 @@ export function QuestionModal({
           <DialogTitle className="font-heading text-xl font-bold text-foreground">
             {modalTitle}
           </DialogTitle>
+          <DialogDescription>
+            {question ? 'Cập nhật nội dung và các tùy chọn của câu hỏi.' : 'Tạo một câu hỏi mới cho bộ trắc nghiệm của bạn.'}
+          </DialogDescription>
         </DialogHeader>
         <div className="max-h-[calc(90vh-120px)] overflow-y-auto px-6 py-6">
           <QuestionForm

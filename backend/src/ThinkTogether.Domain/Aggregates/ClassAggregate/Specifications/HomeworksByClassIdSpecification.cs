@@ -2,10 +2,6 @@ using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.ClassAggregate.Specifications;
 
-/// <summary>
-/// Specification to get homeworks for a class with sorting and pagination.
-/// Note: Homeworks are entities within the Class aggregate, so this works with a pre-loaded Class entity.
-/// </summary>
 public sealed class HomeworksByClassIdSpecification : Specification<Class>
 {
     public HomeworksByClassIdSpecification(

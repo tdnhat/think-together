@@ -36,7 +36,7 @@ public sealed class GetClassByIdQueryHandler : IRequestHandler<GetClassByIdQuery
         var classEntity = await _classRepository.GetByIdAsync(request.ClassId, cancellationToken);
         if (classEntity == null)
         {
-            throw new EntityNotFoundException("Class", request.ClassId);
+            throw new EntityNotFoundException(nameof(Class), request.ClassId);
         }
 
         var dto = classEntity.Adapt<ClassDetailDto>();

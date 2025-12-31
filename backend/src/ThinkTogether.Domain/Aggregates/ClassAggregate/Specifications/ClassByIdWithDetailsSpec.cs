@@ -2,9 +2,6 @@ using Shared.Primitives;
 
 namespace ThinkTogether.Domain.Aggregates.ClassAggregate.Specifications;
 
-/// <summary>
-/// Specification to get class by ID with all related entities (Members, Homeworks, Submissions)
-/// </summary>
 public sealed class ClassByIdWithDetailsSpec : Specification<Class>
 {
     public ClassByIdWithDetailsSpec(Guid id)

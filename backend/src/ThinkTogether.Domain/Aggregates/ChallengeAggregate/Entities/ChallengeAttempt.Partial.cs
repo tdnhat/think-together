@@ -1,6 +1,8 @@
 using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Domain.Enums;
 
+using ThinkTogether.Domain.Aggregates.ChallengeAggregate.Events;
+
 namespace ThinkTogether.Domain.Aggregates.ChallengeAggregate.Entities;
 
 public sealed partial class ChallengeAttempt
@@ -70,6 +72,15 @@ public sealed partial class ChallengeAttempt
         CompletionTimeMs = completionTimeMs;
         CompletedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new ChallengeAttemptCompletedDomainEvent(
+            Id,
+            ChallengeId,
+            UserId,
+            ScoreAchieved,
+            CorrectAnswers,
+            CompletionTimeMs.Value,
+            HomeworkId));
     }
 
     public void Abandon()

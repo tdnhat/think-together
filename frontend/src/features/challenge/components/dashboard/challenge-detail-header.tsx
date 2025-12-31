@@ -3,7 +3,7 @@
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
-import type { ChallengeDto } from '../types'
+import type { ChallengeDto } from '@/features/challenge/types'
 
 interface ChallengeDetailHeaderProps {
   challenge: ChallengeDto

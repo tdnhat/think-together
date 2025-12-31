@@ -4,12 +4,6 @@ namespace ThinkTogether.Infrastructure.Services;
 
 public class ScoreCalculatorService : IScoreCalculatorService
 {
-    /// <summary>
-    /// Calculate points for an answer based on correctness and response time.
-    /// Uses a time-based scoring formula similar to Kahoot.
-    /// Formula: points = basePoints * (1 - (responseTime / timeLimit) / 2)
-    /// This gives full points for instant answers and half points for answers at the time limit.
-    /// </summary>
     public int CalculatePoints(bool isCorrect, int responseTimeMs, int timeLimitMs, int basePoints = 1000)
     {
         if (!isCorrect)

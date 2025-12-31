@@ -4,9 +4,6 @@ using ThinkTogether.Application.Interfaces;
 
 namespace ThinkTogether.Infrastructure.Services;
 
-/// <summary>
-/// Redis-based implementation of question timer service.
-/// </summary>
 public class QuestionTimerService : IQuestionTimerService
 {
     private readonly IConnectionMultiplexer _redis;

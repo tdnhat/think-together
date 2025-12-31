@@ -15,7 +15,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
     [Migration("20251213051459_FixEfCoreConfigWarning")]
     partial class FixEfCoreConfigWarning
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

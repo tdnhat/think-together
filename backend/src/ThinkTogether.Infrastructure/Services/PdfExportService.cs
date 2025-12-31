@@ -10,10 +10,6 @@ using QRCoder;
 
 namespace ThinkTogether.Infrastructure.Services;
 
-/// <summary>
-/// Service for generating PDF exports using QuestPDF.
-/// Provides methods to export attempt results, leaderboards, and statistics.
-/// </summary>
 public class PdfExportService : IPdfExportService
 {
     private readonly IQuizSetRepository _quizSetRepository;
@@ -25,9 +21,6 @@ public class PdfExportService : IPdfExportService
         QuestPDF.Settings.License = LicenseType.Community;
     }
 
-    /// <summary>
-    /// Export a single challenge attempt as a PDF report.
-    /// </summary>
     public async Task<byte[]> ExportAttemptReportAsync(
         ChallengeAttemptDto attemptDto,
         string challengeTitle,
@@ -37,9 +30,6 @@ public class PdfExportService : IPdfExportService
         return await Task.FromResult(GenerateAttemptPdf(attemptDto, challengeTitle, quizSetTitle));
     }
 
-    /// <summary>
-    /// Export a leaderboard as a PDF report.
-    /// </summary>
     public async Task<byte[]> ExportLeaderboardAsync(
         ChallengeLeaderboardDto leaderboardDto,
         string challengeTitle,
@@ -48,9 +38,6 @@ public class PdfExportService : IPdfExportService
         return await Task.FromResult(GenerateLeaderboardPdf(leaderboardDto, challengeTitle));
     }
 
-    /// <summary>
-    /// Export challenge statistics as a PDF report.
-    /// </summary>
     public async Task<byte[]> ExportStatisticsAsync(
         ChallengeStatsDto statsDto,
         string challengeTitle,
@@ -59,9 +46,6 @@ public class PdfExportService : IPdfExportService
         return await Task.FromResult(GenerateStatisticsPdf(statsDto, challengeTitle));
     }
 
-    /// <summary>
-    /// Export a quiz set as a PDF for paper examination.
-    /// </summary>
     public async Task<byte[]> ExportQuizSetAsync(
         Guid quizSetId,
         CancellationToken cancellationToken = default)

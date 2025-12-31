@@ -1,9 +1,5 @@
 namespace ThinkTogether.Application.Interfaces;
 
-/// <summary>
-/// Service for tracking ephemeral connection state (not business state).
-/// Business state should be obtained from domain aggregates.
-/// </summary>
 public interface IGameSessionStateService
 {
     // Player connection tracking

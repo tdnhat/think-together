@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ThinkTogether.Infrastructure.Persistence.Migrations
 {
-    /// <inheritdoc />
     public partial class FixEfCoreConfigWarning : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -24,7 +22,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                 table: "CauHoiDanhDau");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(

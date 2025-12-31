@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog'
 import { toastSuccess, toastError } from "@/lib/utils/toast";
@@ -64,7 +66,12 @@ export function BecomeCreatorModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogTitle className="sr-only">Trở thành Người sáng tạo</DialogTitle>
+        <DialogHeader>
+          <DialogTitle>Trở thành Người sáng tạo</DialogTitle>
+          <DialogDescription>
+            Khám phá các tính năng mới và bắt đầu tạo nội dung của riêng bạn.
+          </DialogDescription>
+        </DialogHeader>
         <ProgressIndicator steps={[...BECOME_CREATOR_STEPS]} currentStepIndex={currentStepIndex} />
 
         {currentStep === "intro" && (

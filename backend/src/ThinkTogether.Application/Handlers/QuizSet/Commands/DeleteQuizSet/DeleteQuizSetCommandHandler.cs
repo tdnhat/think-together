@@ -29,7 +29,7 @@ public sealed class DeleteQuizSetCommandHandler : IRequestHandler<DeleteQuizSetC
         var quizSet = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (quizSet == null)
-            throw new EntityNotFoundException("QuizSet", request.Id);
+            throw new EntityNotFoundException(nameof(QuizSet), request.Id);
 
         // Check if user is the creator
         if (quizSet.CreatorId != Guid.Parse(_currentUserService.UserId!))

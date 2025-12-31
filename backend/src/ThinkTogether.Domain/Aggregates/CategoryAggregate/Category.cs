@@ -19,9 +19,6 @@ public sealed partial class Category : AggregateRoot
 
     public int DisplayOrder { get; private set; }
 
-    /// <summary>
-    /// Factory method to create a new Category
-    /// </summary>
     public static Category Create(string name, string? description = null, int displayOrder = 0)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -48,9 +45,6 @@ public sealed partial class Category : AggregateRoot
         };
     }
 
-    /// <summary>
-    /// Update category information
-    /// </summary>
     public void Update(string name, string? description, int displayOrder)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -71,27 +65,18 @@ public sealed partial class Category : AggregateRoot
         UpdatedAt = DateTime.UtcNow;
     }
 
-    /// <summary>
-    /// Toggle active status
-    /// </summary>
     public void SetActive(bool isActive)
     {
         IsActive = isActive;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    /// <summary>
-    /// Soft delete
-    /// </summary>
     public override void Delete()
     {
         DeletedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    /// <summary>
-    /// Restore soft-deleted category
-    /// </summary>
     public override void Restore()
     {
         DeletedAt = null;

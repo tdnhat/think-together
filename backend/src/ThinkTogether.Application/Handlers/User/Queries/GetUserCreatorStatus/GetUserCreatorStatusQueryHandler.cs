@@ -28,7 +28,7 @@ public sealed class GetUserCreatorStatusQueryHandler : IRequestHandler<GetUserCr
 
         if (user == null)
         {
-            throw new EntityNotFoundException("User", userId);
+            throw new EntityNotFoundException(nameof(User), userId);
         }
 
         return new UserCreatorStatusDto
