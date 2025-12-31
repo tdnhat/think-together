@@ -14,19 +14,19 @@ export function Hero() {
         {/* Left Content */}
         <div className="space-y-6">
           <BrandBadge
-            icon={<Sparkles className="h-4 w-4 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]" />}
+            icon={<Sparkles className="h-4 w-4 fill-secondary text-secondary" />}
             variant="secondary"
           >
             Nền tảng học tập thông minh
           </BrandBadge>
           
-          <h1 className="font-heading text-5xl font-bold text-[var(--text-primary)] md:text-6xl">
+          <h1 className="font-heading text-5xl font-bold text-foreground md:text-6xl">
             Học cùng nhau,
             <br />
-            <span className="text-[var(--brand-primary)]">vui hơn gấp bội!</span>
+            <span className="text-primary">vui hơn gấp bội!</span>
           </h1>
           
-          <p className="max-w-lg text-lg text-[var(--text-secondary)]">
+          <p className="max-w-lg text-lg text-muted-foreground">
             Tham gia cộng đồng học sinh năng động, làm bài kiểm tra thú vị, 
             theo dõi tiến trình và cạnh tranh với bạn bè trên bảng xếp hạng.
           </p>
@@ -55,10 +55,10 @@ export function Hero() {
           <div className="flex flex-wrap items-center gap-8 pt-4">
             {HERO_STATS.map((stat) => (
               <div key={stat.label}>
-                <div className="font-heading text-3xl font-bold text-[var(--brand-primary)]">
+                <div className="font-heading text-3xl font-bold text-primary">
                   {stat.value}
                 </div>
-                <div className="text-[var(--text-secondary)]">{stat.label}</div>
+                <div className="text-muted-foreground">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -67,7 +67,7 @@ export function Hero() {
         {/* Right Image */}
         <div className="relative">
           <div 
-            className="relative h-[400px] overflow-hidden rounded-3xl border border-[var(--brand-primary-shadow)] md:h-[500px]"
+            className="relative h-[400px] overflow-hidden rounded-3xl border border-primary/20 md:h-[500px]"
           >
             <Image
               src="/images/hero-1.png"
@@ -80,11 +80,11 @@ export function Hero() {
           
           {/* Floating decorations */}
           <div 
-            className="absolute -right-6 -top-6 hidden h-28 w-28 rounded-full border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] md:block"
+            className="absolute -right-6 -top-6 hidden h-28 w-28 rounded-full border border-secondary/50 bg-secondary md:block"
             aria-hidden="true"
           />
           <div 
-            className="absolute -left-4 bottom-8 hidden h-20 w-20 rotate-12 rounded-2xl border border-[var(--accent-pink-hover)] bg-[var(--accent-pink)] md:block"
+            className="absolute -left-4 bottom-8 hidden h-20 w-20 rotate-12 rounded-2xl border border-pink-300 bg-pink-200 md:block"
             aria-hidden="true"
           />
         </div>

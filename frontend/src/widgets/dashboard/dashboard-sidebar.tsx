@@ -47,12 +47,12 @@ export function DashboardSidebar() {
   const isHydrated = useAuthStore(selectIsHydrated);
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--brand-primary-shadow)] bg-[var(--bg-surface)]">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-background">
       <div className="flex h-full flex-col">
         <div className="flex-1 overflow-y-auto px-5 py-8">
           <nav className="space-y-6">
             <section>
-              <h2 className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]/70">
+              <h2 className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                 Menu chính
               </h2>
               <div className="space-y-2">
@@ -68,7 +68,7 @@ export function DashboardSidebar() {
             </section>
 
             <section>
-              <h2 className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]/70">
+              <h2 className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                 Khác
               </h2>
               <div className="space-y-2">
@@ -105,25 +105,25 @@ function SidebarLink({ item, isActive, variant }: Readonly<SidebarLinkProps>) {
   const Icon = item.icon;
   const activeClasses =
     variant === "main"
-      ? "bg-[var(--brand-primary)] text-white"
-      : "bg-[var(--brand-secondary)] text-[var(--text-primary)]";
-  const baseClasses = isActive ? activeClasses : "text-[var(--text-primary)]";
+      ? "bg-primary text-primary-foreground"
+      : "bg-secondary text-secondary-foreground";
+  const baseClasses = isActive ? activeClasses : "text-foreground";
 
   let hoverClasses = "";
-  let iconBaseClass = "text-white";
+  let iconBaseClass = "text-primary-foreground";
   let iconHoverClass = "";
 
   if (!isActive) {
     if (variant === "main") {
       hoverClasses =
-        "hover:bg-[color-mix(in_oklab,var(--brand-primary)_10%,var(--bg-surface)_90%)] hover:text-[var(--brand-primary)]";
-      iconBaseClass = "text-[var(--brand-primary)]";
-      iconHoverClass = "group-hover:text-[var(--brand-primary)]";
+        "hover:bg-primary/10 hover:text-primary";
+      iconBaseClass = "text-primary";
+      iconHoverClass = "group-hover:text-primary";
     } else {
       hoverClasses =
-        "hover:bg-[color-mix(in_oklab,var(--brand-secondary)_20%,var(--bg-surface)_80%)] hover:text-[var(--text-primary)]";
-      iconBaseClass = "text-[var(--brand-secondary)]";
-      iconHoverClass = "group-hover:text-[var(--brand-secondary)]";
+        "hover:bg-secondary/20 hover:text-foreground";
+      iconBaseClass = "text-secondary";
+      iconHoverClass = "group-hover:text-secondary";
     }
   }
 

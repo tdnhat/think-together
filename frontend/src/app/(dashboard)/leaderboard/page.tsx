@@ -83,14 +83,14 @@ export default function LeaderboardPage() {
         {/* Header Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-[var(--brand-primary)] p-2">
+            <div className="rounded-lg bg-primary p-2">
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="font-heading text-3xl sm:text-4xl text-[var(--text-primary)]">
+              <h1 className="font-heading text-3xl sm:text-4xl text-foreground">
                 Bảng xếp hạng
               </h1>
-              <p className="mt-1 text-[var(--text-secondary)]">
+              <p className="mt-1 text-muted-foreground">
                 {isCreator
                   ? 'Theo dõi hiệu suất và phân tích dữ liệu người chơi'
                   : 'Xem thứ hạng của bạn và các người chơi khác'}
@@ -180,21 +180,21 @@ export default function LeaderboardPage() {
                 )}
 
                 {/* Results Info */}
-                <div className="mt-4 text-center text-sm text-[var(--text-secondary)]">
+                <div className="mt-4 text-center text-sm text-muted-foreground">
                   Hiển thị {data.entries.length} / {data.totalEntries} kết quả
                 </div>
               </>
             )}
 
             {!isLoading && !error && data && data.entries.length === 0 && (
-              <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-                  <TrendingUp className="h-8 w-8 text-[var(--brand-primary)]" />
+              <Card className="flex flex-col items-center justify-center border-dashed border-border bg-muted py-20 px-6 text-center">
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                  <TrendingUp className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
+                <h3 className="mb-2 font-heading text-xl text-foreground">
                   {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD}
                 </h3>
-                <p className="text-[var(--text-secondary)]">
+                <p className="text-muted-foreground">
                   {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD_DESCRIPTION}
                 </p>
               </Card>

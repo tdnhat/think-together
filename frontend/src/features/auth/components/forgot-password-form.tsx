@@ -26,7 +26,7 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
 
-interface ForgotPasswordFormProps extends React.ComponentProps<"div"> { }
+type ForgotPasswordFormProps = React.ComponentProps<"div">
 
 export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false)

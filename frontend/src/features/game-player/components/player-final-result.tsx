@@ -71,8 +71,8 @@ export function PlayerFinalResult({
         return <Medal className="h-16 w-16 text-amber-600" />
       default:
         return (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-            <span className="font-heading text-3xl font-bold text-[var(--brand-primary)]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <span className="font-heading text-3xl font-bold text-primary">
               #{myRank}
             </span>
           </div>
@@ -89,7 +89,7 @@ export function PlayerFinalResult({
       case 3:
         return 'from-amber-50 to-orange-100 border-amber-400'
       default:
-        return 'from-[var(--bg-surface)] to-[var(--bg-surface-secondary)] border-[var(--color-border-light)]'
+        return 'from-background to-muted border-border'
     }
   }
 
@@ -122,10 +122,10 @@ export function PlayerFinalResult({
           </div>
 
           {/* Congratulations */}
-          <h2 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
+          <h2 className="font-heading text-2xl font-bold text-foreground mb-2">
             {isWinner ? 'Chúc mừng!' : isTopThree ? 'Tuyệt vời!' : 'Kết quả của bạn'}
           </h2>
-          <p className="text-lg text-[var(--text-secondary)] mb-4">
+          <p className="text-lg text-muted-foreground mb-4">
             {nickname}
           </p>
 
@@ -134,42 +134,42 @@ export function PlayerFinalResult({
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="text-center">
                 <Badge variant="default" className="mb-2">#{myRank}</Badge>
-                <div className="text-sm text-[var(--text-secondary)]">Xếp hạng</div>
+                <div className="text-sm text-muted-foreground">Xếp hạng</div>
               </div>
               <div className="text-center">
-                <div className="font-heading text-2xl font-bold text-[var(--brand-primary)]">
+                <div className="font-heading text-2xl font-bold text-primary">
                   {myResult.totalPoints.toLocaleString('vi-VN')}
                 </div>
-                <div className="text-sm text-[var(--text-secondary)]">Điểm</div>
+                <div className="text-sm text-muted-foreground">Điểm</div>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1">
-                  <Target className="h-5 w-5 text-[var(--color-success)]" />
-                  <span className="font-heading text-xl font-bold text-[var(--color-success)]">
+                  <Target className="h-5 w-5 text-green-600" />
+                  <span className="font-heading text-xl font-bold text-green-600">
                     {myResult.correctAnswers}
                   </span>
-                  <span className="text-[var(--text-secondary)]">/{totalQuestions}</span>
+                  <span className="text-muted-foreground">/{totalQuestions}</span>
                 </div>
-                <div className="text-sm text-[var(--text-secondary)]">Đúng</div>
+                <div className="text-sm text-muted-foreground">Đúng</div>
               </div>
             </div>
           )}
 
           {/* Stats Section */}
           {myResult && (
-            <div className="mt-6 pt-4 border-t border-[var(--color-border-light)]/30 space-y-3">
+            <div className="mt-6 pt-4 border-t border-border/30 space-y-3">
               <div className="flex items-center justify-center gap-2">
-                <TrendingUp className="h-5 w-5 text-[var(--brand-secondary)]" />
-                <span className="text-[var(--text-secondary)]">Độ chính xác:</span>
-                <span className="font-bold text-[var(--text-primary)]">
+                <TrendingUp className="h-5 w-5 text-secondary" />
+                <span className="text-muted-foreground">Độ chính xác:</span>
+                <span className="font-bold text-foreground">
                   {(myResult.accuracyPercentage ?? 0).toFixed(0)}%
                 </span>
               </div>
               {myResult.totalTimeSpentMs != null && (
                 <div className="flex items-center justify-center gap-2">
-                  <Clock className="h-5 w-5 text-[var(--color-info)]" />
-                  <span className="text-[var(--text-secondary)]">Thời gian:</span>
-                  <span className="font-bold text-[var(--text-primary)]">
+                  <Clock className="h-5 w-5 text-blue-600" />
+                  <span className="text-muted-foreground">Thời gian:</span>
+                  <span className="font-bold text-foreground">
                     {formatDuration(myResult.totalTimeSpentMs)}
                   </span>
                 </div>

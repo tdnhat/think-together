@@ -33,7 +33,7 @@ export function Leaderboard({
       case 3:
         return <Medal className="h-6 w-6 text-amber-600" />
       default:
-        return <span className="flex h-6 w-6 items-center justify-center font-bold text-[var(--text-secondary)]">{rank}</span>
+        return <span className="flex h-6 w-6 items-center justify-center font-bold text-muted-foreground">{rank}</span>
     }
   }
 
@@ -46,7 +46,7 @@ export function Leaderboard({
       case 3:
         return 'bg-gradient-to-r from-amber-50 to-amber-100 border-amber-300'
       default:
-        return 'bg-[var(--bg-surface-secondary)] border-[var(--color-border-light)]'
+        return 'bg-muted border-border'
     }
   }
 
@@ -82,7 +82,7 @@ export function Leaderboard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Award className="h-5 w-5 text-[var(--brand-primary)]" />
+            <Award className="h-5 w-5 text-primary" />
             {title}
           </CardTitle>
           {entries.length > 0 && (
@@ -96,8 +96,8 @@ export function Leaderboard({
       <CardContent>
         {entries.length === 0 ? (
           <div className="py-8 text-center">
-            <TrendingUp className="mx-auto h-12 w-12 text-[var(--text-tertiary)] opacity-50" />
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">
+            <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+            <p className="mt-3 text-sm text-muted-foreground">
               Chưa có dữ liệu xếp hạng
             </p>
           </div>
@@ -110,7 +110,7 @@ export function Leaderboard({
                 <div
                   key={entry.playerId}
                   className={`flex items-center justify-between rounded-xl border-2 p-4 transition-all ${getRankBg(entry.rank ?? 0)} ${
-                    isHighlighted ? 'ring-2 ring-[var(--brand-primary)] ring-offset-2' : ''
+                    isHighlighted ? 'ring-2 ring-primary ring-offset-2' : ''
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -118,7 +118,7 @@ export function Leaderboard({
                       {getRankIcon(entry.rank ?? 0)}
                     </div>
                     <div>
-                      <span className="font-semibold text-[var(--text-primary)]">
+                      <span className="font-semibold text-foreground">
                         {entry.nickname || 'Người chơi không tên'}
                       </span>
                       {showStats && (
@@ -141,10 +141,10 @@ export function Leaderboard({
                   </div>
                   
                   <div className="text-right">
-                    <span className="font-heading text-xl font-bold text-[var(--brand-primary)]">
+                    <span className="font-heading text-xl font-bold text-primary">
                       {formatPoints(entry.totalPoints)}
                     </span>
-                    <span className="text-sm text-[var(--text-tertiary)] ml-1">điểm</span>
+                    <span className="text-sm text-muted-foreground ml-1">điểm</span>
                   </div>
                 </div>
               )
@@ -152,7 +152,7 @@ export function Leaderboard({
 
             {entries.length > maxDisplay && (
               <div className="text-center pt-2">
-                <span className="text-sm text-[var(--text-tertiary)]">
+                <span className="text-sm text-muted-foreground">
                   +{entries.length - maxDisplay} người chơi khác
                 </span>
               </div>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import type { ChallengeResultsSummary } from '@/features/challenge/types'
-import { usePdfExport } from '../hooks/use-pdf-export'
+import { usePdfExport } from '../../hooks/use-pdf-export'
 
 interface ResultsSummaryProps {
   results: ChallengeResultsSummary
@@ -66,14 +66,14 @@ export function ResultsSummary({ results, attemptId, className = '' }: ResultsSu
       <CardContent className="space-y-6">
         {/* Title */}
         <div>
-          <h3 className="font-semibold text-[var(--text-primary)] text-lg">{results.challengeTitle}</h3>
+          <h3 className="font-semibold text-foreground text-lg">{results.challengeTitle}</h3>
         </div>
 
         {/* Score Display */}
         <div className="flex flex-col items-center gap-3">
           <div className="text-center">
             <div className="text-5xl font-bold text-blue-600">{results.score}</div>
-            <p className="text-sm text-[var(--text-secondary)] mt-1">Tổng điểm</p>
+            <p className="text-sm text-muted-foreground mt-1">Tổng điểm</p>
           </div>
 
           {results.rank && (
@@ -90,7 +90,7 @@ export function ResultsSummary({ results, attemptId, className = '' }: ResultsSu
             <CheckCircle className="h-6 w-6 text-green-600" />
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">{results.correctAnswers}</p>
-              <p className="text-xs text-[var(--text-secondary)]">Câu đúng</p>
+              <p className="text-xs text-muted-foreground">Câu đúng</p>
             </div>
           </div>
 
@@ -99,7 +99,7 @@ export function ResultsSummary({ results, attemptId, className = '' }: ResultsSu
             <XCircle className="h-6 w-6 text-red-600" />
             <div className="text-center">
               <p className="text-2xl font-bold text-red-600">{incorrectAnswers}</p>
-              <p className="text-xs text-[var(--text-secondary)]">Câu sai</p>
+              <p className="text-xs text-muted-foreground">Câu sai</p>
             </div>
           </div>
 
@@ -108,7 +108,7 @@ export function ResultsSummary({ results, attemptId, className = '' }: ResultsSu
             <Target className="h-6 w-6 text-blue-600" />
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">{accuracy.toFixed(1)}%</p>
-              <p className="text-xs text-[var(--text-secondary)]">Độ chính xác</p>
+              <p className="text-xs text-muted-foreground">Độ chính xác</p>
             </div>
           </div>
 
@@ -120,7 +120,7 @@ export function ResultsSummary({ results, attemptId, className = '' }: ResultsSu
                 <p className="text-sm font-bold text-purple-600">
                   {formatTime(results.completionTimeMs)}
                 </p>
-                <p className="text-xs text-[var(--text-secondary)]">Thời gian</p>
+                <p className="text-xs text-muted-foreground">Thời gian</p>
               </div>
             </div>
           )}
@@ -129,10 +129,10 @@ export function ResultsSummary({ results, attemptId, className = '' }: ResultsSu
         {/* Progress bar for accuracy */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-[var(--text-secondary)]">Tiến độ</span>
-            <span className="text-sm font-bold text-[var(--text-primary)]">{results.correctAnswers}/{results.totalQuestions}</span>
+            <span className="text-sm font-medium text-muted-foreground">Tiến độ</span>
+            <span className="text-sm font-bold text-foreground">{results.correctAnswers}/{results.totalQuestions}</span>
           </div>
-          <div className="h-3 w-full rounded-full bg-[var(--bg-surface-secondary)] overflow-hidden">
+          <div className="h-3 w-full rounded-full bg-muted overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-300"
               style={{ width: `${accuracy}%` }}

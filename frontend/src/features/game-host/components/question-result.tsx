@@ -28,41 +28,41 @@ export function QuestionResult({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <Check className="mx-auto h-8 w-8 text-[var(--color-success)] mb-2" />
-            <div className="font-heading text-2xl font-bold text-[var(--color-success)]">
+            <Check className="mx-auto h-8 w-8 text-green-600 mb-2" />
+            <div className="font-heading text-2xl font-bold text-green-600">
               {result.correctAnswerCount}
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Trả lời đúng</div>
+            <div className="text-sm text-muted-foreground">Trả lời đúng</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 text-center">
-            <X className="mx-auto h-8 w-8 text-[var(--color-error)] mb-2" />
-            <div className="font-heading text-2xl font-bold text-[var(--color-error)]">
+            <X className="mx-auto h-8 w-8 text-destructive mb-2" />
+            <div className="font-heading text-2xl font-bold text-destructive">
               {result.wrongAnswerCount}
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Trả lời sai</div>
+            <div className="text-sm text-muted-foreground">Trả lời sai</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 text-center">
-            <Users className="mx-auto h-8 w-8 text-[var(--brand-primary)] mb-2" />
-            <div className="font-heading text-2xl font-bold text-[var(--brand-primary)]">
+            <Users className="mx-auto h-8 w-8 text-primary mb-2" />
+            <div className="font-heading text-2xl font-bold text-primary">
               {totalAnswers}
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Tổng số</div>
+            <div className="text-sm text-muted-foreground">Tổng số</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 text-center">
-            <BarChart3 className="mx-auto h-8 w-8 text-[var(--brand-secondary)] mb-2" />
-            <div className="font-heading text-2xl font-bold text-[var(--brand-secondary)]">
+            <BarChart3 className="mx-auto h-8 w-8 text-secondary mb-2" />
+            <div className="font-heading text-2xl font-bold text-secondary">
               {correctPercentage}%
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Tỷ lệ đúng</div>
+            <div className="text-sm text-muted-foreground">Tỷ lệ đúng</div>
           </CardContent>
         </Card>
       </div>
@@ -83,18 +83,18 @@ export function QuestionResult({
                   key={option.index}
                   className={`flex items-center gap-3 rounded-xl border-3 p-4 transition-all ${
                     isCorrect
-                      ? 'border-[var(--color-success)] bg-[var(--color-success-light)]'
-                      : 'border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] opacity-60'
+                      ? 'border-green-600 bg-green-50 dark:bg-green-950/30'
+                      : 'border-border bg-muted opacity-60'
                   }`}
                 >
                   <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${colorScheme.bg} ${colorScheme.text} font-bold`}>
                     {String.fromCharCode(65 + index)}
                   </div>
-                  <span className="flex-1 font-medium text-[var(--text-primary)]">
+                  <span className="flex-1 font-medium text-foreground">
                     {option.content}
                   </span>
                   {isCorrect && (
-                    <Badge variant="default" className="bg-[var(--color-success)] gap-1">
+                    <Badge variant="default" className="bg-green-600 gap-1">
                       <Check className="h-4 w-4" />
                       Đúng
                     </Badge>
@@ -117,17 +117,17 @@ export function QuestionResult({
               {result.topPlayers.slice(0, 5).map((player, index) => (
                 <div
                   key={player.playerId}
-                  className="flex items-center justify-between rounded-lg border-2 border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] p-3"
+                  className="flex items-center justify-between rounded-lg border-2 border-border bg-muted p-3"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--brand-primary)] text-white font-bold text-sm">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white font-bold text-sm">
                       {index + 1}
                     </span>
-                    <span className="font-medium text-[var(--text-primary)]">
+                    <span className="font-medium text-foreground">
                       {player.nickname}
                     </span>
                   </div>
-                  <span className="font-heading font-bold text-[var(--brand-primary)]">
+                  <span className="font-heading font-bold text-primary">
                     {player.totalPoints.toLocaleString('vi-VN')} điểm
                   </span>
                 </div>

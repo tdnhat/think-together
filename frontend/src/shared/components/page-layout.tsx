@@ -78,9 +78,13 @@ export function PageMain({
       centered && "flex items-center justify-center",
       className
     )}>
-      <div className="container mx-auto max-w-7xl">
-        {children}
-      </div>
+      {centered ? (
+        children
+      ) : (
+        <div className="container mx-auto max-w-7xl">
+          {children}
+        </div>
+      )}
     </main>
   );
 }

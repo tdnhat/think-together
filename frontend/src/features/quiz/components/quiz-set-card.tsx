@@ -112,7 +112,7 @@ export function QuizSetCard({
             {onDelete && (
               <DropdownMenuItem
                 onClick={() => onDelete(quizSet)}
-                className="text-[var(--color-error)] focus:text-[var(--color-error)]"
+                className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Xóa
@@ -134,12 +134,12 @@ export function QuizSetCard({
     >
       <div className="flex flex-col gap-3">
         <div className="space-y-2">
-          <h3 className="font-heading text-lg font-bold text-[var(--text-primary)] line-clamp-2 leading-tight">
+          <h3 className="font-heading text-lg font-bold text-foreground line-clamp-2 leading-tight">
             {quizSet.title}
           </h3>
 
           {quizSet.description && (
-            <p className="text-sm text-[var(--text-secondary)] line-clamp-2">
+            <p className="text-sm text-muted-foreground line-clamp-2">
               {quizSet.description}
             </p>
           )}
@@ -159,22 +159,22 @@ export function QuizSetCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Badge variant="default" className="gap-1.5">
-                <span className="font-heading text-sm font-bold text-[var(--text-secondary)]">
+                <span className="font-heading text-sm font-bold text-primary-foreground">
                   {questionCount}
                 </span>
-                <span className="text-xs font-medium text-[var(--text-secondary)]">
+                <span className="text-xs font-medium text-primary-foreground">
                   câu hỏi
                 </span>
               </Badge>
 
               {quizSet.creatorName && (
-                <span className="text-xs text-[var(--text-secondary)]">
+                <span className="text-xs text-muted-foreground">
                   bởi {quizSet.creatorName}
                 </span>
               )}
             </div>
 
-            <span className="text-xs font-medium text-[var(--text-secondary)]">
+            <span className="text-xs font-medium text-muted-foreground">
               {formatDate(quizSet.updatedAt)}
             </span>
           </div>

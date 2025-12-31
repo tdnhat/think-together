@@ -80,9 +80,9 @@ export function HostLobby({
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
-              <p className="text-sm text-[var(--text-secondary)]">Người chơi tham gia</p>
-              <p className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-                {playerCount} <span className="text-lg font-normal text-[var(--text-tertiary)]">người</span>
+              <p className="text-sm text-muted-foreground">Người chơi tham gia</p>
+              <p className="font-heading text-3xl font-bold text-foreground">
+                {playerCount} <span className="text-lg font-normal text-muted-foreground">người</span>
               </p>
             </div>
 

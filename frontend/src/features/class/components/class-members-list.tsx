@@ -52,10 +52,10 @@ export function ClassMembersList({
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3">
-                <div className="h-10 w-10 animate-pulse rounded-full bg-[var(--bg-surface-secondary)]" />
+                <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
                 <div className="flex-1 space-y-1">
-                  <div className="h-4 w-32 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
-                  <div className="h-3 w-24 animate-pulse rounded bg-[var(--bg-surface-secondary)]" />
+                  <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+                  <div className="h-3 w-24 animate-pulse rounded bg-muted" />
                 </div>
               </div>
             ))}
@@ -76,11 +76,11 @@ export function ClassMembersList({
       <CardContent>
         {members.length === 0 ? (
           <div className="py-8 text-center">
-            <Users className="mx-auto h-12 w-12 text-[var(--text-tertiary)]" />
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+            <p className="mt-2 text-sm text-muted-foreground">
               {CLASS_CONSTANTS.MESSAGES.NO_MEMBERS}
             </p>
-            <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+            <p className="mt-1 text-xs text-muted-foreground">
               {CLASS_CONSTANTS.MESSAGES.NO_MEMBERS_DESCRIPTION}
             </p>
           </div>
@@ -89,24 +89,24 @@ export function ClassMembersList({
             {members.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-[var(--bg-surface-secondary)]"
+                className="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted"
               >
                 <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
+                  <AvatarFallback className="bg-primary/10 text-primary">
                     {getInitials(member.userName, member.userEmail)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-[var(--text-primary)] truncate">
+                  <p className="font-medium text-foreground truncate">
                     {member.userName || member.userEmail || 'Người dùng'}
                   </p>
                   {member.userEmail && (
-                    <div className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Mail className="h-3 w-3" />
                       <span className="truncate">{member.userEmail}</span>
                     </div>
                   )}
-                  <div className="mt-1 flex items-center gap-1 text-xs text-[var(--text-tertiary)]">
+                  <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     <span>
                       Tham gia{' '}

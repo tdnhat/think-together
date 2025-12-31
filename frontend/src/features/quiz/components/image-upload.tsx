@@ -111,7 +111,7 @@ export function ImageUpload({
       {/* Preview Section */}
       {showPreview && previewUrl && (
         <div className="relative">
-          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[var(--brand-primary-shadow)] bg-[var(--bg-surface-secondary)]">
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-primary/20 bg-muted">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={previewUrl}
@@ -162,7 +162,7 @@ export function ImageUpload({
             {/* Success indicator */}
             {!isUploading && !error && currentImageUrl && previewUrl === currentImageUrl && (
               <div className="absolute bottom-2 right-2">
-                <CheckCircle2 className="h-6 w-6 text-[var(--color-success)]" />
+                <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
             )}
           </div>
@@ -171,12 +171,12 @@ export function ImageUpload({
 
       {/* Empty State */}
       {!showPreview && (
-        <div className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] transition-colors hover:border-[var(--brand-primary)] hover:bg-background">
-          <Upload className="h-12 w-12 text-[var(--text-tertiary)]" />
-          <p className="mt-3 text-center text-sm text-[var(--text-secondary)]">
+        <div className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted transition-colors hover:border-primary hover:bg-background">
+          <Upload className="h-12 w-12 text-muted-foreground" />
+          <p className="mt-3 text-center text-sm text-muted-foreground">
             Click để tải ảnh bìa
           </p>
-          <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+          <p className="mt-1 text-xs text-muted-foreground">
             JPEG, PNG, WebP, GIF • Max 5MB
           </p>
           <Button
@@ -210,7 +210,7 @@ export function ImageUpload({
       )}
 
       {/* Helper text */}
-      <p className="text-xs text-[var(--text-tertiary)]">
+      <p className="text-xs text-muted-foreground">
         Hãy chọn ảnh chất lượng cao (tối thiểu 800x600px).
       </p>
     </div>

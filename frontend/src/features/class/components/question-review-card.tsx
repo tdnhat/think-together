@@ -41,7 +41,7 @@ export function QuestionReviewCard({ question, questionNumber }: QuestionReviewC
         <div className="flex items-center gap-2 mt-2">
           <Badge variant="outline">{question.type}</Badge>
           {hasAnswer && (
-            <span className="text-sm text-[var(--text-secondary)]">
+            <span className="text-sm text-muted-foreground">
               {question.studentAnswer?.pointsEarned ?? 0} điểm
             </span>
           )}
@@ -69,7 +69,7 @@ function QuestionContent({ question }: { question: HomeworkSubmissionQuestionDto
     case 'Audio':
       return <AudioQuestionContent question={question} />
     default:
-      return <div className="text-[var(--text-secondary)]">Loại câu hỏi không được hỗ trợ</div>
+      return <div className="text-muted-foreground">Loại câu hỏi không được hỗ trợ</div>
   }
 }
 
@@ -86,7 +86,7 @@ function ChoiceQuestionContent({ question }: { question: HomeworkSubmissionQuest
 
         // Determine styling based on state
         let bgClass = 'bg-gray-50 border-gray-200'
-        let textClass = 'text-[var(--text-primary)]'
+        let textClass = 'text-foreground'
 
         if (isCorrectOption) {
           bgClass = 'bg-green-50 border-green-300'
@@ -144,7 +144,7 @@ function MatchingQuestionContent({ question }: { question: HomeworkSubmissionQue
     <div className="space-y-6">
       {/* Correct Answer */}
       <div className="space-y-3">
-        <h4 className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+        <h4 className="font-medium text-foreground flex items-center gap-2">
           <CheckCircle className="h-4 w-4 text-green-600" />
           <span>Đáp án đúng</span>
         </h4>
@@ -165,7 +165,7 @@ function MatchingQuestionContent({ question }: { question: HomeworkSubmissionQue
       {/* Student Answer */}
       {hasAnswer ? (
         <div className="space-y-3">
-          <h4 className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+          <h4 className="font-medium text-foreground flex items-center gap-2">
             <span>Bài làm của bạn</span>
           </h4>
           <div className="space-y-2">
@@ -215,7 +215,7 @@ function OrderingQuestionContent({ question }: { question: HomeworkSubmissionQue
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Correct Order */}
         <div className="space-y-3">
-          <h4 className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+          <h4 className="font-medium text-foreground flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
             <span>Đáp án đúng</span>
           </h4>
@@ -233,7 +233,7 @@ function OrderingQuestionContent({ question }: { question: HomeworkSubmissionQue
 
         {/* Student Order */}
         <div className="space-y-3">
-          <h4 className="font-medium text-[var(--text-primary)]">Bài làm của bạn</h4>
+          <h4 className="font-medium text-foreground">Bài làm của bạn</h4>
           {studentOrder ? (
             <div className="space-y-2">
               {studentOrder.map((item, idx) => {
@@ -283,7 +283,7 @@ function VideoQuestionContent({ question }: { question: HomeworkSubmissionQuesti
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Play className="h-4 w-4 text-blue-600" />
-            <span className="font-medium text-[var(--text-primary)]">Video câu hỏi</span>
+            <span className="font-medium text-foreground">Video câu hỏi</span>
           </div>
           <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
             <video
@@ -296,7 +296,7 @@ function VideoQuestionContent({ question }: { question: HomeworkSubmissionQuesti
             </video>
           </div>
           {question.videoTimestamp && (
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-muted-foreground">
               Timestamp: {Math.floor(question.videoTimestamp / 60)}:{(question.videoTimestamp % 60).toString().padStart(2, '0')}
             </p>
           )}
@@ -328,7 +328,7 @@ function AudioQuestionContent({ question }: { question: HomeworkSubmissionQuesti
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Volume2 className="h-4 w-4 text-purple-600" />
-            <span className="font-medium text-[var(--text-primary)]">Audio câu hỏi</span>
+            <span className="font-medium text-foreground">Audio câu hỏi</span>
           </div>
           <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
             <audio
@@ -340,7 +340,7 @@ function AudioQuestionContent({ question }: { question: HomeworkSubmissionQuesti
             </audio>
           </div>
           {question.audioTimestamp && (
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-muted-foreground">
               Timestamp: {Math.floor(question.audioTimestamp / 60)}:{(question.audioTimestamp % 60).toString().padStart(2, '0')}
             </p>
           )}

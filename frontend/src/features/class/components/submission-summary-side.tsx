@@ -40,7 +40,7 @@ export function SubmissionSummarySide({ data, onBack }: SubmissionSummarySidePro
 
             <Card className="border-2 shadow-sm overflow-hidden">
                 <div className="bg-[var(--primary)]/5 p-6 text-center border-b">
-                    <h3 className="font-heading text-lg font-semibold text-[var(--text-secondary)] mb-2">
+                    <h3 className="font-heading text-lg font-semibold text-muted-foreground mb-2">
                         Tổng điểm
                     </h3>
                     <div className="flex items-center justify-center gap-2">
@@ -48,18 +48,18 @@ export function SubmissionSummarySide({ data, onBack }: SubmissionSummarySidePro
                         <span className="text-5xl font-bold tracking-tighter text-[var(--primary)]">
                             {submission.score}
                         </span>
-                        <span className="text-xl text-[var(--text-secondary)] self-end mb-2">/ 10</span>
+                        <span className="text-xl text-muted-foreground self-end mb-2">/ 10</span>
                     </div>
                 </div>
 
                 <CardContent className="p-6 space-y-6">
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                            <span className="text-[var(--text-secondary)]">Độ chính xác</span>
+                            <span className="text-muted-foreground">Độ chính xác</span>
                             <span className="font-medium">{accuracy.toFixed(0)}%</span>
                         </div>
                         <Progress value={accuracy} className="h-2" />
-                        <div className="flex justify-between text-xs text-[var(--text-tertiary)]">
+                        <div className="flex justify-between text-xs text-muted-foreground">
                             <span>{attempt.correctAnswers} câu đúng</span>
                             <span>{attempt.totalQuestions} câu hỏi</span>
                         </div>
@@ -69,7 +69,7 @@ export function SubmissionSummarySide({ data, onBack }: SubmissionSummarySidePro
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Clock className="h-4 w-4" />
                                 <span>Thời gian làm bài</span>
                             </div>
@@ -79,7 +79,7 @@ export function SubmissionSummarySide({ data, onBack }: SubmissionSummarySidePro
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Calendar className="h-4 w-4" />
                                 <span>Ngày nộp</span>
                             </div>
@@ -89,7 +89,7 @@ export function SubmissionSummarySide({ data, onBack }: SubmissionSummarySidePro
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-[var(--text-secondary)]">Trạng thái</span>
+                            <span className="text-sm text-muted-foreground">Trạng thái</span>
                             <Badge variant={submission.status === 'Late' ? 'destructive' : 'default'}>
                                 {submission.status === 'Late' ? 'Nộp muộn' : 'Đúng hạn'}
                             </Badge>

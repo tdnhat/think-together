@@ -184,7 +184,7 @@ export default function QuizEditorPage() {
     return (
       <DashboardLayout>
         <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
-          <h2 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+          <h2 className="font-heading text-2xl font-bold text-foreground">
             Không tìm thấy bộ trắc nghiệm
           </h2>
           <Button onClick={handleBack}>Quay lại</Button>
@@ -210,7 +210,7 @@ export default function QuizEditorPage() {
               </Button>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[var(--text-primary)] break-words">
+                  <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground break-words">
                     {quizSet.title}
                   </h1>
                   {quizSet.isPublished ? (
@@ -224,7 +224,7 @@ export default function QuizEditorPage() {
                   )}
                 </div>
                 {quizSet.description && (
-                  <p className="text-sm sm:text-base text-[var(--text-secondary)] break-words">
+                  <p className="text-sm sm:text-base text-muted-foreground break-words">
                     {quizSet.description}
                   </p>
                 )}

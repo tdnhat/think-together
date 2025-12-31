@@ -55,7 +55,7 @@ export function QuestionNavigation({ onPrevious, onNext, className = '' }: Quest
         </Button>
 
         <div className="flex-1 text-center">
-          <span className="text-sm font-medium text-[var(--text-secondary)]">
+          <span className="text-sm font-medium text-muted-foreground">
             {currentIndex + 1} / {totalQuestions}
           </span>
         </div>

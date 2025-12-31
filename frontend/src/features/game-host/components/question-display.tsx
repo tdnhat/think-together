@@ -79,12 +79,12 @@ export function QuestionDisplay({
 
   const getTimerColor = () => {
     if (timeRemaining <= GAME_HOST_CONSTANTS.TIMER.DANGER_THRESHOLD) {
-      return 'text-[var(--color-error)]'
+      return 'text-destructive'
     }
     if (timeRemaining <= GAME_HOST_CONSTANTS.TIMER.WARNING_THRESHOLD) {
-      return 'text-[var(--brand-secondary)]'
+      return 'text-secondary'
     }
-    return 'text-[var(--text-primary)]'
+    return 'text-foreground'
   }
 
   const questionPosition = 'positionInGame' in question ? question.positionInGame + 1 : 1
@@ -119,7 +119,7 @@ export function QuestionDisplay({
       {/* Question Content */}
       <Card className="overflow-hidden">
         <CardContent className="p-8">
-          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center text-[var(--text-primary)] leading-relaxed">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center text-foreground leading-relaxed">
             {question.content}
           </h2>
         </CardContent>

@@ -210,7 +210,7 @@ export default function ClassDetailPage() {
         <div className="container mx-auto py-6">
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-muted-foreground">
                 {error ? 'Không thể tải lớp học' : 'Lớp học không tồn tại'}
               </p>
             </CardContent>
@@ -259,7 +259,7 @@ export default function ClassDetailPage() {
                   <Card>
                     <CardContent className="p-6">
                       <div className="mb-4">
-                        <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+                        <h2 className="font-heading text-xl font-semibold text-foreground">
                           Bài tập sắp đến hạn
                         </h2>
                       </div>
@@ -279,14 +279,14 @@ export default function ClassDetailPage() {
                             .map((homework) => (
                               <div
                                 key={homework.id}
-                                className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-[var(--bg-surface-secondary)]"
+                                className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted"
                               >
                                 <div className="flex-1">
-                                  <p className="font-medium text-[var(--text-primary)]">
+                                  <p className="font-medium text-foreground">
                                     {homework.title}
                                   </p>
                                   {homework.dueDate && (
-                                    <p className="text-sm text-[var(--text-secondary)]">
+                                    <p className="text-sm text-muted-foreground">
                                       Hạn nộp:{' '}
                                       {new Date(homework.dueDate).toLocaleDateString('vi-VN', {
                                         year: 'numeric',
@@ -307,7 +307,7 @@ export default function ClassDetailPage() {
                             ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-[var(--text-secondary)]">
+                        <p className="text-sm text-muted-foreground">
                           Không có bài tập sắp đến hạn
                         </p>
                       )}
@@ -317,10 +317,10 @@ export default function ClassDetailPage() {
                   {/* Recent Activity */}
                   <Card>
                     <CardContent className="p-6">
-                      <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)] mb-4">
+                      <h2 className="font-heading text-xl font-semibold text-foreground mb-4">
                         Hoạt động gần đây
                       </h2>
-                      <p className="text-sm text-[var(--text-secondary)]">
+                      <p className="text-sm text-muted-foreground">
                         Chưa có hoạt động nào
                       </p>
                     </CardContent>
@@ -332,23 +332,23 @@ export default function ClassDetailPage() {
                   {/* Quick Stats */}
                   <Card>
                     <CardContent className="p-6">
-                      <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+                      <h3 className="font-semibold text-foreground mb-4">
                         Thống kê nhanh
                       </h3>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-[var(--text-secondary)]">
+                          <span className="text-sm text-muted-foreground">
                             Tổng bài tập
                           </span>
-                          <span className="font-semibold text-[var(--text-primary)]">
+                          <span className="font-semibold text-foreground">
                             {classData.homeworks?.length || 0}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-[var(--text-secondary)]">
+                          <span className="text-sm text-muted-foreground">
                             Thành viên
                           </span>
-                          <span className="font-semibold text-[var(--text-primary)]">
+                          <span className="font-semibold text-foreground">
                             {classData.members?.length || 0}
                           </span>
                         </div>

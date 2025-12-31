@@ -102,11 +102,11 @@ export function ClassCard({
       <div className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="font-heading text-lg font-semibold text-[var(--text-primary)] truncate">
+            <h3 className="font-heading text-lg font-semibold text-foreground truncate">
               {classData.name}
             </h3>
             {classData.description && (
-              <p className="mt-1 text-sm text-[var(--text-secondary)] line-clamp-2">
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                 {classData.description}
               </p>
             )}
@@ -115,7 +115,7 @@ export function ClassCard({
 
         <div className="pt-0">
           {/* Stats */}
-          <div className="flex items-center gap-4 text-sm text-[var(--text-secondary)]">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4" />
               <span>{classData.memberCount || 0} thành viên</span>
@@ -127,11 +127,11 @@ export function ClassCard({
           </div>
 
           {/* Join Code */}
-          <div className="mt-3 flex items-center justify-between rounded-lg border-2 border-border bg-[var(--bg-surface-secondary)] p-2">
+          <div className="mt-3 flex items-center justify-between rounded-lg border-2 border-border bg-muted p-2">
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-[var(--text-secondary)]" />
-              <span className="text-xs text-[var(--text-secondary)]">Mã tham gia:</span>
-              <code className="font-mono font-bold text-[var(--brand-primary)]">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Mã tham gia:</span>
+              <code className="font-mono font-bold text-primary">
                 {classData.joinCode}
               </code>
             </div>
@@ -148,7 +148,7 @@ export function ClassCard({
           </div>
 
           {/* Created Date */}
-          <div className="mt-2 text-xs text-[var(--text-tertiary)]">
+          <div className="mt-2 text-xs text-muted-foreground">
             Tạo lúc: {formatDate(classData.createdAt)}
           </div>
         </div>

@@ -61,7 +61,7 @@ export function OptionsFields() {
         <FormItem className="space-y-3">
             <div className="flex items-center justify-between">
                 <Label>
-                    Các lựa chọn <span className="text-[var(--color-error)]">*</span>
+                    Các lựa chọn <span className="text-destructive">*</span>
                 </Label>
                 {type !== QuestionType.TRUE_FALSE && (
                     <Button
@@ -148,7 +148,7 @@ export function OptionsFields() {
             </div>
 
             {formState.errors.options && typeof formState.errors.options.message === 'string' && (
-                <p className="text-sm text-[var(--color-error)]">{formState.errors.options.message}</p>
+                <p className="text-sm text-destructive">{formState.errors.options.message}</p>
             )}
         </FormItem>
     )

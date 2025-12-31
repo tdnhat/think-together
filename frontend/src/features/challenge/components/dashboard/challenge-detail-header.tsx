@@ -22,11 +22,11 @@ export function ChallengeDetailHeader({
         <ArrowLeft className="h-5 w-5" />
       </Button>
       <div className="flex-1">
-        <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+        <h1 className="font-heading text-2xl font-bold text-foreground">
           {challenge.title}
         </h1>
         {quizSetTitle && (
-          <p className="text-sm text-[var(--text-secondary)]">
+          <p className="text-sm text-muted-foreground">
             Từ bộ trắc nghiệm: {quizSetTitle}
           </p>
         )}

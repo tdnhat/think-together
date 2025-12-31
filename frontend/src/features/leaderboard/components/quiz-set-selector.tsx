@@ -25,7 +25,7 @@ export function QuizSetSelector({
 }: QuizSetSelectorProps) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <BookOpen className="h-4 w-4 text-[var(--text-secondary)]" />
+      <BookOpen className="h-4 w-4 text-muted-foreground" />
       <Select
         value={selectedQuizSetId || 'all'}
         onValueChange={(value) => {

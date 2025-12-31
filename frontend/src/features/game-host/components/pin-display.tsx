@@ -30,16 +30,16 @@ export function PinDisplay({ pin, className = '' }: Readonly<PinDisplayProps>) {
 
   return (
     <Card className={`relative overflow-hidden ${className}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-hover)] opacity-10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/80 opacity-10" />
       <CardContent className="relative p-8 text-center">
         <div className="mb-4">
-          <span className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider">
+          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
             Mã tham gia
           </span>
         </div>
         
         <div className="mb-6">
-          <span className="font-heading text-6xl md:text-7xl font-bold tracking-[0.3em] text-[var(--brand-primary)]">
+          <span className="font-heading text-6xl md:text-7xl font-bold tracking-[0.3em] text-primary">
             {formattedPin}
           </span>
         </div>
@@ -76,8 +76,8 @@ export function PinDisplay({ pin, className = '' }: Readonly<PinDisplayProps>) {
           </Button>
         </div>
 
-        <div className="mt-6 text-sm text-[var(--text-tertiary)]">
-          Truy cập <span className="font-semibold text-[var(--text-primary)]">thinktogether.vn/join</span> và nhập mã trên
+        <div className="mt-6 text-sm text-muted-foreground">
+          Truy cập <span className="font-semibold text-foreground">thinktogether.vn/join</span> và nhập mã trên
         </div>
       </CardContent>
     </Card>

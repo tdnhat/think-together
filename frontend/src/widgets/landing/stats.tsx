@@ -17,23 +17,23 @@ export function Stats() {
               {Array.from({ length: RATING_STARS_COUNT }, (_, i) => (
                 <Star 
                   key={`star-${i}`}
-                  className="h-6 w-6 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]"
+                  className="h-6 w-6 fill-secondary text-secondary"
                 />
               ))}
             </div>
             
-            <h2 className="mb-4 font-heading text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
+            <h2 className="mb-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
               Hơn 5.000 học sinh đã kiểm tra kiến thức!
             </h2>
             
-            <p className="mb-6 text-lg text-[var(--text-secondary)]">
+            <p className="mb-6 text-lg text-muted-foreground">
               Tham gia cộng đồng học sinh đang ngày càng phát triển. 
               Cùng nhau học tập, chia sẻ và tiến bộ mỗi ngày.
             </p>
             
             <div className="flex flex-wrap gap-4">
               <Badge variant="outline" className="px-4 py-2">
-                <Zap className="h-5 w-5 fill-[var(--brand-secondary)] text-[var(--brand-secondary)]" />
+                <Zap className="h-5 w-5 fill-secondary text-secondary" />
                 <span>Nhanh chóng</span>
               </Badge>
               

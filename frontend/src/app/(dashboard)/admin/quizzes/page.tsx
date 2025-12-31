@@ -10,10 +10,10 @@ export default function QuizzesAdminPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+        <h1 className="text-3xl font-bold text-foreground">
           Quản Lý Quiz
         </h1>
-        <p className="text-[var(--text-secondary)] mt-2">
+        <p className="text-muted-foreground mt-2">
           Xem, chỉnh sửa, và quản lý tất cả quiz trên hệ thống.
         </p>
       </div>
@@ -21,7 +21,7 @@ export default function QuizzesAdminPage() {
       {/* Search and Filters */}
       <div className="flex items-center gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm quiz..."
             className="pl-10"
@@ -42,7 +42,7 @@ export default function QuizzesAdminPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12">
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-muted-foreground">
               Quản lý quiz toàn hệ thống sẽ sớm có sẵn
             </p>
           </div>

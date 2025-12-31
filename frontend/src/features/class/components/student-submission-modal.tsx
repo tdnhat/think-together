@@ -47,7 +47,7 @@ export function StudentSubmissionModal({
                         </div>
                         <div>
                             <span className="text-xl">{studentName}</span>
-                            <p className="text-sm font-normal text-[var(--text-secondary)]">
+                            <p className="text-sm font-normal text-muted-foreground">
                                 Chi tiết bài nộp
                             </p>
                         </div>
@@ -79,13 +79,13 @@ export function StudentSubmissionModal({
                                         {data.submission.score}
                                     </span>
                                 </div>
-                                <p className="text-sm text-[var(--text-secondary)]">Điểm số</p>
+                                <p className="text-sm text-muted-foreground">Điểm số</p>
                             </div>
 
                             {/* Accuracy */}
                             <div className="bg-green-50 p-4 rounded-lg border">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm text-[var(--text-secondary)]">Độ chính xác</span>
+                                    <span className="text-sm text-muted-foreground">Độ chính xác</span>
                                     <span className="font-semibold">
                                         {data.attempt.totalQuestions > 0
                                             ? ((data.attempt.correctAnswers / data.attempt.totalQuestions) * 100).toFixed(0)
@@ -98,7 +98,7 @@ export function StudentSubmissionModal({
                                         : 0}
                                     className="h-2"
                                 />
-                                <p className="text-xs text-[var(--text-secondary)] mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                     {data.attempt.correctAnswers}/{data.attempt.totalQuestions} câu đúng
                                 </p>
                             </div>
@@ -107,7 +107,7 @@ export function StudentSubmissionModal({
                             <div className="bg-blue-50 p-4 rounded-lg border text-center">
                                 <Clock className="h-5 w-5 text-blue-600 mx-auto mb-1" />
                                 <p className="font-semibold">{formatTime(data.attempt.completionTimeMs)}</p>
-                                <p className="text-sm text-[var(--text-secondary)]">Thời gian</p>
+                                <p className="text-sm text-muted-foreground">Thời gian</p>
                             </div>
 
                             {/* Submit Date */}
@@ -116,7 +116,7 @@ export function StudentSubmissionModal({
                                 <p className="font-semibold text-sm">
                                     {format(new Date(data.submission.submittedAt), 'dd MMM, HH:mm', { locale: vi })}
                                 </p>
-                                <p className="text-sm text-[var(--text-secondary)]">
+                                <p className="text-sm text-muted-foreground">
                                     {data.submission.status === 'Late' ? (
                                         <Badge variant="secondary" className="mt-1">Nộp muộn</Badge>
                                     ) : (

@@ -22,7 +22,7 @@ export function PlayerList({
   const remainingCount = Math.max(0, players.length - maxDisplay)
 
   const getConnectionStatusColor = (status: ConnectionStatus) => {
-    return status === ConnectionStatus.Connected ? 'text-[var(--color-success)]' : 'text-[var(--text-tertiary)]'
+    return status === ConnectionStatus.Connected ? 'text-green-600' : 'text-muted-foreground'
   }
 
   const getConnectionStatusIcon = (status: ConnectionStatus) => {
@@ -51,7 +51,7 @@ export function PlayerList({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-[var(--brand-primary)]" />
+            <Users className="h-5 w-5 text-primary" />
             Người chơi
           </CardTitle>
           <Badge variant="default" className="text-sm">
@@ -63,8 +63,8 @@ export function PlayerList({
       <CardContent>
         {players.length === 0 ? (
           <div className="py-8 text-center">
-            <User className="mx-auto h-12 w-12 text-[var(--text-tertiary)] opacity-50" />
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">
+            <User className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+            <p className="mt-3 text-sm text-muted-foreground">
               Đang chờ người chơi tham gia...
             </p>
           </div>
@@ -74,7 +74,7 @@ export function PlayerList({
               {displayedPlayers.map((player, index) => (
                 <div
                   key={player.id}
-                  className="flex items-center justify-between rounded-lg border-2 border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] p-3 transition-all hover:border-[var(--brand-primary)]"
+                  className="flex items-center justify-between rounded-lg border-2 border-border bg-muted p-3 transition-all hover:border-primary"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -82,7 +82,7 @@ export function PlayerList({
                     >
                       {player.nickname.charAt(0).toUpperCase()}
                     </div>
-                    <span className="font-medium text-[var(--text-primary)]">
+                    <span className="font-medium text-foreground">
                       {player.nickname}
                     </span>
                   </div>
@@ -98,7 +98,7 @@ export function PlayerList({
             
             {remainingCount > 0 && (
               <div className="text-center pt-2">
-                <span className="text-sm text-[var(--text-tertiary)]">
+                <span className="text-sm text-muted-foreground">
                   +{remainingCount} người chơi khác
                 </span>
               </div>

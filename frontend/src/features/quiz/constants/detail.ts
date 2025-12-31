@@ -1,0 +1,3 @@
+export const DEFAULT_QUESTION_PREVIEW_COUNT = 3;
+export const DEFAULT_QUESTION_PAGE_SIZE = 10;
+

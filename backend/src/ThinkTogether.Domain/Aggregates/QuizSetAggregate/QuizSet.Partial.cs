@@ -2,6 +2,8 @@ using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Shared.Primitives;
 using ThinkTogether.Domain.Exceptions;
 
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Events;
+
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 
 public sealed partial class QuizSet : AggregateRoot
@@ -22,6 +24,11 @@ public sealed partial class QuizSet : AggregateRoot
 
         _questions.Add(question);
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new QuestionAddedDomainEvent(
+            Id,
+            question.Id,
+            question.Content));
     }
 
     public void RemoveQuestion(Guid questionId)
@@ -32,6 +39,8 @@ public sealed partial class QuizSet : AggregateRoot
 
         _questions.Remove(question);
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new QuestionRemovedDomainEvent(Id, questionId));
     }
 
     public void UpdateTitle(string title)
@@ -77,11 +86,15 @@ public sealed partial class QuizSet : AggregateRoot
 
         IsPublished = true;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new QuizSetPublishedDomainEvent(Id));
     }
 
     public void Unpublish()
     {
         IsPublished = false;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new QuizSetUnpublishedDomainEvent(Id));
     }
 }

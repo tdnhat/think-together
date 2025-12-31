@@ -125,16 +125,16 @@ export function ClassList({
 
       {/* Empty State */}
       {!isLoading && classes.length === 0 && (
-        <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-            <Search className="h-8 w-8 text-[var(--brand-primary)]" />
+        <Card className="flex flex-col items-center justify-center border-dashed border-border bg-muted py-20 px-6 text-center">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <Search className="h-8 w-8 text-primary" />
           </div>
-          <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
+          <h3 className="mb-2 font-heading text-xl text-foreground">
             {searchQuery
               ? 'Không tìm thấy lớp học'
               : CLASS_CONSTANTS.MESSAGES.NO_CLASSES}
           </h3>
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-muted-foreground">
             {searchQuery
               ? 'Thử tìm kiếm với từ khóa khác'
               : CLASS_CONSTANTS.MESSAGES.NO_CLASSES_DESCRIPTION}

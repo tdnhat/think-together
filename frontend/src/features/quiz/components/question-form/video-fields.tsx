@@ -17,16 +17,16 @@ export function VideoFields() {
                 render={({ field }) => (
                     <FormItem>
                         <Label>
-                            URL Video <span className="text-[var(--color-error)]">*</span>
+                            URL Video <span className="text-destructive">*</span>
                         </Label>
                         <FormControl>
                             <Input
                                 {...field}
                                 placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
-                                className={formState.errors.videoUrl ? 'border-[var(--color-error)]' : ''}
+                                className={formState.errors.videoUrl ? 'border-destructive' : ''}
                             />
                         </FormControl>
-                        <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Hỗ trợ YouTube URLs. Ví dụ: https://www.youtube.com/watch?v=dQw4w9WgXcQ
                         </p>
                         <FormMessage />
@@ -47,12 +47,12 @@ export function VideoFields() {
                                 type="number"
                                 min="0"
                                 placeholder="0"
-                                className={formState.errors.videoTimestamp ? 'border-[var(--color-error)]' : ''}
+                                className={formState.errors.videoTimestamp ? 'border-destructive' : ''}
                                 {...field}
                                 onChange={(e) => field.onChange(Number(e.target.value))}
                             />
                         </FormControl>
-                        <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Video sẽ bắt đầu từ thời gian này (tính bằng giây). Ví dụ: 120 = 2 phút
                         </p>
                         <FormMessage />
@@ -62,14 +62,14 @@ export function VideoFields() {
 
             {/* Video Preview */}
             {videoUrl && (
-                <div className="bg-[var(--bg-surface-secondary)] rounded-lg border border-[var(--border-secondary)] p-4">
-                    <p className="text-sm font-medium text-[var(--text-primary)] mb-2">Xem trước video:</p>
+                <div className="bg-muted rounded-lg border border-[var(--border-secondary)] p-4">
+                    <p className="text-sm font-medium text-foreground mb-2">Xem trước video:</p>
                     <div className="bg-black rounded aspect-video flex items-center justify-center">
                         <p className="text-white text-sm">
                             Video preview sẽ được hiển thị tại đây
                         </p>
                     </div>
-                    <p className="text-xs text-[var(--text-secondary)] mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                         {videoUrl}
                         {videoTimestamp && videoTimestamp > 0 && ` (bắt đầu từ ${videoTimestamp}s)`}
                     </p>

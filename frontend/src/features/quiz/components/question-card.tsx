@@ -122,7 +122,7 @@ export function QuestionCard({
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
         <div className="flex items-start gap-3 flex-1 min-w-0">
           {/* Question Number */}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-[var(--brand-primary-shadow)] bg-background font-heading text-sm font-bold">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-3 border-primary/20 bg-background font-heading text-sm font-bold">
             {index + 1}
           </div>
 
@@ -136,11 +136,11 @@ export function QuestionCard({
               {typeInfo.label}
             </Badge>
 
-            <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 my-2">
+            <p className="text-sm font-semibold text-foreground line-clamp-2 my-2">
               {question.content}
             </p>
 
-            <p className="text-xs text-[var(--text-tertiary)]">
+            <p className="text-xs text-muted-foreground">
               {getQuestionSummary()}
             </p>
           </div>
@@ -154,18 +154,18 @@ export function QuestionCard({
             {question.options.slice(0, 3).map((option, idx) => (
               <div
                 key={option.id || `option-${question.id}-${idx}`}
-                className="flex items-center gap-2 rounded-md border border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] px-2.5 py-1.5"
+                className="flex items-center gap-2 rounded-md border border-border bg-muted px-2.5 py-1.5"
               >
-                <span className="font-heading text-xs font-bold text-[var(--text-primary)]">
+                <span className="font-heading text-xs font-bold text-foreground">
                   {String.fromCharCode(65 + idx)}.
                 </span>
-                <span className="flex-1 text-xs text-[var(--text-secondary)] line-clamp-1">
+                <span className="flex-1 text-xs text-muted-foreground line-clamp-1">
                   {option.content}
                 </span>
               </div>
             ))}
             {question.options.length > 3 && (
-              <p className="text-xs font-medium text-[var(--text-tertiary)] pl-2">
+              <p className="text-xs font-medium text-muted-foreground pl-2">
                 +{question.options.length - 3} lựa chọn khác
               </p>
             )}

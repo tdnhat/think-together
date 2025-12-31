@@ -66,9 +66,9 @@ export function OrderingFields() {
             <div className="flex items-center justify-between">
                 <div>
                     <Label>
-                        Mục để sắp xếp <span className="text-[var(--color-error)]">*</span>
+                        Mục để sắp xếp <span className="text-destructive">*</span>
                     </Label>
-                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                         Nhập các mục theo thứ tự đúng. Người chơi sẽ phải sắp xếp chúng theo thứ tự này.
                     </p>
                 </div>
@@ -101,7 +101,7 @@ export function OrderingFields() {
                                             <Input
                                                 {...field}
                                                 placeholder={`Nhập mục ${index + 1}`}
-                                                className={formState.errors.orderingItems?.[index]?.content ? 'border-[var(--color-error)]' : ''}
+                                                className={formState.errors.orderingItems?.[index]?.content ? 'border-destructive' : ''}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -153,7 +153,7 @@ export function OrderingFields() {
 
                 {/* Show error message if validation fails */}
                 {formState.errors.orderingItems && typeof formState.errors.orderingItems.message === 'string' && (
-                    <p className="text-sm text-[var(--color-error)]">{formState.errors.orderingItems.message}</p>
+                    <p className="text-sm text-destructive">{formState.errors.orderingItems.message}</p>
                 )}
             </div>
         </FormItem>

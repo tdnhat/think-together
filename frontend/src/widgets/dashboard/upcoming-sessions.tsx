@@ -7,17 +7,17 @@ import { MOCK_UPCOMING_SESSIONS } from "./constants";
 export function UpcomingSessions() {
   return (
     <Card className="p-6">
-      <h2 className="mb-4 font-heading text-2xl font-semibold text-[var(--text-primary)]">
+      <h2 className="mb-4 font-heading text-2xl font-semibold text-foreground">
         Các bài học sắp diễn ra
       </h2>
       <div className="space-y-4">
         {MOCK_UPCOMING_SESSIONS.map((session) => (
           <Card
             key={session}
-            className="flex items-center justify-between px-4 py-3 text-[var(--text-secondary)]"
+            className="flex items-center justify-between px-4 py-3 text-muted-foreground"
           >
             <div>
-              <p className="font-heading text-base font-semibold text-[var(--text-primary)]">
+              <p className="font-heading text-base font-semibold text-foreground">
                 {session}
               </p>
               <p className="text-sm">Bắt đầu lúc 19:30 tối nay</p>

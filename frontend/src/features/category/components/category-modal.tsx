@@ -43,8 +43,8 @@ export function CategoryModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-        <DialogHeader className="border-b-2 border-[var(--brand-primary)] bg-[var(--bg-surface-secondary)] px-6 py-4">
-          <DialogTitle className="font-heading text-xl font-bold text-[var(--text-primary)]">
+        <DialogHeader className="border-b-2 border-primary bg-muted px-6 py-4">
+          <DialogTitle className="font-heading text-xl font-bold text-foreground">
             {modalTitle}
           </DialogTitle>
         </DialogHeader>

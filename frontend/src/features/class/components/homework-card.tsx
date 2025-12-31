@@ -63,13 +63,13 @@ export function HomeworkCard({
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="mb-2 flex items-center gap-2">
-              <h3 className="font-heading text-lg font-semibold text-[var(--text-primary)] truncate">
+              <h3 className="font-heading text-lg font-semibold text-foreground truncate">
                 {homework.title}
               </h3>
               {getStatusBadge()}
             </div>
             {homework.quizSetTitle && (
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-muted-foreground">
                 Bộ câu hỏi: {homework.quizSetTitle}
               </p>
             )}
@@ -110,7 +110,7 @@ export function HomeworkCard({
         <div className="flex-1 space-y-2">
           {/* Due Date */}
           {dueDate && (
-            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>
                 Hạn nộp:{' '}
@@ -129,7 +129,7 @@ export function HomeworkCard({
 
           {/* Time Remaining */}
           {dueDate && !isOverdue && (
-            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
               <span>
                 Còn lại:{' '}
@@ -142,7 +142,7 @@ export function HomeworkCard({
           )}
 
           {/* Submission Count */}
-          <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="h-4 w-4" />
             <span>
               {homework.submissionCount || 0} học sinh đã nộp bài
@@ -150,7 +150,7 @@ export function HomeworkCard({
           </div>
 
           {/* Assigned Date */}
-          <div className="pt-2 text-xs text-[var(--text-tertiary)]">
+          <div className="pt-2 text-xs text-muted-foreground">
             Giao lúc: {new Date(homework.assignedAt).toLocaleDateString('vi-VN')}
           </div>
         </div>

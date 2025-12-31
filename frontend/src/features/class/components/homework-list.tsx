@@ -60,7 +60,7 @@ export function HomeworkList({
       {/* Header */}
       {onCreateNew && (
         <div className="flex items-center justify-between">
-          <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+          <h2 className="font-heading text-xl font-semibold text-foreground">
             Bài tập về nhà
           </h2>
           <Button onClick={onCreateNew} className="gap-2">
@@ -147,18 +147,18 @@ export function HomeworkList({
 
       {/* Empty State */}
       {!isLoading && filteredHomeworks.length === 0 && (
-        <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-            <BookOpen className="h-8 w-8 text-[var(--brand-primary)]" />
+        <Card className="flex flex-col items-center justify-center border-dashed border-border bg-muted py-20 px-6 text-center">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <BookOpen className="h-8 w-8 text-primary" />
           </div>
-          <h3 className="mb-2 font-heading text-xl text-[var(--text-primary)]">
+          <h3 className="mb-2 font-heading text-xl text-foreground">
             {filter === 'all'
               ? CLASS_CONSTANTS.MESSAGES.NO_HOMEWORKS
               : filter === 'done'
                 ? 'Chưa có bài tập đã làm'
                 : 'Chưa có bài tập chưa làm'}
           </h3>
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-muted-foreground">
             {filter === 'all'
               ? CLASS_CONSTANTS.MESSAGES.NO_HOMEWORKS_DESCRIPTION
               : filter === 'done'

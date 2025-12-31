@@ -86,14 +86,14 @@ export function ClassDetailHeader({
       <div className="relative -mt-16 rounded-t-2xl bg-background px-6 pb-6 pt-8 shadow-lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex-1">
-            <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
+            <h1 className="font-heading text-3xl font-bold text-foreground">
               {classData.name}
             </h1>
             {classData.description && (
-              <p className="mt-2 text-[var(--text-secondary)]">{classData.description}</p>
+              <p className="mt-2 text-muted-foreground">{classData.description}</p>
             )}
             {classData.teacherName && (
-              <p className="mt-1 text-sm text-[var(--text-tertiary)]">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Giáo viên: {classData.teacherName}
               </p>
             )}
@@ -101,12 +101,12 @@ export function ClassDetailHeader({
 
           {/* Join Code (Teacher only) */}
           {isTeacher && (
-            <div className="flex shrink-0 items-center gap-2 rounded-lg border-2 border-[var(--brand-primary)] bg-[var(--bg-surface-secondary)] px-4 py-2">
-              <Calendar className="h-4 w-4 text-[var(--brand-primary)]" />
+            <div className="flex shrink-0 items-center gap-2 rounded-lg border-2 border-primary bg-muted px-4 py-2">
+              <Calendar className="h-4 w-4 text-primary" />
               <div className="flex flex-col">
-                <span className="text-xs text-[var(--text-secondary)]">Mã tham gia</span>
+                <span className="text-xs text-muted-foreground">Mã tham gia</span>
                 <div className="flex items-center gap-2">
-                  <code className="font-mono text-lg font-bold text-[var(--brand-primary)]">
+                  <code className="font-mono text-lg font-bold text-primary">
                     {classData.joinCode}
                   </code>
                   {onCopyJoinCode && (
@@ -128,23 +128,23 @@ export function ClassDetailHeader({
         {/* Stats */}
         <div className="mt-6 flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-[var(--brand-primary)]/10 p-2">
-              <Users className="h-5 w-5 text-[var(--brand-primary)]" />
+            <div className="rounded-full bg-primary/10 p-2">
+              <Users className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-[var(--text-secondary)]">Thành viên</p>
-              <p className="font-semibold text-[var(--text-primary)]">
+              <p className="text-sm text-muted-foreground">Thành viên</p>
+              <p className="font-semibold text-foreground">
                 {classData.memberCount || classData.members?.length || 0}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-[var(--brand-primary)]/10 p-2">
-              <BookOpen className="h-5 w-5 text-[var(--brand-primary)]" />
+            <div className="rounded-full bg-primary/10 p-2">
+              <BookOpen className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-[var(--text-secondary)]">Bài tập</p>
-              <p className="font-semibold text-[var(--text-primary)]">
+              <p className="text-sm text-muted-foreground">Bài tập</p>
+              <p className="font-semibold text-foreground">
                 {classData.homeworkCount || classData.homeworks?.length || 0}
               </p>
             </div>

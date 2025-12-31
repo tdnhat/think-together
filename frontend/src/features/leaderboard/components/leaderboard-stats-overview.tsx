@@ -145,7 +145,7 @@ export function LeaderboardStatsOverview({
                       backgroundColor: config.color,
                     }}
                   />
-                  <span className="text-[var(--text-secondary)]">
+                  <span className="text-muted-foreground">
                     {config.label}
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export function LeaderboardStatsOverview({
         {/* Card - Recent Activity */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-[var(--text-secondary)]">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Hoạt động gần đây
             </CardTitle>
           </CardHeader>
@@ -172,7 +172,7 @@ export function LeaderboardStatsOverview({
                 <p className="text-2xl font-bold text-blue-600">
                   {stats.recentActivityCount.toLocaleString('vi-VN')}
                 </p>
-                <p className="text-xs text-[var(--text-secondary)]">
+                <p className="text-xs text-muted-foreground">
                   Lượt làm gần đây
                 </p>
               </div>
@@ -198,7 +198,7 @@ export function LeaderboardStatsOverview({
                   innerRadius={60}
                   outerRadius={100}
                   strokeWidth={5}
-                  stroke="var(--color-border)"
+                  stroke="hsl(var(--border))"
                 >
                   {donutChartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -210,7 +210,7 @@ export function LeaderboardStatsOverview({
               <div className="text-3xl font-bold">
                 {completionRate}%
               </div>
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-muted-foreground">
                 Tỷ lệ hoàn thành
               </p>
               <div className="mt-2 flex gap-4 text-xs">
@@ -220,7 +220,7 @@ export function LeaderboardStatsOverview({
                       className="h-3 w-3 rounded-sm"
                       style={{ backgroundColor: item.fill }}
                     />
-                    <span className="text-[var(--text-secondary)]">
+                    <span className="text-muted-foreground">
                       {item.name}
                     </span>
                   </div>

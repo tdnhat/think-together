@@ -63,7 +63,7 @@ export function ClassForm({
               required
               disabled={isSubmitting}
             />
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-xs text-muted-foreground">
               {name.length} / {CLASS_CONSTANTS.LIMITS.NAME_MAX_LENGTH} ký tự
             </p>
           </div>
@@ -80,7 +80,7 @@ export function ClassForm({
               rows={4}
               disabled={isSubmitting}
             />
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-xs text-muted-foreground">
               {description.length} / {CLASS_CONSTANTS.LIMITS.DESCRIPTION_MAX_LENGTH} ký tự
             </p>
           </div>

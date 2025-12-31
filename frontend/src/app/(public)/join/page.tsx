@@ -18,8 +18,8 @@ function JoinPageContent() {
       {/* Header */}
       <PageHeader>
         <div className="flex items-center gap-2">
-          <Gamepad2 className="h-8 w-8 text-[var(--brand-primary)]" />
-          <span className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+          <Gamepad2 className="h-8 w-8 text-primary" />
+          <span className="font-heading text-2xl font-bold text-foreground">
             ThinkTogether
           </span>
         </div>
@@ -37,7 +37,7 @@ function JoinPageContent() {
 
       {/* Footer */}
       <PageFooter>
-        <p>© 2024 ThinkTogether. Học cùng nhau, vui hơn gấp bội!</p>
+        <p>© 2025 ThinkTogether. Học cùng nhau, vui hơn gấp bội!</p>
       </PageFooter>
     </PageLayout>
   )

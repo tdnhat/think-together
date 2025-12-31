@@ -5,11 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Button } from '@/shared/ui/button'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { PaginationControls } from '@/shared/components/pagination-controls'
-import { LeaderboardTable } from './leaderboard-table'
+import { LeaderboardTable } from '../leaderboard-table'
 import { ChallengeStatsOverview } from './challenge-stats-overview'
-import { useChallengeStats } from '../hooks'
-import { usePdfExport } from '../hooks/use-pdf-export'
-import type { ChallengeLeaderboardDto } from '../types'
+import { useChallengeStats } from '../../hooks'
+import { usePdfExport } from '../../hooks/use-pdf-export'
+import type { ChallengeLeaderboardDto } from '../../types'
 
 interface ChallengeLeaderboardCardProps {
   challengeId: string
@@ -101,7 +101,7 @@ export function ChallengeLeaderboardCard({
                     total={leaderboard.totalEntries}
                     onPageChange={onPageChange}
                   />
-                  <div className="text-sm text-[var(--text-secondary)]">
+                  <div className="text-sm text-muted-foreground">
                     Hiển thị {leaderboard.entries.length} / {leaderboard.totalEntries} kết quả
                   </div>
                 </div>
@@ -118,14 +118,14 @@ export function ChallengeLeaderboardCard({
                     total={leaderboard.totalEntries}
                     onPageChange={onPageChange}
                   />
-                  <div className="text-sm text-[var(--text-secondary)]">
+                  <div className="text-sm text-muted-foreground">
                     Hiển thị {leaderboard.entries.length} / {leaderboard.totalEntries} kết quả
                   </div>
                 </div>
               )}
             </>
           ) : (
-            <div className="text-center py-8 text-[var(--text-secondary)]">
+            <div className="text-center py-8 text-muted-foreground">
               <Trophy className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p>Chưa có ai hoàn thành thử thách này.</p>
               <p className="text-sm mt-1">Hãy chia sẻ để mời bạn bè tham gia!</p>

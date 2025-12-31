@@ -62,7 +62,7 @@ export function QuestionDisplay({ onAnswerChange, className = '' }: QuestionDisp
     return (
       <Card className={className}>
         <CardContent className="py-12 text-center">
-          <p className="text-[var(--text-secondary)]">Không có câu hỏi để hiển thị</p>
+          <p className="text-muted-foreground">Không có câu hỏi để hiển thị</p>
         </CardContent>
       </Card>
     )
@@ -72,7 +72,7 @@ export function QuestionDisplay({ onAnswerChange, className = '' }: QuestionDisp
     <Card className={className}>
       <CardHeader className="pb-0">
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex size-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-surface-secondary)] text-sm font-semibold text-[var(--text-primary)]">
+          <div className="mt-0.5 flex size-8 items-center justify-center rounded-full border border-border bg-muted text-sm font-semibold text-foreground">
             {currentQuestionIndex + 1}
           </div>
           <div className="min-w-0 flex-1">
@@ -271,7 +271,7 @@ function RenderChoiceOptions({
             if (isCompleted) {
               if (isCorrect) return 'bg-green-500'
               if (isSelected && !isCorrect) return 'bg-red-500'
-              return 'bg-[var(--text-tertiary)]'
+              return 'bg-muted-foreground'
             }
             if (isSelected) return 'bg-blue-500'
             return 'bg-main'
@@ -357,17 +357,17 @@ function RenderTrueFalseOptions({
           if (isCompleted) {
             if (isCorrect) return 'border-green-500'
             if (isSelected && !isCorrect) return 'border-red-500'
-            return 'border-[var(--border)] opacity-60'
+            return 'border-border opacity-60'
           }
           if (isSelected) return 'border-blue-500'
-          return 'border-[var(--border)]'
+          return 'border-border'
         }
 
         const getDotStyle = () => {
           if (isCompleted) {
             if (isCorrect) return 'bg-green-500'
             if (isSelected && !isCorrect) return 'bg-red-500'
-            return 'bg-[var(--text-tertiary)]'
+            return 'bg-muted-foreground'
           }
           if (isSelected) return 'bg-blue-500'
           return 'bg-main'
@@ -428,7 +428,7 @@ function MatchingNode({ data, id }: NodeProps) {
                 : 'opacity-70'
             : isMatched
               ? 'bg-blue-50 border-blue-300'
-              : 'hover:bg-[var(--bg-surface-secondary)]'
+              : 'hover:bg-muted'
         }`}
       >
         <div className="flex items-center gap-2">
@@ -440,7 +440,7 @@ function MatchingNode({ data, id }: NodeProps) {
               className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white" 
             />
           )}
-          <span className="flex-1 text-sm font-medium text-[var(--text-primary)]">{content}</span>
+          <span className="flex-1 text-sm font-medium text-foreground">{content}</span>
           {!isLeftNode && (
             <Handle 
               id="target" 
@@ -741,11 +741,11 @@ function RenderMatchingOptions({
 
   return (
     <div className="space-y-4">
-      <div className="text-sm text-[var(--text-secondary)] mb-2">
+      <div className="text-sm text-muted-foreground mb-2">
         Kéo từ tay cầm bên trái đến tay cầm bên phải để tạo kết nối:
       </div>
       
-      <div style={{ width: '100%', height: `${Math.max(matchingPairs.length * 140, 450)}px`, backgroundColor: 'var(--bg-primary)' }} className="border-2 border-[var(--border)] rounded-lg overflow-hidden">
+      <div style={{ width: '100%', height: `${Math.max(matchingPairs.length * 140, 450)}px`, backgroundColor: 'var(--bg-primary)' }} className="border-2 border-border rounded-lg overflow-hidden">
         <ReactFlow
           key={`flow-${matches.size}-${isCompleted}`}
           nodes={nodes}
@@ -767,7 +767,7 @@ function RenderMatchingOptions({
 
 
       {matches.size > 0 && !isCompleted && (
-        <div className="text-sm text-[var(--text-secondary)] text-center py-2">
+        <div className="text-sm text-muted-foreground text-center py-2">
           Đã ghép {matches.size}/{matchingPairs.length} cặp
         </div>
       )}
@@ -874,7 +874,7 @@ function RenderOrderingOptions({
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-3">
-        <div className="text-sm text-[var(--text-secondary)] mb-4">
+        <div className="text-sm text-muted-foreground mb-4">
           Kéo thả các mục để sắp xếp theo thứ tự đúng:
         </div>
         
@@ -902,7 +902,7 @@ function RenderOrderingOptions({
       <DragOverlay>
         {activeId ? (
           <Card className="p-3 shadow-lg opacity-90">
-            <p className="text-sm font-medium text-[var(--text-primary)]">
+            <p className="text-sm font-medium text-foreground">
               {orderedItems.find((item) => item.id === activeId)?.content}
             </p>
           </Card>
@@ -956,7 +956,7 @@ function SortableOrderingItem({
               : 'bg-red-50 border-red-500'
             : isDragging
               ? 'bg-blue-50 border-blue-500 ring-2 ring-blue-500'
-              : 'bg-[var(--bg-surface-secondary)] border-[var(--border)] hover:bg-[var(--bg-surface)]'
+              : 'bg-muted border-border hover:bg-background'
         }`}
       >
         {/* Content */}
@@ -967,7 +967,7 @@ function SortableOrderingItem({
                 ? status?.isCorrect
                   ? 'text-green-700'
                   : 'text-red-700'
-                : 'text-[var(--text-primary)]'
+                : 'text-foreground'
             }`}
           >
             {item.content}
@@ -1147,7 +1147,7 @@ function AudioPlayer({ src, startTime = 0 }: { src: string; startTime?: number }
                 style={{ left: `${progressPercentage}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-[var(--text-secondary)]">
+            <div className="flex justify-between text-xs text-muted-foreground">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
             </div>

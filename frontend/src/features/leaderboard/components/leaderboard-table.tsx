@@ -148,7 +148,7 @@ export function LeaderboardTable({
           return (
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[var(--text-primary)]">
+                <span className="font-medium text-foreground">
                   {entry.nickname}
                 </span>
                 {entry.isHomework && (
@@ -169,7 +169,7 @@ export function LeaderboardTable({
                 )}
               </div>
               {entry.isHomework && entry.className && (
-                <div className="text-xs text-[var(--text-secondary)] mt-1">
+                <div className="text-xs text-muted-foreground mt-1">
                   {entry.className}
                   {entry.homeworkTitle && ` • ${entry.homeworkTitle}`}
                 </div>
@@ -186,7 +186,7 @@ export function LeaderboardTable({
               cell: ({ row }) => {
                 const title = row.getValue('quizSetTitle') as string | undefined
                 return (
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-muted-foreground">
                     {title || '-'}
                   </span>
                 )
@@ -319,7 +319,7 @@ export function LeaderboardTable({
         cell: ({ row }) => {
           const date = row.getValue('completedAt') as string
           return (
-            <div className="text-center text-xs text-[var(--text-secondary)]">
+            <div className="text-center text-xs text-muted-foreground">
               {formatDate(date)}
             </div>
           )
@@ -346,7 +346,7 @@ export function LeaderboardTable({
     return (
       <Card className={className}>
         <CardContent className="py-12 text-center">
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-muted-foreground">
             Chưa có dữ liệu xếp hạng
           </p>
         </CardContent>
@@ -412,7 +412,7 @@ export function LeaderboardTable({
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
-                    className="bg-secondary-background text-foreground data-[state=selected]:bg-main data-[state=selected]:text-main-foreground hover:bg-[var(--bg-surface-secondary)] transition-colors"
+                    className="bg-secondary-background text-foreground data-[state=selected]:bg-main data-[state=selected]:text-main-foreground hover:bg-muted transition-colors"
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
                   >
@@ -450,14 +450,14 @@ export function LeaderboardTable({
                 <div className="flex items-center gap-2">
                   {getRankIcon(entry.rank)}
                   <div>
-                    <p className="font-semibold text-[var(--text-primary)]">
+                    <p className="font-semibold text-foreground">
                       #{entry.rank}
                     </p>
-                    <p className="text-sm text-[var(--text-secondary)]">
+                    <p className="text-sm text-muted-foreground">
                       {entry.nickname}
                     </p>
                     {entry.isHomework && entry.className && (
-                      <p className="text-xs text-[var(--text-secondary)] mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {entry.className}
                       </p>
                     )}
@@ -490,46 +490,46 @@ export function LeaderboardTable({
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {showQuizSet && entry.quizSetTitle && (
                   <div className="col-span-2">
-                    <p className="text-[var(--text-secondary)] text-xs">
+                    <p className="text-muted-foreground text-xs">
                       Bộ câu hỏi
                     </p>
-                    <p className="font-semibold text-[var(--text-primary)]">
+                    <p className="font-semibold text-foreground">
                       {entry.quizSetTitle}
                     </p>
                   </div>
                 )}
                 <div>
-                  <p className="text-[var(--text-secondary)] text-xs">
+                  <p className="text-muted-foreground text-xs">
                     Câu đúng
                   </p>
-                  <p className="font-semibold text-[var(--text-primary)]">
+                  <p className="font-semibold text-foreground">
                     {entry.correctAnswers}/{entry.totalQuestions}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[var(--text-secondary)] text-xs">
+                  <p className="text-muted-foreground text-xs">
                     Độ chính xác
                   </p>
-                  <p className="font-semibold text-[var(--text-primary)]">
+                  <p className="font-semibold text-foreground">
                     {calculateAccuracy(entry.correctAnswers, entry.totalQuestions)}
                   </p>
                 </div>
                 {entry.completionTimeMs && (
                   <div>
-                    <p className="text-[var(--text-secondary)] text-xs flex items-center gap-1">
+                    <p className="text-muted-foreground text-xs flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       Thời gian
                     </p>
-                    <p className="font-semibold text-[var(--text-primary)]">
+                    <p className="font-semibold text-foreground">
                       {formatTime(entry.completionTimeMs)}
                     </p>
                   </div>
                 )}
                 <div>
-                  <p className="text-[var(--text-secondary)] text-xs">
+                  <p className="text-muted-foreground text-xs">
                     Hoàn thành
                   </p>
-                  <p className="font-semibold text-[var(--text-primary)] text-xs">
+                  <p className="font-semibold text-foreground text-xs">
                     {formatDate(entry.completedAt)}
                   </p>
                 </div>

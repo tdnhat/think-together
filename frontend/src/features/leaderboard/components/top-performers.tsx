@@ -54,23 +54,23 @@ export function TopPerformers({
           {topEntries.map((entry) => (
             <div
               key={entry.attemptId}
-              className="flex items-center justify-between rounded-lg border-2 border-border p-3 hover:bg-[var(--bg-surface-secondary)] transition-colors"
+              className="flex items-center justify-between rounded-lg border-2 border-border p-3 hover:bg-muted transition-colors"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   {getRankIcon(entry.rank)}
                   {!getRankIcon(entry.rank) && (
-                    <span className="text-sm font-semibold text-[var(--text-secondary)] w-6">
+                    <span className="text-sm font-semibold text-muted-foreground w-6">
                       #{entry.rank}
                     </span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[var(--text-primary)] truncate">
+                  <p className="font-semibold text-foreground truncate">
                     {entry.nickname}
                   </p>
                   {entry.quizSetTitle && (
-                    <p className="text-xs text-[var(--text-secondary)] truncate">
+                    <p className="text-xs text-muted-foreground truncate">
                       {entry.quizSetTitle}
                     </p>
                   )}
@@ -79,7 +79,7 @@ export function TopPerformers({
               <div className="flex items-center gap-3 ml-2">
                 <div className="text-right">
                   <p className="font-bold text-blue-600">{entry.score}</p>
-                  <p className="text-xs text-[var(--text-secondary)]">
+                  <p className="text-xs text-muted-foreground">
                     {entry.correctAnswers}/{entry.totalQuestions}
                   </p>
                 </div>

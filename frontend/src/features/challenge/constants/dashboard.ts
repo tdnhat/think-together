@@ -1,0 +1,2 @@
+export const DEFAULT_LEADERBOARD_PAGE_SIZE = 20;
+

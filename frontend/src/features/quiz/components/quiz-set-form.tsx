@@ -93,7 +93,7 @@ export function QuizSetForm({
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title" className="text-sm font-semibold">
-          Tiêu đề <span className="text-[var(--color-error)]">*</span>
+          Tiêu đề <span className="text-destructive">*</span>
         </Label>
         <FormInput
           id="title"
@@ -114,10 +114,10 @@ export function QuizSetForm({
           placeholder={QUIZ_SET_CONSTANTS.PLACEHOLDERS.DESCRIPTION}
           rows={4}
           {...register('description')}
-          className={errors.description ? 'border-[var(--color-error)]' : ''}
+          className={errors.description ? 'border-destructive' : ''}
         />
         {errors.description && (
-          <p className="text-sm text-[var(--color-error)]">{errors.description.message}</p>
+          <p className="text-sm text-destructive">{errors.description.message}</p>
         )}
       </div>
 
@@ -132,7 +132,7 @@ export function QuizSetForm({
           placeholder="Chọn danh mục"
         />
         {errors.categoryId && (
-          <p className="text-sm text-[var(--color-error)]">{errors.categoryId.message}</p>
+          <p className="text-sm text-destructive">{errors.categoryId.message}</p>
         )}
       </div>
 
@@ -167,7 +167,7 @@ export function QuizSetForm({
              error={errors.coverImageUrl?.message}
              disabled={isSubmitting}
            />
-           <p className="text-xs text-[var(--text-tertiary)]">
+           <p className="text-xs text-muted-foreground">
              Bạn có thể tải ảnh lên hoặc nhập URL trực tiếp.
            </p>
          </div>

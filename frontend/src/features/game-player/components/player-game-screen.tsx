@@ -104,8 +104,8 @@ export function PlayerGameScreen({
   if (phase === 'starting') {
     return (
       <div className={`flex flex-col items-center justify-center py-16 ${className}`}>
-        <Loader2 className="h-12 w-12 animate-spin text-[var(--brand-primary)] mb-4" />
-        <p className="text-lg text-[var(--text-secondary)]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <p className="text-lg text-muted-foreground">
           {GAME_PLAYER_CONSTANTS.MESSAGES.GAME_STARTED}
         </p>
       </div>

@@ -9,7 +9,7 @@ export function NavbarSearch() {
       placeholder="Tìm kiếm bộ câu hỏi..."
       value=""
       onChange={() => {}}
-      iconColor="text-[var(--text-secondary)]/40"
+      iconColor="text-muted-foreground/40"
     />
   );
 }

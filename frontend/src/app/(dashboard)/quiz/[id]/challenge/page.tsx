@@ -1,9 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { LoadingSpinner } from '@/shared/ui/loading-spinner'
-import { Button } from '@/shared/ui/button'
+import { useParams } from 'next/navigation'
 import { DashboardLayout } from '@/widgets/dashboard'
 import {
   useChallengeByQuizSetId,
@@ -13,64 +10,37 @@ import {
   ChallengeLeaderboardCard,
 } from '@/features/challenge'
 import { useQuizSet } from '@/features/quiz/hooks/use-quiz-set'
-
-const DEFAULT_PAGE_SIZE = 20
+import {
+  useChallengeActions,
+  useChallengePagination,
+  useChallengeShareUrl,
+} from '@/features/challenge/hooks/dashboard'
+import { ChallengeLoading, ChallengeError } from '@/features/challenge/components/dashboard'
+import { DEFAULT_LEADERBOARD_PAGE_SIZE } from '@/features/challenge/constants/dashboard'
 
 export default function ChallengeDetailsPage() {
   const params = useParams()
-  const router = useRouter()
   const quizSetId = params.id as string
-  const [page, setPage] = useState(1)
 
   const { quizSet, isLoadingQuizSet } = useQuizSet(quizSetId)
-  const { data: challenge, isLoading: isLoadingChallenge } = useChallengeByQuizSetId(quizSetId)
+  const { data: challenge, isLoading: isLoadingChallenge } =
+    useChallengeByQuizSetId(quizSetId)
+  const { page, handlePageChange } = useChallengePagination()
   const { data: leaderboard, isLoading: isLoadingLeaderboard } = useLeaderboard(
     challenge?.id,
     page,
-    DEFAULT_PAGE_SIZE
+    DEFAULT_LEADERBOARD_PAGE_SIZE
   )
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage)
-  }
-
-  const handleBack = () => {
-    router.push(`/quiz/${quizSetId}`)
-  }
-
-  const shareUrl = challenge
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/challenge/${challenge.shareLink}`
-    : ''
+  const { handleBack } = useChallengeActions(quizSetId)
+  const shareUrl = useChallengeShareUrl(challenge)
 
   if (isLoadingQuizSet || isLoadingChallenge) {
-    return (
-      <DashboardLayout>
-        <div className="flex h-[50vh] items-center justify-center">
-          <LoadingSpinner size="md" />
-        </div>
-      </DashboardLayout>
-    )
+    return <ChallengeLoading />
   }
 
   if (!challenge) {
-    return (
-      <DashboardLayout>
-        <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
-          <h2 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
-            Chưa có thử thách
-          </h2>
-          <p className="text-[var(--text-secondary)]">
-            Bộ trắc nghiệm này chưa có thử thách nào.
-          </p>
-          <Button
-            onClick={handleBack}
-            variant="outline"
-          >
-            Quay lại
-          </Button>
-        </div>
-      </DashboardLayout>
-    )
+    return <ChallengeError onBack={handleBack} />
   }
 
   return (

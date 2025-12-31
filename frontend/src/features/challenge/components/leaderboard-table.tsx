@@ -21,7 +21,7 @@ export function LeaderboardTable({
     return (
       <Card className={className}>
         <CardContent className="py-12 text-center">
-          <p className="text-[var(--text-secondary)]">Chưa có bài nộp nào</p>
+          <p className="text-muted-foreground">Chưa có bài nộp nào</p>
         </CardContent>
       </Card>
     )
@@ -46,22 +46,22 @@ export function LeaderboardTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-3 px-4 font-semibold text-[var(--text-secondary)]">
+              <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
                 {LEADERBOARD_HEADERS.RANK}
               </th>
-              <th className="text-left py-3 px-4 font-semibold text-[var(--text-secondary)]">
+              <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
                 {LEADERBOARD_HEADERS.NICKNAME}
               </th>
-              <th className="text-center py-3 px-4 font-semibold text-[var(--text-secondary)]">
+              <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                 {LEADERBOARD_HEADERS.SCORE}
               </th>
-              <th className="text-center py-3 px-4 font-semibold text-[var(--text-secondary)]">
+              <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                 {LEADERBOARD_HEADERS.CORRECT_ANSWERS}
               </th>
-              <th className="text-center py-3 px-4 font-semibold text-[var(--text-secondary)]">
+              <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                 {LEADERBOARD_HEADERS.ACCURACY}
               </th>
-              <th className="text-center py-3 px-4 font-semibold text-[var(--text-secondary)]">
+              <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                 {LEADERBOARD_HEADERS.TIME}
               </th>
             </tr>
@@ -74,8 +74,8 @@ export function LeaderboardTable({
                 key={entry.attemptId}
                 className={`border-b border-border transition-colors ${
                   isHighlighted
-                    ? 'bg-[var(--brand-primary)]/10 border-[var(--brand-primary)]/30'
-                    : 'hover:bg-[var(--bg-surface-secondary)]'
+                    ? 'bg-primary/10 border-primary/30'
+                    : 'hover:bg-accent'
                 }`}
               >
                 <td className="py-3 px-4">
@@ -86,11 +86,11 @@ export function LeaderboardTable({
                     <span className="font-semibold">{entry.rank}</span>
                   </div>
                 </td>
-                <td className="py-3 px-4 font-medium text-[var(--text-primary)]">
+                <td className="py-3 px-4 font-medium text-foreground">
                   <div className="flex items-center gap-2">
                     {entry.nickname}
                     {isHighlighted && (
-                      <Badge variant="default" className="text-xs bg-[var(--brand-primary)] text-white">
+                      <Badge variant="default" className="text-xs">
                         Bạn
                       </Badge>
                     )}
@@ -124,7 +124,7 @@ export function LeaderboardTable({
             key={entry.attemptId} 
             className={`overflow-hidden ${
               isHighlighted
-                ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/5'
+                ? 'border-primary bg-primary/5'
                 : ''
             }`}
           >
@@ -135,18 +135,18 @@ export function LeaderboardTable({
                   {entry.rank === 2 && <Trophy className="h-5 w-5 text-gray-400" />}
                   {entry.rank === 3 && <Trophy className="h-5 w-5 text-orange-600" />}
                   <div>
-                    <p className="font-semibold text-[var(--text-primary)]">#{entry.rank}</p>
+                    <p className="font-semibold text-foreground">#{entry.rank}</p>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm text-[var(--text-secondary)]">{entry.nickname}</p>
+                      <p className="text-sm text-muted-foreground">{entry.nickname}</p>
                       {isHighlighted && (
-                        <Badge variant="default" className="text-xs bg-[var(--brand-primary)] text-white">
+                        <Badge variant="default" className="text-xs">
                           Bạn
                         </Badge>
                       )}
                     </div>
                   </div>
                 </div>
-                <Badge variant="default" className="bg-blue-100 text-blue-700">
+                <Badge variant="secondary">
                   {entry.score} điểm
                 </Badge>
               </div>
@@ -154,24 +154,24 @@ export function LeaderboardTable({
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-[var(--text-secondary)] text-xs">Câu đúng</p>
-                  <p className="font-semibold text-[var(--text-primary)]">
+                  <p className="text-muted-foreground text-xs">Câu đúng</p>
+                  <p className="font-semibold text-foreground">
                     {entry.correctAnswers}/{entry.totalQuestions}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[var(--text-secondary)] text-xs">Độ chính xác</p>
-                  <p className="font-semibold text-[var(--text-primary)]">
+                  <p className="text-muted-foreground text-xs">Độ chính xác</p>
+                  <p className="font-semibold text-foreground">
                     {calculateAccuracy(entry.correctAnswers, entry.totalQuestions)}
                   </p>
                 </div>
                 {entry.completionTimeMs && (
                   <div className="col-span-2">
-                    <p className="text-[var(--text-secondary)] text-xs flex items-center gap-1">
+                    <p className="text-muted-foreground text-xs flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       Thời gian
                     </p>
-                    <p className="font-semibold text-[var(--text-primary)]">
+                    <p className="font-semibold text-foreground">
                       {formatTime(entry.completionTimeMs)}
                     </p>
                   </div>

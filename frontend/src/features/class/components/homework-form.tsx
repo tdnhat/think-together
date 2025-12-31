@@ -91,7 +91,7 @@ export function HomeworkForm({
               Bộ câu hỏi <span className="text-red-500">*</span>
             </Label>
             {isLoadingQuizSets ? (
-              <div className="h-10 w-full animate-pulse rounded-md bg-[var(--bg-surface-secondary)]" />
+              <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
             ) : (
               <Select
                 value={quizSetId}
@@ -108,14 +108,14 @@ export function HomeworkForm({
                       <SelectItem key={quizSet.id} value={quizSet.id}>
                         {quizSet.title}
                         {!quizSet.isPublished && (
-                          <span className="ml-2 text-xs text-[var(--text-tertiary)]">
+                          <span className="ml-2 text-xs text-muted-foreground">
                             (Nháp)
                           </span>
                         )}
                       </SelectItem>
                     ))
                   ) : (
-                    <div className="px-2 py-1.5 text-sm text-[var(--text-secondary)]">
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
                       Không có bộ câu hỏi nào
                     </div>
                   )}
@@ -123,12 +123,12 @@ export function HomeworkForm({
               </Select>
             )}
             {!isLoadingQuizSets && (!quizSets || quizSets.length === 0) && (
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-xs text-muted-foreground">
                 Bạn cần tạo ít nhất một bộ câu hỏi trước khi tạo bài tập về nhà
               </p>
             )}
             {homework && (
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-xs text-muted-foreground">
                 Không thể thay đổi bộ câu hỏi sau khi đã tạo bài tập
               </p>
             )}
@@ -145,7 +145,7 @@ export function HomeworkForm({
               min={new Date().toISOString().slice(0, 16)}
               disabled={isSubmitting}
             />
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-xs text-muted-foreground">
               Để trống nếu không có hạn nộp
             </p>
           </div>

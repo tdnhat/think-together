@@ -49,7 +49,7 @@ export function MatchingFields() {
         <FormItem className="space-y-3">
             <div className="flex items-center justify-between">
                 <Label>
-                    Cặp ghép <span className="text-[var(--color-error)]">*</span>
+                    Cặp ghép <span className="text-destructive">*</span>
                 </Label>
                 <Button
                     type="button"
@@ -82,7 +82,7 @@ export function MatchingFields() {
                                                 <Input
                                                     {...field}
                                                     placeholder="Nhập nội dung bên trái"
-                                                    className={formState.errors.matchingPairs?.[index]?.leftContent ? 'border-[var(--color-error)]' : ''}
+                                                    className={formState.errors.matchingPairs?.[index]?.leftContent ? 'border-destructive' : ''}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -91,7 +91,7 @@ export function MatchingFields() {
                                 />
 
                                 {/* Connector */}
-                                <div className="flex items-center px-2 text-[var(--text-tertiary)]">
+                                <div className="flex items-center px-2 text-muted-foreground">
                                     ↔
                                 </div>
 
@@ -105,7 +105,7 @@ export function MatchingFields() {
                                                 <Input
                                                     {...field}
                                                     placeholder="Nhập nội dung bên phải"
-                                                    className={formState.errors.matchingPairs?.[index]?.rightContent ? 'border-[var(--color-error)]' : ''}
+                                                    className={formState.errors.matchingPairs?.[index]?.rightContent ? 'border-destructive' : ''}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -131,7 +131,7 @@ export function MatchingFields() {
 
                 {/* Show error message if validation fails */}
                 {formState.errors.matchingPairs && typeof formState.errors.matchingPairs.message === 'string' && (
-                    <p className="text-sm text-[var(--color-error)]">{formState.errors.matchingPairs.message}</p>
+                    <p className="text-sm text-destructive">{formState.errors.matchingPairs.message}</p>
                 )}
             </div>
         </FormItem>

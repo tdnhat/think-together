@@ -1,53 +1,36 @@
 'use client'
 
-import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useCallback } from 'react'
 import { toastSuccess } from '@/lib/utils/toast'
-import { LoadingSpinner } from '@/shared/ui/loading-spinner'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/ui/alert-dialog'
-import { Button } from '@/shared/ui/button'
 import { toast } from '@/lib/utils/toast'
-
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { QuizSetList, QuizSetModal, useQuizSets } from '@/features/quiz'
 import { useCreateChallenge, type ChallengeDto } from '@/features/challenge'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
-import { ROUTES } from '@/config/routes'
-import type { QuizSetDto, QuizSetQueryParams } from '@/types/api'
+import type { QuizSetDto } from '@/types/api'
 import type { CreateQuizSetFormData, UpdateQuizSetFormData } from '@/lib/validators'
+import {
+  useQuizUrlParams,
+  useQuizActions,
+  useQuizDialogs,
+  useQuizModal,
+} from '@/features/quiz/hooks/creator'
+import { DeleteQuizDialog, PublishQuizDialog } from '@/features/quiz/components/creator'
 
 function CreatorQuizzesContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editingQuizSet, setEditingQuizSet] = useState<QuizSetDto | null>(null)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
-  const [selectedQuizSet, setSelectedQuizSet] = useState<QuizSetDto | null>(null)
-
-  // Get params from URL
-  const searchQuery = searchParams.get('search') || ''
-  const sortBy = (searchParams.get('sortBy') as 'newest' | 'oldest' | 'title' | 'questions') || 'newest'
-  const filterBy = (searchParams.get('filterBy') as 'all' | 'published' | 'draft') || 'all'
-  const page = Number.parseInt(searchParams.get('page') || '1', 10)
-  const pageSize = Number.parseInt(searchParams.get('pageSize') || '10', 10)
-
-  const queryParams: QuizSetQueryParams = {
-    search: searchQuery || undefined,
-    sortBy,
-    filterBy,
-    page,
-    pageSize,
-  }
+  const { params, queryParams, updateUrlParams } = useQuizUrlParams()
+  const { handleEdit, handleView, handleHost } = useQuizActions()
+  const {
+    deleteDialogOpen,
+    publishDialogOpen,
+    selectedQuizSet,
+    openDeleteDialog,
+    closeDeleteDialog,
+    openPublishDialog,
+    closePublishDialog,
+  } = useQuizDialogs()
+  const { modalOpen, editingQuizSet, openModal, closeModal } = useQuizModal()
 
   const {
     quizSets,
@@ -63,234 +46,176 @@ function CreatorQuizzesContent() {
 
   const { mutate: createChallenge } = useCreateChallenge()
 
-  // Update URL params when filters change
-  const updateUrlParams = (updates: Partial<QuizSetQueryParams>) => {
-    const params = new URLSearchParams(searchParams.toString())
-    
-    if (updates.search !== undefined) {
-      if (updates.search) {
-        params.set('search', updates.search)
-      } else {
-        params.delete('search')
-      }
-    }
-    
-    if (updates.sortBy) params.set('sortBy', updates.sortBy)
-    if (updates.filterBy && updates.filterBy !== 'all') {
-      params.set('filterBy', updates.filterBy)
-    } else {
-      params.delete('filterBy')
-    }
-    
-    if (updates.page && updates.page > 1) {
-      params.set('page', updates.page.toString())
-    } else {
-      params.delete('page')
-    }
-    
-    if (updates.pageSize && updates.pageSize !== 10) {
-      params.set('pageSize', updates.pageSize.toString())
-    } else {
-      params.delete('pageSize')
-    }
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      updateUrlParams({ search: query, page: 1 })
+    },
+    [updateUrlParams]
+  )
 
-    router.push(`?${params.toString()}`)
-  }
+  const handleSortChange = useCallback(
+    (sort: 'newest' | 'oldest' | 'title' | 'questions') => {
+      updateUrlParams({ sortBy: sort, page: 1 })
+    },
+    [updateUrlParams]
+  )
 
-  const handleSearchChange = (query: string) => {
-    updateUrlParams({ search: query, page: 1 })
-  }
+  const handleFilterChange = useCallback(
+    (filter: 'all' | 'published' | 'draft') => {
+      updateUrlParams({ filterBy: filter, page: 1 })
+    },
+    [updateUrlParams]
+  )
 
-  const handleSortChange = (sort: 'newest' | 'oldest' | 'title' | 'questions') => {
-    updateUrlParams({ sortBy: sort, page: 1 })
-  }
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      updateUrlParams({ page: newPage })
+    },
+    [updateUrlParams]
+  )
 
-  const handleFilterChange = (filter: 'all' | 'published' | 'draft') => {
-    updateUrlParams({ filterBy: filter, page: 1 })
-  }
+  const handleCreateNew = useCallback(() => {
+    openModal()
+  }, [openModal])
 
-  const handlePageChange = (newPage: number) => {
-    updateUrlParams({ page: newPage })
-  }
+  const handleDelete = useCallback(
+    (quizSet: QuizSetDto) => {
+      openDeleteDialog(quizSet)
+    },
+    [openDeleteDialog]
+  )
 
-  const handleCreateNew = () => {
-    setEditingQuizSet(null)
-    setModalOpen(true)
-  }
-
-  const handleEdit = (quizSet: QuizSetDto) => {
-    router.push(ROUTES.quiz.edit(quizSet.id))
-  }
-
-  const handleDelete = (quizSet: QuizSetDto) => {
-    setSelectedQuizSet(quizSet)
-    setDeleteDialogOpen(true)
-  }
-
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (selectedQuizSet) {
       try {
         await deleteQuizSet(selectedQuizSet.id)
-        setDeleteDialogOpen(false)
-        setSelectedQuizSet(null)
+        closeDeleteDialog()
       } catch (error) {
         console.error('Failed to delete quiz set:', error)
       }
     }
-  }
+  }, [selectedQuizSet, deleteQuizSet, closeDeleteDialog])
 
-  const handlePublish = (quizSet: QuizSetDto) => {
-    setSelectedQuizSet(quizSet)
-    setPublishDialogOpen(true)
-  }
+  const handlePublish = useCallback(
+    (quizSet: QuizSetDto) => {
+      openPublishDialog(quizSet)
+    },
+    [openPublishDialog]
+  )
 
-  const handlePublishConfirm = async () => {
+  const handlePublishConfirm = useCallback(async () => {
     if (selectedQuizSet) {
       try {
         await publishQuizSet(selectedQuizSet.id)
-        setPublishDialogOpen(false)
-        setSelectedQuizSet(null)
+        closePublishDialog()
       } catch (error) {
         console.error('Failed to publish quiz set:', error)
       }
     }
-  }
+  }, [selectedQuizSet, publishQuizSet, closePublishDialog])
 
-  const handleView = (quizSet: QuizSetDto) => {
-    router.push(ROUTES.quiz.view(quizSet.id))
-  }
-
-  const handleHost = (quizSet: QuizSetDto) => {
-    router.push(ROUTES.game.hostWithQuiz(quizSet.id))
-  }
-
-  const handleDuplicate = () => {
-    // TODO: Implement duplicate functionality
+  const handleDuplicate = useCallback(() => {
     toastSuccess('Tính năng sao chép sẽ được triển khai trong phiên bản tiếp theo')
-  }
+  }, [])
 
-  const handleCreateChallenge = (quizSet: QuizSetDto) => {
-    createChallenge(
-      {
-        quizSetId: quizSet.id,
-        title: quizSet.title,
-        description: quizSet.description,
-      },
-      {
-        onSuccess: (challenge: ChallengeDto) => {
-          toast.success('Thử thách đã được tạo thành công!')
-          // Copy share link to clipboard
-          const shareUrl = `${window.location.origin}/challenge/${challenge.shareLink}`
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            toast.success('Đã sao chép liên kết thử thách!')
-          })
+  const handleCreateChallenge = useCallback(
+    (quizSet: QuizSetDto) => {
+      createChallenge(
+        {
+          quizSetId: quizSet.id,
+          title: quizSet.title,
+          description: quizSet.description,
         },
-      }
-    )
-  }
-
-  const handleModalSubmit = async (data: CreateQuizSetFormData | UpdateQuizSetFormData) => {
-    try {
-      if (editingQuizSet) {
-        await updateQuizSet(data as UpdateQuizSetFormData)
-        setModalOpen(false)
-        setEditingQuizSet(null)
-      } else {
-        const createdQuizSet = await createQuizSet(data as CreateQuizSetFormData)
-        if (createdQuizSet) {
-          setEditingQuizSet(createdQuizSet)
+        {
+          onSuccess: (challenge: ChallengeDto) => {
+            toast.success('Thử thách đã được tạo thành công!')
+            const shareUrl = `${window.location.origin}/challenge/${challenge.shareLink}`
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              toast.success('Đã sao chép liên kết thử thách!')
+            })
+          },
         }
-      }
-    } catch (error) {
-      // Error is already handled by the hook
-      console.error('Failed to save quiz set:', error)
-    }
-  }
+      )
+    },
+    [createChallenge]
+  )
 
-  const handleModalClose = () => {
+  const handleModalSubmit = useCallback(
+    async (data: CreateQuizSetFormData | UpdateQuizSetFormData) => {
+      try {
+        if (editingQuizSet) {
+          await updateQuizSet(data as UpdateQuizSetFormData)
+          closeModal()
+        } else {
+          const createdQuizSet = await createQuizSet(data as CreateQuizSetFormData)
+          if (createdQuizSet) {
+            // Keep modal open to edit the created quiz
+          }
+        }
+      } catch (error) {
+        console.error('Failed to save quiz set:', error)
+      }
+    },
+    [editingQuizSet, updateQuizSet, createQuizSet, closeModal]
+  )
+
+  const handleModalClose = useCallback(() => {
     if (!isCreating && !isUpdating) {
-      setModalOpen(false)
-      setEditingQuizSet(null)
+      closeModal()
     }
-  }
+  }, [isCreating, isUpdating, closeModal])
 
   return (
     <DashboardLayout>
       <CreatorRouteGuard>
         <div className="space-y-6">
-        <QuizSetList
-          quizSets={quizSets}
-          pagination={pagination}
-          isLoading={isLoadingQuizSets}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          sortBy={sortBy}
-          onSortChange={handleSortChange}
-          filterBy={filterBy}
-          onFilterChange={handleFilterChange}
-          onPageChange={handlePageChange}
-          onCreateNew={handleCreateNew}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onPublish={handlePublish}
-          onView={handleView}
-          onHost={handleHost}
-          onDuplicate={handleDuplicate}
-          onCreateChallenge={handleCreateChallenge}
-        />
+          <QuizSetList
+            quizSets={quizSets}
+            pagination={pagination}
+            isLoading={isLoadingQuizSets}
+            searchQuery={params.searchQuery}
+            onSearchChange={handleSearchChange}
+            sortBy={params.sortBy}
+            onSortChange={handleSortChange}
+            filterBy={params.filterBy}
+            onFilterChange={handleFilterChange}
+            onPageChange={handlePageChange}
+            onCreateNew={handleCreateNew}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onPublish={handlePublish}
+            onView={handleView}
+            onHost={handleHost}
+            onDuplicate={handleDuplicate}
+            onCreateChallenge={handleCreateChallenge}
+          />
 
-        <QuizSetModal
-          open={modalOpen}
-          onOpenChange={handleModalClose}
-          quizSet={editingQuizSet}
-          onSubmit={handleModalSubmit}
-          isSubmitting={isCreating || isUpdating}
-          title={editingQuizSet ? 'Chỉnh sửa bộ trắc nghiệm' : 'Tạo bộ trắc nghiệm mới'}
-        />
+          <QuizSetModal
+            open={modalOpen}
+            onOpenChange={handleModalClose}
+            quizSet={editingQuizSet}
+            onSubmit={handleModalSubmit}
+            isSubmitting={isCreating || isUpdating}
+            title={
+              editingQuizSet
+                ? 'Chỉnh sửa bộ trắc nghiệm'
+                : 'Tạo bộ trắc nghiệm mới'
+            }
+          />
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Xóa bộ trắc nghiệm?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Bạn có chắc chắn muốn xóa bộ trắc nghiệm &quot;{selectedQuizSet?.title}&quot; không? Hành động này không thể hoàn tác.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel asChild>
-                <Button variant="outline">Hủy</Button>
-              </AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <Button variant="default" onClick={handleDeleteConfirm}>
-                  Xóa
-                </Button>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          <DeleteQuizDialog
+            open={deleteDialogOpen}
+            onOpenChange={closeDeleteDialog}
+            quizSet={selectedQuizSet}
+            onConfirm={handleDeleteConfirm}
+          />
 
-        {/* Publish Confirmation Dialog */}
-        <AlertDialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Xuất bản bộ trắc nghiệm?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Xuất bản bộ trắc nghiệm &quot;{selectedQuizSet?.title}&quot; sẽ cho phép người khác sử dụng. Bạn có muốn tiếp tục?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel asChild>
-                <Button variant="outline">Hủy</Button>
-              </AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <Button variant="default" onClick={handlePublishConfirm}>
-                  Xuất bản
-                </Button>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          <PublishQuizDialog
+            open={publishDialogOpen}
+            onOpenChange={closePublishDialog}
+            quizSet={selectedQuizSet}
+            onConfirm={handlePublishConfirm}
+          />
         </div>
       </CreatorRouteGuard>
     </DashboardLayout>

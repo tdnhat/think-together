@@ -31,7 +31,7 @@ export function SidebarBrand() {
           </div>
           <span
             className={cn(
-              "text-sm font-heading font-semibold text-[var(--text-primary)] transition-all duration-200 whitespace-nowrap",
+              "text-sm font-heading font-semibold text-foreground transition-all duration-200 whitespace-nowrap",
               isCollapsed ? "opacity-0 w-0 overflow-hidden ml-0" : "opacity-100 ml-2"
             )}
           >

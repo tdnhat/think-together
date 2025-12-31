@@ -24,10 +24,10 @@ export default function JoinClassPage() {
       <div className="container mx-auto py-6">
         <div className="mx-auto max-w-md">
           <div className="mb-6 text-center">
-            <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
+            <h1 className="font-heading text-3xl font-bold text-foreground">
               Tham gia lớp học
             </h1>
-            <p className="mt-2 text-[var(--text-secondary)]">
+            <p className="mt-2 text-muted-foreground">
               Nhập mã tham gia do giáo viên cung cấp để tham gia lớp học
             </p>
           </div>

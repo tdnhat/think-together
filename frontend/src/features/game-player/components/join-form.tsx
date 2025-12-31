@@ -105,8 +105,8 @@ export function JoinForm({
   return (
     <Card className={`max-w-md w-full mx-auto ${className}`}>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-          <Gamepad2 className="h-8 w-8 text-[var(--brand-primary)]" />
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+          <Gamepad2 className="h-8 w-8 text-primary" />
         </div>
         <CardTitle className="text-2xl">Tham gia trò chơi</CardTitle>
         <CardDescription>
@@ -133,12 +133,12 @@ export function JoinForm({
               onChange={handlePinChange}
               placeholder="000000"
               className={`text-center text-3xl tracking-[0.5em] font-heading font-bold h-16 ${
-                pinError ? 'border-[var(--color-error)]' : ''
+                pinError ? 'border-destructive' : ''
               }`}
               disabled={isLoading}
             />
             {pinError && (
-              <p className="text-sm text-[var(--color-error)]">{pinError}</p>
+              <p className="text-sm text-destructive">{pinError}</p>
             )}
           </div>
 
@@ -156,19 +156,19 @@ export function JoinForm({
               onChange={handleNicknameChange}
               placeholder="Nhập tên hiển thị..."
               className={`h-12 text-lg ${
-                nicknameError ? 'border-[var(--color-error)]' : ''
+                nicknameError ? 'border-destructive' : ''
               }`}
               maxLength={GAME_PLAYER_CONSTANTS.VALIDATION.NICKNAME_MAX_LENGTH}
               disabled={isLoading}
             />
             {nicknameError && (
-              <p className="text-sm text-[var(--color-error)]">{nicknameError}</p>
+              <p className="text-sm text-destructive">{nicknameError}</p>
             )}
           </div>
 
           {/* Error from server */}
           {error && (
-            <div className="rounded-lg bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">
+            <div className="rounded-lg bg-red-50 dark:bg-red-950/30 p-3 text-sm text-destructive">
               {error}
             </div>
           )}

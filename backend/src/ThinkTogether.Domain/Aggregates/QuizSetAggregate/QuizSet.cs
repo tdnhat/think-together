@@ -2,6 +2,8 @@ using ThinkTogether.Domain.Exceptions;
 using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Entities;
 using Shared.Primitives;
 
+using ThinkTogether.Domain.Aggregates.QuizSetAggregate.Events;
+
 namespace ThinkTogether.Domain.Aggregates.QuizSetAggregate;
 
 public sealed partial class QuizSet : AggregateRoot
@@ -44,7 +46,7 @@ public sealed partial class QuizSet : AggregateRoot
         if (categoryId == Guid.Empty)
             throw new ValidationException("ID danh mục không hợp lệ");
 
-        return new QuizSet
+        var quizSet = new QuizSet
         {
             Id = Guid.NewGuid(),
             CreatorId = creatorId,
@@ -56,6 +58,13 @@ public sealed partial class QuizSet : AggregateRoot
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        quizSet.AddDomainEvent(new QuizSetCreatedDomainEvent(
+            quizSet.Id,
+            quizSet.CreatorId,
+            quizSet.Title));
+
+        return quizSet;
     }
 
     public Question GetQuestion(Guid questionId)

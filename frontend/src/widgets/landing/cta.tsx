@@ -12,10 +12,10 @@ export function CallToAction() {
       <Card
         className="p-8 text-center md:p-12"
       >
-        <h2 className="mb-4 font-heading text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
+        <h2 className="mb-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
           Sẵn sàng bắt đầu hành trình học tập?
         </h2>
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-[var(--text-secondary)]">
+        <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
           Tham gia ngay hôm nay và khám phá cách học tập thông minh, 
           vui vẻ cùng hàng ngàn học sinh trên khắp Việt Nam!
         </p>

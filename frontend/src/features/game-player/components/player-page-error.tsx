@@ -27,12 +27,12 @@ export function PlayerPageError({ error, onGoBack }: PlayerPageErrorProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="py-6 px-4">
         <div className="container mx-auto flex items-center justify-center">
           <div className="flex items-center gap-2">
-            <Gamepad2 className="h-8 w-8 text-[var(--brand-primary)]" />
-            <span className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            <Gamepad2 className="h-8 w-8 text-primary" />
+            <span className="font-heading text-2xl font-bold text-foreground">
               ThinkTogether
             </span>
           </div>

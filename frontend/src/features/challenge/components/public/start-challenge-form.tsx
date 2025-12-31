@@ -72,7 +72,7 @@ export function StartChallengeForm({
             {errors.nickname && (
               <p className="text-sm text-red-500">{errors.nickname}</p>
             )}
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-xs text-muted-foreground">
               {nickname.length}/{CHALLENGE_CONSTANTS.LIMITS.NICKNAME_MAX_LENGTH}
             </p>
           </div>

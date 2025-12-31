@@ -64,10 +64,10 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+        <h1 className="text-3xl font-bold text-foreground">
           Bảng Điều Khiển Quản Trị
         </h1>
-        <p className="text-[var(--text-secondary)] mt-2">
+        <p className="text-muted-foreground mt-2">
           Chào mừng bạn trở lại. Đây là tổng quan về hệ thống của bạn.
         </p>
       </div>
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
             <Card key={stat.title} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-[var(--text-secondary)]">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     {stat.title}
                   </CardTitle>
                   <div className={`p-2 rounded-lg ${stat.bgColor}`}>
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[var(--text-primary)]">
+                <div className="text-2xl font-bold text-foreground">
                   {stat.value}
                 </div>
                 <Badge variant="secondary" className="mt-2 text-xs">
@@ -115,13 +115,13 @@ export default function AdminDashboard() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={quizTrendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                <XAxis dataKey="month" stroke="var(--text-secondary)" />
-                <YAxis stroke="var(--text-secondary)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'var(--bg-surface)',
-                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
                   }}
                 />
@@ -182,17 +182,17 @@ export default function AdminDashboard() {
             ].map((activity, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between pb-4 border-b border-[var(--border-color)] last:border-b-0 last:pb-0"
+                className="flex items-center justify-between pb-4 border-b border-border last:border-b-0 last:pb-0"
               >
                 <div>
-                  <p className="font-medium text-[var(--text-primary)]">
+                  <p className="font-medium text-foreground">
                     {activity.action}
                   </p>
-                  <p className="text-sm text-[var(--text-secondary)]">
+                  <p className="text-sm text-muted-foreground">
                     Bởi {activity.user}
                   </p>
                 </div>
-                <span className="text-xs text-[var(--text-secondary)]">
+                <span className="text-xs text-muted-foreground">
                   {activity.time}
                 </span>
               </div>

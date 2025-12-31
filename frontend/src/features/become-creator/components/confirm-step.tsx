@@ -14,24 +14,24 @@ export function ConfirmStep({ isActivating, onActivate, onBack }: Readonly<Confi
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--color-border-main)] bg-[var(--brand-secondary)]">
-          <Sparkles className="h-10 w-10 text-[var(--text-primary)]" strokeWidth={2} />
+        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-border bg-secondary">
+          <Sparkles className="h-10 w-10 text-foreground" strokeWidth={2} />
         </div>
-        <h2 className="text-3xl font-bold text-[var(--text-primary)] font-heading">
+        <h2 className="text-3xl font-bold text-foreground font-heading">
           Sẵn sàng trở thành Người sáng tạo?
         </h2>
-        <p className="mt-3 text-lg text-[var(--text-secondary)] font-sans">
+        <p className="mt-3 text-lg text-muted-foreground font-sans">
           Bạn sẽ có quyền truy cập đầy đủ vào tất cả các tính năng tạo nội dung
         </p>
       </div>
 
-      <div className="space-y-3 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--brand-secondary-light)] p-5">
+      <div className="space-y-3 rounded-xl border-2 border-border bg-secondary/10 p-5">
         {CREATOR_BENEFITS.map((benefit) => (
           <div key={benefit} className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-border-main)] bg-[var(--brand-primary)] text-white">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-border bg-primary text-white">
               <Check className="h-3.5 w-3.5" strokeWidth={4} />
             </div>
-            <span className="text-base font-medium text-[var(--text-primary)] font-sans">
+            <span className="text-base font-medium text-foreground font-sans">
               {benefit}
             </span>
           </div>

@@ -94,19 +94,19 @@ export function QuizActions({
         </DropdownMenu>
 
         {!quizSet.isPublished && (
-          <p className="text-xs text-[var(--text-tertiary)] text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Bạn cần xuất bản bộ trắc nghiệm trước khi bắt đầu
           </p>
         )}
 
         {quizSet.isPublished && (quizSet.questionCount || 0) === 0 && (
-          <p className="text-xs text-[var(--text-tertiary)] text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Bạn cần thêm ít nhất một câu hỏi để bắt đầu
           </p>
         )}
 
         {quizSet.isPublished && (quizSet.questionCount || 0) > 0 && (
-          <p className="text-xs text-[var(--text-tertiary)] text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Sẵn sàng để bắt đầu với {quizSet.questionCount} câu hỏi
           </p>
         )}

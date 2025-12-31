@@ -15,14 +15,14 @@ public sealed class QuizSetsByCreatorIdSpecification : Specification<QuizSet>
         var searchLower = search?.ToLower();
 
         // Build criteria with all conditions combined
-        Criteria = quizSet => quizSet.CreatorId == creatorId 
-            && quizSet.DeletedAt == null
+        Criteria = quizSet => 
+            QuizSetSpecifications.CreatedBy(creatorId).Compile()(quizSet)
+            && QuizSetSpecifications.IsActive.Compile()(quizSet)
             && (string.IsNullOrWhiteSpace(search) || 
-                quizSet.Title.ToLower().Contains(searchLower!) ||
-                (quizSet.Description != null && quizSet.Description.ToLower().Contains(searchLower!)))
+                QuizSetSpecifications.ContainsText(search).Compile()(quizSet))
             && (filterBy == null || filterBy == "all" ||
-                (filterBy == "published" && quizSet.IsPublished) ||
-                (filterBy == "draft" && !quizSet.IsPublished));
+                (filterBy == "published" && QuizSetSpecifications.IsPublished.Compile()(quizSet)) ||
+                (filterBy == "draft" && !QuizSetSpecifications.IsPublished.Compile()(quizSet)));
 
         // Sorting
         switch (sortBy?.ToLower())

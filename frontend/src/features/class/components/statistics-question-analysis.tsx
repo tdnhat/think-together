@@ -22,11 +22,11 @@ export function StatisticsQuestionAnalysis({ stats }: StatisticsQuestionAnalysis
                     {stats.map((stat, index) => (
                         <div
                             key={stat.questionId}
-                            className="p-4 rounded-lg border bg-[var(--bg-surface-secondary)]/30 hover:bg-[var(--bg-surface-secondary)]/50 transition-colors"
+                            className="p-4 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors"
                         >
                             <div className="flex items-start justify-between mb-3 gap-2">
                                 <div className="font-medium text-sm line-clamp-2" title={stat.questionContent}>
-                                    <span className="text-[var(--text-secondary)] mr-1">Câu {index + 1}:</span>
+                                    <span className="text-muted-foreground mr-1">Câu {index + 1}:</span>
                                     {stat.questionContent}
                                 </div>
                                 <Badge
@@ -44,7 +44,7 @@ export function StatisticsQuestionAnalysis({ stats }: StatisticsQuestionAnalysis
                             </div>
 
                             <div className="space-y-1">
-                                <div className="flex justify-between text-xs text-[var(--text-secondary)]">
+                                <div className="flex justify-between text-xs text-muted-foreground">
                                     <span>Độ chính xác</span>
                                     <span>{stat.correctAnswerCount} / {stat.totalAnswers} trả lời đúng</span>
                                 </div>

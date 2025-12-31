@@ -18,7 +18,7 @@ export function DashboardLayout({ children }: Readonly<DashboardLayoutProps>) {
       <SidebarInset>
         <DashboardNavbar />
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <main className="flex flex-1 flex-col bg-[var(--bg-surface)] px-6 pb-12 pt-8 overflow-hidden">
+          <main className="flex flex-1 flex-col bg-background px-6 pb-12 pt-8 overflow-hidden">
             <div className="mx-auto w-full max-w-6xl">
               {children}
             </div>

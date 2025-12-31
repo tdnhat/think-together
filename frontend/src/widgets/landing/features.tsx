@@ -5,10 +5,10 @@ export function Features() {
   return (
     <SectionContainer background="gray">
       <div className="mb-12 text-center">
-        <h2 className="mb-4 font-heading text-4xl font-bold text-[var(--text-primary)] md:text-5xl">
+        <h2 className="mb-4 font-heading text-4xl font-bold text-foreground md:text-5xl">
           Tính năng nổi bật
         </h2>
-        <p className="mx-auto max-w-2xl text-lg text-[var(--text-secondary)]">
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
           Mọi thứ bạn cần để học tập hiệu quả và vui vẻ
         </p>
       </div>

@@ -5,6 +5,7 @@ import { CheckCircle, Circle, Flag } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
+import { cn } from '@/lib/utils'
 import { useChallengeStore, selectCurrentQuestionIndex, selectTotalQuestions } from '@/features/challenge/store/challenge.store'
 import type { ChallengeQuestionDto } from '@/features/challenge/types'
 
@@ -49,7 +50,7 @@ export function QuestionGrid({
   return (
     <Card className={className}>
       <CardHeader className="pb-0">
-        <CardTitle className="text-base font-semibold text-[var(--text-primary)]">
+        <CardTitle className="text-base font-semibold text-foreground">
           Tổng quan câu hỏi
         </CardTitle>
       </CardHeader>
@@ -62,11 +63,10 @@ export function QuestionGrid({
               const { isAnswered, isFlagged, isCurrent } = getQuestionStatus(question, questionIndex)
 
               const variant = isCurrent ? 'default' : 'outline'
-              const stateClass = isFlagged
-                ? 'bg-[var(--brand-secondary-light)]'
-                : isAnswered
-                  ? 'bg-[var(--bg-surface-secondary)]'
-                  : ''
+              const stateClasses = cn(
+                isFlagged && 'border-orange-500',
+                !isFlagged && isAnswered && 'bg-muted'
+              )
 
               return (
                 <Button
@@ -74,11 +74,14 @@ export function QuestionGrid({
                   type="button"
                   size="icon"
                   variant={variant}
-                  className={`h-10 w-10 ${stateClass}`}
+                  className={cn('h-10 w-10 relative', stateClasses)}
                   onClick={() => onQuestionClick(questionIndex)}
                   aria-current={isCurrent ? 'true' : undefined}
                 >
                   {questionIndex + 1}
+                  {isFlagged && (
+                    <Flag className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-orange-500 fill-orange-500" />
+                  )}
                 </Button>
               )
             })
@@ -86,8 +89,8 @@ export function QuestionGrid({
         </div>
 
         <div className="space-y-2">
-          <div className="text-sm font-medium text-[var(--text-primary)]">Bảng chỉ dẫn:</div>
-          <div className="space-y-2 text-sm text-[var(--text-secondary)]">
+          <div className="text-sm font-medium text-foreground">Bảng chỉ dẫn:</div>
+          <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Badge variant="default" className="w-6 justify-center px-0"> </Badge>
               <span>Câu hỏi hiện tại</span>
@@ -107,24 +110,24 @@ export function QuestionGrid({
           </div>
         </div>
 
-        <div className="border-t border-[var(--border)] pt-4 space-y-1 text-sm text-[var(--text-secondary)]">
+        <div className="border-t border-border pt-4 space-y-1 text-sm text-muted-foreground">
           <div className="flex items-center justify-between">
             <span>Tổng số câu hỏi:</span>
-            <span className="font-medium text-[var(--text-primary)]">{totalQuestions}</span>
+            <span className="font-medium text-foreground">{totalQuestions}</span>
           </div>
           <div className="flex items-center justify-between">
             <span>Đã trả lời:</span>
-            <span className="font-medium text-[var(--text-primary)]">{answeredCount}</span>
+            <span className="font-medium text-foreground">{answeredCount}</span>
           </div>
           <div className="flex items-center justify-between">
             <span>Đánh dấu:</span>
-            <span className="font-medium text-[var(--text-primary)]">
+            <span className="font-medium text-foreground">
               {flaggedQuestions instanceof Set ? flaggedQuestions.size : 0}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span>Còn lại:</span>
-            <span className="font-medium text-[var(--text-primary)]">
+            <span className="font-medium text-foreground">
               {Math.max(0, totalQuestions - answeredCount)}
             </span>
           </div>

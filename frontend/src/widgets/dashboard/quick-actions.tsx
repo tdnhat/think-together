@@ -13,14 +13,14 @@ export function QuickActions() {
             <div className="flex items-start gap-4">
               <span
                 className={accent === "primary"
-                  ? "flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-primary-hover)] bg-[var(--brand-primary)] text-white"
-                  : "flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-secondary-hover)] bg-[var(--brand-secondary)] text-[var(--text-primary)]"}
+                  ? "flex h-11 w-11 items-center justify-center rounded-xl border border-primary/50 bg-primary text-primary-foreground"
+                  : "flex h-11 w-11 items-center justify-center rounded-xl border border-secondary/50 bg-secondary text-secondary-foreground"}
               >
                 <Icon className="h-5 w-5" />
               </span>
               <div className="space-y-1">
-                <p className="font-heading text-lg font-semibold text-[var(--text-primary)]">{title}</p>
-                <p className="text-sm text-[var(--text-secondary)]">{description}</p>
+                <p className="font-heading text-lg font-semibold text-foreground">{title}</p>
+                <p className="text-sm text-muted-foreground">{description}</p>
               </div>
             </div>
           </Card>

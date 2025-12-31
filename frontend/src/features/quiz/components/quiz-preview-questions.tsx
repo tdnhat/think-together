@@ -53,7 +53,7 @@ export function QuizPreviewQuestions({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex h-32 items-center justify-center">
-          <p className="text-center text-[var(--text-tertiary)]">
+          <p className="text-center text-muted-foreground">
             Chưa có câu hỏi nào trong bộ trắc nghiệm này
           </p>
         </CardContent>

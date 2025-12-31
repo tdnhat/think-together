@@ -39,10 +39,10 @@ export function GameEnded({
             <div className="mb-4">
               <Trophy className="mx-auto h-16 w-16 text-yellow-500 animate-bounce" />
             </div>
-            <h2 className="font-heading text-3xl font-bold text-[var(--text-primary)] mb-2">
+            <h2 className="font-heading text-3xl font-bold text-foreground mb-2">
               🎉 Người chiến thắng 🎉
             </h2>
-            <div className="font-heading text-4xl md:text-5xl font-bold text-[var(--brand-primary)] mb-4">
+            <div className="font-heading text-4xl md:text-5xl font-bold text-primary mb-4">
               {winner.nickname}
             </div>
             <div className="flex items-center justify-center gap-2">
@@ -64,10 +64,10 @@ export function GameEnded({
           {runnerUp && (
             <div className="flex flex-col items-center">
               <div className="mb-2 text-center">
-                <div className="font-medium text-[var(--text-primary)] truncate max-w-24">
+                <div className="font-medium text-foreground truncate max-w-24">
                   {runnerUp.nickname}
                 </div>
-                <div className="text-sm text-[var(--text-secondary)]">
+                <div className="text-sm text-muted-foreground">
                   {runnerUp.totalPoints.toLocaleString('vi-VN')}
                 </div>
               </div>
@@ -82,10 +82,10 @@ export function GameEnded({
             <div className="flex flex-col items-center">
               <Trophy className="h-8 w-8 text-yellow-500 mb-2" />
               <div className="mb-2 text-center">
-                <div className="font-semibold text-[var(--text-primary)] truncate max-w-28">
+                <div className="font-semibold text-foreground truncate max-w-28">
                   {winner.nickname}
                 </div>
-                <div className="text-sm text-[var(--brand-primary)] font-medium">
+                <div className="text-sm text-primary font-medium">
                   {winner.totalPoints.toLocaleString('vi-VN')}
                 </div>
               </div>
@@ -99,10 +99,10 @@ export function GameEnded({
           {thirdPlace && (
             <div className="flex flex-col items-center">
               <div className="mb-2 text-center">
-                <div className="font-medium text-[var(--text-primary)] truncate max-w-24">
+                <div className="font-medium text-foreground truncate max-w-24">
                   {thirdPlace.nickname}
                 </div>
-                <div className="text-sm text-[var(--text-secondary)]">
+                <div className="text-sm text-muted-foreground">
                   {thirdPlace.totalPoints.toLocaleString('vi-VN')}
                 </div>
               </div>
@@ -118,11 +118,11 @@ export function GameEnded({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <Users className="mx-auto h-8 w-8 text-[var(--brand-primary)] mb-2" />
-            <div className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            <Users className="mx-auto h-8 w-8 text-primary mb-2" />
+            <div className="font-heading text-2xl font-bold text-foreground">
               {result.totalPlayers}
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Người chơi</div>
+            <div className="text-sm text-muted-foreground">Người chơi</div>
           </CardContent>
         </Card>
 
@@ -131,20 +131,20 @@ export function GameEnded({
             <Badge className="mx-auto mb-2 h-8 w-8 rounded-full p-2" variant="default">
               Q
             </Badge>
-            <div className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            <div className="font-heading text-2xl font-bold text-foreground">
               {result.totalQuestions}
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Câu hỏi</div>
+            <div className="text-sm text-muted-foreground">Câu hỏi</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 text-center">
-            <Clock className="mx-auto h-8 w-8 text-[var(--brand-secondary)] mb-2" />
-            <div className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            <Clock className="mx-auto h-8 w-8 text-secondary mb-2" />
+            <div className="font-heading text-2xl font-bold text-foreground">
               {result.duration}
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">Thời gian</div>
+            <div className="text-sm text-muted-foreground">Thời gian</div>
           </CardContent>
         </Card>
       </div>

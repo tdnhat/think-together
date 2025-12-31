@@ -38,7 +38,7 @@ export default function HomeworkSubmissionDetailPage() {
         <div className="container max-w-5xl mx-auto py-6">
           <Card className="border-dashed">
             <CardContent className="py-12 text-center">
-              <p className="text-[var(--text-secondary)] mb-4">
+              <p className="text-muted-foreground mb-4">
                 {error ? 'Không thể tải chi tiết bài nộp' : 'Không tìm thấy bài nộp'}
               </p>
               <Button onClick={handleBack} variant="outline">
@@ -60,10 +60,10 @@ export default function HomeworkSubmissionDetailPage() {
           {/* Main Content: Questions - Order 2 on mobile, 1 on desktop */}
           <div className="lg:col-span-8 order-2 lg:order-1 space-y-8">
             <div className="space-y-2">
-              <h1 className="font-heading text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+              <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
                 {homework.title}
               </h1>
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-muted-foreground">
                 Xem lại chi tiết bài làm của bạn
               </p>
             </div>

@@ -60,7 +60,7 @@ export function StatisticsStudentTable({ submissions, classId, homeworkId }: Sta
                         <TableBody>
                             {submissions.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center py-12 text-[var(--text-secondary)]">
+                                    <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                                         Chưa có học sinh nào nộp bài
                                     </TableCell>
                                 </TableRow>
@@ -83,15 +83,15 @@ export function StatisticsStudentTable({ submissions, classId, homeworkId }: Sta
                                                 {submission.score}
                                             </span>
                                         </TableCell>
-                                        <TableCell className="text-center text-[var(--text-secondary)]">
+                                        <TableCell className="text-center text-muted-foreground">
                                             {submission.correctAnswers !== undefined
                                                 ? `${submission.correctAnswers}/${submission.totalQuestions}`
                                                 : '-'}
                                         </TableCell>
-                                        <TableCell className="text-center text-sm text-[var(--text-secondary)]">
+                                        <TableCell className="text-center text-sm text-muted-foreground">
                                             {formatTime(submission.completionTimeMs)}
                                         </TableCell>
-                                        <TableCell className="text-center text-sm text-[var(--text-secondary)]">
+                                        <TableCell className="text-center text-sm text-muted-foreground">
                                             {format(new Date(submission.submittedAt), 'dd MMM, HH:mm', { locale: vi })}
                                         </TableCell>
                                         <TableCell className="text-center">

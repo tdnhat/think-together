@@ -69,7 +69,7 @@ export default function PlayPage({ params }: Readonly<PlayPageProps>) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <PlayerPageHeader nickname={storedNickname} />
 
       <main className="flex-1 container mx-auto px-4 py-6">

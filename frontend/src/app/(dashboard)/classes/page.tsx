@@ -66,10 +66,10 @@ export default function ClassesPage() {
       <div className="container mx-auto space-y-6 py-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
+            <h1 className="font-heading text-3xl font-bold text-foreground">
               Lớp học của tôi
             </h1>
-            <p className="mt-2 text-[var(--text-secondary)]">
+            <p className="mt-2 text-muted-foreground">
               Quản lý các lớp học và bài tập về nhà
             </p>
           </div>

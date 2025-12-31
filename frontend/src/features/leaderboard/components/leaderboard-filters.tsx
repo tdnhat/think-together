@@ -87,7 +87,7 @@ export function LeaderboardFilters({
       {/* Homework/Class Filters */}
       {(classes.length > 0 || homeworks.length > 0) && (
         <div className="flex flex-wrap gap-3 items-center">
-          <span className="text-sm font-semibold text-[var(--text-secondary)]">
+          <span className="text-sm font-semibold text-muted-foreground">
             Loại:
           </span>
           <Select
@@ -156,7 +156,7 @@ export function LeaderboardFilters({
       <div className="flex flex-wrap gap-3">
         {/* Time Period Filter */}
         <div className="flex flex-wrap gap-2">
-          <span className="text-sm font-semibold text-[var(--text-secondary)] self-center">
+          <span className="text-sm font-semibold text-muted-foreground self-center">
             Thời gian:
           </span>
           {Object.entries(TIME_PERIOD_LABELS).map(([value, label]) => (
@@ -177,7 +177,7 @@ export function LeaderboardFilters({
 
       {/* Sort Options */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-sm font-semibold text-[var(--text-secondary)] self-center">
+        <span className="text-sm font-semibold text-muted-foreground self-center">
           Sắp xếp:
         </span>
         {Object.entries(SORT_OPTION_LABELS).map(([value, label]) => (

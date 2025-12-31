@@ -10,10 +10,10 @@ export function QuestionReviewList({ questions, title = 'Chi tiết câu trả l
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+                <h2 className="font-heading text-xl font-semibold text-foreground">
                     {title}
                 </h2>
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-muted-foreground">
                     {questions.length} câu hỏi
                 </span>
             </div>

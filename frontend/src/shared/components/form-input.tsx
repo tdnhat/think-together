@@ -21,13 +21,13 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           ref={ref}
           aria-invalid={hasError}
           className={cn(
-            hasError && 'border-[var(--color-error)]',
+            hasError && 'border-destructive',
             className
           )}
           {...props}
         />
         {error && typeof error === 'string' && (
-          <p className="text-sm text-[var(--color-error)]">{error}</p>
+          <p className="text-sm text-destructive">{error}</p>
         )}
       </div>
     )

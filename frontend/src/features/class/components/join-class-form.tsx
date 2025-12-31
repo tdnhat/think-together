@@ -63,7 +63,7 @@ export function JoinClassForm({
               disabled={isSubmitting}
               autoFocus
             />
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-xs text-muted-foreground">
               Nhập mã tham gia 8 ký tự do giáo viên cung cấp
             </p>
           </div>

@@ -35,7 +35,7 @@ export function PlayerResults({
       case 3:
         return 'text-amber-600'
       default:
-        return 'text-[var(--brand-primary)]'
+        return 'text-primary'
     }
   }
 
@@ -48,7 +48,7 @@ export function PlayerResults({
       case 3:
         return <Award className="h-12 w-12 text-amber-600" />
       default:
-        return <TrendingUp className="h-12 w-12 text-[var(--brand-primary)]" />
+        return <TrendingUp className="h-12 w-12 text-primary" />
     }
   }
 
@@ -61,7 +61,7 @@ export function PlayerResults({
   return (
     <div className={`space-y-6 max-w-2xl mx-auto ${className}`}>
       {/* Player's Stats */}
-      <Card className="bg-gradient-to-br from-[var(--brand-primary)]/10 to-[var(--brand-secondary)]/5 border-2 border-[var(--brand-primary)]">
+      <Card className="bg-gradient-to-br from-primary/10 to-secondary/5 border-2 border-primary">
         <CardContent className="pt-6">
           <div className="text-center space-y-4">
             {/* Rank Icon */}
@@ -71,28 +71,28 @@ export function PlayerResults({
 
             {/* Rank */}
             <div>
-              <p className="text-sm text-[var(--text-secondary)] mb-1">Vị trí của bạn</p>
+              <p className="text-sm text-muted-foreground mb-1">Vị trí của bạn</p>
               <p className={`font-heading text-5xl font-bold ${getRankColor(playerRank)}`}>
                 #{playerRank}
               </p>
             </div>
 
             {/* Points */}
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--color-border-light)]">
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
               <div>
-                <p className="text-xs text-[var(--text-tertiary)] mb-1">Điểm</p>
-                <p className="font-heading text-2xl font-bold text-[var(--brand-primary)]">
+                <p className="text-xs text-muted-foreground mb-1">Điểm</p>
+                <p className="font-heading text-2xl font-bold text-primary">
                   {playerPoints.toLocaleString('vi-VN')}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-[var(--text-tertiary)] mb-1">Đúng</p>
+                <p className="text-xs text-muted-foreground mb-1">Đúng</p>
                 <p className="font-heading text-2xl font-bold text-green-600">
                   {correctAnswers}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-[var(--text-tertiary)] mb-1">Độ chính xác</p>
+                <p className="text-xs text-muted-foreground mb-1">Độ chính xác</p>
                 <p className="font-heading text-2xl font-bold text-blue-600">
                   {accuracy.toFixed(0)}%
                 </p>
@@ -105,8 +105,8 @@ export function PlayerResults({
       {/* Top 3 Leaderboard */}
       <div className="space-y-3">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <Trophy className="h-5 w-5 text-[var(--brand-primary)]" />
-          <h3 className="font-heading text-lg font-bold text-[var(--text-primary)]">
+          <Trophy className="h-5 w-5 text-primary" />
+          <h3 className="font-heading text-lg font-bold text-foreground">
             Top 3 người chơi
           </h3>
         </div>
@@ -120,8 +120,8 @@ export function PlayerResults({
               key={entry.playerId}
               className={`transition-all ${
                 isCurrentPlayer 
-                  ? 'bg-[var(--brand-primary)]/10 border-2 border-[var(--brand-primary)]' 
-                  : 'bg-[var(--bg-surface-secondary)]'
+                  ? 'bg-primary/10 border-2 border-primary' 
+                  : 'bg-muted'
               }`}
             >
               <CardContent className="p-4">
@@ -137,7 +137,7 @@ export function PlayerResults({
                     {/* Player Info */}
                     <div>
                       <p className={`font-semibold ${
-                        isCurrentPlayer ? 'text-[var(--brand-primary)]' : 'text-[var(--text-primary)]'
+                        isCurrentPlayer ? 'text-primary' : 'text-foreground'
                       }`}>
                         {entry.nickname}
                         {isCurrentPlayer && (
@@ -157,10 +157,10 @@ export function PlayerResults({
 
                   {/* Points */}
                   <div className="text-right">
-                    <p className="font-heading text-2xl font-bold text-[var(--brand-primary)]">
+                    <p className="font-heading text-2xl font-bold text-primary">
                       {entry.totalPoints.toLocaleString('vi-VN')}
                     </p>
-                    <p className="text-xs text-[var(--text-tertiary)]">điểm</p>
+                    <p className="text-xs text-muted-foreground">điểm</p>
                   </div>
                 </div>
               </CardContent>
@@ -171,7 +171,7 @@ export function PlayerResults({
 
       {/* Waiting message */}
       <div className="text-center pt-4">
-        <p className="text-sm text-[var(--text-secondary)] animate-pulse">
+        <p className="text-sm text-muted-foreground animate-pulse">
           Chờ câu hỏi tiếp theo...
         </p>
       </div>

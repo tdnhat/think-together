@@ -27,15 +27,15 @@ export function AudioFields() {
                 render={({ field }) => (
                     <FormItem>
                         <Label>
-                            Tệp Âm thanh <span className="text-[var(--color-error)]">*</span>
+                            Tệp Âm thanh <span className="text-destructive">*</span>
                         </Label>
                         <FormControl>
                             <div className="space-y-2">
                                 {!audioUrl ? (
                                     <div
                                         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isUploadingAudio
-                                                ? 'border-[var(--brand-primary)] bg-[var(--brand-primary-light)]/10 cursor-wait'
-                                                : 'border-[var(--border-secondary)] hover:border-[var(--brand-primary)] cursor-pointer'
+                                                ? 'border-primary bg-primary/10 cursor-wait'
+                                                : 'border-border hover:border-primary cursor-pointer'
                                             }`}
                                         onClick={() => {
                                             if (!isUploadingAudio) {
@@ -104,36 +104,36 @@ export function AudioFields() {
                                             <div className="space-y-3">
                                                 <LoadingSpinner size="md" className="mx-auto" />
                                                 <div className="space-y-2">
-                                                    <p className="text-sm font-medium text-[var(--text-primary)]">
+                                                    <p className="text-sm font-medium text-foreground">
                                                         Đang tải lên...
                                                     </p>
                                                     {/* Progress Bar */}
-                                                    <div className="w-full bg-[var(--bg-surface-secondary)] rounded-full h-2 overflow-hidden">
+                                                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-primary-light)] transition-all duration-300 ease-out"
+                                                            className="h-full bg-gradient-to-r from-primary to-primary/20 transition-all duration-300 ease-out"
                                                             style={{ width: `${audioUploadProgress}%` }}
                                                         />
                                                     </div>
-                                                    <p className="text-xs text-[var(--text-secondary)]">
+                                                    <p className="text-xs text-muted-foreground">
                                                         {audioUploadProgress}% hoàn thành
                                                     </p>
                                                 </div>
                                             </div>
                                         ) : (
                                             <>
-                                                <p className="text-sm text-[var(--text-primary)]">
+                                                <p className="text-sm text-foreground">
                                                     Nhấp để chọn tệp âm thanh
                                                 </p>
-                                                <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                                                <p className="text-xs text-muted-foreground mt-1">
                                                     Hỗ trợ: MP3, WAV, OGG, M4A, FLAC, WebM (tối đa 20MB)
                                                 </p>
                                             </>
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="bg-[var(--bg-surface-secondary)] rounded-lg border border-[var(--border-secondary)] p-4">
+                                    <div className="bg-muted rounded-lg border border-[var(--border-secondary)] p-4">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium text-[var(--text-primary)]">
+                                            <p className="text-sm font-medium text-foreground">
                                                 Tệp đã tải lên
                                             </p>
                                             <Button
@@ -198,12 +198,12 @@ export function AudioFields() {
                                 type="number"
                                 min="0"
                                 placeholder="0"
-                                className={formState.errors.audioTimestamp ? 'border-[var(--color-error)]' : ''}
+                                className={formState.errors.audioTimestamp ? 'border-destructive' : ''}
                                 {...field}
                                 onChange={(e) => field.onChange(Number(e.target.value))}
                             />
                         </FormControl>
-                        <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Âm thanh sẽ bắt đầu từ thời gian này (tính bằng giây). Ví dụ: 120 = 2 phút
                         </p>
                         <FormMessage />

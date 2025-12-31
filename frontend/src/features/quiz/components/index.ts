@@ -18,3 +18,12 @@ export { QuestionModal } from './question-modal'
 
 // Utility components
 export { ImageUpload } from './image-upload'
+
+// Home page components
+export * from './home'
+
+// Creator components
+export * from './creator'
+
+// Detail components
+export * from './detail'

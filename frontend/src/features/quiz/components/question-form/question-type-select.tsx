@@ -35,7 +35,7 @@ export function QuestionTypeSelect({ question }: QuestionTypeSelectProps) {
                             </SelectContent>
                         </Select>
                     </FormControl>
-                    <p className="text-xs text-[var(--text-tertiary)]">
+                    <p className="text-xs text-muted-foreground">
                         {QUESTION_CONSTANTS.TYPES[type]?.description}
                     </p>
                     <FormMessage />

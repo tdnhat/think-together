@@ -68,7 +68,7 @@ export function StatisticsOverview({
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold">{metric.value}</p>
-                                    <p className="text-sm text-[var(--text-secondary)]">{metric.label}</p>
+                                    <p className="text-sm text-muted-foreground">{metric.label}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -79,21 +79,21 @@ export function StatisticsOverview({
             <div className="grid grid-cols-3 gap-4">
                 <Card className="border shadow-sm">
                     <CardContent className="p-6 text-center">
-                        <p className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">Điểm trung bình</p>
-                        <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">
+                        <p className="text-sm text-muted-foreground uppercase tracking-wide">Điểm trung bình</p>
+                        <p className="text-3xl font-bold text-foreground mt-2">
                             {averageScore.toFixed(1)}
                         </p>
                     </CardContent>
                 </Card>
                 <Card className="border shadow-sm">
                     <CardContent className="p-6 text-center">
-                        <p className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">Cao nhất</p>
+                        <p className="text-sm text-muted-foreground uppercase tracking-wide">Cao nhất</p>
                         <p className="text-3xl font-bold text-green-600 mt-2">{highestScore}</p>
                     </CardContent>
                 </Card>
                 <Card className="border shadow-sm">
                     <CardContent className="p-6 text-center">
-                        <p className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">Thấp nhất</p>
+                        <p className="text-sm text-muted-foreground uppercase tracking-wide">Thấp nhất</p>
                         <p className="text-3xl font-bold text-red-600 mt-2">{lowestScore}</p>
                     </CardContent>
                 </Card>

@@ -13,11 +13,11 @@ public sealed class PublishedQuizSetsSpecification : Specification<QuizSet>
         var searchLower = search?.ToLower();
 
         // Base criteria: published and not deleted, with optional search
-        Criteria = quizSet => quizSet.IsPublished 
-            && quizSet.DeletedAt == null
+        Criteria = quizSet => 
+            QuizSetSpecifications.IsPublished.Compile()(quizSet)
+            && QuizSetSpecifications.IsActive.Compile()(quizSet)
             && (string.IsNullOrWhiteSpace(search) ||
-                quizSet.Title.ToLower().Contains(searchLower!) 
-                || (quizSet.Description != null && quizSet.Description.ToLower().Contains(searchLower!)));
+                QuizSetSpecifications.ContainsText(search).Compile()(quizSet));
 
         // Sorting
         switch (sortBy?.ToLower())

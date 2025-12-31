@@ -112,10 +112,10 @@ export function QuizSetList({
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
-            <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
+            <h1 className="font-heading text-3xl font-bold text-foreground">
               Bộ trắc nghiệm của tôi
             </h1>
-            <p className="text-base text-[var(--text-secondary)]">
+            <p className="text-base text-muted-foreground">
               Quản lý và tạo bộ câu hỏi cho các buổi học của bạn
             </p>
           </div>
@@ -169,13 +169,13 @@ export function QuizSetList({
             placeholder="Tìm kiếm bộ trắc nghiệm..."
             value={searchQuery}
             onChange={(value) => onSearchChange?.(value)}
-            iconColor="text-[var(--text-tertiary)]"
+            iconColor="text-muted-foreground"
           />
 
           {/* Sort and Filter */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-[var(--text-tertiary)]" />
+              <Filter className="h-4 w-4 text-muted-foreground" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-36 justify-between">
@@ -231,7 +231,7 @@ export function QuizSetList({
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && onPageChange && (
           <div className="flex flex-col items-center gap-2">
-            <span className="text-sm text-[var(--text-secondary)]">
+            <span className="text-sm text-muted-foreground">
               Trang {pagination.page} / {pagination.totalPages}
             </span>
             <PaginationControls
@@ -245,14 +245,14 @@ export function QuizSetList({
 
         {/* Content */}
         {quizSets.length === 0 && !isLoading ? (
-          <Card className="flex flex-col items-center justify-center border-dashed border-[var(--color-border-light)] bg-[var(--bg-surface-secondary)] py-20 px-6 text-center">
+          <Card className="flex flex-col items-center justify-center border-dashed border-border bg-muted py-20 px-6 text-center">
             <Card className="mb-6 rounded-full p-6">
-              <Search className="h-10 w-10 text-[var(--brand-primary)]" />
+              <Search className="h-10 w-10 text-primary" />
             </Card>
-            <h3 className="mb-3 font-heading text-2xl font-bold text-[var(--text-primary)]">
+            <h3 className="mb-3 font-heading text-2xl font-bold text-foreground">
               {QUIZ_SET_CONSTANTS.MESSAGES.EMPTY_STATE_TITLE}
             </h3>
-            <p className="mb-8 max-w-md text-base text-[var(--text-secondary)]">
+            <p className="mb-8 max-w-md text-base text-muted-foreground">
               {QUIZ_SET_CONSTANTS.MESSAGES.EMPTY_STATE_DESCRIPTION}
             </p>
             {onCreateNew && (

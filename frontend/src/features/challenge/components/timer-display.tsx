@@ -19,7 +19,7 @@ export function TimerDisplay({ className = '' }: TimerDisplayProps) {
   const isWarning = remainingTimeMs <= CHALLENGE_CONSTANTS.TIMER.WARNING_THRESHOLD
   const isCritical = remainingTimeMs <= CHALLENGE_CONSTANTS.TIMER.CRITICAL_THRESHOLD
 
-  let colorClass = 'text-[var(--text-primary)]'
+  let colorClass = 'text-foreground'
   if (isCritical) {
     colorClass = 'text-red-500 animate-pulse'
   } else if (isWarning) {

@@ -29,7 +29,7 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-heading text-xl font-bold text-[var(--text-primary)]">
+        <h1 className="font-heading text-xl font-bold text-foreground">
           Chi tiết bộ trắc nghiệm
         </h1>
       </div>
@@ -52,7 +52,7 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
               ) : (
                 <Badge variant="outline">Bản nháp</Badge>
               )}
-              <Badge variant="outline" className="text-[var(--text-secondary)]">
+              <Badge variant="outline" className="text-muted-foreground">
                 <Calendar className="mr-1 h-3 w-3" />
                 {format(new Date(quizSet.createdAt), 'dd/MM/yyyy', { locale: vi })}
               </Badge>
@@ -61,7 +61,7 @@ export function QuizDetailHeader({ quizSet, onBack }: QuizDetailHeaderProps) {
 
           <div>
             <h3 className="mb-2 font-heading text-lg font-bold">Mô tả</h3>
-            <p className="text-[var(--text-secondary)] whitespace-pre-wrap">
+            <p className="text-muted-foreground whitespace-pre-wrap">
               {quizSet.description || 'Chưa có mô tả cho bộ trắc nghiệm này.'}
             </p>
           </div>

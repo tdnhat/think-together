@@ -44,7 +44,7 @@ const resetPasswordSchema = z
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
 
-interface ResetPasswordFormProps extends React.ComponentProps<"div"> { }
+type ResetPasswordFormProps = React.ComponentProps<"div">
 
 export function ResetPasswordForm({ className, ...props }: ResetPasswordFormProps) {
   const searchParams = useSearchParams()

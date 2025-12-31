@@ -40,7 +40,7 @@ export default function HomeworkStatisticsPage() {
         <div className="container mx-auto py-6 px-4">
           <Card className="border-dashed">
             <CardContent className="py-12 text-center">
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-muted-foreground">
                 {error ? 'Không thể tải thống kê' : 'Không tìm thấy thống kê'}
               </p>
               <Button onClick={handleBack} className="mt-4" variant="outline">
@@ -75,10 +75,10 @@ export default function HomeworkStatisticsPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+            <h1 className="font-heading text-2xl font-bold text-foreground">
               {homework.title}
             </h1>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-muted-foreground">
               Tổng quan thống kê kết quả làm bài
             </p>
           </div>
@@ -86,7 +86,7 @@ export default function HomeworkStatisticsPage() {
 
         {/* Dashboard Sections */}
         <section className="space-y-4">
-          <h2 className="font-semibold text-lg text-[var(--text-primary)]">Tổng quan</h2>
+          <h2 className="font-semibold text-lg text-foreground">Tổng quan</h2>
           <StatisticsOverview
             totalStudents={totalStudents}
             submittedCount={submittedCount}
@@ -99,7 +99,7 @@ export default function HomeworkStatisticsPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="font-semibold text-lg text-[var(--text-primary)]">Phân tích chi tiết</h2>
+          <h2 className="font-semibold text-lg text-foreground">Phân tích chi tiết</h2>
 
           <div className="space-y-4">
             <StatisticsQuestionAnalysis stats={questionStatistics} />
@@ -107,7 +107,7 @@ export default function HomeworkStatisticsPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="font-semibold text-lg text-[var(--text-primary)]">Danh sách bài nộp</h2>
+          <h2 className="font-semibold text-lg text-foreground">Danh sách bài nộp</h2>
           <StatisticsStudentTable submissions={studentSubmissions} classId={classId} homeworkId={homeworkId} />
         </section>
 

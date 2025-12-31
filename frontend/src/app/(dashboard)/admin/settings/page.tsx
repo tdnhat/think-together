@@ -10,10 +10,10 @@ export default function SettingsAdminPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+        <h1 className="text-3xl font-bold text-foreground">
           Cài Đặt Hệ Thống
         </h1>
-        <p className="text-[var(--text-secondary)] mt-2">
+        <p className="text-muted-foreground mt-2">
           Cấu hình các cài đặt chung của hệ thống.
         </p>
       </div>
@@ -59,7 +59,7 @@ export default function SettingsAdminPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12">
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-muted-foreground">
               Cài đặt nâng cao sẽ sớm có sẵn
             </p>
           </div>

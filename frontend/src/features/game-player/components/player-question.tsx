@@ -62,12 +62,12 @@ export function PlayerQuestion({
 
   const getTimerColor = () => {
     if (timeRemaining <= GAME_PLAYER_CONSTANTS.TIMER.DANGER_THRESHOLD) {
-      return 'text-[var(--color-error)] bg-[var(--color-error-light)]'
+      return 'text-destructive bg-red-50 dark:bg-red-950/30'
     }
     if (timeRemaining <= GAME_PLAYER_CONSTANTS.TIMER.WARNING_THRESHOLD) {
-      return 'text-[var(--brand-secondary)] bg-[var(--brand-secondary-light)]'
+      return 'text-secondary bg-secondary/10'
     }
-    return 'text-[var(--text-primary)] bg-[var(--bg-surface-secondary)]'
+    return 'text-foreground bg-muted'
   }
 
   const isMultipleChoice = question.questionType === '2' || question.questionType === 'MultipleChoice'
@@ -91,11 +91,11 @@ export function PlayerQuestion({
       {/* Question Content */}
       <Card>
         <CardContent className="p-6">
-          <h2 className="text-xl md:text-2xl font-heading font-bold text-center text-[var(--text-primary)] leading-relaxed">
+          <h2 className="text-xl md:text-2xl font-heading font-bold text-center text-foreground leading-relaxed">
             {question.content}
           </h2>
           {isMultipleChoice && (
-            <p className="mt-2 text-center text-sm text-[var(--text-tertiary)]">
+            <p className="mt-2 text-center text-sm text-muted-foreground">
               (Chọn nhiều đáp án)
             </p>
           )}
@@ -136,7 +136,7 @@ export function PlayerQuestion({
             <CheckCircle className="h-5 w-5" />
             Đã gửi câu trả lời
           </Badge>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          <p className="mt-2 text-sm text-muted-foreground">
             {GAME_PLAYER_CONSTANTS.MESSAGES.WAITING_FOR_RESULT}
           </p>
         </div>

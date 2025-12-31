@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex h-screen flex-col">
       {/* Header */}
-      <header className="relative flex h-16 shrink-0 items-center gap-2 bg-[var(--bg-page)]/95 backdrop-blur px-4 border-b border-[var(--border-color)]">
+      <header className="relative flex h-16 shrink-0 items-center gap-2 bg-background/95 backdrop-blur px-4 border-b border-border">
         <div className="flex-1">
           <DashboardNavbar />
         </div>
@@ -46,14 +46,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Admin Sidebar */}
-        <aside className="w-64 border-r border-[var(--border-color)] bg-[var(--bg-surface)] overflow-y-auto">
+        <aside className="w-64 border-r border-border bg-background overflow-y-auto">
           <div className="p-6">
             <AdminSidebar />
           </div>
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-[var(--bg-page)]">
+        <main className="flex-1 overflow-y-auto bg-background">
           <div className="px-10 py-8 max-w-7xl mx-auto w-full">
             {children}
           </div>

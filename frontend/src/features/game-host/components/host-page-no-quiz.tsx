@@ -40,8 +40,8 @@ export function HostPageNoQuiz({ error, onRejoinByPin }: HostPageNoQuizProps) {
     <div className="flex flex-col items-center justify-center py-16 gap-6">
       <Card className="max-w-md w-full">
         <CardHeader>
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-            <Gamepad2 className="h-8 w-8 text-[var(--brand-primary)]" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <Gamepad2 className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="text-center">Tổ chức trò chơi</CardTitle>
           <CardDescription className="text-center">
@@ -58,10 +58,10 @@ export function HostPageNoQuiz({ error, onRejoinByPin }: HostPageNoQuizProps) {
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-[var(--color-border-light)]" />
+              <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-[var(--text-tertiary)]">
+              <span className="bg-card px-2 text-muted-foreground">
                 hoặc kết nối lại
               </span>
             </div>

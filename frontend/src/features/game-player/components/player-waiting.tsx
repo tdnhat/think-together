@@ -28,16 +28,16 @@ export function PlayerWaiting({
         <CardContent className="p-8 space-y-6">
           {/* Animated Icon */}
           <div className="relative mx-auto w-24 h-24">
-            <div className="absolute inset-0 rounded-full bg-[var(--brand-primary)]/20 animate-ping" />
-            <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-[var(--brand-primary)]/10">
-              <Gamepad2 className="h-12 w-12 text-[var(--brand-primary)] animate-pulse" />
+            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+            <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+              <Gamepad2 className="h-12 w-12 text-primary animate-pulse" />
             </div>
           </div>
 
           {/* Welcome Message */}
           <div className="space-y-2">
-            <p className="text-sm text-[var(--text-secondary)]">Xin chào</p>
-            <h2 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
+            <p className="text-sm text-muted-foreground">Xin chào</p>
+            <h2 className="font-heading text-3xl font-bold text-foreground">
               {nickname}
             </h2>
           </div>
@@ -57,13 +57,13 @@ export function PlayerWaiting({
           </div>
 
           {/* Waiting Status */}
-          <div className="flex flex-col items-center gap-3 pt-4 border-t border-[var(--color-border-light)]">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--brand-primary)]" />
-            <p className="text-[var(--text-secondary)]">{message}</p>
+          <div className="flex flex-col items-center gap-3 pt-4 border-t border-border">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">{message}</p>
           </div>
 
           {/* Tips */}
-          <div className="text-sm text-[var(--text-tertiary)] bg-[var(--bg-surface-secondary)] rounded-lg p-4">
+          <div className="text-sm text-muted-foreground bg-muted rounded-lg p-4">
             <div className="flex items-start gap-2">
               <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <p>Giữ màn hình sáng và đảm bảo kết nối internet ổn định để không bỏ lỡ câu hỏi!</p>

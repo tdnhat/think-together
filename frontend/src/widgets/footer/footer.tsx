@@ -24,17 +24,17 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative bg-[var(--bg-surface)]">
+    <footer className="relative bg-background">
       <Separator className="absolute top-0 left-0 right-0" />
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 grid gap-8 md:grid-cols-4">
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <div className="mb-4 flex items-center gap-2">
-              <GraduationCap className="h-8 w-8 text-[var(--brand-primary)]" />
-              <span className="text-xl font-heading font-bold text-[var(--text-primary)]">ThinkTogether</span>
+              <GraduationCap className="h-8 w-8 text-primary" />
+              <span className="text-xl font-heading font-bold text-foreground">ThinkTogether</span>
             </div>
-            <p className="max-w-md text-[var(--text-secondary)]">
+            <p className="max-w-md text-muted-foreground">
               Nền tảng học tập thông minh giúp học sinh kiểm tra kiến thức, 
               theo dõi tiến trình và cạnh tranh với bạn bè một cách vui vẻ.
             </p>
@@ -42,27 +42,27 @@ export function Footer() {
           
           {/* Quick Links */}
           <div>
-            <h3 className="mb-4 font-heading font-semibold text-[var(--text-primary)]">
+            <h3 className="mb-4 font-heading font-semibold text-foreground">
               Liên kết nhanh
             </h3>
-            <ul className="space-y-2 text-[var(--text-secondary)]">
+            <ul className="space-y-2 text-muted-foreground">
               <li>
-                <Link href={ROUTES.public.about} className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.about} className="transition-colors hover:text-foreground">
                   Giới thiệu
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.public.privacy} className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.privacy} className="transition-colors hover:text-foreground">
                   Chính sách bảo mật
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.public.terms} className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.terms} className="transition-colors hover:text-foreground">
                   Điều khoản sử dụng
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.public.contact} className="transition-colors hover:text-[var(--text-primary)]">
+                <Link href={ROUTES.public.contact} className="transition-colors hover:text-foreground">
                   Liên hệ
                 </Link>
               </li>
@@ -71,7 +71,7 @@ export function Footer() {
           
           {/* Social Links */}
           <div>
-            <h3 className="mb-4 font-heading font-semibold text-[var(--text-primary)]">
+            <h3 className="mb-4 font-heading font-semibold text-foreground">
               Kết nối
             </h3>
             <div className="flex gap-3">
@@ -81,7 +81,7 @@ export function Footer() {
                   href={href}
                   target={href.startsWith("http") ? "_blank" : undefined}
                   rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--brand-primary-hover)] bg-[var(--brand-primary)] text-white transition-transform hover:translate-x-0.5 hover:translate-y-0.5"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/50 bg-primary text-primary-foreground transition-transform hover:translate-x-0.5 hover:translate-y-0.5"
                   aria-label={label}
                 >
                   <Icon className="h-5 w-5" />
@@ -92,7 +92,7 @@ export function Footer() {
         </div>
         
         {/* Bottom bar */}
-        <div className="pt-8 text-center text-[var(--text-secondary)]">
+        <div className="pt-8 text-center text-muted-foreground">
           <Separator className="mb-8" />
           <p>&copy; {new Date().getFullYear()} ThinkTogether. Tất cả quyền được bảo lưu.</p>
         </div>

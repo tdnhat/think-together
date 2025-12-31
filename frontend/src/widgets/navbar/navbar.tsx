@@ -15,18 +15,18 @@ export function Navbar() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav className="sticky top-0 z-50 relative bg-[var(--bg-page)]/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 relative bg-background/95 backdrop-blur">
       <Separator className="absolute bottom-0 left-0 right-0" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <GraduationCap className="h-8 w-8 text-[var(--brand-primary)]" />
-            <span className="text-xl font-heading font-bold text-[var(--text-primary)]">ThinkTogether</span>
+            <GraduationCap className="h-8 w-8 text-primary" />
+            <span className="text-xl font-heading font-bold text-foreground">ThinkTogether</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-8 text-[var(--text-secondary)] md:flex">
+          <div className="hidden items-center gap-8 text-muted-foreground md:flex">
             <Link href={ROUTES.public.home} className="transition-opacity hover:opacity-70">
               Trang chủ
             </Link>
@@ -76,7 +76,7 @@ export function Navbar() {
             type="button"
             variant="outline"
             size="icon"
-            className="md:hidden rounded-xl border-none bg-transparent p-2 text-[var(--text-primary)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-accent hover:shadow-none"
+            className="md:hidden rounded-xl border-none bg-transparent p-2 text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-accent hover:shadow-none"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -88,7 +88,7 @@ export function Navbar() {
         {mobileMenuOpen && (
           <div className="py-4 md:hidden">
             <Separator className="mb-4" />
-            <div className="flex flex-col gap-4 text-[var(--text-secondary)]">
+            <div className="flex flex-col gap-4 text-muted-foreground">
               <Link
                 href={ROUTES.public.home}
                 className="transition-opacity hover:opacity-70"

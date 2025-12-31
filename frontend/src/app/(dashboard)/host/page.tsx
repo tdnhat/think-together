@@ -127,7 +127,7 @@ function HostPageContent() {
             <ArrowLeft className="h-4 w-4" />
             Quay lại
           </Button>
-          <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Phòng chờ
           </h1>
         </div>

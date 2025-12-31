@@ -13,10 +13,10 @@ export function FeaturesStep({ onNext, onBack }: Readonly<FeaturesStepProps>) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-[var(--text-primary)] font-heading">
+        <h2 className="text-3xl font-bold text-foreground font-heading">
           Những gì bạn sẽ làm được
         </h2>
-        <p className="mt-3 text-lg text-[var(--text-secondary)] font-sans">
+        <p className="mt-3 text-lg text-muted-foreground font-sans">
           Khám phá các công cụ mạnh mẽ cho việc giáo dục tương tác
         </p>
       </div>
@@ -26,24 +26,24 @@ export function FeaturesStep({ onNext, onBack }: Readonly<FeaturesStepProps>) {
           const Icon = feature.icon;
           // Alternate colors for variety
           const colors = [
-            'bg-[var(--brand-primary-light)]',
-            'bg-[var(--brand-secondary-light)]',
-            'bg-[var(--accent-pink-light)]',
-            'bg-[var(--accent-cyan-light)]'
+            'bg-primary/10',
+            'bg-secondary/10',
+            'bg-pink-100 dark:bg-pink-950/30',
+            'bg-cyan-100 dark:bg-cyan-950/30'
           ];
           const iconBg = colors[index % colors.length];
           
           return (
             <div
               key={feature.title}
-              className="flex flex-col items-start gap-4 rounded-xl border-2 border-[var(--color-border-main)] bg-[var(--bg-surface)] p-5 transition-all hover:-translate-y-1"
+              className="flex flex-col items-start gap-4 rounded-xl border-2 border-border bg-background p-5 transition-all hover:-translate-y-1"
             >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 border-[var(--color-border-main)] ${iconBg} text-[var(--text-primary)]`}>
+              <div className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 border-border ${iconBg} text-foreground`}>
                 <Icon className="h-6 w-6" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col gap-2">
-                <h4 className="font-heading font-bold text-[var(--text-primary)] text-lg">{feature.title}</h4>
-                <p className="text-sm leading-relaxed text-[var(--text-secondary)] font-sans">{feature.description}</p>
+                <h4 className="font-heading font-bold text-foreground text-lg">{feature.title}</h4>
+                <p className="text-sm leading-relaxed text-muted-foreground font-sans">{feature.description}</p>
               </div>
             </div>
           );

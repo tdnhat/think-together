@@ -28,7 +28,7 @@ const verifyEmailSchema = z.object({
 
 type VerifyEmailFormData = z.infer<typeof verifyEmailSchema>
 
-interface VerifyEmailFormProps extends React.ComponentProps<"div"> { }
+type VerifyEmailFormProps = React.ComponentProps<"div">
 
 export function VerifyEmailForm({ className, ...props }: VerifyEmailFormProps) {
   const [isLoading, setIsLoading] = useState(false)

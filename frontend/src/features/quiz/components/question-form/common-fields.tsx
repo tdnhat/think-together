@@ -19,7 +19,7 @@ export function CommonFields() {
                 render={({ field }) => (
                     <FormItem>
                         <Label>
-                            Nội dung câu hỏi <span className="text-[var(--color-error)]">*</span>
+                            Nội dung câu hỏi <span className="text-destructive">*</span>
                         </Label>
                         <FormControl>
                             <Textarea
@@ -39,7 +39,7 @@ export function CommonFields() {
                 render={({ field }) => (
                     <FormItem>
                         <Label>
-                            Thời gian giới hạn (giây) <span className="text-[var(--color-error)]">*</span>
+                            Thời gian giới hạn (giây) <span className="text-destructive">*</span>
                         </Label>
                         <div className="flex gap-2">
                             <FormControl>
@@ -60,7 +60,7 @@ export function CommonFields() {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => field.onChange(preset)}
-                                        className={timeLimit === preset ? 'border-[var(--brand-primary)]' : ''}
+                                        className={timeLimit === preset ? 'border-primary' : ''}
                                     >
                                         {preset}s
                                     </Button>

@@ -35,12 +35,12 @@ export function HostPageResumeOption({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="p-4 bg-[var(--bg-surface-secondary)] rounded-lg text-center">
-            <p className="text-sm text-[var(--text-secondary)]">Mã PIN</p>
-            <p className="font-heading text-3xl font-bold text-[var(--brand-primary)] tracking-wider">
+          <div className="p-4 bg-muted rounded-lg text-center">
+            <p className="text-sm text-muted-foreground">Mã PIN</p>
+            <p className="font-heading text-3xl font-bold text-primary tracking-wider">
               {storedSession?.pin?.match(/.{1,3}/g)?.join(' ')}
             </p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Trạng thái: Đang chờ
             </p>
           </div>
