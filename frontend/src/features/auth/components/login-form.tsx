@@ -1,36 +1,54 @@
 'use client'
 
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Button } from '@/shared/ui/button'
-import { Checkbox } from '@/shared/ui/checkbox'
-import { Label } from '@/shared/ui/label'
+import { cn } from "@/lib/utils"
+import { Button } from "@/shared/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/ui/card"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/ui/form"
+import { Input } from "@/shared/ui/input"
 import { loginSchema, type LoginFormData } from '@/lib/validators'
 import { useAuth } from '../hooks/use-auth'
-import { AuthField } from './auth-field'
-import { PasswordToggle } from './password-toggle'
 import { ROUTES } from '@/config/routes'
+import { PasswordToggle } from './password-toggle'
 
-type LoginFormValues = LoginFormData
+interface LoginFormProps extends React.ComponentProps<"div"> {
+  onGoogleLogin?: () => void;
+}
 
-export function LoginForm() {
+export function LoginForm({
+  className,
+  onGoogleLogin,
+  ...props
+}: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { login } = useAuth()
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<LoginFormValues>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (data: LoginFormValues) => {
+  // Hook form submit handler
+  const { handleSubmit, control, register } = form;
+
+  const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true)
     try {
       await login({
@@ -44,56 +62,116 @@ export function LoginForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      <div className="space-y-3">
-        <AuthField
-          {...register('email')}
-          type="email"
-          autoComplete="email"
-          label="Email"
-          placeholder="abc@example.com"
-          error={errors.email?.message}
-          inputMode="email"
-        />
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Chào mừng quay trở lại</CardTitle>
+          <CardDescription>
+            Đăng nhập bằng tài khoản Google hoặc email
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="grid gap-6">
+                <Button variant="outline" className="w-full" type="button" onClick={onGoogleLogin}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                  Đăng nhập với Google
+                </Button>
 
-        <AuthField
-          {...register('password')}
-          type={showPassword ? 'text' : 'password'}
-          autoComplete="current-password"
-          label="Mật khẩu"
-          placeholder="Nhập mật khẩu của bạn"
-          error={errors.password?.message}
-          trailingSlot={
-            <PasswordToggle show={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
-          }
-        />
+                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                  <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                    Hoặc đăng nhập với email
+                  </span>
+                </div>
+
+                <div className="grid gap-6">
+                  <FormField
+                    control={control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="m@example.com"
+                            type="email"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center">
+                          <FormLabel>Mật khẩu</FormLabel>
+                          <Link
+                            href={ROUTES.auth.forgotPassword}
+                            className="ml-auto text-sm underline-offset-4 hover:underline"
+                          >
+                            Quên mật khẩu?
+                          </Link>
+                        </div>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? 'text' : 'password'}
+                              {...field}
+                              className="pr-12"
+                            />
+                            <div className="absolute inset-y-0 right-3 flex items-center">
+                              <PasswordToggle show={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
+                  </Button>
+                </div>
+
+                <div className="text-center text-sm">
+                  Bạn chưa có tài khoản?{" "}
+                  <Link href="/signup" className="underline underline-offset-4">
+                    Đăng ký
+                  </Link>
+                </div>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
+        Bằng cách nhấp vào tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a>{" "}
+        và <a href="#">Chính sách bảo mật</a> của chúng tôi.
       </div>
-
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-3 text-sm text-foreground/70">
-          <div className="flex items-center gap-2">
-            <Controller
-              name="rememberMe"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="rememberMe" checked={field.value ?? false} onCheckedChange={field.onChange} />
-              )}
-            />
-            <Label htmlFor="rememberMe" className="cursor-pointer font-base normal-case">
-              Ghi nhớ tôi
-            </Label>
-          </div>
-
-          <Link href={ROUTES.auth.forgotPassword} className="text-sm font-base text-foreground hover:text-main transition-colors">
-            Quên mật khẩu?
-          </Link>
-        </div>
-
-        <Button type="submit" variant="default" size="lg" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
-        </Button>
-      </div>
-    </form>
+    </div>
   )
 }
-

@@ -8,6 +8,15 @@ export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export { Input } from './ui/input'
 export { Label } from './ui/label'
 export { Separator } from './ui/separator'
+export {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+    BreadcrumbEllipsis,
+} from './ui/breadcrumb'
 
 // Custom Reusable Components
 export * as components from './components'

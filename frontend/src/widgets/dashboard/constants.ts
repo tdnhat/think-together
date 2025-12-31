@@ -1,4 +1,51 @@
-import { BookOpen, Crown, Target } from "lucide-react";
+import {
+  Activity,
+  BookOpen,
+  Clock,
+  Crown,
+  GraduationCap,
+  Home,
+  Settings,
+  Star,
+  Target,
+  TrendingUp,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+import { ROUTES } from "@/config/routes";
+
+export interface NavigationItem {
+  title: string;
+  url: string;
+  icon: LucideIcon;
+}
+
+export interface NavigationGroup {
+  title: string;
+  items: NavigationItem[];
+}
+
+export const SIDEBAR_NAVIGATION: NavigationGroup[] = [
+  {
+    title: "Menu chính",
+    items: [
+      { title: "Trang chủ", url: ROUTES.dashboard.home, icon: Home },
+      { title: "Bộ câu hỏi", url: ROUTES.quiz.list, icon: BookOpen },
+      { title: "Lớp học", url: ROUTES.classes.list, icon: GraduationCap },
+      { title: "Bảng xếp hạng", url: ROUTES.leaderboard, icon: TrendingUp },
+      { title: "Tiến trình", url: "/progress", icon: Activity },
+    ],
+  },
+  {
+    title: "Khác",
+    items: [
+      { title: "Bài đã lưu", url: "/saved", icon: Star },
+      { title: "Lịch sử", url: "/history", icon: Clock },
+      { title: "Cộng đồng", url: "/community", icon: Users },
+      { title: "Cài đặt", url: "/settings", icon: Settings },
+    ],
+  },
+] as const;
 
 export const QUICK_ACTIONS = [
   {

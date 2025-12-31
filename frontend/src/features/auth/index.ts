@@ -16,6 +16,7 @@ export {
   ConfirmEmailForm,
   VerifyEmailForm,
   ResetPasswordForm,
+  FloatingStationery,
 } from './components'
 
 // ============= Hooks =============

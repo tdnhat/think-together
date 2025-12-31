@@ -2,11 +2,16 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useCallback, useState, type ButtonHTMLAttributes } from "react";
-
-import { Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/shared";
-import { cn } from "@/lib/utils";
+import { useCallback, useState } from "react";
 import { User, Settings, HelpCircle, LogOut, Sparkles, Home } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { useAuthStore, selectUser } from "@/features/auth/stores/auth.store";
 import { ROUTES } from "@/config/routes";
 import { BecomeCreatorModal } from "@/features/become-creator";
@@ -14,22 +19,6 @@ import { BecomeCreatorModal } from "@/features/become-creator";
 interface ProfileDropdownProps {
   initials?: string;
   onSignOut?: () => Promise<void> | void;
-}
-
-function AvatarButton({ className, type = "button", ...props }: Readonly<ButtonHTMLAttributes<HTMLButtonElement>>) {
-  return (
-    <Button
-      type={type}
-      size="icon"
-      variant="default"
-      className={cn(
-        "rounded-xl border border-[var(--brand-primary-hover)] bg-[var(--brand-primary)] font-heading uppercase text-white",
-        "focus-visible:ring-[var(--brand-secondary)]",
-        className,
-      )}
-      {...props}
-    />
-  );
 }
 
 export function ProfileDropdown({ initials = "ND", onSignOut }: Readonly<ProfileDropdownProps>) {
@@ -68,28 +57,34 @@ export function ProfileDropdown({ initials = "ND", onSignOut }: Readonly<Profile
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <AvatarButton>{initials}</AvatarButton>
+          <button
+            type="button"
+            className="relative h-10 w-10 rounded-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:rounded-full"
+            aria-label="User menu"
+          >
+            <Avatar className="h-10 w-10 rounded-full">
+              <AvatarFallback className="bg-primary text-primary-foreground font-heading uppercase text-sm rounded-full">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          sideOffset={12}
-          className="w-60"
-        >
+        <DropdownMenuContent align="end" sideOffset={12} className="w-60">
           <DropdownMenuItem asChild>
             <Link href={ROUTES.dashboard.profile}>
-              <User className="text-[var(--brand-primary)]" />
+              <User />
               <span>Xem hồ sơ</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={ROUTES.dashboard.settings}>
-              <Settings className="text-[var(--brand-primary)]" />
+              <Settings />
               <span>Cài đặt</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={ROUTES.dashboard.support}>
-              <HelpCircle className="text-[var(--brand-primary)]" />
+              <HelpCircle />
               <span>Trợ giúp &amp; Hỗ trợ</span>
             </Link>
           </DropdownMenuItem>
@@ -100,13 +95,13 @@ export function ProfileDropdown({ initials = "ND", onSignOut }: Readonly<Profile
             <>
               {isOnHomePage && (
                 <DropdownMenuItem onSelect={handleSwitchToCreator}>
-                  <Sparkles className="text-[var(--brand-primary)]" />
+                  <Sparkles />
                   <span>Chế độ người sáng tạo</span>
                 </DropdownMenuItem>
               )}
               {isOnCreatorPage && (
                 <DropdownMenuItem onSelect={handleSwitchToPlayer}>
-                  <Home className="text-[var(--brand-primary)]" />
+                  <Home />
                   <span>Chế độ người chơi</span>
                 </DropdownMenuItem>
               )}
@@ -115,14 +110,14 @@ export function ProfileDropdown({ initials = "ND", onSignOut }: Readonly<Profile
 
           {!isCreator && (
             <DropdownMenuItem onSelect={handleBecomeCreator}>
-              <Sparkles className="text-[var(--brand-primary)]" />
+              <Sparkles />
               <span>Trở thành Người sáng tạo</span>
             </DropdownMenuItem>
           )}
 
           {isCreator && <DropdownMenuSeparator />}
 
-          <DropdownMenuItem onSelect={handleSignOut}>
+          <DropdownMenuItem onSelect={handleSignOut} variant="destructive">
             <LogOut />
             <span>Đăng xuất</span>
           </DropdownMenuItem>
