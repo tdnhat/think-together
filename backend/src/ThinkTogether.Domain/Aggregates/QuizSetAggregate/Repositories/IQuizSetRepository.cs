@@ -10,5 +10,7 @@ public interface IQuizSetRepository : IRepository<QuizSet, Guid>
     Task<(List<QuizSet> Items, int TotalCount)> GetBySpecificationAsync(
         Specification<QuizSet> spec, 
         CancellationToken cancellationToken = default);
+    
+    Task<int> CountQuestionsAsync(CancellationToken cancellationToken = default);
 }
 

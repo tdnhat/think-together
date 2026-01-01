@@ -245,6 +245,29 @@ export function formatScore(score: number): string {
 }
 
 /**
+ * Format number in compact notation (e.g., 1.5k+, 2.3M+)
+ * 
+ * @param num - Number to format
+ * @returns Formatted compact number string
+ * 
+ * @example
+ * ```typescript
+ * formatCompactNumber(1500) // "1.5k+"
+ * formatCompactNumber(2300000) // "2.3M+"
+ * formatCompactNumber(500) // "500"
+ * ```
+ */
+export function formatCompactNumber(num: number): string {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(1)}M+`;
+  }
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}k+`;
+  }
+  return num.toString();
+}
+
+/**
  * Pluralize word based on count
  * 
  * @param count - Count

@@ -1,58 +1,99 @@
+"use client";
+
 import { Heart, Star, Zap } from "lucide-react";
 
 import { Card } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { SectionContainer, StatCard } from "@/shared/components";
-import { LANDING_STATS, RATING_STARS_COUNT } from "./constants";
+import { RATING_STARS_COUNT } from "./constants";
+import { usePlatformStats } from "./hooks/use-platform-stats";
+import { LoadingSpinner } from "@/shared/ui/loading-spinner";
+import { formatCompactNumber } from "@/lib/utils/format";
 
 export function Stats() {
+  const { data: stats, isLoading } = usePlatformStats();
+
+  // Calculate stats to display
+  const displayStats = stats
+    ? [
+        {
+          value: formatCompactNumber(stats.totalChallengeAttempts),
+          label: "Câu trả lời",
+          variant: "secondary" as const,
+        },
+        {
+          value: formatCompactNumber(stats.totalGameSessions),
+          label: "Phiên chơi",
+          variant: "primary" as const,
+        },
+        {
+          value: formatCompactNumber(stats.totalCategories),
+          label: "Môn học",
+          variant: "primary" as const,
+        },
+        {
+          value: "24/7",
+          label: "Hỗ trợ",
+          variant: "secondary" as const,
+        },
+      ]
+    : [];
+
+  const userCountText = stats
+    ? `Hơn ${formatCompactNumber(stats.totalUsers)} học sinh đã kiểm tra kiến thức!`
+    : "Hơn 5.000 học sinh đã kiểm tra kiến thức!";
+
   return (
     <SectionContainer>
-      <Card
-        className="p-8 md:p-12"
-      >
+      <Card className="p-8 md:p-12">
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
             <div className="mb-4 flex items-center gap-2">
               {Array.from({ length: RATING_STARS_COUNT }, (_, i) => (
-                <Star 
+                <Star
                   key={`star-${i}`}
                   className="h-6 w-6 fill-secondary text-secondary"
                 />
               ))}
             </div>
-            
+
             <h2 className="mb-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
-              Hơn 5.000 học sinh đã kiểm tra kiến thức!
+              {userCountText}
             </h2>
-            
+
             <p className="mb-6 text-lg text-muted-foreground">
-              Tham gia cộng đồng học sinh đang ngày càng phát triển. 
-              Cùng nhau học tập, chia sẻ và tiến bộ mỗi ngày.
+              Tham gia cộng đồng học sinh đang ngày càng phát triển. Cùng nhau
+              học tập, chia sẻ và tiến bộ mỗi ngày.
             </p>
-            
+
             <div className="flex flex-wrap gap-4">
-              <Badge variant="outline" className="px-4 py-2">
-                <Zap className="h-5 w-5 fill-secondary text-secondary" />
+              <Badge variant="outline" className="p-2">
+                <Zap className="h-5 w-5 fill-secondary text-primary" />
                 <span>Nhanh chóng</span>
               </Badge>
-              
-              <Badge variant="default" className="px-4 py-2">
+
+              <Badge variant="default" className="p-2">
                 <Heart className="h-5 w-5 fill-white text-white" />
                 <span>Thú vị</span>
               </Badge>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
-            {LANDING_STATS.map((stat) => (
-              <StatCard
-                key={stat.label}
-                value={stat.value}
-                label={stat.label}
-                variant={stat.variant}
-              />
-            ))}
+            {isLoading ? (
+              <div className="col-span-2 flex justify-center py-8">
+                <LoadingSpinner size="sm" />
+              </div>
+            ) : (
+              displayStats.map((stat) => (
+                <StatCard
+                  key={stat.label}
+                  value={stat.value}
+                  label={stat.label}
+                  variant={stat.variant}
+                />
+              ))
+            )}
           </div>
         </div>
       </Card>

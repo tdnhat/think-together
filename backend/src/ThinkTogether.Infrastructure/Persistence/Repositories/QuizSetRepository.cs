@@ -67,5 +67,18 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
 
         return query;
     }
+
+    public async Task<int> CountQuestionsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Questions
+            .Where(q => q.DeletedAt == null)
+            .Join(
+                _context.QuizSets.Where(qs => qs.DeletedAt == null),
+                question => question.QuizSetId,
+                quizSet => quizSet.Id,
+                (question, quizSet) => question
+            )
+            .CountAsync(cancellationToken);
+    }
 }
 

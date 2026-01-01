@@ -15,7 +15,7 @@ export function Navbar() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav className="sticky top-0 z-50 relative bg-background/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur">
       <Separator className="absolute bottom-0 left-0 right-0" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -44,27 +44,15 @@ export function Navbar() {
           {/* Desktop Auth Buttons */}
           <div className="hidden items-center gap-3 md:flex">
             {isAuthenticated ? (
-              <Button
-                asChild
-                variant="default"
-                className="rounded-xl"
-              >
+              <Button asChild variant="default">
                 <Link href={ROUTES.dashboard.home}>Vào ứng dụng</Link>
               </Button>
             ) : (
               <>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-xl"
-                >
+                <Button asChild variant="outline">
                   <Link href={ROUTES.auth.login}>Đăng nhập</Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="default"
-                  className="rounded-xl"
-                >
+                <Button asChild variant="default">
                   <Link href={ROUTES.auth.signup}>Đăng ký</Link>
                 </Button>
               </>
@@ -74,9 +62,9 @@ export function Navbar() {
           {/* Mobile menu button */}
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="md:hidden rounded-xl border-none bg-transparent p-2 text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-accent hover:shadow-none"
+            className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -119,30 +107,22 @@ export function Navbar() {
               </Link>
               <div className="flex flex-col gap-2 pt-2">
                 {isAuthenticated ? (
-                  <Button
-                    asChild
-                    variant="default"
-                    className="rounded-xl"
-                  >
+                  <Button asChild variant="default">
                     <Link href={ROUTES.dashboard.home} onClick={() => setMobileMenuOpen(false)}>
                       Vào ứng dụng
                     </Link>
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="rounded-xl"
-                    >
-                      <Link href={ROUTES.auth.login} onClick={() => setMobileMenuOpen(false)}>Đăng nhập</Link>
+                    <Button asChild variant="outline">
+                      <Link href={ROUTES.auth.login} onClick={() => setMobileMenuOpen(false)}>
+                        Đăng nhập
+                      </Link>
                     </Button>
-                    <Button
-                      asChild
-                      variant="default"
-                      className="rounded-xl"
-                    >
-                      <Link href={ROUTES.auth.signup} onClick={() => setMobileMenuOpen(false)}>Đăng ký</Link>
+                    <Button asChild variant="default">
+                      <Link href={ROUTES.auth.signup} onClick={() => setMobileMenuOpen(false)}>
+                        Đăng ký
+                      </Link>
                     </Button>
                   </>
                 )}

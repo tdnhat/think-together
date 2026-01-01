@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,16 +7,38 @@ import Link from "next/link";
 import { Button } from "@/shared";
 import { BrandBadge, SectionContainer } from "@/shared/components";
 import { ROUTES } from "@/config/routes";
-import { HERO_STATS } from "./constants";
+import { usePlatformStats } from "./hooks/use-platform-stats";
+import { LoadingSpinner } from "@/shared/ui/loading-spinner";
+import { formatCompactNumber } from "@/lib/utils/format";
 
 export function Hero() {
+  const { data: stats, isLoading } = usePlatformStats();
+
+  // Calculate stats to display
+  const displayStats = stats
+    ? [
+        {
+          value: formatCompactNumber(stats.totalUsers),
+          label: "Học sinh",
+        },
+        {
+          value: formatCompactNumber(stats.totalQuestions),
+          label: "Câu hỏi",
+        },
+        {
+          value: formatCompactNumber(stats.totalPublishedQuizSets),
+          label: "Bộ câu hỏi",
+        },
+      ]
+    : [];
+
   return (
     <SectionContainer className="py-20">
       <div className="grid items-center gap-12 md:grid-cols-2">
         {/* Left Content */}
         <div className="space-y-6">
           <BrandBadge
-            icon={<Sparkles className="h-4 w-4 fill-secondary text-secondary" />}
+            icon={<Sparkles className="h-4 w-4 fill-secondary text-primary" />}
             variant="secondary"
           >
             Nền tảng học tập thông minh
@@ -53,14 +77,18 @@ export function Hero() {
           </div>
           
           <div className="flex flex-wrap items-center gap-8 pt-4">
-            {HERO_STATS.map((stat) => (
-              <div key={stat.label}>
-                <div className="font-heading text-3xl font-bold text-primary">
-                  {stat.value}
+            {isLoading ? (
+              <LoadingSpinner size="sm" />
+            ) : (
+              displayStats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="font-heading text-3xl font-bold text-primary">
+                    {stat.value}
+                  </div>
+                  <div className="text-muted-foreground">{stat.label}</div>
                 </div>
-                <div className="text-muted-foreground">{stat.label}</div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
         

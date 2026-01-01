@@ -17,4 +17,6 @@ public interface IChallengeRepository : IRepository<Challenge, Guid>
         Guid? challengeId = null,
         DateTime? startedAfter = null,
         CancellationToken cancellationToken = default);
+    
+    Task<int> CountAttemptsAsync(CancellationToken cancellationToken = default);
 }

@@ -26,14 +26,16 @@ export function BrandBadge({
   return (
     <Card
       className={cn(
-        "inline-flex items-center gap-2 px-5 py-2.5 rounded-full border",
+        "inline-flex flex-row items-center gap-2 px-5 py-2.5 rounded-full border",
         "text-sm font-bold uppercase tracking-wide",
         variantStyles,
         className
       )}
     >
-      {icon && <span className="flex-shrink-0">{icon}</span>}
-      <span>{children}</span>
+      {icon && (
+        <span className="flex-shrink-0 flex items-center">{icon}</span>
+      )}
+      <span className="leading-none">{children}</span>
     </Card>
   );
 }

@@ -88,4 +88,17 @@ public class ChallengeRepository : Repository<Challenge, Guid>, IChallengeReposi
         var results = await query.ToListAsync(cancellationToken);
         return results.Select(x => x.Attempt).ToList();
     }
+
+    public async Task<int> CountAttemptsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.ChallengeAttempts
+            .Where(a => a.DeletedAt == null)
+            .Join(
+                _context.Challenges.Where(c => c.DeletedAt == null),
+                attempt => attempt.ChallengeId,
+                challenge => challenge.Id,
+                (attempt, challenge) => attempt
+            )
+            .CountAsync(cancellationToken);
+    }
 }
