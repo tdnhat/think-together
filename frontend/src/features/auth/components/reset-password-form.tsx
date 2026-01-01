@@ -176,7 +176,7 @@ export function ResetPasswordForm({ className, ...props }: ResetPasswordFormProp
 
                 <div className="text-center text-sm">
                   Đã nhớ mật khẩu?{" "}
-                  <Link href="/login" className="underline underline-offset-4">
+                  <Link href={ROUTES.auth.login} className="underline underline-offset-4">
                     Đăng nhập
                   </Link>
                 </div>

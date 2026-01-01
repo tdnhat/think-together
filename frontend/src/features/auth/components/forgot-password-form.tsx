@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from '@/shared/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form'
+import { ROUTES } from '@/config/routes'
 import { usePasswordRecovery } from '../hooks/use-password-recovery'
 
 const forgotPasswordSchema = z.object({
@@ -87,7 +88,7 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
 
                 <div className="text-center text-sm">
                   Đã nhớ mật khẩu?{" "}
-                  <Link href="/login" className="underline underline-offset-4">
+                  <Link href={ROUTES.auth.login} className="underline underline-offset-4">
                     Đăng nhập
                   </Link>
                 </div>

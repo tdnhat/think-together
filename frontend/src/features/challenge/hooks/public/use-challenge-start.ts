@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStartAttempt } from '@/features/challenge';
 import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store';
+import { ROUTES } from '@/config/routes';
 import type { ChallengeDto } from '@/features/challenge/types';
 
 interface UseChallengeStartOptions {
@@ -31,9 +32,12 @@ export function useChallengeStart({
         },
         {
           onSuccess: (attempt) => {
-            router.push(
-              `/challenge/${shareLink}/take?attemptId=${attempt.id}&homeworkId=${homeworkId}`
-            );
+            const queryParams = new URLSearchParams();
+            queryParams.set('attemptId', attempt.id);
+            if (homeworkId) {
+              queryParams.set('homeworkId', homeworkId);
+            }
+            router.push(`${ROUTES.game.challenge(shareLink)}/take?${queryParams.toString()}`);
           },
         }
       );
@@ -66,7 +70,7 @@ export function useChallengeStart({
             if (homeworkId) {
               queryParams.set('homeworkId', homeworkId);
             }
-            router.push(`/challenge/${shareLink}/take?${queryParams.toString()}`);
+            router.push(`${ROUTES.game.challenge(shareLink)}/take?${queryParams.toString()}`);
           },
         }
       );

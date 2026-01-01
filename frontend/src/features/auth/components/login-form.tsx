@@ -159,7 +159,7 @@ export function LoginForm({
 
                 <div className="text-center text-sm">
                   Bạn chưa có tài khoản?{" "}
-                  <Link href="/signup" className="underline underline-offset-4">
+                  <Link href={ROUTES.auth.signup} className="underline underline-offset-4">
                     Đăng ký
                   </Link>
                 </div>

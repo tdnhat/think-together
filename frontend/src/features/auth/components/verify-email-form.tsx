@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from '@/shared/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form'
+import { ROUTES } from '@/config/routes'
 import { authService } from '../api/auth-service'
 
 const verifyEmailSchema = z.object({
@@ -94,7 +95,7 @@ export function VerifyEmailForm({ className, ...props }: VerifyEmailFormProps) {
               Gửi lại email xác nhận
             </Button>
             <div className="text-center text-sm">
-              <Link href="/login" className="underline underline-offset-4">
+              <Link href={ROUTES.auth.login} className="underline underline-offset-4">
                 Quay lại đăng nhập
               </Link>
             </div>
@@ -120,7 +121,7 @@ export function VerifyEmailForm({ className, ...props }: VerifyEmailFormProps) {
           </CardHeader>
           <CardContent>
             <div className="text-center text-sm">
-              <Link href="/login" className="underline underline-offset-4">
+              <Link href={ROUTES.auth.login} className="underline underline-offset-4">
                 Quay lại đăng nhập
               </Link>
             </div>
@@ -169,7 +170,7 @@ export function VerifyEmailForm({ className, ...props }: VerifyEmailFormProps) {
 
                 <div className="text-center text-sm">
                   Đã xác nhận email?{" "}
-                  <Link href="/login" className="underline underline-offset-4">
+                  <Link href={ROUTES.auth.login} className="underline underline-offset-4">
                     Đăng nhập
                   </Link>
                 </div>

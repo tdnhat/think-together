@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from '@/shared/ui/form'
 import { registerSchema, type RegisterFormData } from '@/lib/validators'
+import { ROUTES } from '@/config/routes'
 import { useAuth } from '../hooks/use-auth'
 import { PasswordToggle } from './password-toggle'
 
@@ -203,7 +204,7 @@ export function SignupForm({ className, onGoogleSignup, ...props }: SignupFormPr
 
                 <div className="text-center text-sm">
                   Đã có tài khoản?{" "}
-                  <Link href="/login" className="underline underline-offset-4">
+                  <Link href={ROUTES.auth.login} className="underline underline-offset-4">
                     Đăng nhập
                   </Link>
                 </div>

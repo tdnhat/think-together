@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { useAuthStore, selectUser, selectIsHydrated } from '@/features/auth/stores/auth.store'
 import { SidebarProvider, SidebarTrigger } from '@/shared/ui/sidebar'
 import { Separator } from '@/shared/ui/separator'
+import { ROUTES } from '@/config/routes'
 import { DashboardNavbar } from '@/widgets/dashboard/dashboard-navbar'
 import { AdminSidebar } from '@/widgets/admin/admin-sidebar'
 
@@ -26,11 +27,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Redirect if not authenticated or not admin
   if (!user) {
-    redirect('/login')
+    redirect(ROUTES.auth.login)
   }
 
   if (user.role !== 'Administrator') {
-    redirect('/home')
+    redirect(ROUTES.dashboard.home)
   }
 
   return (

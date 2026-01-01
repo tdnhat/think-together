@@ -44,11 +44,12 @@ const routes = {
   // ========== QUIZ ROUTES ==========
   quiz: {
     browse: '/quiz',
-    list: '/creator/quizzes',
-    create: '/quiz/create',
-    edit: (id: string) => `/quiz/${id}/edit` as const,
-    view: (id: string) => `/quiz/${id}` as const,
-    duplicate: (id: string) => `/quiz/${id}/duplicate` as const,
+    list: '/my-quizzes',
+    create: '/my-quizzes/create',
+    edit: (id: string) => `/my-quizzes/${id}/edit` as const,
+    view: (id: string) => `/my-quizzes/${id}` as const,
+    duplicate: (id: string) => `/my-quizzes/${id}/duplicate` as const,
+    challenge: (id: string) => `/my-quizzes/${id}/challenge` as const,
   },
   
   // ========== GAME ROUTES ==========
@@ -114,7 +115,7 @@ export const protectedRoutes = [
   routes.dashboard.settings,
   routes.quiz.list,
   routes.quiz.create,
-  '/quiz/', // Matches all quiz routes
+  '/my-quizzes/', // Matches all my-quizzes routes
   '/reports/',
   '/host/',
   '/creator/',

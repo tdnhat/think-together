@@ -17,6 +17,7 @@ import {
   useQuizModal,
 } from '@/features/quiz/hooks/creator'
 import { DeleteQuizDialog, PublishQuizDialog } from '@/features/quiz/components/creator'
+import { ROUTES } from '@/config/routes'
 
 function CreatorQuizzesContent() {
   const { params, queryParams, updateUrlParams } = useQuizUrlParams()
@@ -129,7 +130,7 @@ function CreatorQuizzesContent() {
         {
           onSuccess: (challenge: ChallengeDto) => {
             toast.success('Thử thách đã được tạo thành công!')
-            const shareUrl = `${window.location.origin}/challenge/${challenge.shareLink}`
+            const shareUrl = `${window.location.origin}${ROUTES.game.challenge(challenge.shareLink)}`
             navigator.clipboard.writeText(shareUrl).then(() => {
               toast.success('Đã sao chép liên kết thử thách!')
             })

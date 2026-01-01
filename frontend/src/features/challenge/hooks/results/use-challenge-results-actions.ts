@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/config/routes';
 
 export function useChallengeResultsActions(shareLink: string) {
   const router = useRouter();
 
   const handleShare = useCallback(async () => {
-    const url = `${window.location.origin}/challenge/${shareLink}`;
+    const url = `${window.location.origin}${ROUTES.game.challenge(shareLink)}`;
 
     if (navigator.share) {
       try {
@@ -25,11 +26,11 @@ export function useChallengeResultsActions(shareLink: string) {
   }, [shareLink]);
 
   const handleRetry = useCallback(() => {
-    router.push(`/challenge/${shareLink}`);
+    router.push(ROUTES.game.challenge(shareLink));
   }, [router, shareLink]);
 
   const handleHome = useCallback(() => {
-    router.push('/home');
+    router.push(ROUTES.dashboard.home);
   }, [router]);
 
   return {

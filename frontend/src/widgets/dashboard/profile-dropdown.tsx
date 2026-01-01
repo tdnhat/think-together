@@ -29,7 +29,7 @@ export function ProfileDropdown({ initials = "ND", onSignOut }: Readonly<Profile
   const [isBecomeCreatorModalOpen, setIsBecomeCreatorModalOpen] = useState(false)
 
   const isOnHomePage = pathname === ROUTES.dashboard.home
-  const isOnCreatorPage = pathname === ROUTES.quiz.list || pathname.startsWith('/creator/')
+  const isOnCreatorPage = pathname === ROUTES.quiz.list || pathname.startsWith(ROUTES.quiz.list)
 
   const handleSignOut = useCallback(() => {
     if (!onSignOut) {

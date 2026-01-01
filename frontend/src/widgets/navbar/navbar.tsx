@@ -20,7 +20,7 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+          <Link href={ROUTES.public.home} className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <GraduationCap className="h-8 w-8 text-primary" />
             <span className="text-xl font-heading font-bold text-foreground">ThinkTogether</span>
           </Link>

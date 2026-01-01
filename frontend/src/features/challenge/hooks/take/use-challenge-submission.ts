@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/config/routes';
 import { useSubmitAnswers } from '../index';
 import { useChallengeStore } from '../../store/challenge.store';
 import type { ChallengeAttemptDto } from '../../types';
@@ -94,7 +95,7 @@ export function useChallengeSubmission({
           if (homeworkId) {
             queryParams.set('homeworkId', homeworkId);
           }
-          router.push(`/challenge/${shareLink}/results?${queryParams.toString()}`);
+          router.push(`${ROUTES.game.challenge(shareLink)}/results?${queryParams.toString()}`);
         },
         onError: () => {
           setIsSubmitting(false);

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
+import { ROUTES } from '@/config/routes'
 import {
   ClassDetailHeader,
   ClassMembersList,
@@ -111,7 +112,10 @@ export default function ClassDetailPage() {
             {
               onSuccess: (attempt) => {
                 // Navigate directly to taking page
-                router.push(`/challenge/${challenge.shareLink}/take?attemptId=${attempt.id}&homeworkId=${homework.id}`)
+                const queryParams = new URLSearchParams();
+                queryParams.set('attemptId', attempt.id);
+                queryParams.set('homeworkId', homework.id);
+                router.push(`${ROUTES.game.challenge(challenge.shareLink)}/take?${queryParams.toString()}`)
               },
               onError: () => {
                 toast.error('Không thể bắt đầu làm bài. Vui lòng thử lại.')

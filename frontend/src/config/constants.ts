@@ -93,9 +93,9 @@ export const ROUTES = {
   // Dashboard routes (nested structure)
   DASHBOARD: {
     HOME: '/home',
-    MY_QUIZZES: '/creator/quizzes',
-    CREATE_QUIZ: '/quiz/create',
-    EDIT_QUIZ: (id: string) => `/quiz/${id}/edit`,
+    MY_QUIZZES: '/my-quizzes',
+    CREATE_QUIZ: '/my-quizzes/create',
+    EDIT_QUIZ: (id: string) => `/my-quizzes/${id}/edit`,
     QUIZ_REPORTS: (sessionId: string) => `/reports/${sessionId}`,
   },
 
@@ -116,7 +116,7 @@ export const PROTECTED_ROUTES = [
   ROUTES.DASHBOARD.HOME,
   ROUTES.DASHBOARD.MY_QUIZZES,
   ROUTES.DASHBOARD.CREATE_QUIZ,
-  '/creator/quizzes',
+  '/my-quizzes',
   '/quiz/',
   '/reports/',
   '/host/',

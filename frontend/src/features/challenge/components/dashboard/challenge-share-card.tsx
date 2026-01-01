@@ -46,7 +46,7 @@ export function ChallengeShareCard({ challenge, shareUrl }: ChallengeShareCardPr
 
   const handleOpenChallenge = () => {
     if (!challenge) return
-    window.open(`/challenge/${challenge.shareLink}`, '_blank')
+    window.open(ROUTES.game.challenge(challenge.shareLink), '_blank')
   }
 
   return (

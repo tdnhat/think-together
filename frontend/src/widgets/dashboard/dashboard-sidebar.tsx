@@ -31,14 +31,14 @@ const mainMenuItems: SidebarItem[] = [
   { icon: Home, label: "Trang chủ", href: ROUTES.dashboard.home },
   { icon: BookOpen, label: "Bộ câu hỏi", href: ROUTES.quiz.list },
   { icon: TrendingUp, label: "Bảng xếp hạng", href: ROUTES.leaderboard },
-  { icon: Activity, label: "Tiến trình", href: "/progress" },
+  { icon: Activity, label: "Tiến trình", href: "/progress" }, // TODO: Add to routes when implemented
 ];
 
 const otherMenuItems: SidebarItem[] = [
-  { icon: Star, label: "Bài đã lưu", href: "/saved" },
-  { icon: Clock, label: "Lịch sử", href: "/history" },
-  { icon: Users, label: "Cộng đồng", href: "/community" },
-  { icon: Settings, label: "Cài đặt", href: "/settings" },
+  { icon: Star, label: "Bài đã lưu", href: "/saved" }, // TODO: Add to routes when implemented
+  { icon: Clock, label: "Lịch sử", href: "/history" }, // TODO: Add to routes when implemented
+  { icon: Users, label: "Cộng đồng", href: "/community" }, // TODO: Add to routes when implemented
+  { icon: Settings, label: "Cài đặt", href: ROUTES.dashboard.settings },
 ];
 
 export function DashboardSidebar() {

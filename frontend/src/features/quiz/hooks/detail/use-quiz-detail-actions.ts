@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCreateChallenge } from '@/features/challenge';
 import { toast } from '@/lib/utils/toast';
+import { ROUTES } from '@/config/routes';
 import type { QuizSetDto } from '@/types/api';
 
 export function useQuizDetailActions(quizSetId: string, quizSet: QuizSetDto | null | undefined) {
@@ -30,17 +31,17 @@ export function useQuizDetailActions(quizSetId: string, quizSet: QuizSetDto | nu
         description: quizSet.description,
       },
       {
-        onSuccess: (challenge) => {
+        onSuccess: () => {
           toast.success('Thử thách đã được tạo thành công!');
           queryClient.invalidateQueries({ queryKey: ['challenge-by-quiz', quizSetId] });
-          router.push(`/quiz/${quizSetId}/challenge`);
+          router.push(ROUTES.quiz.challenge(quizSetId));
         },
       }
     );
   }, [quizSet, createChallenge, quizSetId, queryClient, router]);
 
   const handleViewChallenge = useCallback(() => {
-    router.push(`/quiz/${quizSetId}/challenge`);
+    router.push(ROUTES.quiz.challenge(quizSetId));
   }, [router, quizSetId]);
 
   const handleViewAllQuestions = useCallback(() => {
