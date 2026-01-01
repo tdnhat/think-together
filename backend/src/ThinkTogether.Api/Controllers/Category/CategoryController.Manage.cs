@@ -18,12 +18,11 @@ public partial class CategoryController
         [FromBody] CreateCategoryRequest request,
         CancellationToken cancellationToken = default)
     {
-        var command = new CreateCategoryCommand
-        {
-            Name = request.Name,
-            Description = request.Description,
-            DisplayOrder = request.DisplayOrder
-        };
+        var command = new CreateCategoryCommand(
+            request.Name,
+            request.Description!,
+            request.IsActive
+        );
 
         var result = await _mediator.Send(command, cancellationToken);
         
@@ -48,7 +47,6 @@ public partial class CategoryController
             Id = id,
             Name = request.Name,
             Description = request.Description,
-            DisplayOrder = request.DisplayOrder,
             IsActive = request.IsActive
         };
 

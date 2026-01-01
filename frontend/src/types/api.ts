@@ -40,7 +40,7 @@ export interface ValidationErrorResponse {
 }
 
 // User Role enum
-export type UserRole = 'Student' | 'Teacher' | 'Administrator'
+export type UserRole = 'User' | 'Creator' | 'Administrator'
 
 // Backend DTOs
 export interface AuthTokenDto {
@@ -56,9 +56,26 @@ export interface UserDto {
   lastName: string
   role: UserRole
   isEmailVerified: boolean
+  isActive: boolean
   avatarUrl?: string | null
   bio?: string | null
   createdAt?: string | null
+}
+
+export interface GetUsersRequest {
+  search?: string
+  role?: UserRole
+  sortBy?: 'newest' | 'oldest' | 'name' | 'email'
+  page?: number
+  pageSize?: number
+}
+
+export interface UpdateUserRequest {
+  id: string
+  firstName: string
+  lastName: string
+  role: UserRole
+  bio?: string
 }
 
 // Request DTOs
@@ -100,7 +117,6 @@ export interface CategoryDto {
   name: string
   description?: string
   isActive: boolean
-  displayOrder: number
   createdAt: string
   updatedAt?: string
 }
@@ -108,15 +124,14 @@ export interface CategoryDto {
 export interface CreateCategoryRequest {
   name: string
   description?: string
-  displayOrder?: number
+  isActive?: boolean
 }
 
 export interface UpdateCategoryRequest {
   id: string
-  name: string
+  name?: string
   description?: string
-  displayOrder: number
-  isActive: boolean
+  isActive?: boolean
 }
 
 // Quiz Set DTOs
@@ -249,4 +264,29 @@ export interface UpdateQuestionRequest {
 export interface ReorderQuestionsRequest {
   quizSetId: string
   questionOrders: Array<{ id: string; displayOrder: number }>
+}
+
+export interface ChartDataDto {
+  label: string
+  value: number
+}
+
+export interface CategoryDistributionDto {
+  name: string
+  value: number
+}
+
+export interface DashboardCountsDto {
+  totalQuizzes: number
+  newQuizzesToday: number
+  totalUsers: number
+  newUsersToday: number
+  totalCategories: number
+  activeUsersToday: number
+}
+
+export interface DashboardChartsDto {
+  quizTrends: ChartDataDto[]
+  userTrends: ChartDataDto[]
+  categoryDistribution: CategoryDistributionDto[]
 }

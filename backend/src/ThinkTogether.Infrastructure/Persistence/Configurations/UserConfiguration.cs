@@ -61,6 +61,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("gioiThieu")
             .HasMaxLength(-1); // nvarchar(max)
 
+        builder.Property(u => u.IsActive)
+            .HasColumnName("dangHoatDong")
+            .IsRequired()
+            .HasDefaultValue(true);
+
         builder.Property(u => u.IsEmailVerified)
             .HasColumnName("daXacNhanEmail")
             .IsRequired()

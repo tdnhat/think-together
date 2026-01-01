@@ -81,5 +81,39 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
             )
             .CountAsync(cancellationToken);
     }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.QuizSets.CountAsync(cancellationToken);
+    }
+
+    public async Task<int> CountCreatedAfterAsync(DateTime date, CancellationToken cancellationToken = default)
+    {
+        return await _context.QuizSets.CountAsync(q => q.CreatedAt >= date, cancellationToken);
+    }
+
+    public async Task<Dictionary<DateTime, int>> GetCreationStatsAsync(DateTime from, DateTime to, CancellationToken cancellationToken = default)
+    {
+        var stats = await _context.QuizSets
+            .Where(q => q.CreatedAt >= from && q.CreatedAt <= to)
+            .GroupBy(q => new { q.CreatedAt.Year, q.CreatedAt.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        return stats.ToDictionary(k => new DateTime(k.Year, k.Month, 1), v => v.Count);
+    }
+
+    public async Task<Dictionary<string, int>> GetCountsByCategoryAsync(CancellationToken cancellationToken = default)
+    {
+        // Join with Categories to get names
+        var query = from q in _context.QuizSets
+                    where q.CategoryId.HasValue
+                    join c in _context.Categories on q.CategoryId equals c.Id
+                    group q by c.Name into g
+                    select new { CategoryName = g.Key, Count = g.Count() };
+                    
+        var result = await query.ToListAsync(cancellationToken);
+        return result.ToDictionary(k => k.CategoryName, v => v.Count);
+    }
 }
 

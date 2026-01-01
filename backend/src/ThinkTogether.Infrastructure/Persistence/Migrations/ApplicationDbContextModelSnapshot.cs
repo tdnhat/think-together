@@ -43,12 +43,6 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(2000)")
                         .HasColumnName("moTa");
 
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("thuTu");
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -70,13 +64,13 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                     b.HasIndex("DeletedAt")
                         .HasDatabaseName("IDX_DanhMuc_ngayXoa");
 
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IDX_DanhMuc_IsActive");
+
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasDatabaseName("IDX_DanhMuc_tenDanhMuc")
                         .HasFilter("[ngayXoa] IS NULL");
-
-                    b.HasIndex("IsActive", "DisplayOrder")
-                        .HasDatabaseName("IDX_DanhMuc_IsActive_DisplayOrder");
 
                     b.ToTable("DanhMuc", (string)null);
                 });
@@ -1451,6 +1445,12 @@ namespace ThinkTogether.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("tenDem");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("dangHoatDong");
 
                     b.Property<bool>("IsEmailVerified")
                         .ValueGeneratedOnAdd()

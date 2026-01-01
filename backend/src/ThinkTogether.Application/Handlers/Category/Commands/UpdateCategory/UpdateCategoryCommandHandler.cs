@@ -32,7 +32,10 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
             throw new ValidationException("Tên danh mục đã tồn tại");
 
         // Update category
-        category.Update(request.Name, request.Description, request.DisplayOrder);
+        category.Update(
+            request.Name,
+            request.Description
+        );
         category.SetActive(request.IsActive);
 
         // Save changes

@@ -16,8 +16,7 @@ public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCo
         RuleFor(x => x.Description)
             .MaximumLength(2000).WithMessage("Mô tả không được vượt quá 2000 ký tự");
 
-        RuleFor(x => x.DisplayOrder)
-            .GreaterThanOrEqualTo(0).WithMessage("Thứ tự hiển thị phải là số không âm");
+
     }
 }
 

@@ -30,11 +30,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasDefaultValue(true);
 
-        builder.Property(c => c.DisplayOrder)
-            .HasColumnName("thuTu")
-            .IsRequired()
-            .HasDefaultValue(0);
-
         builder.Property(c => c.CreatedAt)
             .HasColumnName("ngayTao")
             .IsRequired()
@@ -52,8 +47,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasFilter("[ngayXoa] IS NULL")
             .HasDatabaseName("IDX_DanhMuc_tenDanhMuc");
 
-        builder.HasIndex(c => new { c.IsActive, c.DisplayOrder })
-            .HasDatabaseName("IDX_DanhMuc_IsActive_DisplayOrder");
+        builder.HasIndex(c => c.IsActive)
+            .HasDatabaseName("IDX_DanhMuc_IsActive");
 
         builder.HasIndex(c => c.DeletedAt)
             .HasDatabaseName("IDX_DanhMuc_ngayXoa");

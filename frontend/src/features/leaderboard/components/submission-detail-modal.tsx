@@ -79,7 +79,7 @@ export function SubmissionDetailModal({
 
                     {data && (
                         <QuestionReviewList
-                            // @ts-ignore - Types are compatible enough for runtime, we can fix strict typing later if needed
+                            // @ts-expect-error - Types are compatible enough for runtime, we can fix strict typing later if needed
                             questions={data.questions}
                             title="Danh sách câu hỏi"
                         />

@@ -22,8 +22,7 @@ public class CategoryRepository : Repository<Category, Guid>, ICategoryRepositor
     {
         return await _dbSet
             .Where(c => c.IsActive && c.DeletedAt == null)
-            .OrderBy(c => c.DisplayOrder)
-            .ThenBy(c => c.Name)
+            .OrderBy(c => c.Name) // Changed from DisplayOrder
             .ToListAsync(cancellationToken);
     }
 
@@ -43,8 +42,7 @@ public class CategoryRepository : Repository<Category, Guid>, ICategoryRepositor
     {
         return await _dbSet
             .Where(c => c.IsActive && c.DeletedAt == null && c.Name.Contains(searchTerm))
-            .OrderBy(c => c.DisplayOrder)
-            .ThenBy(c => c.Name)
+            .OrderBy(c => c.Name) // Changed from DisplayOrder
             .ToListAsync(cancellationToken);
     }
 
@@ -55,8 +53,7 @@ public class CategoryRepository : Repository<Category, Guid>, ICategoryRepositor
     {
         var query = _dbSet
             .Where(c => c.IsActive && c.DeletedAt == null)
-            .OrderBy(c => c.DisplayOrder)
-            .ThenBy(c => c.Name);
+            .OrderBy(c => c.Name);
 
         var total = await query.CountAsync(cancellationToken);
         var items = await query
@@ -71,6 +68,11 @@ public class CategoryRepository : Repository<Category, Guid>, ICategoryRepositor
             Page = page,
             PageSize = pageSize
         };
+    }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Categories.CountAsync(cancellationToken);
     }
 }
 

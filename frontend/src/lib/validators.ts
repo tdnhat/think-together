@@ -2,50 +2,50 @@ import { z } from "zod";
 
 // Auth schemas
 export const loginSchema = z.object({
-    email: z.string().email("Địa chỉ email không hợp lệ"),
-    password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-    rememberMe: z.boolean().optional(),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
+  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  rememberMe: z.boolean().optional(),
 });
 
 export const registerSchema = z
-    .object({
-        name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
-        email: z.string().email("Địa chỉ email không hợp lệ"),
-        password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: "Mật khẩu không khớp",
-        path: ["confirmPassword"],
-    });
+  .object({
+    name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
+    email: z.string().email("Địa chỉ email không hợp lệ"),
+    password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Mật khẩu không khớp",
+    path: ["confirmPassword"],
+  });
 
 export const confirmEmailSchema = z.object({
-    token: z.string().min(1, "Token xác nhận email là bắt buộc"),
+  token: z.string().min(1, "Token xác nhận email là bắt buộc"),
 });
 
 export const resendEmailConfirmationSchema = z.object({
-    email: z.string().email("Địa chỉ email không hợp lệ"),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
 });
 
 export const forgotPasswordSchema = z.object({
-    email: z.string().email("Địa chỉ email không hợp lệ"),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
 });
 
 export const resetPasswordSchema = z
-    .object({
-        token: z.string().min(1, "Token đặt lại mật khẩu là bắt buộc"),
-        newPassword: z
-            .string()
-            .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
-            .regex(/[A-Z]/, "Mật khẩu phải chứa ít nhất một chữ cái viết hoa")
-            .regex(/[a-z]/, "Mật khẩu phải chứa ít nhất một chữ cái viết thường")
-            .regex(/[0-9]/, "Mật khẩu phải chứa ít nhất một chữ số"),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-        message: "Mật khẩu không khớp",
-        path: ["confirmPassword"],
-    });
+  .object({
+    token: z.string().min(1, "Token đặt lại mật khẩu là bắt buộc"),
+    newPassword: z
+      .string()
+      .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+      .regex(/[A-Z]/, "Mật khẩu phải chứa ít nhất một chữ cái viết hoa")
+      .regex(/[a-z]/, "Mật khẩu phải chứa ít nhất một chữ cái viết thường")
+      .regex(/[0-9]/, "Mật khẩu phải chứa ít nhất một chữ số"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Mật khẩu không khớp",
+    path: ["confirmPassword"],
+  });
 
 // Type exports
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -58,44 +58,61 @@ export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 // Quiz schemas
 // Helper to validate UUID or empty string, transforming empty string to undefined
 const optionalUuidSchema = z.preprocess(
-    (val) => (val === "" || val === null || val === undefined ? undefined : val),
-    z.string().uuid("ID danh mục không hợp lệ").optional()
+  (val) => (val === "" || val === null || val === undefined ? undefined : val),
+  z.string().uuid("ID danh mục không hợp lệ").optional()
 );
 
 // Helper to validate URL or empty string, transforming empty string to undefined
 const optionalUrlSchema = z.preprocess(
-    (val) => (val === "" || val === null || val === undefined ? undefined : val),
-    z.string().url("URL ảnh bìa không hợp lệ").optional()
+  (val) => (val === "" || val === null || val === undefined ? undefined : val),
+  z.string().url("URL ảnh bìa không hợp lệ").optional()
 );
 
 export const createQuizSetSchema = z.object({
-    title: z.string()
-        .min(1, "Tiêu đề là bắt buộc")
-        .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
-    description: z.string()
-        .max(2000, "Mô tả không được vượt quá 2000 ký tự")
-        .optional()
-        .transform((val) => val === "" ? undefined : val),
-    coverImageUrl: optionalUrlSchema,
-    categoryId: optionalUuidSchema,
+  title: z.string()
+    .min(1, "Tiêu đề là bắt buộc")
+    .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
+  description: z.string()
+    .max(2000, "Mô tả không được vượt quá 2000 ký tự")
+    .optional()
+    .transform((val) => val === "" ? undefined : val),
+  coverImageUrl: optionalUrlSchema,
+  categoryId: optionalUuidSchema,
 });
 
 export const updateQuizSetSchema = z.object({
-    id: z.string().uuid("ID không hợp lệ"),
-    title: z.string()
-        .min(1, "Tiêu đề là bắt buộc")
-        .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
-    description: z.string()
-        .max(2000, "Mô tả không được vượt quá 2000 ký tự")
-        .optional()
-        .transform((val) => val === "" ? undefined : val),
-    coverImageUrl: optionalUrlSchema,
-    categoryId: optionalUuidSchema,
+  id: z.string().uuid("ID không hợp lệ"),
+  title: z.string()
+    .min(1, "Tiêu đề là bắt buộc")
+    .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
+  description: z.string()
+    .max(2000, "Mô tả không được vượt quá 2000 ký tự")
+    .optional()
+    .transform((val) => val === "" ? undefined : val),
+  coverImageUrl: optionalUrlSchema,
+  categoryId: optionalUuidSchema,
 });
 
-// Type exports
+// Quiz Set DTOs
 export type CreateQuizSetFormData = z.infer<typeof createQuizSetSchema>;
 export type UpdateQuizSetFormData = z.infer<typeof updateQuizSetSchema>;
+
+// Category schemas
+export const createCategorySchema = z.object({
+  name: z.string().min(1, 'Tên danh mục không được trống').max(255, 'Tối đa 255 ký tự'),
+  description: z.string().max(2000, 'Tối đa 2000 ký tự').optional().or(z.literal('')),
+  isActive: z.boolean().default(true).optional(),
+});
+
+export const updateCategorySchema = z.object({
+  id: z.string().uuid("ID không hợp lệ"),
+  name: z.string().min(1, 'Tên danh mục không được trống').max(255, 'Tối đa 255 ký tự'),
+  description: z.string().max(2000, 'Tối đa 2000 ký tự').optional().or(z.literal('')),
+  isActive: z.boolean().default(true).optional(),
+});
+
+export type CreateCategoryFormData = z.infer<typeof createCategorySchema>;
+export type UpdateCategoryFormData = z.infer<typeof updateCategorySchema>;
 
 // Question schemas
 const matchingPairSchema = z.object({
@@ -187,12 +204,12 @@ export const createQuestionSchema = z.object({
 
     // Validate correct answers
     const correctCount = data.options.filter(opt => opt.isCorrect).length
-    
+
     if (data.type === 'SingleChoice' || data.type === 'TrueFalse') {
       if (correctCount !== 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: data.type === 'TrueFalse' 
+          message: data.type === 'TrueFalse'
             ? "Phải chọn một đáp án đúng (Đúng hoặc Sai)"
             : "Phải chọn chính xác một đáp án đúng",
           path: ['options'],

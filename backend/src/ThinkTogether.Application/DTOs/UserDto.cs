@@ -7,6 +7,7 @@ public record UserDto(
     string LastName,
     string Role,
     bool IsEmailVerified,
+    bool IsActive,
     string? AvatarUrl = null,
     string? Bio = null,
     DateTime? CreatedAt = null);

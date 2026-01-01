@@ -17,9 +17,7 @@ public sealed partial class Category : AggregateRoot
 
     public bool IsActive { get; private set; }
 
-    public int DisplayOrder { get; private set; }
-
-    public static Category Create(string name, string? description = null, int displayOrder = 0)
+    public static Category Create(string name, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ValidationException("Tên danh mục không được trống");
@@ -29,9 +27,6 @@ public sealed partial class Category : AggregateRoot
 
         if (description?.Length > 2000)
             throw new ValidationException("Mô tả không được vượt quá 2000 ký tự");
-
-        if (displayOrder < 0)
-            throw new ValidationException("Thứ tự hiển thị phải là số không âm");
 
         return new Category
         {
@@ -39,13 +34,12 @@ public sealed partial class Category : AggregateRoot
             Name = name.Trim(),
             Description = description?.Trim(),
             IsActive = true,
-            DisplayOrder = displayOrder,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
     }
 
-    public void Update(string name, string? description, int displayOrder)
+    public void Update(string name, string? description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ValidationException("Tên danh mục không được trống");
@@ -56,12 +50,8 @@ public sealed partial class Category : AggregateRoot
         if (description?.Length > 2000)
             throw new ValidationException("Mô tả không được vượt quá 2000 ký tự");
 
-        if (displayOrder < 0)
-            throw new ValidationException("Thứ tự hiển thị phải là số không âm");
-
         Name = name.Trim();
         Description = description?.Trim();
-        DisplayOrder = displayOrder;
         UpdatedAt = DateTime.UtcNow;
     }
 

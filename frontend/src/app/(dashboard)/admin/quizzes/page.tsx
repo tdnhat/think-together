@@ -1,11 +1,20 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
-import { Search } from 'lucide-react'
+import { QuizList } from '@/features/quiz/components/quiz-list'
+import { QuizFilters } from '@/features/quiz/components/quiz-filters'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/shared/ui/pagination'
 
 export default function QuizzesAdminPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [page, setPage] = useState(1)
+
+  // Mock data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const quizzes = [] as any[]
+  const isLoading = false
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -18,34 +27,28 @@ export default function QuizzesAdminPage() {
         </p>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Tìm kiếm quiz..."
-            className="pl-10"
-          />
-        </div>
-        <Button variant="outline">
-          Lọc
-        </Button>
-      </div>
-
       {/* Content */}
       <Card>
         <CardHeader>
           <CardTitle>Danh Sách Quiz</CardTitle>
           <CardDescription>
-            Tính năng này đang được phát triển
+            Xem và quản lý tất cả quiz trong hệ thống
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">
-              Quản lý quiz toàn hệ thống sẽ sớm có sẵn
-            </p>
-          </div>
+        <CardContent className="space-y-6">
+          <QuizFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+
+          <QuizList
+            quizzes={quizzes}
+            isLoading={isLoading}
+            onView={(quiz) => console.log('View quiz', quiz)}
+          />
+
+          {/* Pagination Placeholder */}
+          {/* <Pagination>...</Pagination> */}
         </CardContent>
       </Card>
     </div>

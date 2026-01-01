@@ -17,5 +17,7 @@ public interface ICategoryRepository : IRepository<Category, Guid>
         int page,
         int pageSize,
         CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(CancellationToken cancellationToken = default);
 }
 

@@ -27,7 +27,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
             throw new ValidationException("Tên danh mục đã tồn tại");
 
         // Create category
-        var category = ThinkTogether.Domain.Aggregates.CategoryAggregate.Category.Create(request.Name, request.Description, request.DisplayOrder);
+        var category = ThinkTogether.Domain.Aggregates.CategoryAggregate.Category.Create(request.Name, request.Description);
 
         // Add to repository
         await _categoryRepository.AddAsync(category, cancellationToken);

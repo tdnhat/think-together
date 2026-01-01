@@ -2,8 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { useAuthStore, selectUser, selectIsHydrated } from '@/features/auth/stores/auth.store'
-import { SidebarProvider, SidebarTrigger } from '@/shared/ui/sidebar'
-import { Separator } from '@/shared/ui/separator'
+import { SidebarInset, SidebarProvider } from '@/shared/ui/sidebar'
 import { ROUTES } from '@/config/routes'
 import { DashboardNavbar } from '@/widgets/dashboard/dashboard-navbar'
 import { AdminSidebar } from '@/widgets/admin/admin-sidebar'
@@ -35,31 +34,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      {/* Header */}
-      <header className="relative flex h-16 shrink-0 items-center gap-2 bg-background/95 backdrop-blur px-4 border-b border-border">
-        <div className="flex-1">
-          <DashboardNavbar />
+    <SidebarProvider>
+      <AdminSidebar />
+      <SidebarInset>
+        <DashboardNavbar />
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <main className="flex flex-1 flex-col bg-background px-6 pb-12 pt-8 overflow-hidden">
+            <div className="mx-auto w-full max-w-7xl">
+              {children}
+            </div>
+          </main>
         </div>
-        <Separator className="absolute bottom-0 left-0 right-0" />
-      </header>
-
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Admin Sidebar */}
-        <aside className="w-64 border-r border-border bg-background overflow-y-auto">
-          <div className="p-6">
-            <AdminSidebar />
-          </div>
-        </aside>
-
-        {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-background">
-          <div className="px-10 py-8 max-w-7xl mx-auto w-full">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

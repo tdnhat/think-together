@@ -7,7 +7,6 @@ public record CategoryResponse(
     string Name,
     string? Description,
     bool IsActive,
-    int DisplayOrder,
     DateTime CreatedAt,
     DateTime? UpdatedAt)
 {
@@ -16,7 +15,6 @@ public record CategoryResponse(
         dto.Name,
         dto.Description,
         dto.IsActive,
-        dto.DisplayOrder,
         dto.CreatedAt,
         dto.UpdatedAt);
 }

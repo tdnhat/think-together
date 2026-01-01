@@ -83,16 +83,16 @@ public class DbInitializer : IDbInitializer
 
         var categories = new List<Category>
         {
-            Category.Create("Toán Học", "Danh mục cho các bài tập và câu hỏi về toán học", 1),
-            Category.Create("Tiếng Anh", "Danh mục cho các bài tập và câu hỏi về tiếng Anh", 2),
-            Category.Create("Lịch Sử", "Danh mục cho các bài tập và câu hỏi về lịch sử", 3),
-            Category.Create("Khoa Học", "Danh mục cho các bài tập và câu hỏi về khoa học tổng quát", 4),
-            Category.Create("Ngữ Văn", "Danh mục cho các bài tập và câu hỏi về ngữ văn", 5),
-            Category.Create("Địa Lý", "Danh mục cho các bài tập và câu hỏi về địa lý", 6),
-            Category.Create("Sinh Học", "Danh mục cho các bài tập và câu hỏi về sinh học", 7),
-            Category.Create("Hóa Học", "Danh mục cho các bài tập và câu hỏi về hóa học", 8),
-            Category.Create("Vật Lý", "Danh mục cho các bài tập và câu hỏi về vật lý", 9),
-            Category.Create("Tin Học", "Danh mục cho các bài tập và câu hỏi về tin học", 10)
+            Category.Create("Toán học", "Các bài kiểm tra về Toán học"),
+            Category.Create("Vật lý", "Các bài kiểm tra về Vật lý"),
+            Category.Create("Hóa học", "Các bài kiểm tra về Hóa học"),
+            Category.Create("Sinh học", "Các bài kiểm tra về Sinh học"),
+            Category.Create("Lịch sử", "Các bài kiểm tra về Lịch sử"),
+            Category.Create("Địa lý", "Các bài kiểm tra về Địa lý"),
+            Category.Create("Văn học", "Các bài kiểm tra về Văn học"),
+            Category.Create("Tiếng Anh", "Các bài kiểm tra về Tiếng Anh"),
+            Category.Create("Tin học", "Các bài kiểm tra về Tin học"),
+            Category.Create("Công nghệ", "Các bài kiểm tra về Công nghệ")
         };
 
         _context.Categories.AddRange(categories);

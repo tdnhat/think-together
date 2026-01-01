@@ -23,6 +23,7 @@ public sealed partial class User : AggregateRoot
     public string? AvatarUrl { get; private set; }
     public string? Bio { get; private set; }
     public bool IsEmailVerified { get; private set; }
+    public bool IsActive { get; private set; } = true;
 
     public IReadOnlyList<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 

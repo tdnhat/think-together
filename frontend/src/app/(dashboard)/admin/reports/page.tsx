@@ -1,11 +1,18 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
-import { Search } from 'lucide-react'
+import { ReportList } from '@/features/report/components/report-list'
+import { ReportFilters } from '@/features/report/components/report-filters'
 
 export default function ReportsAdminPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // Mock data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reports = [] as any[]
+  const isLoading = false
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -18,34 +25,25 @@ export default function ReportsAdminPage() {
         </p>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Tìm kiếm báo cáo..."
-            className="pl-10"
-          />
-        </div>
-        <Button variant="outline">
-          Lọc
-        </Button>
-      </div>
-
       {/* Content */}
       <Card>
         <CardHeader>
           <CardTitle>Danh Sách Báo Cáo</CardTitle>
           <CardDescription>
-            Tính năng này đang được phát triển
+            Xem và quản lý tất cả báo cáo trong hệ thống
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">
-              Công cụ báo cáo toàn hệ thống sẽ sớm có sẵn
-            </p>
-          </div>
+        <CardContent className="space-y-6">
+          <ReportFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+
+          <ReportList
+            reports={reports}
+            isLoading={isLoading}
+            onView={(report) => console.log('View report', report)}
+          />
         </CardContent>
       </Card>
     </div>

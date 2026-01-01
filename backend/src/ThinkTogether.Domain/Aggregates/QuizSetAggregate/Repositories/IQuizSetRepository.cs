@@ -12,5 +12,13 @@ public interface IQuizSetRepository : IRepository<QuizSet, Guid>
         CancellationToken cancellationToken = default);
     
     Task<int> CountQuestionsAsync(CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(CancellationToken cancellationToken = default);
+
+    Task<int> CountCreatedAfterAsync(DateTime date, CancellationToken cancellationToken = default);
+
+    Task<Dictionary<DateTime, int>> GetCreationStatsAsync(DateTime from, DateTime to, CancellationToken cancellationToken = default);
+
+    Task<Dictionary<string, int>> GetCountsByCategoryAsync(CancellationToken cancellationToken = default);
 }
 

@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Checkbox } from '@/shared/ui/checkbox'
@@ -16,22 +15,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/ui/form'
-import { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest } from '@/types/api'
-
-const categoryFormSchema = z.object({
-  name: z.string().min(1, 'Tên danh mục không được trống').max(255, 'Tối đa 255 ký tự'),
-  description: z.string().max(2000, 'Tối đa 2000 ký tự').optional().or(z.literal('')),
-  displayOrder: z.number().min(0, 'Thứ tự phải là số không âm'),
-  isActive: z.boolean().default(true),
-})
-
-type CategoryFormValues = z.infer<typeof categoryFormSchema>
+import { CategoryDto } from '@/types/api'
+import {
+  createCategorySchema,
+  updateCategorySchema,
+  type CreateCategoryFormData,
+  type UpdateCategoryFormData
+} from '@/lib/validators'
 
 interface CategoryFormProps {
   category?: CategoryDto | null
-  onSubmit: (data: CreateCategoryRequest | UpdateCategoryRequest) => void | Promise<void>
-  onCancel: () => void
+  onSubmit: (data: CreateCategoryFormData | UpdateCategoryFormData) => void | Promise<void>
+  onCancel?: () => void
   isSubmitting?: boolean
+  showActions?: boolean
 }
 
 export function CategoryForm({
@@ -39,16 +36,23 @@ export function CategoryForm({
   onSubmit,
   onCancel,
   isSubmitting = false,
+  showActions = true,
 }: CategoryFormProps) {
   const isEditing = !!category
+  const schema = isEditing ? updateCategorySchema : createCategorySchema
 
-  const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categoryFormSchema),
+  const form = useForm<CreateCategoryFormData | UpdateCategoryFormData>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      name: category?.name || '',
-      description: category?.description || '',
-      displayOrder: category?.displayOrder || 0,
-      isActive: category?.isActive ?? true,
+      name: '',
+      description: '',
+      isActive: true,
+      ...(isEditing && category ? {
+        id: category.id,
+        name: category.name,
+        description: category.description || '',
+        isActive: category.isActive,
+      } : {})
     },
   })
 
@@ -56,48 +60,33 @@ export function CategoryForm({
   useEffect(() => {
     if (category) {
       form.reset({
+        id: category.id,
         name: category.name,
         description: category.description || '',
-        displayOrder: category.displayOrder,
         isActive: category.isActive ?? true,
       })
     } else {
       form.reset({
         name: '',
         description: '',
-        displayOrder: 0,
         isActive: true,
       })
     }
   }, [category, form])
 
-  const handleSubmit = async (values: CategoryFormValues) => {
-    if (isEditing && category) {
-      await onSubmit({
-        id: category.id,
-        name: values.name,
-        description: values.description || undefined,
-        displayOrder: values.displayOrder,
-        isActive: values.isActive,
-      } as UpdateCategoryRequest)
-    } else {
-      await onSubmit({
-        name: values.name,
-        description: values.description || undefined,
-        displayOrder: values.displayOrder,
-      } as CreateCategoryRequest)
-    }
+  const handleSubmit = async (values: CreateCategoryFormData | UpdateCategoryFormData) => {
+    await onSubmit(values)
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form id="category-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tên danh mục *</FormLabel>
+              <FormLabel>Tên danh mục <span className="text-destructive">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="Ví dụ: Tiếng Anh, Toán Học..." {...field} />
               </FormControl>
@@ -124,25 +113,6 @@ export function CategoryForm({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="displayOrder"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Thứ tự hiển thị</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={0}
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {isEditing && (
           <FormField
             control={form.control}
@@ -151,7 +121,7 @@ export function CategoryForm({
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
                   <Checkbox
-                    checked={field.value}
+                    checked={field.value as boolean}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
@@ -161,14 +131,18 @@ export function CategoryForm({
           />
         )}
 
-        <div className="flex gap-3 pt-4">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang xử lý...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
-          </Button>
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-            Hủy
-          </Button>
-        </div>
+        {showActions && (
+          <div className="flex gap-3 pt-4">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Đang xử lý...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
+            </Button>
+            {onCancel && (
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+                Hủy
+              </Button>
+            )}
+          </div>
+        )}
       </form>
     </Form>
   )

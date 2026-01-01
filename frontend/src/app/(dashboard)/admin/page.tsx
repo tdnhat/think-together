@@ -3,76 +3,73 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
+import { RecentActivityList } from '@/features/dashboard/components/recent-activity-list'
 import { TrendingUp, Users, BookOpen, Tags, Activity } from 'lucide-react'
-
-const dashboardStats = [
-  {
-    title: 'Tổng Quiz',
-    value: '1,234',
-    change: '+12%',
-    icon: BookOpen,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-  },
-  {
-    title: 'Tổng Người Dùng',
-    value: '5,678',
-    change: '+8%',
-    icon: Users,
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10',
-  },
-  {
-    title: 'Danh Mục',
-    value: '24',
-    change: '+2',
-    icon: Tags,
-    color: 'text-amber-500',
-    bgColor: 'bg-amber-500/10',
-  },
-  {
-    title: 'Hoạt Động Hôm Nay',
-    value: '342',
-    change: '+15%',
-    icon: Activity,
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-  },
-]
-
-const quizTrendData = [
-  { month: 'Jan', quizzes: 65, users: 120 },
-  { month: 'Feb', quizzes: 78, users: 145 },
-  { month: 'Mar', quizzes: 82, users: 165 },
-  { month: 'Apr', quizzes: 95, users: 189 },
-  { month: 'May', quizzes: 110, users: 210 },
-  { month: 'Jun', quizzes: 145, users: 289 },
-]
-
-const categoryDistribution = [
-  { name: 'Toán', value: 245 },
-  { name: 'Tiếng Anh', value: 189 },
-  { name: 'Khoa học', value: 167 },
-  { name: 'Lịch sử', value: 98 },
-  { name: 'Khác', value: 135 },
-]
+import { dashboardService } from '@/features/dashboard/services/dashboard-service'
+import { useQuery } from '@tanstack/react-query'
+import { LoadingSpinner } from '@/shared/ui/loading-spinner'
+import { DashboardChartsDto, DashboardCountsDto, QuizSetDto } from '@/types/api'
 
 const COLORS = ['#3b82f6', '#a855f7', '#ec4899', '#f59e0b', '#10b981']
 
 export default function AdminDashboard() {
-  return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">
-          Bảng Điều Khiển Quản Trị
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Chào mừng bạn trở lại. Đây là tổng quan về hệ thống của bạn.
-        </p>
-      </div>
+  const countsQuery = useQuery({
+    queryKey: ['dashboard-counts'],
+    queryFn: dashboardService.getCounts
+  })
 
-      {/* Stats Grid */}
+  const chartsQuery = useQuery({
+    queryKey: ['dashboard-charts'],
+    queryFn: dashboardService.getCharts
+  })
+
+  const recentActivityQuery = useQuery({
+    queryKey: ['dashboard-recent'],
+    queryFn: dashboardService.getRecentActivity
+  })
+
+  // Helper to render stats section
+  const renderStats = () => {
+    if (countsQuery.isLoading) return <LoadingSpinner />
+    if (countsQuery.error || !countsQuery.data) return <p className="text-red-500">Lỗi tải dữ liệu</p>
+
+    const stats = countsQuery.data
+    const dashboardStats = [
+      {
+        title: 'Tổng Quiz',
+        value: stats.totalQuizzes.toLocaleString(),
+        change: `+${stats.newQuizzesToday} hôm nay`,
+        icon: BookOpen,
+        color: 'text-blue-500',
+        bgColor: 'bg-blue-500/10',
+      },
+      {
+        title: 'Tổng Người Dùng',
+        value: stats.totalUsers.toLocaleString(),
+        change: `+${stats.newUsersToday} hôm nay`,
+        icon: Users,
+        color: 'text-purple-500',
+        bgColor: 'bg-purple-500/10',
+      },
+      {
+        title: 'Tổng Danh Mục',
+        value: stats.totalCategories.toLocaleString(),
+        change: 'Đang hoạt động',
+        icon: Tags,
+        color: 'text-amber-500',
+        bgColor: 'bg-amber-500/10',
+      },
+      {
+        title: 'Quiz Mới Hôm Nay',
+        value: stats.newQuizzesToday.toLocaleString(),
+        change: 'Tăng trưởng',
+        icon: Activity,
+        color: 'text-green-500',
+        bgColor: 'bg-green-500/10',
+      },
+    ]
+
+    return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {dashboardStats.map((stat) => {
           const Icon = stat.icon
@@ -101,8 +98,23 @@ export default function AdminDashboard() {
           )
         })}
       </div>
+    )
+  }
 
-      {/* Charts */}
+  // Helper to render charts
+  const renderCharts = () => {
+    if (chartsQuery.isLoading) return <div className="h-96 flex items-center justify-center"><LoadingSpinner /></div>
+    if (chartsQuery.error || !chartsQuery.data) return <p className="text-red-500">Lỗi tải biểu đồ</p>
+
+    const stats = chartsQuery.data
+    const quizTrendData = stats.quizTrends.map((q, idx) => ({
+      month: q.label,
+      quizzes: q.value,
+      users: stats.userTrends[idx]?.value || 0
+    }))
+    const categoryDistribution = stats.categoryDistribution
+
+    return (
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Quiz Trend Chart */}
         <Card className="lg:col-span-2">
@@ -141,65 +153,70 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={(entry) => `${entry.name}`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {categoryDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex flex-col items-center justify-center">
+              {categoryDistribution.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={categoryDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={false}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {categoryDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                  Chưa có dữ liệu
+                </div>
+              )}
+              <div className="mt-4 grid grid-cols-2 gap-2 text-sm w-full">
+                {categoryDistribution.map((entry, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                    <span className="truncate" title={entry.name}>{entry.name} ({entry.value})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
+    )
+  }
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Hoạt Động Gần Đây</CardTitle>
-          <CardDescription>
-            Những sự kiện mới nhất trong hệ thống
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { action: 'Quiz mới được tạo', user: 'Nguyễn Văn A', time: '2 giờ trước' },
-              { action: 'Người dùng mới đăng ký', user: 'Trần Thị B', time: '4 giờ trước' },
-              { action: 'Danh mục được cập nhật', user: 'Admin', time: '6 giờ trước' },
-              { action: 'Quiz được yêu thích', user: 'Hoàng Văn C', time: '1 ngày trước' },
-            ].map((activity, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between pb-4 border-b border-border last:border-b-0 last:pb-0"
-              >
-                <div>
-                  <p className="font-medium text-foreground">
-                    {activity.action}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Bởi {activity.user}
-                  </p>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {activity.time}
-                </span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+  // Helper to render recent activity
+  const renderRecent = () => {
+    if (recentActivityQuery.isLoading) return <LoadingSpinner />
+    if (recentActivityQuery.error || !recentActivityQuery.data) return <p className="text-red-500">Lỗi tải hoạt động</p>
+
+    return <RecentActivityList quizzes={recentActivityQuery.data} />
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">
+          Bảng Điều Khiển Quản Trị
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Chào mừng bạn trở lại. Đây là tổng quan về hệ thống của bạn.
+        </p>
+      </div>
+
+      {renderStats()}
+      {renderCharts()}
+      {renderRecent()}
     </div>
   )
 }
