@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.GameSession.Commands.EndGame;
 using ThinkTogether.Application.Handlers.GameSession.Commands.NextQuestion;
@@ -12,7 +11,7 @@ public partial class GameSessionController
 {
     [HttpPost("{id:guid}/start")]
     [Authorize]
-    [ProducesResponseType(typeof(ApiResponse<GameQuestionDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GameQuestionDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> StartGame(
         Guid id,
         CancellationToken cancellationToken)
@@ -23,17 +22,13 @@ public partial class GameSessionController
         // Notifications are handled automatically by domain event handlers
         // No need to call notification service here
 
-        return Ok(new ApiResponse<GameQuestionDto>
-        {
-            Success = true,
-            Message = "Trò chơi đã bắt đầu",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpPost("{id:guid}/next-question")]
     [Authorize]
-    [ProducesResponseType(typeof(ApiResponse<NextQuestionResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NextQuestionResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> NextQuestion(
         Guid id,
         CancellationToken cancellationToken)
@@ -44,16 +39,13 @@ public partial class GameSessionController
         // Notifications are handled automatically by domain event handlers
         // No need to call notification service here
 
-        return Ok(new ApiResponse<NextQuestionResult>
-        {
-            Success = true,
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpPost("{id:guid}/end")]
     [Authorize]
-    [ProducesResponseType(typeof(ApiResponse<GameResultDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GameResultDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> EndGame(
         Guid id,
         CancellationToken cancellationToken)
@@ -64,11 +56,7 @@ public partial class GameSessionController
         // Notifications are handled automatically by domain event handlers
         // No need to call notification service here
 
-        return Ok(new ApiResponse<GameResultDto>
-        {
-            Success = true,
-            Message = "Trò chơi đã kết thúc",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 }

@@ -1,0 +1,343 @@
+# Cursor Rules - Think Together Project
+
+## Modal/Dialog Implementation Standards
+
+When creating modals or dialogs using the `Dialog` component from `@/shared/ui/dialog`, follow these standards:
+
+### Layout Structure
+
+1. **Use Flexbox Layout**: Always use `flex flex-col` on `DialogContent` to create a proper vertical layout
+   ```tsx
+   <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-4xl max-h-[90vh] flex flex-col p-0">
+   ```
+
+2. **Fixed Header**: Make `DialogHeader` fixed with `flex-shrink-0` and custom padding
+   ```tsx
+   <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
+   ```
+
+3. **Scrollable Content Area**: Wrap the main content in a scrollable container with `flex-1 overflow-y-auto` and use `scrollbar-thin` class
+   ```tsx
+   <div className="flex-1 overflow-y-auto px-6 scrollbar-thin">
+     {/* Your form or content here */}
+   </div>
+   ```
+
+4. **Fixed Footer**: Make `DialogFooter` fixed with `flex-shrink-0`, custom padding, and border-top for visual separation
+   ```tsx
+   <DialogFooter className="flex-shrink-0 px-6 pb-6 pt-4 border-t">
+   ```
+
+### Width Guidelines
+
+- **Mobile**: Use `max-w-[calc(100%-2rem)]` to ensure proper margins on small screens
+- **Desktop**: Use responsive classes like `sm:max-w-4xl`, `sm:max-w-2xl`, etc. based on content needs
+- **Important**: Always use responsive prefixes (e.g., `sm:max-w-4xl`) to override the default `sm:max-w-md` from `DialogContent`
+
+### Height Guidelines
+
+- Use `max-h-[90vh]` on `DialogContent` to prevent modals from exceeding viewport height
+- The flexbox layout ensures proper scrolling behavior
+
+### Scrolling Best Practices
+
+- **Never** apply `overflow-y-auto` directly to `DialogContent` - it creates ugly scrollbars
+- **Always** create a separate scrollable container for the content area
+- Use the `scrollbar-thin` utility class for clean, subtle scrollbars
+- The scrollbar styling is already defined in `globals.css` and supports both light and dark modes
+
+### Complete Modal Template
+
+```tsx
+<Dialog open={open} onOpenChange={handleOpenChange}>
+  <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-4xl max-h-[90vh] flex flex-col p-0">
+    <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
+      <DialogTitle>Modal Title</DialogTitle>
+      <DialogDescription>Modal description</DialogDescription>
+    </DialogHeader>
+    <div className="flex-1 overflow-y-auto px-6 scrollbar-thin">
+      {/* Main content - forms, lists, etc. */}
+    </div>
+    <DialogFooter className="flex-shrink-0 px-6 pb-6 pt-4 border-t">
+      {/* Action buttons */}
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+### Key Points
+
+- ✅ Header and footer stay fixed while content scrolls
+- ✅ Clean, thin scrollbar that doesn't break the modal's beauty
+- ✅ Proper responsive width handling
+- ✅ Consistent padding and spacing
+- ✅ Visual separation with border-top on footer
+- ❌ Never put overflow on DialogContent directly
+- ❌ Never use non-responsive max-width classes (they get overridden)
+
+## Form & Validation Implementation Standards
+
+When creating forms with validation, always use the shadcn `Form` components with `react-hook-form` and `zod` for validation.
+
+### Required Dependencies
+
+```typescript
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from '@/shared/ui/form'
+import { Input } from '@/shared/ui/input'
+import { Textarea } from '@/shared/ui/textarea'
+```
+
+### Form Setup Pattern
+
+1. **Define Zod Schema**: Create validation schema in `@/lib/validators.ts`
+   ```typescript
+   export const createFormSchema = z.object({
+     title: z.string().min(1, "Title is required"),
+     description: z.string().optional(),
+   })
+   
+   export type CreateFormData = z.infer<typeof createFormSchema>
+   ```
+
+2. **Initialize Form**: Use `useForm` with `zodResolver`
+   ```typescript
+   const form = useForm<FormData>({
+     resolver: zodResolver(formSchema),
+     defaultValues: {
+       title: '',
+       description: '',
+     },
+   })
+   
+   const { handleSubmit, control } = form
+   ```
+
+3. **Wrap with Form Provider**: Always wrap form with `Form` component
+   ```tsx
+   <Form {...form}>
+     <form onSubmit={handleSubmit(onSubmit)}>
+       {/* Form fields */}
+     </form>
+   </Form>
+   ```
+
+### FormField Pattern
+
+**Always use `FormField` with `control` prop** - never use `register` directly:
+
+```tsx
+// ✅ Good: Using FormField with control
+<FormField
+  control={control}
+  name="title"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Title</FormLabel>
+      <FormControl>
+        <Input placeholder="Enter title" {...field} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+// ❌ Bad: Using register directly
+<Input {...register('title')} />
+```
+
+### FormField Structure
+
+Every `FormField` should follow this structure:
+
+```tsx
+<FormField
+  control={control}
+  name="fieldName"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        Label Text
+        {/* Optional required indicator */}
+        <span className="text-destructive">*</span>
+      </FormLabel>
+      <FormControl>
+        {/* Input, Textarea, Select, or custom component */}
+        <Input {...field} />
+      </FormControl>
+      {/* Optional description */}
+      <FormDescription>
+        Helper text or description
+      </FormDescription>
+      {/* Error message (automatically shown) */}
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+### Custom Components in Forms
+
+When using custom components (like `CategorySelector`), integrate them with `FormField`:
+
+```tsx
+<FormField
+  control={control}
+  name="categoryId"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Category</FormLabel>
+      <FormControl>
+        <CategorySelector
+          value={field.value || ''}
+          onChange={(value) => field.onChange(value || '')}
+          placeholder="Select category"
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+### Form Submission Pattern
+
+```typescript
+const onSubmit = async (data: FormData) => {
+  setIsSubmitting(true)
+  try {
+    await submitHandler(data)
+    // Handle success (close modal, show toast, etc.)
+  } catch (error) {
+    // Error handling is automatic via FormMessage
+    console.error('Form submission error:', error)
+  } finally {
+    setIsSubmitting(false)
+  }
+}
+```
+
+### Form State Management
+
+- **Loading State**: Use `isSubmitting` state for submit button
+  ```tsx
+  <Button type="submit" disabled={isSubmitting}>
+    {isSubmitting ? 'Saving...' : 'Save'}
+  </Button>
+  ```
+
+- **Default Values**: Set in `useForm` config or via `useEffect` for edit forms
+  ```typescript
+  const defaultValues = isEditing && data ? {
+    title: data.title,
+    description: data.description || '',
+  } : {
+    title: '',
+    description: '',
+  }
+  
+  const form = useForm({
+    resolver: zodResolver(schema),
+    defaultValues,
+  })
+  ```
+
+### Complete Form Example
+
+```tsx
+'use client'
+
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form'
+import { Input } from '@/shared/ui/input'
+import { Button } from '@/shared/ui/button'
+import { formSchema, type FormData } from '@/lib/validators'
+
+export function MyForm({ onSubmit, isSubmitting }: MyFormProps) {
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+    },
+  })
+
+  const { handleSubmit, control } = form
+
+  return (
+    <Form {...form}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Title <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Enter title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Enter description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : 'Save'}
+        </Button>
+      </form>
+    </Form>
+  )
+}
+```
+
+### Key Points
+
+- ✅ Always use `Form`, `FormField`, `FormControl`, `FormItem`, `FormLabel`, `FormMessage`
+- ✅ Always use `control` prop with `FormField`, never `register` directly
+- ✅ Define schemas in `@/lib/validators.ts` with Zod
+- ✅ Export TypeScript types from schema using `z.infer<typeof schema>`
+- ✅ Use `FormDescription` for helper text
+- ✅ Handle loading states with `isSubmitting`
+- ✅ Set proper `defaultValues` in `useForm` config
+- ❌ Never use `register` directly - always use `FormField` with `control`
+- ❌ Never use custom `FormInput` component - use shadcn `Input` with `FormField`
+- ❌ Never manually display errors - use `FormMessage` component
+- ❌ Never skip validation schema - always use Zod schemas
+
+### Migration Checklist
+
+When refactoring existing forms:
+- [ ] Replace `register` with `FormField` and `control`
+- [ ] Replace `FormInput` with shadcn `Input` inside `FormControl`
+- [ ] Replace manual error display with `FormMessage`
+- [ ] Wrap form with `Form` provider
+- [ ] Ensure Zod schema exists in `@/lib/validators.ts`
+- [ ] Export TypeScript type from schema
+- [ ] Use `FormDescription` for helper text instead of separate `<p>` tags
+

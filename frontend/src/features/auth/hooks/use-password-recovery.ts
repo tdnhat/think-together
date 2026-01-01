@@ -17,18 +17,11 @@ export function usePasswordRecovery() {
 
   const handleForgotPassword = useCallback(async (email: string) => {
     try {
-      const response = await passwordService.forgotPassword(email)
+      await passwordService.forgotPassword(email)
 
-      if (response.success) {
-        toastSuccess(AUTH.MESSAGES.EMAIL_SENT)
-        router.push(ROUTES.AUTH.LOGIN)
-        return { success: true }
-      }
-
-      return {
-        success: false,
-        error: response.message || 'Gửi email thất bại'
-      }
+      toastSuccess(AUTH.MESSAGES.EMAIL_SENT)
+      router.push(ROUTES.AUTH.LOGIN)
+      return { success: true }
     } catch (error) {
       const handledError = handleError(error, {
         showToast: true,
@@ -47,22 +40,15 @@ export function usePasswordRecovery() {
     confirmPassword: string
   ) => {
     try {
-      const response = await passwordService.resetPassword(
+      await passwordService.resetPassword(
         token,
         newPassword,
         confirmPassword
       )
 
-      if (response.success) {
-        toastSuccess('Đặt lại mật khẩu thành công')
-        router.push(ROUTES.AUTH.LOGIN)
-        return { success: true }
-      }
-
-      return {
-        success: false,
-        error: response.message || 'Đặt lại mật khẩu thất bại'
-      }
+      toastSuccess('Đặt lại mật khẩu thành công')
+      router.push(ROUTES.AUTH.LOGIN)
+      return { success: true }
     } catch (error) {
       const handledError = handleError(error, {
         showToast: true,

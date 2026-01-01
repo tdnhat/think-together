@@ -8,7 +8,7 @@ public partial class QuizSetController
 {
     [HttpPost("upload-cover-temp")]
     [Consumes("multipart/form-data")]
-    [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UploadCoverImageTemp(
         IFormFile coverImage,
@@ -33,12 +33,8 @@ public partial class QuizSetController
                 "quiz-sets/covers",
                 cancellationToken);
 
-            return Ok(new ApiResponse<string>
-            {
-                Success = true,
-                Message = "Ảnh bìa đã được tải lên thành công",
-                Data = imageUrl
-            });
+            return Ok(imageUrl
+            );
         }
         catch (ArgumentException ex)
         {
@@ -66,7 +62,7 @@ public partial class QuizSetController
 
     [HttpPost("{id}/upload-cover")]
     [Consumes("multipart/form-data")]
-    [ProducesResponseType(typeof(ApiResponse<QuizSetDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(QuizSetDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -78,11 +74,7 @@ public partial class QuizSetController
         var command = new ThinkTogether.Application.Handlers.QuizSet.Commands.UploadCoverImage.UploadCoverImageCommand(id, coverImage);
         var result = await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse<QuizSetDto>
-        {
-            Success = true,
-            Message = "Ảnh bìa đã được tải lên thành công",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 }

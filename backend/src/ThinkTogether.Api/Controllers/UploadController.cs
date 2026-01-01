@@ -81,6 +81,7 @@ public class UploadController : ControllerBase
     [HttpPost("image")]
     public async Task<IActionResult> UploadImage(
         IFormFile file,
+        [FromQuery] string folder = "quiz-sets/images",
         CancellationToken cancellationToken = default)
     {
         try
@@ -97,7 +98,7 @@ public class UploadController : ControllerBase
 
             var imageUrl = await _uploadService.UploadImageAsync(
                 file,
-                "quiz-sets/images",
+                folder,
                 cancellationToken);
 
             _logger.LogInformation("Image uploaded successfully: {Url}", imageUrl);

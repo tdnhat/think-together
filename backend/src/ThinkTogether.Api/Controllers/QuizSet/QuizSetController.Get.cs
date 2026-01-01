@@ -55,17 +55,13 @@ public partial class QuizSetController
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<QuizSetDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(QuizSetDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetQuizSetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetQuizSetByIdQuery(id), cancellationToken);
 
-        return Ok(new ApiResponse<QuizSetDto>
-        {
-            Success = true,
-            Message = "Bộ trắc nghiệm được tải thành công",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 }

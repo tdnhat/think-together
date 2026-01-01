@@ -5,6 +5,7 @@ import { Upload, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { useImageUpload } from '@/lib/hooks'
+import { quizService } from '@/lib/api/services/quiz.service'
 import type { QuizSetDto } from '@/types/api'
 
 interface ImageUploadProps {
@@ -31,7 +32,7 @@ export function ImageUpload({
   const [showPreview, setShowPreview] = useState(!!currentImageUrl)
   const isTempMode = !quizSetId
 
-  const { isUploading, uploadProgress, error, uploadImage, uploadImageTemp, clearError } = useImageUpload({
+  const { isUploading, uploadProgress, error, uploadImage, uploadImageTemp, clearError } = useImageUpload<QuizSetDto>({
     onSuccess: (quizSet) => {
       setPreviewUrl(quizSet.coverImageUrl || null)
       setShowPreview(!!quizSet.coverImageUrl)
@@ -59,9 +60,9 @@ export function ImageUpload({
     // Upload the file
     let result: QuizSetDto | string | null = null
     if (isTempMode) {
-      result = await uploadImageTemp(file)
+      result = await uploadImageTemp(file, (f) => quizService.uploadQuizSetCoverImageTemp(f))
     } else if (quizSetId) {
-      result = await uploadImage(quizSetId, file)
+      result = await uploadImage(quizSetId, file, (id, f) => quizService.uploadQuizSetCoverImage(id, f))
     }
 
     // Clean up preview URL if upload failed

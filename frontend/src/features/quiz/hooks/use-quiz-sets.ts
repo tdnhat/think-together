@@ -29,8 +29,7 @@ export function useQuizSets(params?: QuizSetQueryParams) {
   } = useQuery({
     queryKey: QUERY_KEYS.QUIZ_SETS(params),
     queryFn: async () => {
-      const response = await quizSetService.getAllQuizSets(params)
-      return response.success ? response.data : { data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
+      return quizSetService.getAllQuizSets(params)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -57,11 +56,7 @@ export function useQuizSets(params?: QuizSetQueryParams) {
   // Create quiz set mutation
   const createQuizSetMutation = useMutation({
     mutationFn: async (data: CreateQuizSetFormData) => {
-      const response = await quizSetService.createQuizSet(data)
-      if (!response.success) {
-        throw new Error(response.message || QUIZ_SET_CONSTANTS.MESSAGES.CREATE_FAILED)
-      }
-      return response.data!
+      return quizSetService.createQuizSet(data)
     },
     onSuccess: () => {
       // Invalidate queries to refetch with current params
@@ -77,11 +72,7 @@ export function useQuizSets(params?: QuizSetQueryParams) {
   // Update quiz set mutation
   const updateQuizSetMutation = useMutation({
     mutationFn: async (data: UpdateQuizSetFormData) => {
-      const response = await quizSetService.updateQuizSet(data)
-      if (!response.success) {
-        throw new Error(response.message || QUIZ_SET_CONSTANTS.MESSAGES.UPDATE_FAILED)
-      }
-      return response.data!
+      return quizSetService.updateQuizSet(data)
     },
     onSuccess: (updatedQuizSet) => {
       // Invalidate queries to refetch with current params
@@ -100,10 +91,7 @@ export function useQuizSets(params?: QuizSetQueryParams) {
   // Delete quiz set mutation
   const deleteQuizSetMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await quizSetService.deleteQuizSet(id)
-      if (!response.success) {
-        throw new Error(response.message || QUIZ_SET_CONSTANTS.MESSAGES.DELETE_FAILED)
-      }
+      await quizSetService.deleteQuizSet(id)
       return id
     },
     onSuccess: (deletedId) => {
@@ -123,10 +111,7 @@ export function useQuizSets(params?: QuizSetQueryParams) {
   // Publish quiz set mutation
   const publishQuizSetMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await quizSetService.publishQuizSet(id)
-      if (!response.success) {
-        throw new Error(response.message || QUIZ_SET_CONSTANTS.MESSAGES.PUBLISH_FAILED)
-      }
+      await quizSetService.publishQuizSet(id)
       return id
     },
     onSuccess: (publishedId) => {
@@ -149,11 +134,7 @@ export function useQuizSets(params?: QuizSetQueryParams) {
   // Duplicate quiz set mutation
   const duplicateQuizSetMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await quizSetService.duplicateQuizSet(id)
-      if (!response.success) {
-        throw new Error(response.message || 'Không thể sao chép bộ trắc nghiệm')
-      }
-      return response.data!
+      return quizSetService.duplicateQuizSet(id)
     },
     onSuccess: () => {
       // Invalidate queries to refetch with current params

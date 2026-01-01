@@ -11,7 +11,7 @@ public class QuizSetMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<QuizSet, QuizSetDto>()
-            .Map(dest => dest.QuestionCount, src => src.Questions.Count);
+            .Map(dest => dest.QuestionCount, src => src.Questions.Count(q => q.DeletedAt == null));
 
         config.NewConfig<Question, QuestionDto>()
             .Map(dest => dest.Options, src => src.Options.OrderBy(o => o.DisplayOrder).Adapt<List<QuestionOptionDto>>())

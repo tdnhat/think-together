@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '@/lib/api/endpoints'
 import { handleError } from '@/lib/errors/error-handler'
 import { AUTH } from '@/config/constants'
 import type {
-  ApiResponse,
+
   AuthTokenDto,
   UserDto,
   LoginRequest,
@@ -22,9 +22,9 @@ class AuthService {
    * @param rememberMe Whether to extend token expiration
    * @returns API response with auth tokens
    */
-  async login(email: string, password: string, rememberMe: boolean = false): Promise<ApiResponse<AuthTokenDto>> {
+  async login(email: string, password: string, rememberMe: boolean = false): Promise<AuthTokenDto> {
     try {
-      const response = await axiosInstance.post<ApiResponse<AuthTokenDto>>(
+      const response = await axiosInstance.post<AuthTokenDto>(
         API_ENDPOINTS.AUTH.LOGIN,
         {
           email,
@@ -40,20 +40,15 @@ class AuthService {
     }
   }
 
-  /**
-   * Register a new user account
-   * @param data User registration data including name, email, and passwords
-   * @returns API response with auth tokens for the new user
-   */
   async register(data: {
     email: string
     password: string
     confirmPassword: string
     firstName: string
     lastName: string
-  }): Promise<ApiResponse<AuthTokenDto>> {
+  }): Promise<AuthTokenDto> {
     try {
-      const response = await axiosInstance.post<ApiResponse<AuthTokenDto>>(
+      const response = await axiosInstance.post<AuthTokenDto>(
         API_ENDPOINTS.AUTH.REGISTER,
         data as RegisterRequest
       )
@@ -75,18 +70,18 @@ class AuthService {
     }
   }
 
-  async getCurrentUser(): Promise<ApiResponse<UserDto>> {
+  async getCurrentUser(): Promise<UserDto> {
     try {
-      const response = await axiosInstance.get<ApiResponse<UserDto>>(API_ENDPOINTS.AUTH.ME)
+      const response = await axiosInstance.get<UserDto>(API_ENDPOINTS.AUTH.ME)
       return response.data
     } catch (error) {
       throw handleError(error)
     }
   }
 
-  async refreshToken(): Promise<ApiResponse<AuthTokenDto>> {
+  async refreshToken(): Promise<AuthTokenDto> {
     try {
-      const response = await axiosInstance.post<ApiResponse<AuthTokenDto>>(
+      const response = await axiosInstance.post<AuthTokenDto>(
         API_ENDPOINTS.AUTH.REFRESH_TOKEN
       )
       return response.data
@@ -97,18 +92,12 @@ class AuthService {
     }
   }
 
-  /**
-   * Confirm email with token from email link
-   * @param token Email confirmation token
-   * @returns API response
-   */
-  async confirmEmail(token: string): Promise<ApiResponse<void>> {
+  async confirmEmail(token: string): Promise<void> {
     try {
-      const response = await axiosInstance.post<ApiResponse<void>>(
+      await axiosInstance.post<void>(
         API_ENDPOINTS.AUTH.CONFIRM_EMAIL,
         { token } as ConfirmEmailRequest
       )
-      return response.data
     } catch (error) {
       throw handleError(error, {
         customMessage: 'Xác nhận email thất bại',
@@ -116,18 +105,12 @@ class AuthService {
     }
   }
 
-  /**
-   * Resend email confirmation to user's email
-   * @param email User email address
-   * @returns API response
-   */
-  async resendEmailConfirmation(email: string): Promise<ApiResponse<void>> {
+  async resendEmailConfirmation(email: string): Promise<void> {
     try {
-      const response = await axiosInstance.post<ApiResponse<void>>(
+      await axiosInstance.post<void>(
         API_ENDPOINTS.AUTH.RESEND_CONFIRMATION,
         { email } as ResendEmailConfirmationRequest
       )
-      return response.data
     } catch (error) {
       throw handleError(error, {
         customMessage: AUTH.MESSAGES.EMAIL_SENT,
@@ -135,18 +118,12 @@ class AuthService {
     }
   }
 
-  /**
-   * Request password reset link to be sent to email
-   * @param email User email address
-   * @returns API response
-   */
-  async forgotPassword(email: string): Promise<ApiResponse<void>> {
+  async forgotPassword(email: string): Promise<void> {
     try {
-      const response = await axiosInstance.post<ApiResponse<void>>(
+      await axiosInstance.post<void>(
         API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
         { email } as ForgotPasswordRequest
       )
-      return response.data
     } catch (error) {
       throw handleError(error, {
         customMessage: 'Gửi email đặt lại mật khẩu thất bại',
@@ -154,24 +131,16 @@ class AuthService {
     }
   }
 
-  /**
-   * Reset password using token from email link
-   * @param token Password reset token
-   * @param newPassword New password
-   * @param confirmPassword Password confirmation
-   * @returns API response
-   */
   async resetPassword(
     token: string,
     newPassword: string,
     confirmPassword: string
-  ): Promise<ApiResponse<void>> {
+  ): Promise<void> {
     try {
-      const response = await axiosInstance.post<ApiResponse<void>>(
+      await axiosInstance.post<void>(
         API_ENDPOINTS.AUTH.RESET_PASSWORD,
         { token, newPassword, confirmPassword } as ResetPasswordRequest
       )
-      return response.data
     } catch (error) {
       throw handleError(error, {
         customMessage: 'Đặt lại mật khẩu thất bại',
@@ -179,17 +148,11 @@ class AuthService {
     }
   }
 
-  /**
-   * Activate creator role for current user
-   * Requires verified email
-   * @returns API response
-   */
-  async becomeCreator(): Promise<ApiResponse<void>> {
+  async becomeCreator(): Promise<void> {
     try {
-      const response = await axiosInstance.post<ApiResponse<void>>(
+      await axiosInstance.post<void>(
         API_ENDPOINTS.AUTH.BECOME_CREATOR
       )
-      return response.data
     } catch (error) {
       throw handleError(error, {
         customMessage: 'Kích hoạt tài khoản người sáng tạo thất bại',

@@ -1,12 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from '@/shared/ui/form'
 import { Button } from '@/shared/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Input } from '@/shared/ui/input'
-import { Label } from '@/shared/ui/label'
 import { Textarea } from '@/shared/ui/textarea'
+import {
+  createClassSchema,
+  updateClassSchema,
+  type CreateClassFormData,
+  type UpdateClassFormData,
+} from '@/lib/validators'
 import { CLASS_CONSTANTS } from '../constants'
+import { ImageUpload } from './image-upload'
 import type { ClassDto, CreateClassRequest, UpdateClassRequest } from '../types'
 
 interface ClassFormProps {
@@ -15,6 +30,7 @@ interface ClassFormProps {
   onCancel?: () => void
   isSubmitting?: boolean
   className?: string
+  showActions?: boolean
 }
 
 export function ClassForm({
@@ -23,115 +39,147 @@ export function ClassForm({
   onCancel,
   isSubmitting = false,
   className = '',
+  showActions = true,
 }: Readonly<ClassFormProps>) {
-  const [name, setName] = useState(classData?.name || '')
-  const [description, setDescription] = useState(classData?.description || '')
-  const [coverImageUrl, setCoverImageUrl] = useState(classData?.coverImageUrl || '')
+  const isEditing = !!classData
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<CreateClassFormData | UpdateClassFormData>({
+    resolver: zodResolver(isEditing ? updateClassSchema : createClassSchema),
+    defaultValues: {
+      name: classData?.name || '',
+      description: classData?.description || '',
+      coverImageUrl: classData?.coverImageUrl || '',
+    },
+  })
 
-    const data: CreateClassRequest | UpdateClassRequest = {
-      name: name.trim(),
-      description: description.trim() || undefined,
-      coverImageUrl: coverImageUrl.trim() || undefined,
+  const { handleSubmit, control, watch } = form
+  const coverImageUrl = watch('coverImageUrl')
+
+  const handleFormSubmit = async (data: CreateClassFormData | UpdateClassFormData) => {
+    const submitData: CreateClassRequest | UpdateClassRequest = {
+      ...(data.name && { name: data.name.trim() }),
+      ...(data.description !== undefined && { description: data.description?.trim() || undefined }),
+      ...(data.coverImageUrl !== undefined && { coverImageUrl: data.coverImageUrl?.trim() || undefined }),
     }
 
-    await onSubmit(data)
+    await onSubmit(submitData)
   }
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            {classData ? 'Chỉnh sửa lớp học' : 'Tạo lớp học mới'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <Form {...form}>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className={className}>
+        <div className="space-y-6">
           {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name">
-              Tên lớp học <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={CLASS_CONSTANTS.PLACEHOLDERS.NAME}
-              maxLength={CLASS_CONSTANTS.LIMITS.NAME_MAX_LENGTH}
-              required
-              disabled={isSubmitting}
-            />
-            <p className="text-xs text-muted-foreground">
-              {name.length} / {CLASS_CONSTANTS.LIMITS.NAME_MAX_LENGTH} ký tự
-            </p>
-          </div>
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Tên lớp học <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={CLASS_CONSTANTS.PLACEHOLDERS.NAME}
+                    maxLength={CLASS_CONSTANTS.LIMITS.NAME_MAX_LENGTH}
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {field.value?.length || 0} / {CLASS_CONSTANTS.LIMITS.NAME_MAX_LENGTH} ký tự
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Mô tả</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={CLASS_CONSTANTS.PLACEHOLDERS.DESCRIPTION}
-              maxLength={CLASS_CONSTANTS.LIMITS.DESCRIPTION_MAX_LENGTH}
-              rows={4}
-              disabled={isSubmitting}
-            />
-            <p className="text-xs text-muted-foreground">
-              {description.length} / {CLASS_CONSTANTS.LIMITS.DESCRIPTION_MAX_LENGTH} ký tự
-            </p>
-          </div>
-
-          {/* Cover Image URL */}
-          <div className="space-y-2">
-            <Label htmlFor="coverImageUrl">URL hình ảnh bìa</Label>
-            <Input
-              id="coverImageUrl"
-              type="url"
-              value={coverImageUrl}
-              onChange={(e) => setCoverImageUrl(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              disabled={isSubmitting}
-            />
-            {coverImageUrl && (
-              <div className="relative aspect-video w-full max-w-md overflow-hidden rounded-lg border-2 border-border">
-                <img
-                  src={coverImageUrl}
-                  alt="Preview"
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                  }}
-                />
-              </div>
+          <FormField
+            control={control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mô tả</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={CLASS_CONSTANTS.PLACEHOLDERS.DESCRIPTION}
+                    maxLength={CLASS_CONSTANTS.LIMITS.DESCRIPTION_MAX_LENGTH}
+                    rows={4}
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {(field.value?.length || 0)} / {CLASS_CONSTANTS.LIMITS.DESCRIPTION_MAX_LENGTH} ký tự
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
+          />
+
+          {/* Cover Image */}
+          <div className="space-y-4">
+            <FormLabel>Ảnh bìa</FormLabel>
+
+            <ImageUpload
+              classId={classData?.id}
+              currentImageUrl={coverImageUrl}
+              onUploadSuccess={(updatedClass) => {
+                form.setValue('coverImageUrl', updatedClass.coverImageUrl || '')
+              }}
+              onUploadSuccessTemp={(imageUrl) => {
+                form.setValue('coverImageUrl', imageUrl)
+              }}
+              disabled={isSubmitting}
+            />
+
+            <FormField
+              control={control}
+              name="coverImageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-normal text-muted-foreground">
+                    Hoặc nhập URL ảnh bìa
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="url"
+                      placeholder="https://example.com/image.jpg"
+                      disabled={isSubmitting}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting || !name.trim()}
-              className="flex-1"
-            >
-              {isSubmitting ? 'Đang lưu...' : classData ? 'Cập nhật' : 'Tạo lớp học'}
-            </Button>
-            {onCancel && (
+          {showActions && (
+            <div className="flex gap-3 pt-4">
               <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
+                type="submit"
+                disabled={isSubmitting || !watch('name')?.trim()}
+                className="flex-1"
               >
-                Hủy
+                {isSubmitting ? 'Đang lưu...' : classData ? 'Cập nhật' : 'Tạo lớp học'}
               </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </form>
+              {onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  Hủy
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </form>
+    </Form>
   )
 }

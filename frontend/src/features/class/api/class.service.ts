@@ -7,8 +7,7 @@
  */
 
 import { api } from '@/lib/api/client'
-import { CLASS_ENDPOINTS, buildQueryString } from '@/lib/api/endpoints'
-import type { ApiResponse } from '@/lib/api/types'
+import { CLASS_ENDPOINTS, PLATFORM_ENDPOINTS, buildQueryString } from '@/lib/api/endpoints'
 import type {
   ClassDto,
   ClassDetailDto,
@@ -37,30 +36,22 @@ export async function getClasses(
   }
 
   const queryString = buildQueryString(queryParams)
-  const response = await api.get<ApiResponse<ClassResponseDto>>(
+  const response = await api.get<ClassResponseDto>(
     `${CLASS_ENDPOINTS.GET_CLASSES}${queryString}`
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải danh sách lớp học')
-  }
-
-  return response.data
+  return response
 }
 
 /**
  * Get class by ID
  */
 export async function getClassById(classId: string): Promise<ClassDetailDto> {
-  const response = await api.get<ApiResponse<ClassDetailDto>>(
+  const response = await api.get<ClassDetailDto>(
     CLASS_ENDPOINTS.GET_CLASS(classId)
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải lớp học')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -69,16 +60,12 @@ export async function getClassById(classId: string): Promise<ClassDetailDto> {
 export async function createClass(
   data: CreateClassRequest
 ): Promise<ClassDto> {
-  const response = await api.post<ApiResponse<ClassDto>>(
+  const response = await api.post<ClassDto>(
     CLASS_ENDPOINTS.CREATE_CLASS,
     data
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tạo lớp học')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -88,58 +75,73 @@ export async function updateClass(
   classId: string,
   data: UpdateClassRequest
 ): Promise<ClassDto> {
-  const response = await api.put<ApiResponse<ClassDto>>(
+  const response = await api.put<ClassDto>(
     CLASS_ENDPOINTS.UPDATE_CLASS(classId),
     data
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể cập nhật lớp học')
-  }
-
-  return response.data
+  return response
 }
 
 /**
  * Delete class
  */
 export async function deleteClass(classId: string): Promise<void> {
-  const response = await api.delete<ApiResponse<void>>(
+  await api.delete<void>(
     CLASS_ENDPOINTS.DELETE_CLASS(classId)
   )
+}
 
-  if (!response.success) {
-    throw new Error(response.message || 'Không thể xóa lớp học')
-  }
+/**
+ * Upload class cover image
+ */
+export async function uploadCoverImage(classId: string, file: File): Promise<ClassDto> {
+  const formData = new FormData()
+  formData.append('coverImage', file)
+
+  const response = await api.post<ClassDto>(
+    CLASS_ENDPOINTS.UPLOAD_COVER_IMAGE(classId),
+    formData
+  )
+
+  return response
+}
+
+/**
+ * Upload class cover image temporarily
+ * Reuse quiz set temp endpoint but with 'classes/covers' folder
+ */
+export async function uploadCoverImageTemp(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await api.post<{ url: string }>(
+    `${PLATFORM_ENDPOINTS.UPLOAD_IMAGE}?folder=classes/covers`,
+    formData
+  )
+
+  return response.url
 }
 
 /**
  * Join class by join code
  */
 export async function joinClass(data: JoinClassRequest): Promise<ClassDto> {
-  const response = await api.post<ApiResponse<ClassDto>>(
+  const response = await api.post<ClassDto>(
     CLASS_ENDPOINTS.JOIN_CLASS,
     data
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tham gia lớp học')
-  }
-
-  return response.data
+  return response
 }
 
 /**
  * Leave class
  */
 export async function leaveClass(classId: string): Promise<void> {
-  const response = await api.post<ApiResponse<void>>(
+  await api.post<void>(
     CLASS_ENDPOINTS.LEAVE_CLASS(classId)
   )
-
-  if (!response.success) {
-    throw new Error(response.message || 'Không thể rời khỏi lớp học')
-  }
 }
 
 /**
@@ -159,13 +161,9 @@ export async function getHomeworkSubmission(
     url += `?studentId=${studentId}`
   }
 
-  const response = await api.get<ApiResponse<HomeworkSubmissionDetailDto>>(url)
+  const response = await api.get<HomeworkSubmissionDetailDto>(url)
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải chi tiết bài nộp')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -175,13 +173,9 @@ export async function getHomeworkStatistics(
   classId: string,
   homeworkId: string
 ): Promise<HomeworkStatisticsDto> {
-  const response = await api.get<ApiResponse<HomeworkStatisticsDto>>(
+  const response = await api.get<HomeworkStatisticsDto>(
     CLASS_ENDPOINTS.GET_HOMEWORK_STATISTICS(classId, homeworkId)
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải thống kê bài tập')
-  }
-
-  return response.data
+  return response
 }

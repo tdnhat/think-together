@@ -9,7 +9,7 @@ import { DashboardLayout } from '@/widgets/dashboard'
 import { useHomeworkStatistics } from '@/features/class/hooks/use-classes'
 import { ROUTES } from '@/config/routes'
 import { StatisticsOverview } from '@/features/class/components/statistics-overview'
-import { StatisticsQuestionAnalysis } from '@/features/class/components/statistics-question-analysis'
+import StatisticsQuestionAnalysis from '@/features/class/components/statistics-question-analysis'
 import { StatisticsStudentTable } from '@/features/class/components/statistics-student-table'
 
 export default function HomeworkStatisticsPage() {

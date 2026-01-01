@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { Home, BookOpen, Users, Plus, Copy } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent } from '@/shared/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/shared/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
@@ -22,7 +22,6 @@ import {
   CLASS_CONSTANTS,
 } from '@/features/class'
 import { challengeService, useStartAttempt } from '@/features/challenge'
-import { ROUTES } from '@/config/routes'
 import { useAuthStore, selectUser } from '@/features/auth/stores/auth.store'
 import { toast } from '@/lib/utils/toast'
 import type { HomeworkDto } from '@/features/class/types'
@@ -239,7 +238,7 @@ export default function ClassDetailPage() {
         {/* Tabs Navigation */}
         <div className="container mx-auto px-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:w-auto">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="home" className="gap-2">
                 <Home className="h-4 w-4" />
                 Chung
@@ -390,40 +389,88 @@ export default function ClassDetailPage() {
 
         {/* Create Homework Modal */}
         <Dialog open={isCreateHomeworkModalOpen} onOpenChange={setIsCreateHomeworkModalOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
+          <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
               <DialogTitle>Tạo bài tập về nhà mới</DialogTitle>
               <DialogDescription>
                 Tạo một bài tập về nhà mới cho lớp học của bạn.
               </DialogDescription>
             </DialogHeader>
-            <HomeworkForm
-              classId={classId}
-              onSubmit={(data) => handleCreateHomework(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
-              onCancel={() => setIsCreateHomeworkModalOpen(false)}
-              isSubmitting={createHomeworkMutation.isPending}
-            />
+            <div className="flex-1 overflow-y-auto px-6 scrollbar-thin">
+              <HomeworkForm
+                classId={classId}
+                onSubmit={(data) => handleCreateHomework(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
+                onCancel={() => setIsCreateHomeworkModalOpen(false)}
+                isSubmitting={createHomeworkMutation.isPending}
+                showActions={false}
+              />
+            </div>
+            <DialogFooter className="flex-shrink-0 px-6 pb-6 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateHomeworkModalOpen(false)}
+                disabled={createHomeworkMutation.isPending}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  // Trigger form submission
+                  const form = document.querySelector('form') as HTMLFormElement
+                  form?.requestSubmit()
+                }}
+                disabled={createHomeworkMutation.isPending}
+              >
+                {createHomeworkMutation.isPending ? 'Đang lưu...' : 'Tạo bài tập'}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Edit Homework Modal */}
         <Dialog open={!!editingHomework} onOpenChange={(open: boolean) => !open && setEditingHomework(null)}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
+          <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
               <DialogTitle>Chỉnh sửa bài tập về nhà</DialogTitle>
               <DialogDescription>
                 Cập nhật thông tin bài tập về nhà của bạn.
               </DialogDescription>
             </DialogHeader>
-            {editingHomework && (
-              <HomeworkForm
-                classId={classId}
-                homework={editingHomework}
-                onSubmit={(data) => handleUpdateHomework(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
-                onCancel={() => setEditingHomework(null)}
-                isSubmitting={updateHomeworkMutation.isPending}
-              />
-            )}
+            <div className="flex-1 overflow-y-auto px-6 scrollbar-thin">
+              {editingHomework && (
+                <HomeworkForm
+                  classId={classId}
+                  homework={editingHomework}
+                  onSubmit={(data) => handleUpdateHomework(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
+                  onCancel={() => setEditingHomework(null)}
+                  isSubmitting={updateHomeworkMutation.isPending}
+                  showActions={false}
+                />
+              )}
+            </div>
+            <DialogFooter className="flex-shrink-0 px-6 pb-6 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditingHomework(null)}
+                disabled={updateHomeworkMutation.isPending}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  // Trigger form submission
+                  const form = document.querySelector('form') as HTMLFormElement
+                  form?.requestSubmit()
+                }}
+                disabled={updateHomeworkMutation.isPending}
+              >
+                {updateHomeworkMutation.isPending ? 'Đang lưu...' : 'Cập nhật bài tập'}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

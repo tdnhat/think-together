@@ -5,7 +5,6 @@
 
 import { api } from '@/lib/api/client'
 import { CLASS_ENDPOINTS, buildQueryString } from '@/lib/api/endpoints'
-import type { ApiResponse } from '@/lib/api/types'
 import type {
   HomeworkDto,
   HomeworkDetailDto,
@@ -27,15 +26,11 @@ export async function getHomeworks(
   }
 
   const queryString = buildQueryString(queryParams)
-  const response = await api.get<ApiResponse<HomeworkResponseDto>>(
+  const response = await api.get<HomeworkResponseDto>(
     `${CLASS_ENDPOINTS.GET_HOMEWORKS(params.classId)}${queryString}`
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải danh sách bài tập về nhà')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -45,15 +40,11 @@ export async function getHomeworkById(
   classId: string,
   homeworkId: string
 ): Promise<HomeworkDetailDto> {
-  const response = await api.get<ApiResponse<HomeworkDetailDto>>(
+  const response = await api.get<HomeworkDetailDto>(
     CLASS_ENDPOINTS.GET_HOMEWORK(classId, homeworkId)
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải bài tập về nhà')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -62,7 +53,7 @@ export async function getHomeworkById(
 export async function createHomework(
   data: CreateHomeworkRequest
 ): Promise<HomeworkDto> {
-  const response = await api.post<ApiResponse<HomeworkDto>>(
+  const response = await api.post<HomeworkDto>(
     CLASS_ENDPOINTS.CREATE_HOMEWORK(data.classId),
     {
       quizSetId: data.quizSetId,
@@ -71,11 +62,7 @@ export async function createHomework(
     }
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tạo bài tập về nhà')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -86,16 +73,12 @@ export async function updateHomework(
   homeworkId: string,
   data: UpdateHomeworkRequest
 ): Promise<HomeworkDto> {
-  const response = await api.put<ApiResponse<HomeworkDto>>(
+  const response = await api.put<HomeworkDto>(
     CLASS_ENDPOINTS.UPDATE_HOMEWORK(classId, homeworkId),
     data
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể cập nhật bài tập về nhà')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -105,11 +88,7 @@ export async function deleteHomework(
   classId: string,
   homeworkId: string
 ): Promise<void> {
-  const response = await api.delete<ApiResponse<void>>(
+  await api.delete<void>(
     CLASS_ENDPOINTS.DELETE_HOMEWORK(classId, homeworkId)
   )
-
-  if (!response.success) {
-    throw new Error(response.message || 'Không thể xóa bài tập về nhà')
-  }
 }

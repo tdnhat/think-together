@@ -19,11 +19,7 @@ public partial class AuthenticationController
     {
         await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Email đã được xác nhận thành công! Chào mừng bạn đến với ThinkTogether."
-        });
+        return NoContent();
     }
 
     [HttpPost("resend-email-confirmation")]
@@ -36,11 +32,7 @@ public partial class AuthenticationController
     {
         await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được email xác nhận"
-        });
+        return NoContent();
     }
 
     [HttpPost("become-creator")]
@@ -53,10 +45,6 @@ public partial class AuthenticationController
         var command = new ActivateCreatorCommand();
         await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Bạn đã trở thành Người sáng tạo!"
-        });
+        return NoContent();
     }
 }

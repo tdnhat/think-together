@@ -37,15 +37,15 @@ export const USER_ENDPOINTS = {
   GET_USER: (id: string) => `${BASE}/users/${id}`,
   UPDATE_USER: (id: string) => `${BASE}/users/${id}`,
   DELETE_USER: (id: string) => `${BASE}/users/${id}`,
-  
+
   // User list
   LIST_USERS: `${BASE}/users`,
   SEARCH_USERS: `${BASE}/users/search`,
-  
+
   // User stats
   GET_USER_STATS: (id: string) => `${BASE}/users/${id}/stats`,
   GET_USER_ACTIVITY: (id: string) => `${BASE}/users/${id}/activity`,
-  
+
   // Creator
   BECOME_CREATOR: `${BASE}/users/become-creator`,
   GET_CREATOR_STATUS: `${BASE}/users/creator-status`,
@@ -68,7 +68,7 @@ export const QUIZ_SET_ENDPOINTS = {
   DUPLICATE_QUIZ_SET: (id: string) => `${BASE}/quiz-sets/${id}/duplicate`,
   UPLOAD_COVER_IMAGE: (id: string) => `${BASE}/quiz-sets/${id}/upload-cover`,
   UPLOAD_COVER_IMAGE_TEMP: `${BASE}/quiz-sets/upload-cover-temp`,
-  
+
   // Upload endpoints
   UPLOAD_AUDIO: `${BASE}/upload/audio`,
 
@@ -144,6 +144,8 @@ export const LEADERBOARD_ENDPOINTS = {
 
 export const PLATFORM_ENDPOINTS = {
   GET_STATS: `${BASE}/platform/stats`,
+  UPLOAD_IMAGE: `${BASE}/upload/image`,
+  GET_ATTEMPT_DETAIL: (attemptId: string) => `${BASE}/challenges/attempts/${attemptId}`,
 } as const;
 
 // ============================================================================
@@ -157,20 +159,21 @@ export const CLASS_ENDPOINTS = {
   CREATE_CLASS: `${BASE}/classes`,
   UPDATE_CLASS: (id: string) => `${BASE}/classes/${id}`,
   DELETE_CLASS: (id: string) => `${BASE}/classes/${id}`,
-  
+
   // Class Actions
   JOIN_CLASS: `${BASE}/classes/join`,
   LEAVE_CLASS: (id: string) => `${BASE}/classes/${id}/leave`,
   GET_CLASS_MEMBERS: (id: string) => `${BASE}/classes/${id}/members`,
   REMOVE_MEMBER: (classId: string, memberId: string) => `${BASE}/classes/${classId}/members/${memberId}`,
-  
+  UPLOAD_COVER_IMAGE: (id: string) => `${BASE}/classes/${id}/upload-cover`,
+
   // Homework CRUD
   GET_HOMEWORKS: (classId: string) => `${BASE}/classes/${classId}/homeworks`,
   GET_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}`,
   CREATE_HOMEWORK: (classId: string) => `${BASE}/classes/${classId}/homeworks`,
   UPDATE_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}`,
   DELETE_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}`,
-  
+
   // Homework Submissions
   GET_HOMEWORK_SUBMISSIONS: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submissions`,
   SUBMIT_HOMEWORK: (classId: string, homeworkId: string) => `${BASE}/classes/${classId}/homeworks/${homeworkId}/submit`,
@@ -189,7 +192,7 @@ export const CATEGORY_ENDPOINTS = {
   CREATE_CATEGORY: `${BASE}/categories`,
   UPDATE_CATEGORY: (id: string) => `${BASE}/categories/${id}`,
   DELETE_CATEGORY: (id: string) => `${BASE}/categories/${id}`,
-  
+
   // Category Search
   SEARCH_CATEGORIES: `${BASE}/categories/search`,
 } as const;
@@ -221,7 +224,7 @@ export const API_ENDPOINTS = {
  */
 export function buildQueryString(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       if (Array.isArray(value)) {
@@ -231,7 +234,7 @@ export function buildQueryString(params: Record<string, unknown>): string {
       }
     }
   });
-  
+
   const queryString = searchParams.toString();
   return queryString ? `?${queryString}` : '';
 }

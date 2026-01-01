@@ -24,6 +24,7 @@ interface QuestionFormProps {
   onSubmit: (data: CreateQuestionRequest) => void | Promise<void>
   onCancel: () => void
   isSubmitting?: boolean
+  showActions?: boolean
 }
 
 export function QuestionForm({
@@ -32,6 +33,7 @@ export function QuestionForm({
   onSubmit,
   onCancel,
   isSubmitting = false,
+  showActions = true,
 }: QuestionFormProps) {
   // Initialize default values based on question type
   const getDefaultValues = () => {
@@ -39,6 +41,10 @@ export function QuestionForm({
       content: question?.content || '',
       type: question?.type || QuestionType.SINGLE_CHOICE,
       timeLimit: question?.timeLimit || QUESTION_CONSTANTS.TIME_LIMITS.DEFAULT,
+      videoUrl: question?.videoUrl || '',
+      videoTimestamp: question?.videoTimestamp || 0,
+      audioUrl: question?.audioUrl || '',
+      audioTimestamp: question?.audioTimestamp || 0,
     }
 
     if (question?.type === QuestionType.MATCHING) {
@@ -65,8 +71,6 @@ export function QuestionForm({
     if (question?.type === QuestionType.VIDEO) {
       return {
         ...baseValues,
-        videoUrl: question?.videoUrl || '',
-        videoTimestamp: question?.videoTimestamp || 0,
         options: question?.options || [
           { content: '', isCorrect: false, displayOrder: 0 },
           { content: '', isCorrect: false, displayOrder: 1 },
@@ -77,8 +81,6 @@ export function QuestionForm({
     if (question?.type === QuestionType.AUDIO) {
       return {
         ...baseValues,
-        audioUrl: question?.audioUrl || '',
-        audioTimestamp: question?.audioTimestamp || 0,
         options: question?.options || [
           { content: '', isCorrect: false, displayOrder: 0 },
           { content: '', isCorrect: false, displayOrder: 1 },
@@ -156,10 +158,6 @@ export function QuestionForm({
           { content: '', isCorrect: false, displayOrder: 0 },
           { content: '', isCorrect: false, displayOrder: 1 },
         ])
-        const currentVideoUrl = form.getValues('videoUrl')
-        if (!currentVideoUrl) {
-          setValue('videoTimestamp', 0)
-        }
       }
     } else if (currentType === QuestionType.AUDIO) {
       setValue('matchingPairs', undefined)
@@ -172,10 +170,6 @@ export function QuestionForm({
           { content: '', isCorrect: false, displayOrder: 0 },
           { content: '', isCorrect: false, displayOrder: 1 },
         ])
-        const currentAudioUrl = form.getValues('audioUrl')
-        if (!currentAudioUrl) {
-          setValue('audioTimestamp', 0)
-        }
       }
     }
   }, [type, question, setValue, form])
@@ -230,7 +224,7 @@ export function QuestionForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form id="question-form" onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
         <QuestionTypeSelect question={question} />
 
         <CommonFields />
@@ -255,17 +249,19 @@ export function QuestionForm({
           <AudioFields />
         )}
 
-        <div className="space-y-4 pt-4">
-          <Separator />
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-              Hủy
-            </Button>
-            <Button type="submit" variant="default" disabled={isSubmitting}>
-              {isSubmitting ? 'Đang lưu...' : question ? 'Cập nhật' : 'Tạo câu hỏi'}
-            </Button>
+        {showActions && (
+          <div className="space-y-4 pt-4">
+            <Separator />
+            <div className="flex justify-end gap-3">
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+                Hủy
+              </Button>
+              <Button type="submit" variant="default" disabled={isSubmitting}>
+                {isSubmitting ? 'Đang lưu...' : question ? 'Cập nhật' : 'Tạo câu hỏi'}
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </form>
     </Form>
   )

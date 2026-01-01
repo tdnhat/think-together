@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
-import type { ApiResponse, ApiError, AuthTokenDto } from '@/types/api'
+import type { ApiError, AuthTokenDto } from '@/types/api'
 import { ROUTES } from '@/config/constants'
 import { API } from '@/config/constants'
 
@@ -73,24 +73,20 @@ class ApiClient {
           isRefreshing = true
 
           try {
-            const response = await this.client.post<ApiResponse<AuthTokenDto>>(
+            const response = await this.client.post<AuthTokenDto>(
               '/api/auth/refresh-token'
             )
 
-            if (response.data.success && response.data.data) {
-              const { accessToken } = response.data.data
-              this.setAuthToken(accessToken)
-              isRefreshing = false
-              onTokenRefreshed(accessToken)
+            const { accessToken } = response.data
+            this.setAuthToken(accessToken)
+            isRefreshing = false
+            onTokenRefreshed(accessToken)
 
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${accessToken}`
-              }
-
-              return this.client(originalRequest)
-            } else {
-              throw new Error('Token refresh failed')
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`
             }
+
+            return this.client(originalRequest)
           } catch (refreshError) {
             console.error('Token refresh failed:', refreshError)
             isRefreshing = false

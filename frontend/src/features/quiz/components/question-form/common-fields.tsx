@@ -1,9 +1,8 @@
 import { useFormContext } from 'react-hook-form'
-import { FormField, FormItem, FormControl, FormMessage } from '@/shared/ui/form'
+import { FormField, FormItem, FormControl, FormLabel, FormMessage } from '@/shared/ui/form'
 import { Input } from '@/shared/ui/input'
 import { Textarea } from '@/shared/ui/textarea'
 import { Button } from '@/shared/ui/button'
-import { Label } from '@/shared/ui/label'
 import { QUESTION_CONSTANTS } from '../../constants'
 import { CreateQuestionFormData } from '@/lib/validators'
 
@@ -18,9 +17,9 @@ export function CommonFields() {
                 name="content"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>
+                        <FormLabel>
                             Nội dung câu hỏi <span className="text-destructive">*</span>
-                        </Label>
+                        </FormLabel>
                         <FormControl>
                             <Textarea
                                 {...field}
@@ -38,9 +37,9 @@ export function CommonFields() {
                 name="timeLimit"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>
+                        <FormLabel>
                             Thời gian giới hạn (giây) <span className="text-destructive">*</span>
-                        </Label>
+                        </FormLabel>
                         <div className="flex gap-2">
                             <FormControl>
                                 <Input

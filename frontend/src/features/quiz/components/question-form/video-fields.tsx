@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
-import { FormField, FormItem, FormControl, FormMessage } from '@/shared/ui/form'
+import { FormField, FormItem, FormControl, FormLabel, FormDescription, FormMessage } from '@/shared/ui/form'
 import { Input } from '@/shared/ui/input'
-import { Label } from '@/shared/ui/label'
 import { CreateQuestionFormData } from '@/lib/validators'
 
 export function VideoFields() {
@@ -16,9 +15,9 @@ export function VideoFields() {
                 name="videoUrl"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>
+                        <FormLabel>
                             URL Video <span className="text-destructive">*</span>
-                        </Label>
+                        </FormLabel>
                         <FormControl>
                             <Input
                                 {...field}
@@ -26,9 +25,9 @@ export function VideoFields() {
                                 className={formState.errors.videoUrl ? 'border-destructive' : ''}
                             />
                         </FormControl>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <FormDescription>
                             Hỗ trợ YouTube URLs. Ví dụ: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-                        </p>
+                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -39,9 +38,9 @@ export function VideoFields() {
                 name="videoTimestamp"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>
+                        <FormLabel>
                             Thời gian bắt đầu video (giây)
-                        </Label>
+                        </FormLabel>
                         <FormControl>
                             <Input
                                 type="number"
@@ -52,9 +51,9 @@ export function VideoFields() {
                                 onChange={(e) => field.onChange(Number(e.target.value))}
                             />
                         </FormControl>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <FormDescription>
                             Video sẽ bắt đầu từ thời gian này (tính bằng giây). Ví dụ: 120 = 2 phút
-                        </p>
+                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -62,7 +61,7 @@ export function VideoFields() {
 
             {/* Video Preview */}
             {videoUrl && (
-                <div className="bg-muted rounded-lg border border-[var(--border-secondary)] p-4">
+                <div className="bg-muted rounded-lg border border-border p-4">
                     <p className="text-sm font-medium text-foreground mb-2">Xem trước video:</p>
                     <div className="bg-black rounded aspect-video flex items-center justify-center">
                         <p className="text-white text-sm">

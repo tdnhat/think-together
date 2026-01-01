@@ -30,6 +30,7 @@ import {
 } from '@/shared/ui/table'
 import { LEADERBOARD_HEADERS } from '../constants'
 import type { LeaderboardEntryDto } from '../types'
+import { SubmissionDetailModal } from './submission-detail-modal'
 
 interface LeaderboardTableProps {
   entries: LeaderboardEntryDto[]
@@ -92,9 +93,16 @@ export function LeaderboardTable({
   showQuizSet = false,
   className = '',
 }: LeaderboardTableProps) {
+  const [selectedAttemptId, setSelectedAttemptId] = React.useState<string | null>(null)
+  const [selectedStudentName, setSelectedStudentName] = React.useState<string>('')
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+    React.useState<VisibilityState>({
+      accuracy: false,
+      completedAt: false,
+    })
 
   const columns = React.useMemo<ColumnDef<LeaderboardEntryDto>[]>(
     () => [
@@ -148,7 +156,14 @@ export function LeaderboardTable({
           return (
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">
+                <span
+                  className="font-medium text-foreground hover:underline cursor-pointer"
+                  onClick={() => {
+                    setSelectedAttemptId(entry.attemptId)
+                    setSelectedStudentName(entry.nickname)
+                    setIsModalOpen(true)
+                  }}
+                >
                   {entry.nickname}
                 </span>
                 {entry.isHomework && (
@@ -180,19 +195,19 @@ export function LeaderboardTable({
       },
       ...(showQuizSet
         ? [
-            {
-              accessorKey: 'quizSetTitle',
-              header: LEADERBOARD_HEADERS.QUIZ_SET,
-              cell: ({ row }) => {
-                const title = row.getValue('quizSetTitle') as string | undefined
-                return (
-                  <span className="text-sm text-muted-foreground">
-                    {title || '-'}
-                  </span>
-                )
-              },
-            } as ColumnDef<LeaderboardEntryDto>,
-          ]
+          {
+            accessorKey: 'quizSetTitle',
+            header: LEADERBOARD_HEADERS.QUIZ_SET,
+            cell: ({ row }) => {
+              const title = row.getValue('quizSetTitle') as string | undefined
+              return (
+                <span className="text-sm text-muted-foreground">
+                  {title || '-'}
+                </span>
+              )
+            },
+          } as ColumnDef<LeaderboardEntryDto>,
+        ]
         : []),
       {
         accessorKey: 'score',
@@ -399,9 +414,9 @@ export function LeaderboardTable({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     )
                   })}
@@ -538,6 +553,12 @@ export function LeaderboardTable({
           </Card>
         ))}
       </div>
+      <SubmissionDetailModal
+        attemptId={selectedAttemptId}
+        studentName={selectedStudentName}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   )
 }

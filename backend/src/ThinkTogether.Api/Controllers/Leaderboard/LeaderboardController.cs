@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.Leaderboard.Queries.GetLeaderboard;
 using ThinkTogether.Application.Handlers.Leaderboard.Queries.GetLeaderboardStats;
@@ -22,7 +21,7 @@ public class LeaderboardController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<LeaderboardDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LeaderboardDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLeaderboard(
         [FromQuery] Guid? quizSetId = null,
         [FromQuery] Guid? challengeId = null,
@@ -50,15 +49,12 @@ public class LeaderboardController : ControllerBase
 
         var result = await _mediator.Send(query, cancellationToken);
 
-        return Ok(new ApiResponse<LeaderboardDto>
-        {
-            Success = true,
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpGet("stats")]
-    [ProducesResponseType(typeof(ApiResponse<LeaderboardStatsDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LeaderboardStatsDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLeaderboardStats(
         [FromQuery] Guid? quizSetId = null,
         [FromQuery] Guid? challengeId = null,
@@ -72,10 +68,7 @@ public class LeaderboardController : ControllerBase
 
         var result = await _mediator.Send(query, cancellationToken);
 
-        return Ok(new ApiResponse<LeaderboardStatsDto>
-        {
-            Success = true,
-            Data = result
-        });
+        return Ok(result
+        );
     }
 }

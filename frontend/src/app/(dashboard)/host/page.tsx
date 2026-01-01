@@ -101,8 +101,8 @@ function HostPageContent() {
           // Get session by pin and resume
           const { gameSessionService } = await import('@/features/game-host')
           const response = await gameSessionService.getSessionByPin(pin)
-          if (response.success && response.data) {
-            resumeSession(response.data.id)
+          if (response) {
+            resumeSession(response.id)
           }
         }}
       />

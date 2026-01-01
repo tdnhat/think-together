@@ -40,5 +40,8 @@ public sealed class PublishedQuizSetsSpecification : Specification<QuizSet>
         // Pagination
         var skip = (page - 1) * pageSize;
         ApplyPaging(skip, pageSize);
+
+        // Include Questions for QuestionCount mapping
+        AddInclude(quizSet => quizSet.Questions);
     }
 }

@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
-import { FormField, FormItem, FormControl, FormMessage } from '@/shared/ui/form'
+import { FormField, FormItem, FormControl, FormLabel, FormDescription, FormMessage } from '@/shared/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select'
-import { Label } from '@/shared/ui/label'
 import { QUESTION_CONSTANTS } from '../../constants'
 import { QuestionDto, QuestionType, CreateQuestionRequest } from '@/types/api'
 import { CreateQuestionFormData } from '@/lib/validators'
@@ -20,7 +19,7 @@ export function QuestionTypeSelect({ question }: QuestionTypeSelectProps) {
             name="type"
             render={({ field }) => (
                 <FormItem>
-                    <Label>Loại câu hỏi</Label>
+                    <FormLabel>Loại câu hỏi</FormLabel>
                     <FormControl>
                         <Select value={field.value} onValueChange={field.onChange} disabled={!!question}>
                             <SelectTrigger>
@@ -35,9 +34,9 @@ export function QuestionTypeSelect({ question }: QuestionTypeSelectProps) {
                             </SelectContent>
                         </Select>
                     </FormControl>
-                    <p className="text-xs text-muted-foreground">
+                    <FormDescription>
                         {QUESTION_CONSTANTS.TYPES[type]?.description}
-                    </p>
+                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}

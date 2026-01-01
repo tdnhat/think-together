@@ -38,105 +38,36 @@ export function StudentSubmissionModal({
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
+                <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
                     <DialogTitle>Chi tiết bài nộp - {studentName}</DialogTitle>
                     <DialogDescription>
                         Xem chi tiết bài làm và kết quả của học sinh.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex items-center gap-3 -mt-2">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
-                        {studentName?.[0]?.toUpperCase() || 'U'}
-                    </div>
-                    <div>
-                        <span className="font-semibold">{studentName}</span>
-                    </div>
-                </div>
-
-                {isLoading && (
-                    <div className="flex items-center justify-center py-12">
-                        <LoadingSpinner />
-                    </div>
-                )}
-
-                {error && (
-                    <div className="flex items-center justify-center py-12 text-red-500">
-                        <AlertCircle className="h-5 w-5 mr-2" />
-                        Không thể tải bài nộp của học sinh
-                    </div>
-                )}
-
-                {data && (
-                    <div className="space-y-6">
-                        {/* Summary Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            {/* Score */}
-                            <div className="bg-[var(--primary)]/5 p-4 rounded-lg border text-center">
-                                <div className="flex items-center justify-center gap-2 mb-1">
-                                    <Trophy className="h-5 w-5 text-yellow-500" />
-                                    <span className="text-3xl font-bold text-[var(--primary)]">
-                                        {data.submission.score}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-muted-foreground">Điểm số</p>
-                            </div>
-
-                            {/* Accuracy */}
-                            <div className="bg-green-50 p-4 rounded-lg border">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm text-muted-foreground">Độ chính xác</span>
-                                    <span className="font-semibold">
-                                        {data.attempt.totalQuestions > 0
-                                            ? ((data.attempt.correctAnswers / data.attempt.totalQuestions) * 100).toFixed(0)
-                                            : 0}%
-                                    </span>
-                                </div>
-                                <Progress
-                                    value={data.attempt.totalQuestions > 0
-                                        ? (data.attempt.correctAnswers / data.attempt.totalQuestions) * 100
-                                        : 0}
-                                    className="h-2"
-                                />
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    {data.attempt.correctAnswers}/{data.attempt.totalQuestions} câu đúng
-                                </p>
-                            </div>
-
-                            {/* Time */}
-                            <div className="bg-blue-50 p-4 rounded-lg border text-center">
-                                <Clock className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-                                <p className="font-semibold">{formatTime(data.attempt.completionTimeMs)}</p>
-                                <p className="text-sm text-muted-foreground">Thời gian</p>
-                            </div>
-
-                            {/* Submit Date */}
-                            <div className="bg-purple-50 p-4 rounded-lg border text-center">
-                                <Calendar className="h-5 w-5 text-purple-600 mx-auto mb-1" />
-                                <p className="font-semibold text-sm">
-                                    {format(new Date(data.submission.submittedAt), 'dd MMM, HH:mm', { locale: vi })}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    {data.submission.status === 'Late' ? (
-                                        <Badge variant="secondary" className="mt-1">Nộp muộn</Badge>
-                                    ) : (
-                                        <Badge variant="default" className="mt-1">Đúng hạn</Badge>
-                                    )}
-                                </p>
-                            </div>
+                <div className="flex-1 overflow-y-auto px-6 scrollbar-thin">
+                    {isLoading && (
+                        <div className="flex items-center justify-center py-12">
+                            <LoadingSpinner />
                         </div>
+                    )}
 
-                        <Separator />
+                    {error && (
+                        <div className="flex items-center justify-center py-12 text-red-500">
+                            <AlertCircle className="h-5 w-5 mr-2" />
+                            Không thể tải bài nộp của học sinh
+                        </div>
+                    )}
 
-                        {/* Questions */}
+                    {data && (
                         <QuestionReviewList
                             questions={data.attempt.questions}
                             title="Chi tiết bài làm"
                         />
-                    </div>
-                )}
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     )

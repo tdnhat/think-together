@@ -1,9 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
-import { FormField, FormItem, FormControl, FormMessage } from '@/shared/ui/form'
+import { FormField, FormItem, FormControl, FormLabel, FormDescription, FormMessage } from '@/shared/ui/form'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
-import { Label } from '@/shared/ui/label'
 import { Badge } from '@/shared/ui/badge'
 import { QUESTION_CONSTANTS } from '../../constants'
 import { CreateQuestionFormData } from '@/lib/validators'
@@ -65,12 +64,12 @@ export function OrderingFields() {
         <FormItem className="space-y-3">
             <div className="flex items-center justify-between">
                 <div>
-                    <Label>
+                    <FormLabel>
                         Mục để sắp xếp <span className="text-destructive">*</span>
-                    </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    </FormLabel>
+                    <FormDescription>
                         Nhập các mục theo thứ tự đúng. Người chơi sẽ phải sắp xếp chúng theo thứ tự này.
-                    </p>
+                    </FormDescription>
                 </div>
                 <Button
                     type="button"
@@ -87,7 +86,7 @@ export function OrderingFields() {
             <div className="space-y-2">
                 {orderingItems && orderingItems.length > 0 ? (
                     orderingItems.map((item, index) => (
-                        <div key={index} className="flex items-start gap-2 rounded-lg border border-[var(--border-secondary)] p-3">
+                        <div key={index} className="flex items-start gap-2 rounded-lg border border-border p-3">
                             <Badge variant="outline" className="mt-1 flex-shrink-0 min-w-fit">
                                 {index + 1}
                             </Badge>

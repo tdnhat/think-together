@@ -6,7 +6,6 @@
  */
 
 import { api } from '@/lib/api/client'
-import type { ApiResponse } from '@/types/api'
 import type {
   CreateGameSessionRequest,
   CreateGameSessionResponse,
@@ -40,8 +39,8 @@ class GameSessionService {
   /**
    * Create a new game session (Host only - requires auth)
    */
-  async createSession(request: CreateGameSessionRequest): Promise<ApiResponse<CreateGameSessionResponse>> {
-    return api.post<ApiResponse<CreateGameSessionResponse>>(
+  async createSession(request: CreateGameSessionRequest): Promise<CreateGameSessionResponse> {
+    return api.post<CreateGameSessionResponse>(
       GAME_SESSION_ENDPOINTS.BASE,
       request
     )
@@ -50,8 +49,8 @@ class GameSessionService {
   /**
    * Abandon active session (Host only - requires auth)
    */
-  async abandonActiveSession(): Promise<ApiResponse<boolean>> {
-    return api.post<ApiResponse<boolean>>(
+  async abandonActiveSession(): Promise<boolean> {
+    return api.post<boolean>(
       GAME_SESSION_ENDPOINTS.ABANDON_ACTIVE
     )
   }
@@ -59,8 +58,8 @@ class GameSessionService {
   /**
    * Get game session by ID (requires auth)
    */
-  async getSessionById(id: string): Promise<ApiResponse<GameSession>> {
-    return api.get<ApiResponse<GameSession>>(
+  async getSessionById(id: string): Promise<GameSession> {
+    return api.get<GameSession>(
       GAME_SESSION_ENDPOINTS.BY_ID(id)
     )
   }
@@ -68,8 +67,8 @@ class GameSessionService {
   /**
    * Get game session by PIN (public endpoint)
    */
-  async getSessionByPin(pin: string): Promise<ApiResponse<GameSession>> {
-    return api.get<ApiResponse<GameSession>>(
+  async getSessionByPin(pin: string): Promise<GameSession> {
+    return api.get<GameSession>(
       GAME_SESSION_ENDPOINTS.BY_PIN(pin)
     )
   }
@@ -77,8 +76,8 @@ class GameSessionService {
   /**
    * Join a game session (public endpoint)
    */
-  async joinSession(request: JoinGameSessionRequest): Promise<ApiResponse<JoinGameSessionResponse>> {
-    return api.post<ApiResponse<JoinGameSessionResponse>>(
+  async joinSession(request: JoinGameSessionRequest): Promise<JoinGameSessionResponse> {
+    return api.post<JoinGameSessionResponse>(
       GAME_SESSION_ENDPOINTS.JOIN,
       request
     )
@@ -87,8 +86,8 @@ class GameSessionService {
   /**
    * Reconnect to a game session (public endpoint)
    */
-  async reconnect(request: ReconnectRequest): Promise<ApiResponse<ReconnectResponse>> {
-    return api.post<ApiResponse<ReconnectResponse>>(
+  async reconnect(request: ReconnectRequest): Promise<ReconnectResponse> {
+    return api.post<ReconnectResponse>(
       GAME_SESSION_ENDPOINTS.RECONNECT,
       request
     )
@@ -97,8 +96,8 @@ class GameSessionService {
   /**
    * Start the game (Host only - requires auth)
    */
-  async startGame(sessionId: string): Promise<ApiResponse<StartGameResponse>> {
-    return api.post<ApiResponse<StartGameResponse>>(
+  async startGame(sessionId: string): Promise<StartGameResponse> {
+    return api.post<StartGameResponse>(
       GAME_SESSION_ENDPOINTS.START(sessionId)
     )
   }
@@ -106,8 +105,8 @@ class GameSessionService {
   /**
    * Move to next question (Host only - requires auth)
    */
-  async nextQuestion(sessionId: string): Promise<ApiResponse<NextQuestionResponse>> {
-    return api.post<ApiResponse<NextQuestionResponse>>(
+  async nextQuestion(sessionId: string): Promise<NextQuestionResponse> {
+    return api.post<NextQuestionResponse>(
       GAME_SESSION_ENDPOINTS.NEXT_QUESTION(sessionId)
     )
   }
@@ -115,8 +114,8 @@ class GameSessionService {
   /**
    * Get current leaderboard (Host only - requires auth)
    */
-  async getLeaderboard(sessionId: string): Promise<ApiResponse<LeaderboardEntry[]>> {
-    return api.get<ApiResponse<LeaderboardEntry[]>>(
+  async getLeaderboard(sessionId: string): Promise<LeaderboardEntry[]> {
+    return api.get<LeaderboardEntry[]>(
       GAME_SESSION_ENDPOINTS.LEADERBOARD(sessionId)
     )
   }
@@ -124,8 +123,8 @@ class GameSessionService {
   /**
    * End the game (Host only - requires auth)
    */
-  async endGame(sessionId: string): Promise<ApiResponse<EndGameResponse>> {
-    return api.post<ApiResponse<EndGameResponse>>(
+  async endGame(sessionId: string): Promise<EndGameResponse> {
+    return api.post<EndGameResponse>(
       GAME_SESSION_ENDPOINTS.END(sessionId)
     )
   }
@@ -134,14 +133,13 @@ class GameSessionService {
    * Sync game session state (public endpoint)
    * Used for state recovery after browser refresh or reconnection
    */
-  async syncGameSession(sessionId: string, playerId?: string): Promise<ApiResponse<SyncGameSessionResult>> {
+  async syncGameSession(sessionId: string, playerId?: string): Promise<SyncGameSessionResult> {
     const url = playerId
       ? `${GAME_SESSION_ENDPOINTS.SYNC(sessionId)}?playerId=${playerId}`
       : GAME_SESSION_ENDPOINTS.SYNC(sessionId)
-    return api.get<ApiResponse<SyncGameSessionResult>>(url)
+    return api.get<SyncGameSessionResult>(url)
   }
 }
 
 export const gameSessionService = new GameSessionService()
 export default gameSessionService
-

@@ -15,24 +15,20 @@ public partial class AuthenticationController
 {
     [HttpPost("register")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<RegisterResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
     public async Task<IActionResult> Register(
         [FromBody] RegisterUserCommand command,
         CancellationToken cancellationToken)
     {
         await _mediator.Send(command, cancellationToken);
 
-        return CreatedAtAction(nameof(GetCurrentUser), null, new ApiResponse<RegisterResponse>
-        {
-            Success = true,
-            Message = "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.",
-            Data = new RegisterResponse(EmailConfirmed: false)
-        });
+        return CreatedAtAction(nameof(GetCurrentUser), null, new RegisterResponse(EmailConfirmed: false)
+        );
     }
 
     [HttpPost("login")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<AuthTokenDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AuthTokenDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login(
         [FromBody] LoginUserCommand command,
         CancellationToken cancellationToken)
@@ -51,16 +47,13 @@ public partial class AuthenticationController
             });
         }
 
-        return Ok(new ApiResponse<AuthTokenDto>
-        {
-            Success = true,
-            Data = result.WithoutRefreshToken()
-        });
+        return Ok(result.WithoutRefreshToken()
+        );
     }
 
     [HttpPost("refresh-token")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<AuthTokenDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AuthTokenDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
     {
@@ -94,25 +87,19 @@ public partial class AuthenticationController
                 Expires = DateTimeOffset.FromUnixTimeSeconds(response.ExpiresAt)
             });
 
-        return Ok(new ApiResponse<AuthTokenDto>
-        {
-            Success = true,
-            Data = response
-        });
+        return Ok(response
+        );
     }
 
     [HttpGet("me")]
     [Authorize]
-    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
 
-        return Ok(new ApiResponse<UserDto>
-        {
-            Success = true,
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpPost("logout")]

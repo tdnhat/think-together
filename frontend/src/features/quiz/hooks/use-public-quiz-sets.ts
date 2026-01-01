@@ -21,8 +21,7 @@ export function usePublicQuizSets(params?: QuizSetQueryParams) {
   } = useQuery({
     queryKey: QUERY_KEYS.PUBLIC_QUIZ_SETS(params),
     queryFn: async () => {
-      const response = await quizSetService.getPublicQuizSets(params)
-      return response.success ? response.data : { data: [], total: 0, page: 1, pageSize: 12, totalPages: 0 }
+      return quizSetService.getPublicQuizSets(params)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -45,4 +44,3 @@ export function usePublicQuizSets(params?: QuizSetQueryParams) {
     refetchQuizSets,
   }
 }
-

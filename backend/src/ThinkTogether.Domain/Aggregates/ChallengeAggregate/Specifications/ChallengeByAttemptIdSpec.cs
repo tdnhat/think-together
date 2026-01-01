@@ -9,8 +9,8 @@ public class ChallengeByAttemptIdSpec : Specification<Challenge>
         Criteria = challenge => challenge.Attempts.Any(a => a.Id == attemptId);
 
         // Include Attempts and their nested entities
+        AddInclude("Attempts");
         AddInclude("Attempts.Answers");
         AddInclude("Attempts.FlaggedQuestions");
     }
 }
-

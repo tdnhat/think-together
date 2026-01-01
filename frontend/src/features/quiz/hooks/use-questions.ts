@@ -29,8 +29,7 @@ export function useQuestions(quizSetId: string, params?: QuestionQueryParams) {
   } = useQuery({
     queryKey: QUERY_KEYS.QUESTIONS(quizSetId, params),
     queryFn: async () => {
-      const response = await questionService.getQuestionsByQuizSetId(quizSetId, params)
-      return response.success ? response.data : { data: [], total: 0, page: 1, pageSize: 50, totalPages: 0 }
+      return questionService.getQuestionsByQuizSetId(quizSetId, params)
     },
     enabled: !!quizSetId,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -47,11 +46,7 @@ export function useQuestions(quizSetId: string, params?: QuestionQueryParams) {
   // Create question mutation
   const createQuestionMutation = useMutation({
     mutationFn: async (data: CreateQuestionRequest) => {
-      const response = await questionService.createQuestion(data)
-      if (!response.success) {
-        throw new Error(response.message || QUESTION_CONSTANTS.MESSAGES.CREATE_FAILED)
-      }
-      return response.data!
+      return questionService.createQuestion(data)
     },
     onSuccess: () => {
       // Invalidate queries to refetch with current params
@@ -66,11 +61,7 @@ export function useQuestions(quizSetId: string, params?: QuestionQueryParams) {
   // Update question mutation
   const updateQuestionMutation = useMutation({
     mutationFn: async (data: UpdateQuestionRequest) => {
-      const response = await questionService.updateQuestion(quizSetId, data)
-      if (!response.success) {
-        throw new Error(response.message || QUESTION_CONSTANTS.MESSAGES.UPDATE_FAILED)
-      }
-      return response.data!
+      return questionService.updateQuestion(quizSetId, data)
     },
     onSuccess: () => {
       // Invalidate queries to refetch with current params
@@ -85,10 +76,7 @@ export function useQuestions(quizSetId: string, params?: QuestionQueryParams) {
   // Delete question mutation
   const deleteQuestionMutation = useMutation({
     mutationFn: async (questionId: string) => {
-      const response = await questionService.deleteQuestion(quizSetId, questionId)
-      if (!response.success) {
-        throw new Error(response.message || QUESTION_CONSTANTS.MESSAGES.DELETE_FAILED)
-      }
+      await questionService.deleteQuestion(quizSetId, questionId)
       return questionId
     },
     onSuccess: () => {
@@ -104,10 +92,7 @@ export function useQuestions(quizSetId: string, params?: QuestionQueryParams) {
   // Reorder questions mutation
   const reorderQuestionsMutation = useMutation({
     mutationFn: async (data: ReorderQuestionsRequest) => {
-      const response = await questionService.reorderQuestions(data)
-      if (!response.success) {
-        throw new Error(response.message || QUESTION_CONSTANTS.MESSAGES.REORDER_FAILED)
-      }
+      await questionService.reorderQuestions(data)
       return data
     },
     onSuccess: () => {
@@ -123,11 +108,7 @@ export function useQuestions(quizSetId: string, params?: QuestionQueryParams) {
   // Duplicate question mutation
   const duplicateQuestionMutation = useMutation({
     mutationFn: async (questionId: string) => {
-      const response = await questionService.duplicateQuestion(quizSetId, questionId)
-      if (!response.success) {
-        throw new Error(response.message || QUESTION_CONSTANTS.MESSAGES.DUPLICATE_FAILED)
-      }
-      return response.data!
+      return questionService.duplicateQuestion(quizSetId, questionId)
     },
     onSuccess: () => {
       // Invalidate queries to refetch with current params
@@ -167,11 +148,9 @@ export function useQuestion(quizSetId: string, questionId: string) {
   return useQuery({
     queryKey: QUERY_KEYS.QUESTION(quizSetId, questionId),
     queryFn: async () => {
-      const response = await questionService.getQuestionById(quizSetId, questionId)
-      return response.success ? response.data : null
+      return questionService.getQuestionById(quizSetId, questionId)
     },
     enabled: !!quizSetId && !!questionId,
     staleTime: 5 * 60 * 1000,
   })
 }
-

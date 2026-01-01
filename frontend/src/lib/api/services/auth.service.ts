@@ -8,7 +8,7 @@
 import { api } from '../client';
 import { AUTH_ENDPOINTS } from '../endpoints';
 import type {
-  ApiResponse,
+
   LoginRequest,
   LoginResponse,
   SignupRequest,
@@ -29,36 +29,30 @@ export class AuthService {
    * Login with email and password
    */
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const response = await api.post<ApiResponse<LoginResponse>>(
+    const response = await api.post<LoginResponse>(
       AUTH_ENDPOINTS.LOGIN,
       data
     );
-    
-    if (response.success && response.data) {
-      // Store tokens
-      api.setToken(response.data.accessToken, response.data.refreshToken);
-      return response.data;
-    }
-    
-    throw new Error(response.message || 'Đăng nhập thất bại');
+
+    // Store tokens
+    api.setToken(response.accessToken, response.refreshToken);
+    return response;
   }
-  
+
   /**
    * Sign up new user
    */
   async signup(data: SignupRequest): Promise<SignupResponse> {
-    const response = await api.post<ApiResponse<SignupResponse>>(
+    const response = await api.post<SignupResponse>(
       AUTH_ENDPOINTS.REGISTER,
       data
     );
-    
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error(response.message || 'Đăng ký thất bại');
+
+    return response;
+
+    // Response handled by error interceptor
   }
-  
+
   /**
    * Logout current user
    */
@@ -70,134 +64,102 @@ export class AuthService {
       api.clearToken();
     }
   }
-  
+
   /**
    * Get current user profile
    */
   async getProfile(): Promise<User> {
-    const response = await api.get<ApiResponse<User>>(
+    const response = await api.get<User>(
       AUTH_ENDPOINTS.GET_PROFILE
     );
-    
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error(response.message || 'Không thể tải thông tin người dùng');
+
+    return response;
+
+    // Response handled by error interceptor
   }
-  
+
   /**
    * Update user profile
    */
   async updateProfile(data: Partial<User>): Promise<User> {
-    const response = await api.put<ApiResponse<User>>(
+    const response = await api.put<User>(
       AUTH_ENDPOINTS.UPDATE_PROFILE,
       data
     );
-    
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error(response.message || 'Cập nhật thông tin thất bại');
+
+    return response;
+
+    // Response handled by error interceptor
   }
-  
+
   /**
    * Send forgot password email
    */
   async forgotPassword(data: ForgotPasswordRequest): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.FORGOT_PASSWORD,
       data
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Gửi email thất bại');
-    }
   }
-  
+
   /**
    * Reset password with token
    */
   async resetPassword(data: ResetPasswordRequest): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.RESET_PASSWORD,
       data
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Đặt lại mật khẩu thất bại');
-    }
   }
-  
+
   /**
    * Change password (authenticated)
    */
   async changePassword(data: ChangePasswordRequest): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.CHANGE_PASSWORD,
       data
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Đổi mật khẩu thất bại');
-    }
   }
-  
+
   /**
    * Verify email with token
    */
   async verifyEmail(data: VerifyEmailRequest): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.CONFIRM_EMAIL,
       data
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Xác thực email thất bại');
-    }
   }
-  
+
   /**
    * Confirm email
    */
   async confirmEmail(token: string): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.CONFIRM_EMAIL,
       { token }
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Xác nhận email thất bại');
-    }
   }
-  
+
   /**
    * Resend verification email
    */
   async resendVerification(): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.RESEND_CONFIRMATION
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Gửi lại email xác thực thất bại');
-    }
   }
-  
+
   /**
    * Activate creator role
    */
   async becomeCreator(): Promise<void> {
-    const response = await api.post<ApiResponse>(
+    await api.post<void>(
       AUTH_ENDPOINTS.BECOME_CREATOR
     );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Kích hoạt vai trò người sáng tạo thất bại');
-    }
   }
-  
+
   /**
    * Check if user is authenticated
    */

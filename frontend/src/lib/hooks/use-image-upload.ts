@@ -1,21 +1,19 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { quizService } from '@/lib/api/services/quiz.service'
-import type { QuizSetDto } from '@/types/api'
 
-interface UseImageUploadOptions {
-  onSuccess?: (quizSet: QuizSetDto) => void
+interface UseImageUploadOptions<T> {
+  onSuccess?: (data: T) => void
   onSuccessTemp?: (imageUrl: string) => void
   onError?: (error: string) => void
 }
 
-export interface UseImageUploadReturn {
+export interface UseImageUploadReturn<T> {
   isUploading: boolean
   uploadProgress: number
   error: string | null
-  uploadImage: (quizSetId: string, file: File) => Promise<QuizSetDto | null>
-  uploadImageTemp: (file: File) => Promise<string | null>
+  uploadImage: (id: string, file: File, uploadFn: (id: string, file: File) => Promise<T>) => Promise<T | null>
+  uploadImageTemp: (file: File, uploadTempFn: (file: File) => Promise<string>) => Promise<string | null>
   clearError: () => void
   reset: () => void
 }
@@ -23,7 +21,7 @@ export interface UseImageUploadReturn {
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 
-export function useImageUpload(options?: UseImageUploadOptions): UseImageUploadReturn {
+export function useImageUpload<T = unknown>(options?: UseImageUploadOptions<T>): UseImageUploadReturn<T> {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -45,7 +43,7 @@ export function useImageUpload(options?: UseImageUploadOptions): UseImageUploadR
   }, [])
 
   const uploadImage = useCallback(
-    async (quizSetId: string, file: File): Promise<QuizSetDto | null> => {
+    async (id: string, file: File, uploadFn: (id: string, file: File) => Promise<T>): Promise<T | null> => {
       setError(null)
       setUploadProgress(0)
 
@@ -61,7 +59,7 @@ export function useImageUpload(options?: UseImageUploadOptions): UseImageUploadR
         setIsUploading(true)
         setUploadProgress(10) // Simulate start
 
-        const result = await quizService.uploadQuizSetCoverImage(quizSetId, file)
+        const result = await uploadFn(id, file)
 
         setUploadProgress(100)
         options?.onSuccess?.(result)
@@ -81,7 +79,7 @@ export function useImageUpload(options?: UseImageUploadOptions): UseImageUploadR
   )
 
   const uploadImageTemp = useCallback(
-    async (file: File): Promise<string | null> => {
+    async (file: File, uploadTempFn: (file: File) => Promise<string>): Promise<string | null> => {
       setError(null)
       setUploadProgress(0)
 
@@ -97,7 +95,7 @@ export function useImageUpload(options?: UseImageUploadOptions): UseImageUploadR
         setIsUploading(true)
         setUploadProgress(10) // Simulate start
 
-        const imageUrl = await quizService.uploadQuizSetCoverImageTemp(file)
+        const imageUrl = await uploadTempFn(file)
 
         setUploadProgress(100)
         options?.onSuccessTemp?.(imageUrl)

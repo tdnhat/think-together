@@ -1,6 +1,6 @@
 'use client'
 
-import { MoreVertical, Edit, Trash2, Share, Play, Eye, Trophy } from 'lucide-react'
+import {MoreVertical, Edit, Trash2, Share, Play, Eye, Trophy, Copy} from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
 import { Separator } from '@/shared/ui/separator'
@@ -29,7 +29,6 @@ export function QuizSetCard({
   onView,
   onHost,
   onDuplicate,
-  onCreateChallenge,
   className = '',
 }: Readonly<QuizSetCardProps>) {
   const coverImage = quizSet.coverImageUrl || QUIZ_SET_CONSTANTS.DEFAULTS.COVER_IMAGE
@@ -48,7 +47,7 @@ export function QuizSetCard({
       {/* Status Badge */}
       <div className="absolute top-3 left-3">
         <Badge
-          variant={quizSet.isPublished ? 'default' : 'outline'}
+          variant={quizSet.isPublished ? 'default' : 'secondary'}
           className="text-xs font-semibold"
         >
           {quizSet.isPublished ? 'Đã xuất bản' : 'Nháp'}
@@ -97,16 +96,10 @@ export function QuizSetCard({
                 Tổ chức trò chơi
               </DropdownMenuItem>
             )}
-            {onCreateChallenge && quizSet.isPublished && (
-              <DropdownMenuItem onClick={() => onCreateChallenge(quizSet)}>
-                <Trophy className="mr-2 h-4 w-4" />
-                Tạo thử thách
-              </DropdownMenuItem>
-            )}
             {onDuplicate && (
               <DropdownMenuItem onClick={() => onDuplicate(quizSet)}>
-                <Share className="mr-2 h-4 w-4" />
-                Sao chép
+                <Copy className="mr-2 h-4 w-4" />
+                Nhân bản
               </DropdownMenuItem>
             )}
             {onDelete && (

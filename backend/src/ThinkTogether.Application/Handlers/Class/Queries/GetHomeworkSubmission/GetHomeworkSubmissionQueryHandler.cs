@@ -166,8 +166,7 @@ public sealed class GetHomeworkSubmissionQueryHandler : IRequestHandler<GetHomew
                     {
                         foreach (var option in questionDto.Options)
                         {
-                            var optionIndex = option.DisplayOrder - 1; // Assuming DisplayOrder is 1-based
-                            var srcOption = q.Options.FirstOrDefault(o => o.Content == option.Content && o.DisplayOrder == option.DisplayOrder);
+                            var srcOption = q.Options.FirstOrDefault(o => o.DisplayOrder == option.DisplayOrder);
                             if (srcOption != null)
                             {
                                 option.IsCorrect = srcOption.IsCorrect;

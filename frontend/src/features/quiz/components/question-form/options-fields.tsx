@@ -1,9 +1,8 @@
 import { useFormContext, Controller } from 'react-hook-form'
 import { Plus, Trash2, Check, X } from 'lucide-react'
-import { FormField, FormItem, FormControl, FormMessage } from '@/shared/ui/form'
+import { FormField, FormItem, FormControl, FormLabel, FormMessage } from '@/shared/ui/form'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
-import { Label } from '@/shared/ui/label'
 import { Badge } from '@/shared/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip'
 import { QUESTION_CONSTANTS } from '../../constants'
@@ -60,9 +59,9 @@ export function OptionsFields() {
     return (
         <FormItem className="space-y-3">
             <div className="flex items-center justify-between">
-                <Label>
+                <FormLabel>
                     Các lựa chọn <span className="text-destructive">*</span>
-                </Label>
+                </FormLabel>
                 {type !== QuestionType.TRUE_FALSE && (
                     <Button
                         type="button"
@@ -147,8 +146,12 @@ export function OptionsFields() {
                 ) : null}
             </div>
 
-            {formState.errors.options && typeof formState.errors.options.message === 'string' && (
-                <p className="text-sm text-destructive">{formState.errors.options.message}</p>
+            {formState.errors.options && (
+                <p className="text-sm text-destructive">
+                    {typeof formState.errors.options.message === 'string' 
+                        ? formState.errors.options.message 
+                        : 'Vui lòng kiểm tra các lựa chọn của bạn'}
+                </p>
             )}
         </FormItem>
     )

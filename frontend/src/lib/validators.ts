@@ -56,15 +56,28 @@ export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 // Quiz schemas
+// Helper to validate UUID or empty string, transforming empty string to undefined
+const optionalUuidSchema = z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    z.string().uuid("ID danh mục không hợp lệ").optional()
+);
+
+// Helper to validate URL or empty string, transforming empty string to undefined
+const optionalUrlSchema = z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    z.string().url("URL ảnh bìa không hợp lệ").optional()
+);
+
 export const createQuizSetSchema = z.object({
     title: z.string()
         .min(1, "Tiêu đề là bắt buộc")
         .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
     description: z.string()
         .max(2000, "Mô tả không được vượt quá 2000 ký tự")
-        .optional(),
-    coverImageUrl: z.string().url("URL ảnh bìa không hợp lệ").optional().or(z.literal("")),
-    categoryId: z.string().uuid("ID danh mục không hợp lệ").optional().or(z.literal("")),
+        .optional()
+        .transform((val) => val === "" ? undefined : val),
+    coverImageUrl: optionalUrlSchema,
+    categoryId: optionalUuidSchema,
 });
 
 export const updateQuizSetSchema = z.object({
@@ -74,9 +87,10 @@ export const updateQuizSetSchema = z.object({
         .max(255, "Tiêu đề không được vượt quá 255 ký tự"),
     description: z.string()
         .max(2000, "Mô tả không được vượt quá 2000 ký tự")
-        .optional(),
-    coverImageUrl: z.string().url("URL ảnh bìa không hợp lệ").optional().or(z.literal("")),
-    categoryId: z.string().uuid("ID danh mục không hợp lệ").optional().or(z.literal("")),
+        .optional()
+        .transform((val) => val === "" ? undefined : val),
+    coverImageUrl: optionalUrlSchema,
+    categoryId: optionalUuidSchema,
 });
 
 // Type exports
@@ -103,16 +117,12 @@ const orderingItemSchema = z.object({
   correctPosition: z.number(),
 });
 
-const optionsSchema = z.array(z.object({
+// Base option schema
+const optionSchema = z.object({
   content: z.string().min(1, "Nội dung lựa chọn không được để trống"),
   isCorrect: z.boolean(),
   displayOrder: z.number(),
-})).refine(
-  (options) => options.some(opt => opt.isCorrect),
-  {
-    message: "Phải có ít nhất một đáp án đúng",
-  }
-);
+})
 
 export const createQuestionSchema = z.object({
   content: z.string()
@@ -122,7 +132,7 @@ export const createQuestionSchema = z.object({
   timeLimit: z.number()
     .min(5, "Thời gian giới hạn tối thiểu là 5 giây")
     .max(300, "Thời gian giới hạn tối đa là 300 giây"),
-  options: optionsSchema.optional(),
+  options: z.array(optionSchema).optional(),
   matchingPairs: z.array(matchingPairSchema)
     .min(2, "Phải có ít nhất 2 cặp ghép")
     .max(5, "Không được có quá 5 cặp ghép")
@@ -132,46 +142,228 @@ export const createQuestionSchema = z.object({
     .max(6, "Không được có quá 6 mục để sắp xếp")
     .optional(),
   videoUrl: z.string()
+    .url("URL video không hợp lệ")
     .max(500, "URL video không được vượt quá 500 ký tự")
-    .optional(),
+    .optional()
+    .or(z.literal("")),
   videoTimestamp: z.number()
     .min(0, "Dấu thời gian video không được âm")
     .optional(),
   audioUrl: z.string()
+    .url("URL audio không hợp lệ")
     .max(500, "URL audio không được vượt quá 500 ký tự")
-    .optional(),
+    .optional()
+    .or(z.literal("")),
   audioTimestamp: z.number()
     .min(0, "Dấu thời gian audio không được âm")
     .optional(),
-}).refine(
-  (data) => {
-    // For choice-based questions, options must be provided
-    if (['SingleChoice', 'TrueFalse', 'MultipleChoice'].includes(data.type)) {
-      return Array.isArray(data.options) && data.options.length > 0;
+}).superRefine((data, ctx) => {
+  // Validate options based on question type
+  if (['SingleChoice', 'TrueFalse', 'MultipleChoice', 'Video', 'Audio'].includes(data.type)) {
+    if (!data.options || data.options.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Phải có ít nhất 2 lựa chọn",
+        path: ['options'],
+      })
+      return
     }
-    // For matching questions, matchingPairs must be provided
-    if (data.type === 'Matching') {
-      return Array.isArray(data.matchingPairs) && data.matchingPairs.length >= 2;
+
+    if (data.options.length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Phải có ít nhất 2 lựa chọn",
+        path: ['options'],
+      })
     }
-    // For ordering questions, orderingItems must be provided
-    if (data.type === 'Ordering') {
-      return Array.isArray(data.orderingItems) && data.orderingItems.length >= 3;
+
+    if (data.options.length > 6) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Không được có quá 6 lựa chọn",
+        path: ['options'],
+      })
     }
-    // For video questions, videoUrl must be provided
-    if (data.type === 'Video') {
-      return !!data.videoUrl && data.videoUrl.trim().length > 0;
+
+    // Validate correct answers
+    const correctCount = data.options.filter(opt => opt.isCorrect).length
+    
+    if (data.type === 'SingleChoice' || data.type === 'TrueFalse') {
+      if (correctCount !== 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: data.type === 'TrueFalse' 
+            ? "Phải chọn một đáp án đúng (Đúng hoặc Sai)"
+            : "Phải chọn chính xác một đáp án đúng",
+          path: ['options'],
+        })
+      }
+    } else if (data.type === 'MultipleChoice') {
+      if (correctCount === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Phải có ít nhất một đáp án đúng",
+          path: ['options'],
+        })
+      }
+    } else if (data.type === 'Video' || data.type === 'Audio') {
+      if (correctCount === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Phải có ít nhất một đáp án đúng",
+          path: ['options'],
+        })
+      }
     }
-    // For audio questions, audioUrl must be provided
-    if (data.type === 'Audio') {
-      return !!data.audioUrl && data.audioUrl.trim().length > 0;
-    }
-    return true;
-  },
-  {
-    message: "Nội dung câu hỏi không đầy đủ cho loại câu hỏi đã chọn",
   }
-);
+
+  // Validate matching pairs
+  if (data.type === 'Matching') {
+    if (!data.matchingPairs || data.matchingPairs.length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Phải có ít nhất 2 cặp ghép",
+        path: ['matchingPairs'],
+      })
+    }
+    if (data.matchingPairs && data.matchingPairs.length > 5) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Không được có quá 5 cặp ghép",
+        path: ['matchingPairs'],
+      })
+    }
+  }
+
+  // Validate ordering items
+  if (data.type === 'Ordering') {
+    if (!data.orderingItems || data.orderingItems.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Phải có ít nhất 3 mục để sắp xếp",
+        path: ['orderingItems'],
+      })
+    }
+    if (data.orderingItems && data.orderingItems.length > 6) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Không được có quá 6 mục để sắp xếp",
+        path: ['orderingItems'],
+      })
+    }
+  }
+
+  // Validate video URL
+  if (data.type === 'Video') {
+    if (!data.videoUrl || data.videoUrl.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "URL video là bắt buộc",
+        path: ['videoUrl'],
+      })
+    } else if (data.videoUrl && !z.string().url().safeParse(data.videoUrl).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "URL video không hợp lệ",
+        path: ['videoUrl'],
+      })
+    }
+  }
+
+  // Validate audio URL
+  if (data.type === 'Audio') {
+    if (!data.audioUrl || data.audioUrl.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "URL audio là bắt buộc",
+        path: ['audioUrl'],
+      })
+    } else if (data.audioUrl && !z.string().url().safeParse(data.audioUrl).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "URL audio không hợp lệ",
+        path: ['audioUrl'],
+      })
+    }
+  }
+});
 
 export type CreateQuestionFormData = z.infer<typeof createQuestionSchema>;
 export type MatchingPairFormData = z.infer<typeof matchingPairSchema>;
 export type OrderingItemFormData = z.infer<typeof orderingItemSchema>;
+
+// Class schemas
+export const createClassSchema = z.object({
+  name: z.string()
+    .min(1, "Tên lớp học là bắt buộc")
+    .max(100, "Tên lớp học không được vượt quá 100 ký tự")
+    .trim(),
+  description: z.string()
+    .max(500, "Mô tả không được vượt quá 500 ký tự")
+    .optional()
+    .or(z.literal("")),
+  coverImageUrl: z.string()
+    .url("URL hình ảnh không hợp lệ")
+    .max(500, "URL hình ảnh không được vượt quá 500 ký tự")
+    .optional()
+    .or(z.literal("")),
+});
+
+export const updateClassSchema = z.object({
+  name: z.string()
+    .min(1, "Tên lớp học là bắt buộc")
+    .max(100, "Tên lớp học không được vượt quá 100 ký tự")
+    .trim()
+    .optional(),
+  description: z.string()
+    .max(500, "Mô tả không được vượt quá 500 ký tự")
+    .optional()
+    .or(z.literal("")),
+  coverImageUrl: z.string()
+    .url("URL hình ảnh không hợp lệ")
+    .max(500, "URL hình ảnh không được vượt quá 500 ký tự")
+    .optional()
+    .or(z.literal("")),
+});
+
+export type CreateClassFormData = z.infer<typeof createClassSchema>;
+export type UpdateClassFormData = z.infer<typeof updateClassSchema>;
+
+// Homework schemas
+export const createHomeworkSchema = z.object({
+  title: z.string()
+    .min(1, "Tiêu đề bài tập là bắt buộc")
+    .max(255, "Tiêu đề bài tập không được vượt quá 255 ký tự")
+    .trim(),
+  quizSetId: z.string()
+    .min(1, "Phải chọn bộ câu hỏi")
+    .uuid("ID bộ câu hỏi không hợp lệ"),
+  dueDate: z.string()
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: "Ngày hết hạn không hợp lệ",
+    })
+    .refine((val) => !val || new Date(val) > new Date(), {
+      message: "Ngày hết hạn phải ở tương lai",
+    }),
+});
+
+export const updateHomeworkSchema = z.object({
+  title: z.string()
+    .min(1, "Tiêu đề bài tập là bắt buộc")
+    .max(255, "Tiêu đề bài tập không được vượt quá 255 ký tự")
+    .trim()
+    .optional(),
+  quizSetId: z.string()
+    .min(1, "Phải chọn bộ câu hỏi")
+    .uuid("ID bộ câu hỏi không hợp lệ")
+    .optional(),
+  dueDate: z.string()
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: "Ngày hết hạn không hợp lệ",
+    }),
+});
+
+export type CreateHomeworkFormData = z.infer<typeof createHomeworkSchema>;
+export type UpdateHomeworkFormData = z.infer<typeof updateHomeworkSchema>;

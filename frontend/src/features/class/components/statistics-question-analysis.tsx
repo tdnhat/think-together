@@ -8,7 +8,7 @@ interface StatisticsQuestionAnalysisProps {
     stats: QuestionStatisticsDto[]
 }
 
-export function StatisticsQuestionAnalysis({ stats }: StatisticsQuestionAnalysisProps) {
+function StatisticsQuestionAnalysis({ stats }: StatisticsQuestionAnalysisProps) {
     return (
         <Card className="border shadow-sm">
             <CardHeader className="pb-2">
@@ -18,7 +18,7 @@ export function StatisticsQuestionAnalysis({ stats }: StatisticsQuestionAnalysis
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                     {stats.map((stat, index) => (
                         <div
                             key={stat.questionId}
@@ -65,3 +65,5 @@ export function StatisticsQuestionAnalysis({ stats }: StatisticsQuestionAnalysis
         </Card>
     )
 }
+
+export default StatisticsQuestionAnalysis

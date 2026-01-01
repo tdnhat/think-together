@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from '@/lib/api/client'
-import type { ApiResponse, PaginatedResponse } from '@/types/api'
+import type {  PaginatedResponse } from '@/types/api'
 import type {
   ChallengeDto,
   ChallengeAttemptApiDto,
@@ -37,27 +37,24 @@ export const challengeService = {
 
   // Get single challenge by ID
   async getChallenge(id: string): Promise<ChallengeDto> {
-    const response = await apiClient.get<ApiResponse<ChallengeDto>>(
+    return apiClient.get<ChallengeDto>(
       `${CHALLENGE_BASE_URL}/${id}`
     )
-    return response.data!
   },
 
   // Get challenge by share link
   async getChallengeByShareLink(shareLink: string): Promise<ChallengeDto> {
-    const response = await apiClient.get<ApiResponse<ChallengeDto>>(
+    return apiClient.get<ChallengeDto>(
       `${CHALLENGE_BASE_URL}/by-link/${shareLink}`
     )
-    return response.data!
   },
 
   // Get challenge by quiz set ID (returns null if no challenge exists)
   async getChallengeByQuizSetId(quizSetId: string): Promise<ChallengeDto | null> {
     try {
-      const response = await apiClient.get<ApiResponse<ChallengeDto>>(
+      return await apiClient.get<ChallengeDto>(
         `${CHALLENGE_BASE_URL}/by-quiz/${quizSetId}`
       )
-      return response.data ?? null
     } catch (error) {
       // 204 No Content or 404 means no challenge exists
       return null
@@ -66,20 +63,18 @@ export const challengeService = {
 
   // Create challenge
   async createChallenge(data: CreateChallengeRequest): Promise<ChallengeDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeDto>>(
+    return apiClient.post<ChallengeDto>(
       CHALLENGE_BASE_URL,
       data
     )
-    return response.data!
   },
 
   // Update challenge
   async updateChallenge(data: UpdateChallengeRequest): Promise<ChallengeDto> {
-    const response = await apiClient.put<ApiResponse<ChallengeDto>>(
+    return apiClient.put<ChallengeDto>(
       `${CHALLENGE_BASE_URL}/${data.id}`,
       data
     )
-    return response.data!
   },
 
   // Delete challenge
@@ -89,20 +84,18 @@ export const challengeService = {
 
   // Archive challenge
   async archiveChallenge(id: string): Promise<ChallengeDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeDto>>(
+    return apiClient.post<ChallengeDto>(
       `${CHALLENGE_BASE_URL}/${id}/archive`,
       {}
     )
-    return response.data!
   },
 
   // Activate challenge
   async activateChallenge(id: string): Promise<ChallengeDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeDto>>(
+    return apiClient.post<ChallengeDto>(
       `${CHALLENGE_BASE_URL}/${id}/activate`,
       {}
     )
-    return response.data!
   },
 
   // Start attempt
@@ -110,19 +103,17 @@ export const challengeService = {
     challengeId: string,
     data: StartChallengeAttemptRequest
   ): Promise<ChallengeAttemptApiDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
+    return apiClient.post<ChallengeAttemptApiDto>(
       `${CHALLENGE_BASE_URL}/${challengeId}/attempts`,
       data
     )
-    return response.data!
   },
 
   // Get attempt details
   async getAttempt(attemptId: string): Promise<ChallengeAttemptApiDto> {
-    const response = await apiClient.get<ApiResponse<ChallengeAttemptApiDto>>(
+    return apiClient.get<ChallengeAttemptApiDto>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}`
     )
-    return response.data!
   },
 
   // Submit all answers at once (now returns completed attempt immediately)
@@ -136,20 +127,18 @@ export const challengeService = {
     }>,
     homeworkId?: string
   ): Promise<ChallengeAttemptApiDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
+    return apiClient.post<ChallengeAttemptApiDto>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}/submit-answers`,
       { answers, homeworkId }
     )
-    return response.data!
   },
 
   // Abandon attempt
   async abandonAttempt(attemptId: string): Promise<ChallengeAttemptApiDto> {
-    const response = await apiClient.post<ApiResponse<ChallengeAttemptApiDto>>(
+    return apiClient.post<ChallengeAttemptApiDto>(
       `${CHALLENGE_BASE_URL}/attempts/${attemptId}/abandon`,
       {}
     )
-    return response.data!
   },
 
   // Get leaderboard
@@ -162,17 +151,15 @@ export const challengeService = {
     params.append('page', page.toString())
     params.append('pageSize', pageSize.toString())
 
-    const response = await apiClient.get<ApiResponse<ChallengeLeaderboardDto>>(
+    return apiClient.get<ChallengeLeaderboardDto>(
       `${CHALLENGE_BASE_URL}/${challengeId}/leaderboard?${params.toString()}`
     )
-    return response.data!
   },
 
   // Get challenge statistics
   async getChallengeStats(challengeId: string): Promise<ChallengeStatsDto> {
-    const response = await apiClient.get<ApiResponse<ChallengeStatsDto>>(
+    return apiClient.get<ChallengeStatsDto>(
       `${CHALLENGE_BASE_URL}/${challengeId}/stats`
     )
-    return response.data!
   },
 }

@@ -66,21 +66,11 @@ export function useBecomeCreator(): BecomeCreatorActions {
       const simulatedDelay = 2000 + Math.random() * 1000
       await new Promise(resolve => setTimeout(resolve, simulatedDelay))
 
-      const response = await authService.becomeCreator()
-
-      if (!response.success) {
-        const errorMessage = response.message || 'Không thể kích hoạt vai trò Người sáng tạo'
-        setState((prev) => ({
-          ...prev,
-          isActivating: false,
-          error: errorMessage,
-        }))
-        return false
-      }
+      await authService.becomeCreator()
 
       return true
     } catch (error: unknown) {
-      handleError(error, { 
+      handleError(error, {
         showToast: false
       })
 

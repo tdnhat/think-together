@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.QuizSet.Commands.CreateQuestion;
 using ThinkTogether.Application.Handlers.QuizSet.Commands.DeleteQuestion;
@@ -40,23 +39,19 @@ public partial class QuizSetController
     }
 
     [HttpGet("{id}/questions/{questionId}")]
-    [ProducesResponseType(typeof(ApiResponse<QuestionDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(QuestionDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetQuestionById(Guid id, Guid questionId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetQuestionByIdQuery(id, questionId), cancellationToken);
 
-        return Ok(new ApiResponse<QuestionDto>
-        {
-            Success = true,
-            Message = "Câu hỏi được tải thành công",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpPost("{id}/questions")]
-    [ProducesResponseType(typeof(ApiResponse<QuestionDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(QuestionDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -71,16 +66,11 @@ public partial class QuizSetController
         return CreatedAtAction(
             nameof(GetQuestionById),
             new { id = id, questionId = result.Id },
-            new ApiResponse<QuestionDto>
-            {
-                Success = true,
-                Message = "Câu hỏi đã được tạo thành công",
-                Data = result
-            });
+            result);
     }
 
     [HttpPut("{id}/questions/{questionId}")]
-    [ProducesResponseType(typeof(ApiResponse<QuestionDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(QuestionDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -93,12 +83,8 @@ public partial class QuizSetController
         var commandWithIds = command with { QuizSetId = id, QuestionId = questionId };
         var result = await _mediator.Send(commandWithIds, cancellationToken);
 
-        return Ok(new ApiResponse<QuestionDto>
-        {
-            Success = true,
-            Message = "Câu hỏi đã được cập nhật thành công",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpDelete("{id}/questions/{questionId}")]
@@ -113,7 +99,7 @@ public partial class QuizSetController
     }
 
     [HttpPost("{id}/questions/{questionId}/duplicate")]
-    [ProducesResponseType(typeof(ApiResponse<QuestionDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(QuestionDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DuplicateQuestion(Guid id, Guid questionId, CancellationToken cancellationToken)
@@ -123,12 +109,7 @@ public partial class QuizSetController
         return CreatedAtAction(
             nameof(GetQuestionById),
             new { id, questionId = result.Id },
-            new ApiResponse<QuestionDto>
-            {
-                Success = true,
-                Message = "Câu hỏi đã được sao chép thành công",
-                Data = result
-            });
+            result);
     }
 
     [HttpPut("{id}/questions/reorder")]

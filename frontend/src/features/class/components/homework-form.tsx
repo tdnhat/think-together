@@ -1,13 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from '@/shared/ui/form'
 import { Button } from '@/shared/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Input } from '@/shared/ui/input'
-import { Label } from '@/shared/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select'
+import {
+  createHomeworkSchema,
+  updateHomeworkSchema,
+  type CreateHomeworkFormData,
+  type UpdateHomeworkFormData,
+} from '@/lib/validators'
 import { useQuizSets } from '@/features/quiz/hooks'
-import { CLASS_CONSTANTS } from '../constants'
 import type { HomeworkDto, CreateHomeworkRequest, UpdateHomeworkRequest } from '../types'
 
 interface HomeworkFormProps {
@@ -17,6 +30,7 @@ interface HomeworkFormProps {
   onCancel?: () => void
   isSubmitting?: boolean
   className?: string
+  showActions?: boolean
 }
 
 export function HomeworkForm({
@@ -26,152 +40,145 @@ export function HomeworkForm({
   onCancel,
   isSubmitting = false,
   className = '',
+  showActions = true,
 }: Readonly<HomeworkFormProps>) {
   const { quizSets, isLoadingQuizSets } = useQuizSets({
     page: 1,
     pageSize: 100, // Get all quiz sets for the dropdown
   })
-  const [title, setTitle] = useState(homework?.title || '')
-  const [quizSetId, setQuizSetId] = useState(homework?.quizSetId || '')
-  const [dueDate, setDueDate] = useState(
-    homework?.dueDate ? new Date(homework.dueDate).toISOString().slice(0, 16) : ''
-  )
 
-  useEffect(() => {
-    if (homework) {
-      setTitle(homework.title)
-      setQuizSetId(homework.quizSetId)
-      setDueDate(
-        homework.dueDate ? new Date(homework.dueDate).toISOString().slice(0, 16) : ''
-      )
-    }
-  }, [homework])
+  const isEditing = !!homework
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<CreateHomeworkFormData | UpdateHomeworkFormData>({
+    resolver: zodResolver(isEditing ? updateHomeworkSchema : createHomeworkSchema),
+    defaultValues: {
+      title: homework?.title || '',
+      quizSetId: homework?.quizSetId || '',
+      dueDate: homework?.dueDate ? new Date(homework.dueDate).toISOString().slice(0, 16) : '',
+    },
+  })
 
-    const data: CreateHomeworkRequest | UpdateHomeworkRequest = {
+  const { handleSubmit, control } = form
+
+  const handleFormSubmit = async (data: CreateHomeworkFormData | UpdateHomeworkFormData) => {
+    const submitData: CreateHomeworkRequest | UpdateHomeworkRequest = {
+      ...(homework?.id && { id: homework.id }),
       classId,
-      quizSetId,
-      title: title.trim(),
-      dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+      title: data.title?.trim() || '',
+      quizSetId: data.quizSetId || '',
+      dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
     }
 
-    await onSubmit(data)
+    await onSubmit(submitData)
   }
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            {homework ? 'Chỉnh sửa bài tập về nhà' : 'Tạo bài tập về nhà mới'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <Form {...form}>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className={className}>
+        <div className="space-y-6">
           {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Tiêu đề <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ví dụ: Bài tập về nhà tuần 1"
-              maxLength={255}
-              required
-              disabled={isSubmitting}
-            />
-          </div>
+          <FormField
+            control={control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Tiêu đề bài tập <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Nhập tiêu đề bài tập"
+                    maxLength={255}
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {field.value?.length || 0} / 255 ký tự
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Quiz Set */}
-          <div className="space-y-2">
-            <Label htmlFor="quizSetId">
-              Bộ câu hỏi <span className="text-red-500">*</span>
-            </Label>
-            {isLoadingQuizSets ? (
-              <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
-            ) : (
-              <Select
-                value={quizSetId}
-                onValueChange={setQuizSetId}
-                disabled={isSubmitting || !!homework}
-                required
-              >
-                <SelectTrigger id="quizSetId">
-                  <SelectValue placeholder="Chọn bộ câu hỏi" />
-                </SelectTrigger>
-                <SelectContent>
-                  {quizSets && quizSets.length > 0 ? (
-                    quizSets.map((quizSet) => (
-                      <SelectItem key={quizSet.id} value={quizSet.id}>
-                        {quizSet.title}
-                        {!quizSet.isPublished && (
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            (Nháp)
-                          </span>
-                        )}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                      Không có bộ câu hỏi nào
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
+          <FormField
+            control={control}
+            name="quizSetId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Bộ câu hỏi <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={isSubmitting || isLoadingQuizSets}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn bộ câu hỏi" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {quizSets?.map((quizSet) => (
+                        <SelectItem key={quizSet.id} value={quizSet.id}>
+                          {quizSet.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-            {!isLoadingQuizSets && (!quizSets || quizSets.length === 0) && (
-              <p className="text-xs text-muted-foreground">
-                Bạn cần tạo ít nhất một bộ câu hỏi trước khi tạo bài tập về nhà
-              </p>
-            )}
-            {homework && (
-              <p className="text-xs text-muted-foreground">
-                Không thể thay đổi bộ câu hỏi sau khi đã tạo bài tập
-              </p>
-            )}
-          </div>
+          />
 
           {/* Due Date */}
-          <div className="space-y-2">
-            <Label htmlFor="dueDate">Hạn nộp bài</Label>
-            <Input
-              id="dueDate"
-              type="datetime-local"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              min={new Date().toISOString().slice(0, 16)}
-              disabled={isSubmitting}
-            />
-            <p className="text-xs text-muted-foreground">
-              Để trống nếu không có hạn nộp
-            </p>
-          </div>
+          <FormField
+            control={control}
+            name="dueDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ngày hết hạn</FormLabel>
+                <FormControl>
+                  <Input
+                    type="datetime-local"
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Để trống nếu không có hạn nộp
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting || !title.trim() || !quizSetId}
-              className="flex-1"
-            >
-              {isSubmitting ? 'Đang lưu...' : homework ? 'Cập nhật' : 'Tạo bài tập'}
-            </Button>
-            {onCancel && (
+          {showActions && (
+            <div className="flex gap-3 pt-4">
               <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
+                type="submit"
+                disabled={isSubmitting || !form.watch('title')?.trim() || !form.watch('quizSetId')}
+                className="flex-1"
               >
-                Hủy
+                {isSubmitting ? 'Đang lưu...' : homework ? 'Cập nhật' : 'Tạo bài tập'}
               </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </form>
+              {onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  Hủy
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </form>
+    </Form>
   )
 }

@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ThinkTogether.Api.Models;
 using ThinkTogether.Application.DTOs;
 using ThinkTogether.Application.Handlers.Platform.Queries.GetPlatformStats;
 
@@ -20,17 +19,14 @@ public class PlatformController : ControllerBase
 
     [HttpGet("stats")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<PlatformStatsDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PlatformStatsDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPlatformStats(CancellationToken cancellationToken = default)
     {
         var query = new GetPlatformStatsQuery();
         var result = await _mediator.Send(query, cancellationToken);
 
-        return Ok(new ApiResponse<PlatformStatsDto>
-        {
-            Success = true,
-            Data = result
-        });
+        return Ok(result
+        );
     }
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/shared/ui/dialog'
 import { DashboardLayout } from '@/widgets/dashboard'
 import {
   ClassList,
@@ -14,6 +14,7 @@ import {
 } from '@/features/class'
 import { ROUTES } from '@/config/routes'
 import type { ClassDto } from '@/features/class/types'
+import { Button } from '@/shared/ui/button'
 
 export default function ClassesPage() {
   const router = useRouter()
@@ -99,18 +100,42 @@ export default function ClassesPage() {
 
         {/* Create Class Modal */}
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
+          <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
               <DialogTitle>Tạo lớp học mới</DialogTitle>
               <DialogDescription>
                 Tạo một lớp học mới để quản lý học sinh và bài tập về nhà.
               </DialogDescription>
             </DialogHeader>
-            <ClassForm
-              onSubmit={(data) => handleCreate(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
-              onCancel={() => setIsCreateModalOpen(false)}
-              isSubmitting={createClassMutation.isPending}
-            />
+            <div className="flex-1 overflow-y-auto px-6 scrollbar-thin">
+              <ClassForm
+                onSubmit={(data) => handleCreate(data as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
+                onCancel={() => setIsCreateModalOpen(false)}
+                isSubmitting={createClassMutation.isPending}
+                showActions={false}
+              />
+            </div>
+            <DialogFooter className="flex-shrink-0 px-6 pb-6 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateModalOpen(false)}
+                disabled={createClassMutation.isPending}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  // Trigger form submission
+                  const form = document.querySelector('form') as HTMLFormElement
+                  form?.requestSubmit()
+                }}
+                disabled={createClassMutation.isPending}
+              >
+                {createClassMutation.isPending ? 'Đang lưu...' : 'Tạo lớp học'}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { toast } from '@/lib/utils/toast'
+import { ROUTES } from '@/config/routes'
 import type { ChallengeDto } from '@/features/challenge/types'
 
 interface ChallengeShareCardProps {

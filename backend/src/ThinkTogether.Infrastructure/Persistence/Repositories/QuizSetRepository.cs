@@ -29,6 +29,7 @@ public class QuizSetRepository : Repository<QuizSet, Guid>, IQuizSetRepository
 
         return await _dbSet
             .Where(q => ids.Contains(q.Id) && q.DeletedAt == null)
+            .Include(q => q.Questions.Where(question => question.DeletedAt == null))
             .ToListAsync(cancellationToken);
     }
 

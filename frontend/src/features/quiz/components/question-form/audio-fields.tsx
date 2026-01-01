@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { AlertCircle, X } from 'lucide-react'
-import { FormField, FormItem, FormControl, FormMessage } from '@/shared/ui/form'
+import { FormField, FormItem, FormControl, FormLabel, FormDescription, FormMessage } from '@/shared/ui/form'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
-import { Label } from '@/shared/ui/label'
 import { Separator } from '@/shared/ui/separator'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert'
 import { quizService } from '@/lib/api/services/quiz.service'
 import { CreateQuestionFormData } from '@/lib/validators'
 
@@ -26,9 +26,9 @@ export function AudioFields() {
                 name="audioUrl"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>
+                        <FormLabel>
                             Tệp Âm thanh <span className="text-destructive">*</span>
-                        </Label>
+                        </FormLabel>
                         <FormControl>
                             <div className="space-y-2">
                                 {!audioUrl ? (
@@ -131,7 +131,7 @@ export function AudioFields() {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="bg-muted rounded-lg border border-[var(--border-secondary)] p-4">
+                                    <div className="bg-muted rounded-lg border border-border p-4">
                                         <div className="flex items-center justify-between">
                                             <p className="text-sm font-medium text-foreground">
                                                 Tệp đã tải lên
@@ -157,26 +157,22 @@ export function AudioFields() {
 
                                 {/* Error Message */}
                                 {audioUploadError && (
-                                    <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                                        <AlertCircle className="size-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-red-800 dark:text-red-300">
-                                                Lỗi tải lên
-                                            </p>
-                                            <p className="text-xs text-red-700 dark:text-red-400 mt-1">
-                                                {audioUploadError}
-                                            </p>
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="icon"
-                                            className="size-6 shrink-0"
-                                            onClick={() => setAudioUploadError(null)}
-                                        >
-                                            <X className="size-4" />
-                                        </Button>
-                                    </div>
+                                    <Alert variant="destructive">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertTitle>Lỗi tải lên</AlertTitle>
+                                        <AlertDescription className="flex items-center justify-between">
+                                            <span>{audioUploadError}</span>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-6 w-6"
+                                                onClick={() => setAudioUploadError(null)}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </AlertDescription>
+                                    </Alert>
                                 )}
                             </div>
                         </FormControl>
@@ -190,9 +186,9 @@ export function AudioFields() {
                 name="audioTimestamp"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>
+                        <FormLabel>
                             Thời gian bắt đầu âm thanh (giây)
-                        </Label>
+                        </FormLabel>
                         <FormControl>
                             <Input
                                 type="number"
@@ -203,9 +199,9 @@ export function AudioFields() {
                                 onChange={(e) => field.onChange(Number(e.target.value))}
                             />
                         </FormControl>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <FormDescription>
                             Âm thanh sẽ bắt đầu từ thời gian này (tính bằng giây). Ví dụ: 120 = 2 phút
-                        </p>
+                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}

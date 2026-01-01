@@ -36,23 +36,14 @@ export function useJoinGame(): UseJoinGameReturn {
       // Join the game - the endpoint will validate PIN and game status
       const joinResponse = await gameSessionService.joinSession({ pin, nickname })
       
-      if (!joinResponse.success || !joinResponse.data) {
-        const errorMsg = joinResponse.message || GAME_PLAYER_CONSTANTS.ERRORS.JOIN_FAILED
-        setError(errorMsg)
-        toastError(errorMsg)
-        return
-      }
-
       // Get sessionId - we need it for SignalR
       const sessionResponse = await gameSessionService.getSessionByPin(pin)
-      const sessionId = sessionResponse.success && sessionResponse.data 
-        ? sessionResponse.data.id 
-        : ''
+      const sessionId = sessionResponse.id
 
       // Store player info
       setPlayerInfo({
         pin,
-        playerId: joinResponse.data.playerId,
+        playerId: joinResponse.playerId,
         nickname,
         sessionId,
       })
@@ -84,4 +75,3 @@ export function useJoinGame(): UseJoinGameReturn {
     clearError,
   }
 }
-

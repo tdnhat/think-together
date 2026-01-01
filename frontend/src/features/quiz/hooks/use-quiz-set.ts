@@ -18,8 +18,7 @@ export function useQuizSet(id: string) {
   } = useQuery({
     queryKey: QUERY_KEYS.QUIZ_SET(id),
     queryFn: async () => {
-      const response = await quizSetService.getQuizSetById(id)
-      return response.success ? response.data : null
+      return await quizSetService.getQuizSetById(id)
     },
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes

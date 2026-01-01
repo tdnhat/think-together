@@ -17,11 +17,7 @@ public partial class AuthenticationController
     {
         await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được liên kết đặt lại mật khẩu"
-        });
+        return NoContent();
     }
 
     [HttpPost("reset-password")]
@@ -34,10 +30,6 @@ public partial class AuthenticationController
     {
         await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Mật khẩu đã được đặt lại thành công"
-        });
+        return NoContent();
     }
 }

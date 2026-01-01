@@ -17,8 +17,7 @@ export const useCategories = (onlyActive: boolean = true) => {
   const { data: categories = [], isLoading, error } = useQuery({
     queryKey: QUERY_KEYS.CATEGORIES(onlyActive),
     queryFn: async () => {
-      const response = await categoryService.getAll(onlyActive)
-      return response.success ? response.data || [] : []
+      return categoryService.getAll(onlyActive)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -26,11 +25,7 @@ export const useCategories = (onlyActive: boolean = true) => {
   // Mutation: Create category
   const createMutation = useMutation({
     mutationFn: async (data: CreateCategoryRequest) => {
-      const response = await categoryService.create(data)
-      if (!response.success) {
-        throw new Error(response.message || 'Không thể tạo danh mục')
-      }
-      return response.data!
+      return categoryService.create(data)
     },
     onSuccess: (newCategory) => {
       // Invalidate queries to refetch
@@ -47,11 +42,7 @@ export const useCategories = (onlyActive: boolean = true) => {
   // Mutation: Update category
   const updateMutation = useMutation({
     mutationFn: async (data: UpdateCategoryRequest) => {
-      const response = await categoryService.update(data)
-      if (!response.success) {
-        throw new Error(response.message || 'Không thể cập nhật danh mục')
-      }
-      return response.data!
+      return categoryService.update(data)
     },
     onSuccess: (updatedCategory) => {
       // Invalidate queries to refetch
@@ -68,10 +59,7 @@ export const useCategories = (onlyActive: boolean = true) => {
   // Mutation: Delete category
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await categoryService.delete(id)
-      if (!response.success) {
-        throw new Error(response.message || 'Không thể xóa danh mục')
-      }
+      await categoryService.delete(id)
       return id
     },
     onSuccess: (deletedId) => {
@@ -98,4 +86,3 @@ export const useCategories = (onlyActive: boolean = true) => {
     isDeleting: deleteMutation.isPending
   }
 }
-

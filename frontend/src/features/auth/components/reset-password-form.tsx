@@ -69,13 +69,9 @@ export function ResetPasswordForm({ className, ...props }: ResetPasswordFormProp
 
     setIsLoading(true)
     try {
-      const response = await authService.resetPassword(token, data.password, data.confirmPassword)
-      if (response.success) {
-        toastSuccess('Đặt lại mật khẩu thành công!')
-        router.push(ROUTES.auth.login)
-      } else {
-        toastError(response.message || 'Đặt lại mật khẩu thất bại')
-      }
+      await authService.resetPassword(token, data.password, data.confirmPassword)
+      toastSuccess('Đặt lại mật khẩu thành công!')
+      router.push(ROUTES.auth.login)
     } catch {
       toastError('Có lỗi xảy ra khi đặt lại mật khẩu')
     } finally {

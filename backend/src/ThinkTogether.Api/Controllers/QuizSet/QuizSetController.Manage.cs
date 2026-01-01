@@ -12,7 +12,7 @@ namespace ThinkTogether.Api.Controllers.QuizSet;
 public partial class QuizSetController
 {
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<QuizSetDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(QuizSetDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateQuizSet(
         [FromBody] CreateQuizSetCommand command,
@@ -20,16 +20,12 @@ public partial class QuizSetController
     {
         var result = await _mediator.Send(command, cancellationToken);
 
-        return CreatedAtAction(nameof(GetAllQuizSets), null, new ApiResponse<QuizSetDto>
-        {
-            Success = true,
-            Message = "Bộ trắc nghiệm đã được tạo thành công",
-            Data = result
-        });
+        return CreatedAtAction(nameof(GetAllQuizSets), null, result
+        );
     }
 
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<QuizSetDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(QuizSetDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -41,12 +37,8 @@ public partial class QuizSetController
         var commandWithId = command with { Id = id };
         var result = await _mediator.Send(commandWithId, cancellationToken);
 
-        return Ok(new ApiResponse<QuizSetDto>
-        {
-            Success = true,
-            Message = "Bộ trắc nghiệm đã được cập nhật thành công",
-            Data = result
-        });
+        return Ok(result
+        );
     }
 
     [HttpDelete("{id}")]
@@ -69,15 +61,11 @@ public partial class QuizSetController
     {
         await _mediator.Send(new PublishQuizSetCommand(id), cancellationToken);
 
-        return Ok(new ApiResponse<object>
-        {
-            Success = true,
-            Message = "Bộ trắc nghiệm đã được xuất bản thành công"
-        });
+        return NoContent();
     }
 
     [HttpPost("{id}/duplicate")]
-    [ProducesResponseType(typeof(ApiResponse<QuizSetDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(QuizSetDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DuplicateQuizSet(Guid id, CancellationToken cancellationToken)
@@ -86,12 +74,7 @@ public partial class QuizSetController
 
         return CreatedAtAction(
             nameof(GetQuizSetById),
-            new { id = result.Id },
-            new ApiResponse<QuizSetDto>
-            {
-                Success = true,
-                Message = "Bộ trắc nghiệm đã được sao chép thành công",
-                Data = result
-            });
+            new { id = result.Id }, result
+            );
     }
 }

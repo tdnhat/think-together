@@ -5,7 +5,6 @@
 
 import { api } from '@/lib/api/client'
 import { LEADERBOARD_ENDPOINTS, buildQueryString } from '@/lib/api/endpoints'
-import type { ApiResponse } from '@/lib/api/types'
 import type {
   LeaderboardDto,
   LeaderboardEntryDto,
@@ -57,15 +56,11 @@ export async function getLeaderboard(
   }
 
   const queryString = buildQueryString(queryParams)
-  const response = await api.get<ApiResponse<LeaderboardDto>>(
+  const response = await api.get<LeaderboardDto>(
     `${LEADERBOARD_ENDPOINTS.GET_LEADERBOARD}${queryString}`
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải bảng xếp hạng')
-  }
-
-  return response.data
+  return response
 }
 
 /**
@@ -113,13 +108,9 @@ export async function getLeaderboardStats(
   }
 
   const queryString = buildQueryString(queryParams)
-  const response = await api.get<ApiResponse<LeaderboardStatsDto>>(
+  const response = await api.get<LeaderboardStatsDto>(
     `${LEADERBOARD_ENDPOINTS.GET_LEADERBOARD}/stats${queryString}`
   )
 
-  if (!response.success || !response.data) {
-    throw new Error(response.message || 'Không thể tải thống kê bảng xếp hạng')
-  }
-
-  return response.data
+  return response
 }

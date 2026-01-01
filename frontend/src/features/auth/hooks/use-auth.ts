@@ -29,15 +29,14 @@ export function useAuth() {
     try {
       setLoading(true)
       const response = await authService.login(data.email, data.password, data.rememberMe || false)
-      
-      if (response.success && response.data) {
-        const { accessToken } = response.data
+
+      if (response) {
+        const { accessToken } = response
         apiClient.setToken(accessToken)
 
-        const userResponse = await authService.getCurrentUser()
-        
-        if (userResponse.success && userResponse.data) {
-          const userDto = userResponse.data
+        const userDto = await authService.getCurrentUser()
+
+        if (userDto) {
           // Map API role to auth role
           const mapRole = (apiRole: string): 'User' | 'Creator' | 'Administrator' => {
             switch (apiRole) {
@@ -64,10 +63,10 @@ export function useAuth() {
             bio: userDto.bio,
             createdAt: userDto.createdAt,
           }
-          
+
           loginAction(user, accessToken)
           toastSuccess(AUTH.MESSAGES.LOGIN_SUCCESS)
-          
+
           if (user.role === 'Administrator') {
             router.push(ROUTES.admin.dashboard)
           } else if (user.role === 'Creator') {
@@ -75,20 +74,20 @@ export function useAuth() {
           } else {
             router.push(ROUTES.dashboard.home)
           }
-          
+
           return { success: true as const }
         }
       }
-      
-      return { 
-        success: false as const, 
-        error: response.message || AUTH.MESSAGES.LOGIN_FAILED
+
+      return {
+        success: false as const,
+        error: AUTH.MESSAGES.LOGIN_FAILED
       }
     } catch (error) {
       const handledError = handleError(error, {
         showToast: true,
       })
-      
+
       return {
         success: false as const,
         error: handledError.message,
@@ -101,11 +100,11 @@ export function useAuth() {
   const handleRegister = useCallback(async (data: RegisterFormData) => {
     try {
       setLoading(true)
-      
+
       const nameParts = data.name.trim().split(' ')
       const firstName = nameParts[0] || ''
       const lastName = nameParts.slice(1).join(' ') || ''
-      
+
       const response = await authService.register({
         email: data.email,
         password: data.password,
@@ -113,25 +112,25 @@ export function useAuth() {
         firstName,
         lastName,
       })
-      
-      if (response.success) {
+
+      if (response) {
         toastSuccess(AUTH.MESSAGES.REGISTER_SUCCESS)
         // Store email temporarily for verify-email page
         sessionStorage.setItem('pendingVerificationEmail', data.email)
         router.push(ROUTES.auth.verifyEmail)
-        
+
         return { success: true as const }
       }
-      
-      return { 
-        success: false as const, 
-        error: response.message || AUTH.MESSAGES.REGISTER_FAILED
+
+      return {
+        success: false as const,
+        error: AUTH.MESSAGES.REGISTER_FAILED
       }
     } catch (error) {
       const handledError = handleError(error, {
         showToast: true,
       })
-      
+
       return {
         success: false as const,
         error: handledError.message,
@@ -168,8 +167,8 @@ export function useAuth() {
     try {
       const response = await authService.refreshToken()
 
-      if (response.success && response.data) {
-        const { accessToken } = response.data
+      if (response) {
+        const { accessToken } = response
         apiClient.setToken(accessToken)
         return true
       }

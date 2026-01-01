@@ -57,13 +57,9 @@ export function VerifyEmailForm({ className, ...props }: VerifyEmailFormProps) {
   const onSubmit = async (data: VerifyEmailFormData) => {
     setIsLoading(true)
     try {
-      const response = await authService.resendEmailConfirmation(data.email)
-      if (response.success) {
-        setEmailSent(true)
-        toastSuccess('Email xác nhận đã được gửi!')
-      } else {
-        toastError(response.message || 'Gửi email thất bại')
-      }
+      await authService.resendEmailConfirmation(data.email)
+      setEmailSent(true)
+      toastSuccess('Email xác nhận đã được gửi!')
     } catch {
       toastError('Có lỗi xảy ra khi gửi email')
     } finally {

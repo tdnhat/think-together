@@ -37,7 +37,7 @@ export function HomeworkCard({
   const getStatusBadge = () => {
     if (isOverdue) {
       return (
-        <Badge variant="secondary" className="gap-1">
+        <Badge variant="destructive" className="gap-1">
           <AlertCircle className="h-3 w-3" />
           Quá hạn
         </Badge>

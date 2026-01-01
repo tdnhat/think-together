@@ -174,29 +174,25 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
 
         // Reconnected - sync state from API
         const syncResponse = await gameSessionService.syncGameSession(sessionId, playerId)
-        if (syncResponse.success && syncResponse.data) {
-          const syncData = syncResponse.data
+        const syncData = syncResponse
 
-          if (syncData.status === 'IN_PROGRESS' && syncData.currentQuestion) {
-            // Game in progress - update question
-            actions.handleQuestionStarted({
-              gameQuestionId: syncData.currentQuestion.gameQuestionId,
-              questionId: syncData.currentQuestion.id,
-              content: syncData.currentQuestion.content,
-              questionType: syncData.currentQuestion.questionType,
-              timeLimit: syncData.currentQuestion.totalTimeSeconds,
-              endTime: syncData.currentQuestion.endTime,
-              positionInGame: syncData.currentQuestion.positionInGame,
-              totalQuestions: syncData.totalQuestions,
-              videoUrl: syncData.currentQuestion.videoUrl,
-              videoTimestamp: syncData.currentQuestion.videoTimestamp,
-              options: syncData.currentQuestion.options,
-            })
-          } else if (syncData.status === 'FINISHED') {
-            actions.setPhase('ended')
-          } else {
-            actions.setPhase('lobby')
-          }
+        if (syncData.status === 'IN_PROGRESS' && syncData.currentQuestion) {
+          // Game in progress - update question
+          actions.handleQuestionStarted({
+            gameQuestionId: syncData.currentQuestion.gameQuestionId,
+            questionId: syncData.currentQuestion.id,
+            content: syncData.currentQuestion.content,
+            questionType: syncData.currentQuestion.questionType,
+            timeLimit: syncData.currentQuestion.totalTimeSeconds,
+            endTime: syncData.currentQuestion.endTime,
+            positionInGame: syncData.currentQuestion.positionInGame,
+            totalQuestions: syncData.totalQuestions,
+            videoUrl: syncData.currentQuestion.videoUrl,
+            videoTimestamp: syncData.currentQuestion.videoTimestamp,
+            options: syncData.currentQuestion.options,
+          })
+        } else if (syncData.status === 'FINISHED') {
+          actions.setPhase('ended')
         } else {
           actions.setPhase('lobby')
         }
@@ -313,4 +309,3 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
     submitAnswer,
   }
 }
-

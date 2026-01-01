@@ -208,11 +208,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
 
       const response = await gameSessionService.createSession({ quizSetId: quizId })
 
-      if (!response.success || !response.data) {
-        throw new Error(response.message || GAME_HOST_CONSTANTS.ERRORS.CREATE_SESSION_FAILED)
-      }
-
-      const newSession = response.data as GameSession
+      const newSession = response as GameSession
 
       // Save to storage and store
       clearStoredHostSession()
@@ -256,11 +252,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     try {
       const response = await gameSessionService.getSessionById(resumeSessionId)
 
-      if (!response.success || !response.data) {
-        throw new Error(GAME_HOST_CONSTANTS.ERRORS.SESSION_NOT_FOUND)
-      }
-
-      const resumedSession = response.data
+      const resumedSession = response
 
       // Check session status
       if (resumedSession.status === GameStatus.Ended) {
@@ -319,9 +311,6 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     try {
       const response = await gameSessionService.startGame(session.id)
 
-      if (!response.success) {
-        throw new Error(response.message || 'Không thể bắt đầu trò chơi')
-      }
 
       // Backend will send QuestionStarted via SignalR
       toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.GAME_STARTED)
@@ -341,9 +330,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     if (session) {
       gameSessionService.getLeaderboard(session.id)
         .then(response => {
-          if (response.success && response.data) {
-            actions.setLeaderboard(response.data)
-          }
+          actions.setLeaderboard(response)
         })
         .catch(() => {})
     }
@@ -357,11 +344,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     try {
       const response = await gameSessionService.nextQuestion(session.id)
 
-      if (!response.success || !response.data) {
-        throw new Error(response.message || 'Không thể chuyển câu hỏi')
-      }
-
-      const { hasMoreQuestions, leaderboard: newLeaderboard } = response.data
+      const { hasMoreQuestions, leaderboard: newLeaderboard } = response
 
       // Update leaderboard
       if (newLeaderboard) {
@@ -389,23 +372,21 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     try {
       const response = await gameSessionService.endGame(session.id)
 
-      if (response.success && response.data) {
-        actions.handleGameEnded({
-          gameSessionId: session.id,
-          totalQuestions: response.data.totalQuestions,
-          totalPlayers: response.data.totalPlayers,
-          duration: response.data.duration,
-          finalLeaderboard: response.data.finalLeaderboard.map(e => ({
-            playerId: e.playerId,
-            nickname: e.nickname,
-            totalPoints: e.totalPoints,
-            correctAnswers: e.correctAnswers,
-            rank: e.rank,
-          })),
-        })
-        clearStoredHostSession()
-        toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.GAME_ENDED)
-      }
+      actions.handleGameEnded({
+        gameSessionId: session.id,
+        totalQuestions: response.totalQuestions,
+        totalPlayers: response.totalPlayers,
+        duration: response.duration,
+        finalLeaderboard: response.finalLeaderboard.map(e => ({
+          playerId: e.playerId,
+          nickname: e.nickname,
+          totalPoints: e.totalPoints,
+          correctAnswers: e.correctAnswers,
+          rank: e.rank,
+        })),
+      })
+      clearStoredHostSession()
+      toastSuccess(GAME_HOST_CONSTANTS.MESSAGES.GAME_ENDED)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Không thể kết thúc trò chơi'
       toastError(message)
@@ -492,4 +473,3 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     reset,
   }
 }
-

@@ -1,12 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImageIcon, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
-import { FormInput } from '@/shared/components'
-import { Label } from '@/shared/ui/label'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from '@/shared/ui/form'
+import { Input } from '@/shared/ui/input'
 import { Textarea } from '@/shared/ui/textarea'
 import { createQuizSetSchema, updateQuizSetSchema, type CreateQuizSetFormData, type UpdateQuizSetFormData } from '@/lib/validators'
 import { QUIZ_SET_CONSTANTS } from '../constants'
@@ -32,7 +39,6 @@ export function QuizSetForm({
   showActions = true,
 }: QuizSetFormProps) {
   const isEditing = !!quizSet
-  const [uploadSuccess, setUploadSuccess] = useState(false)
 
   const schema = isEditing ? updateQuizSetSchema : createQuizSetSchema
   const defaultValues = isEditing && quizSet ? {
@@ -48,17 +54,12 @@ export function QuizSetForm({
     categoryId: '',
   }
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<CreateQuizSetFormData | UpdateQuizSetFormData>({
+  const form = useForm<CreateQuizSetFormData | UpdateQuizSetFormData>({
     resolver: zodResolver(schema),
     defaultValues,
   })
 
+  const { handleSubmit, control, watch, setValue } = form
   const coverImageUrl = watch('coverImageUrl')
 
   // Update form when quizSet prop changes
@@ -78,12 +79,6 @@ export function QuizSetForm({
 
   const handleImageUploadSuccess = (updatedQuizSet: QuizSetDto) => {
     setValue('coverImageUrl', updatedQuizSet.coverImageUrl || '')
-    setUploadSuccess(true)
-    setTimeout(() => setUploadSuccess(false), 2000)
-  }
-
-  const handleRemoveImage = () => {
-    setValue('coverImageUrl', '')
   }
 
   const handleImageUrlChange = (url: string) => {
@@ -91,89 +86,110 @@ export function QuizSetForm({
   }
 
   return (
-    <form id="quiz-set-form" onSubmit={handleSubmit(handleFormSubmit)} className={`space-y-6 ${className}`}>
-      {/* Title */}
-      <div className="space-y-2">
-        <Label htmlFor="title" className="text-sm font-semibold">
-          Tiêu đề <span className="text-destructive">*</span>
-        </Label>
-        <FormInput
-          id="title"
-          type="text"
-          placeholder={QUIZ_SET_CONSTANTS.PLACEHOLDERS.TITLE}
-          error={errors.title?.message}
-          {...register('title')}
-        />
-      </div>
-
-      {/* Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description" className="text-sm font-semibold">
-          Mô tả
-        </Label>
-        <Textarea
-          id="description"
-          placeholder={QUIZ_SET_CONSTANTS.PLACEHOLDERS.DESCRIPTION}
-          rows={4}
-          {...register('description')}
-          className={errors.description ? 'border-destructive' : ''}
-        />
-        {errors.description && (
-          <p className="text-sm text-destructive">{errors.description.message}</p>
-        )}
-      </div>
-
-      {/* Category */}
-      <div className="space-y-2">
-        <Label className="text-sm font-semibold">
-          Danh mục (Tùy chọn)
-        </Label>
-        <CategorySelector
-          value={watch('categoryId')}
-          onChange={(value) => setValue('categoryId', value || '')}
-          placeholder="Chọn danh mục"
-        />
-        {errors.categoryId && (
-          <p className="text-sm text-destructive">{errors.categoryId.message}</p>
-        )}
-      </div>
-
-      {/* Cover Image */}
-      <div className="space-y-4">
-        <Label className="text-sm font-semibold">Ảnh bìa</Label>
-
-        {/* File Upload Component - show for both create and edit */}
-        <ImageUpload
-          quizSetId={isEditing && quizSet ? quizSet.id : undefined}
-          currentImageUrl={coverImageUrl}
-          onUploadSuccess={handleImageUploadSuccess}
-          onUploadSuccessTemp={(imageUrl) => {
-            handleImageUrlChange(imageUrl)
-            setUploadSuccess(true)
-            setTimeout(() => setUploadSuccess(false), 2000)
-          }}
-          disabled={isSubmitting}
+    <Form {...form}>
+      <form id="quiz-set-form" onSubmit={handleSubmit(handleFormSubmit)} className={`space-y-6 ${className}`}>
+        {/* Title */}
+        <FormField
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-semibold">
+                Tiêu đề <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={QUIZ_SET_CONSTANTS.PLACEHOLDERS.TITLE}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        {/* URL Input - for manual URL entry (optional) */}
-         <div className="space-y-2">
-           <Label htmlFor="coverImageUrl" className="text-sm font-semibold">
-             Hoặc nhập URL ảnh bìa
-           </Label>
-           <FormInput
-             id="coverImageUrl"
-             type="url"
-             placeholder="https://example.com/image.jpg"
-             value={coverImageUrl}
-             onChange={(e) => handleImageUrlChange(e.target.value)}
-             error={errors.coverImageUrl?.message}
-             disabled={isSubmitting}
-           />
-           <p className="text-xs text-muted-foreground">
-             Bạn có thể tải ảnh lên hoặc nhập URL trực tiếp.
-           </p>
-         </div>
-      </div>
+        {/* Description */}
+        <FormField
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-semibold">
+                Mô tả
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder={QUIZ_SET_CONSTANTS.PLACEHOLDERS.DESCRIPTION}
+                  rows={4}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Category */}
+        <FormField
+          control={control}
+          name="categoryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-semibold">
+                Danh mục (Tùy chọn)
+              </FormLabel>
+              <FormControl>
+                <CategorySelector
+                  value={field.value || ''}
+                  onChange={(value) => field.onChange(value || '')}
+                  placeholder="Chọn danh mục"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Cover Image */}
+        <div className="space-y-4">
+          <FormLabel className="text-sm font-semibold">Ảnh bìa</FormLabel>
+
+          {/* File Upload Component - show for both create and edit */}
+          <ImageUpload
+            quizSetId={isEditing && quizSet ? quizSet.id : undefined}
+            currentImageUrl={coverImageUrl}
+            onUploadSuccess={handleImageUploadSuccess}
+            onUploadSuccessTemp={(imageUrl) => {
+              handleImageUrlChange(imageUrl)
+            }}
+            disabled={isSubmitting}
+          />
+
+          {/* URL Input - for manual URL entry (optional) */}
+          <FormField
+            control={control}
+            name="coverImageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold">
+                  Hoặc nhập URL ảnh bìa
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Bạn có thể tải ảnh lên hoặc nhập URL trực tiếp.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
       {/* Actions */}
       {showActions && (
@@ -197,6 +213,7 @@ export function QuizSetForm({
           </Button>
         </div>
       )}
-    </form>
+      </form>
+    </Form>
   )
 }

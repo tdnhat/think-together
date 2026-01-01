@@ -115,8 +115,8 @@ function ChoiceQuestionContent({ question }: { question: HomeworkSubmissionQuest
             {/* Status indicators */}
             <div className="flex items-center gap-2 shrink-0">
               {isStudentSelected && (
-                <span className={`text-xs px-2 py-0.5 rounded ${isCorrectOption ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                  Bạn chọn
+                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                  Đã chọn
                 </span>
               )}
             </div>
@@ -128,7 +128,7 @@ function ChoiceQuestionContent({ question }: { question: HomeworkSubmissionQuest
       {!hasAnswer && (
         <div className="p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-orange-700 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
-          <span>Bạn chưa trả lời câu hỏi này</span>
+          <span>Chưa trả lời</span>
         </div>
       )}
     </div>
@@ -166,7 +166,7 @@ function MatchingQuestionContent({ question }: { question: HomeworkSubmissionQue
       {hasAnswer ? (
         <div className="space-y-3">
           <h4 className="font-medium text-foreground flex items-center gap-2">
-            <span>Bài làm của bạn</span>
+            <span>Bài làm của học sinh</span>
           </h4>
           <div className="space-y-2">
             {question.studentAnswer!.matchingPairs!.map((pair, idx) => {
@@ -192,7 +192,7 @@ function MatchingQuestionContent({ question }: { question: HomeworkSubmissionQue
       ) : (
         <div className="p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-orange-700 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
-          <span>Bạn chưa trả lời câu hỏi này</span>
+          <span>Chưa trả lời</span>
         </div>
       )}
     </div>
@@ -233,7 +233,7 @@ function OrderingQuestionContent({ question }: { question: HomeworkSubmissionQue
 
         {/* Student Order */}
         <div className="space-y-3">
-          <h4 className="font-medium text-foreground">Bài làm của bạn</h4>
+          <h4 className="font-medium text-foreground">Bài làm của học sinh</h4>
           {studentOrder ? (
             <div className="space-y-2">
               {studentOrder.map((item, idx) => {
@@ -265,7 +265,7 @@ function OrderingQuestionContent({ question }: { question: HomeworkSubmissionQue
           ) : (
             <div className="p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-orange-700 flex items-center gap-2">
               <AlertCircle className="h-4 w-4" />
-              <span>Bạn chưa trả lời câu hỏi này</span>
+              <span>Chưa trả lời</span>
             </div>
           )}
         </div>
@@ -306,13 +306,13 @@ function VideoQuestionContent({ question }: { question: HomeworkSubmissionQuesti
       {hasAnswer ? (
         <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-sm text-blue-700">
-            <strong>Đáp án của bạn:</strong> {question.studentAnswer?.selectedOptionIndexes?.length ? 'Đã trả lời' : 'Chưa trả lời'}
+            <strong>Bài làm của học sinh:</strong> {question.studentAnswer?.selectedOptionIndexes?.length ? 'Đã trả lời' : 'Chưa trả lời'}
           </p>
         </div>
       ) : (
         <div className="p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-orange-700 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
-          <span>Bạn chưa trả lời câu hỏi này</span>
+          <span>Chưa trả lời</span>
         </div>
       )}
     </div>
@@ -350,13 +350,13 @@ function AudioQuestionContent({ question }: { question: HomeworkSubmissionQuesti
       {hasAnswer ? (
         <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
           <p className="text-sm text-purple-700">
-            <strong>Đáp án của bạn:</strong> {question.studentAnswer?.selectedOptionIndexes?.length ? 'Đã trả lời' : 'Chưa trả lời'}
+            <strong>Bài làm của học sinh:</strong> {question.studentAnswer?.selectedOptionIndexes?.length ? 'Đã trả lời' : 'Chưa trả lời'}
           </p>
         </div>
       ) : (
         <div className="p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-orange-700 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
-          <span>Bạn chưa trả lời câu hỏi này</span>
+          <span>Chưa trả lời</span>
         </div>
       )}
     </div>

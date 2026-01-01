@@ -1,11 +1,5 @@
 // API Response Types
 
-export interface ApiResponse<T = unknown> {
-  success: boolean
-  data?: T
-  message?: string
-}
-
 export interface PaginatedResponse<T> {
   data: T[]
   total: number
@@ -205,7 +199,7 @@ export interface QuestionDto {
   displayOrder: number
   createdAt: string
   updatedAt?: string
-  
+
   // Type-specific data
   options?: QuestionOptionDto[]
   matchingPairs?: MatchingPairDto[]
@@ -223,7 +217,7 @@ export interface CreateQuestionRequest {
   type: QuestionType
   timeLimit: number
   displayOrder?: number
-  
+
   // Type-specific data
   options?: Omit<QuestionOptionDto, 'id'>[]
   matchingPairs?: Omit<MatchingPairDto, 'id'>[]
@@ -240,7 +234,7 @@ export interface UpdateQuestionRequest {
   content?: string
   timeLimit?: number
   displayOrder?: number
-  
+
   // Type-specific data
   options?: QuestionOptionDto[]
   matchingPairs?: MatchingPairDto[]
