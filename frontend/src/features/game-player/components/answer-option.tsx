@@ -1,7 +1,7 @@
 import { CheckCircle, Circle } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { cn } from '@/lib/utils'
-import { GAME_PLAYER_CONSTANTS } from '../constants'
+import { GAME_CONSTANTS } from '@/features/game'
 
 interface AnswerOptionProps {
     index: number
@@ -18,7 +18,7 @@ export function AnswerOption({
     hasAnswered,
     onSelect,
 }: AnswerOptionProps) {
-    const colorScheme = GAME_PLAYER_CONSTANTS.ANSWER_COLORS[index] || GAME_PLAYER_CONSTANTS.ANSWER_COLORS[0]
+    const colorScheme = GAME_CONSTANTS.ANSWER_COLORS[index] || GAME_CONSTANTS.ANSWER_COLORS[0]
 
     return (
         <Button

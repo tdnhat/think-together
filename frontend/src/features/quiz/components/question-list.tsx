@@ -1,18 +1,12 @@
 'use client'
 
-import { Plus, Search, Filter } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card } from '@/shared/ui/card'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/select'
-import { PaginationControls, SearchInput, SectionContainer } from '@/shared/components'
+import { PaginationControls, SectionContainer } from '@/shared/components'
 import { QuestionCard } from './question-card'
+import { QuestionListToolbar } from './question-list-toolbar'
 import { QUESTION_CONSTANTS } from '../constants'
 import { QuestionType, type QuestionDto } from '@/types/api'
 
@@ -85,32 +79,12 @@ export function QuestionList({
 
         {/* Search and Filter Bar */}
         {(questions.length > 0 || searchQuery || filterBy !== 'all') && (
-          <div className="flex flex-col gap-3 sm:flex-row">
-            {/* Search */}
-            <SearchInput
-              className="flex-1"
-              placeholder="Tìm kiếm câu hỏi..."
-              value={searchQuery}
-              onChange={(value) => onSearchChange?.(value)}
-              iconColor="text-primary"
-            />
-
-            {/* Filter Select */}
-             <Select value={filterBy} onValueChange={onFilterChange}>
-               <SelectTrigger className="w-auto gap-2 bg-secondary-background border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none">
-                 <Filter className="h-4 w-4 text-secondary" />
-                 <SelectValue />
-               </SelectTrigger>
-               <SelectContent align="end">
-                 <SelectItem value="all">Tất cả loại</SelectItem>
-                 {Object.entries(QUESTION_CONSTANTS.TYPES).map(([type, info]) => (
-                   <SelectItem key={type} value={type}>
-                     {info.label}
-                   </SelectItem>
-                 ))}
-               </SelectContent>
-             </Select>
-          </div>
+          <QuestionListToolbar
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+            filterBy={filterBy}
+            onFilterChange={onFilterChange}
+          />
         )}
 
         {/* Loading State */}

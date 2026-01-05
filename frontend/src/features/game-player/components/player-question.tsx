@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { GAME_PLAYER_CONSTANTS } from '../constants'
+import { GAME_CONSTANTS } from '@/features/game'
 import type { QuestionStartedMessage } from '@/features/game-host/types'
 import { AnswerOption } from './answer-option'
 
@@ -61,10 +62,10 @@ export function PlayerQuestion({
   }, [hasAnswered, calculateRemainingTime, timeRemaining])
 
   const getTimerColor = () => {
-    if (timeRemaining <= GAME_PLAYER_CONSTANTS.TIMER.DANGER_THRESHOLD) {
+    if (timeRemaining <= GAME_CONSTANTS.TIMER.DANGER_THRESHOLD) {
       return 'text-destructive bg-red-50 dark:bg-red-950/30'
     }
-    if (timeRemaining <= GAME_PLAYER_CONSTANTS.TIMER.WARNING_THRESHOLD) {
+    if (timeRemaining <= GAME_CONSTANTS.TIMER.WARNING_THRESHOLD) {
       return 'text-secondary bg-secondary/10'
     }
     return 'text-foreground bg-muted'

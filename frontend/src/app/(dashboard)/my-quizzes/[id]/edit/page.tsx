@@ -2,33 +2,33 @@
 
 import { useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Settings, Eye } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
-import { Badge } from '@/shared/ui/badge'
-import { Card } from '@/shared/ui/card'
 import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { DashboardLayout } from '@/widgets/dashboard'
-import { QuestionList, QuestionModal } from '@/features/quiz'
+import { QuestionList, QuestionModal, QuizEditorHeader } from '@/features/quiz'
 import { useQuizSets } from '@/features/quiz/hooks/use-quiz-sets'
 import { useQuestions } from '@/features/quiz/hooks/use-questions'
 import { ROUTES } from '@/config/routes'
+import { useUrlParams } from '@/hooks/use-url-params'
 import type { QuestionDto, CreateQuestionRequest, QuestionQueryParams } from '@/types/api'
 
 export default function QuizEditorPage() {
   const params = useParams()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const quizSetId = params.id as string
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingQuestion, setEditingQuestion] = useState<QuestionDto | null>(null)
 
-  // Get params from URL
-  const searchQuery = searchParams.get('search') || ''
-  const filterBy = searchParams.get('filterBy') || 'all'
-  const sortBy = (searchParams.get('sortBy') as 'order' | 'createdAt' | 'type') || 'order'
-  const page = Number.parseInt(searchParams.get('page') || '1', 10)
-  const pageSize = Number.parseInt(searchParams.get('pageSize') || '50', 10)
+  // Use generic hook for params
+  const { params: urlParams, updateParams } = useUrlParams<'order' | 'createdAt' | 'type'>({
+    defaultPageSize: 50,
+    defaultSortBy: 'order',
+    defaultFilterBy: 'all'
+  })
+
+  // Destructure for readability
+  const { search: searchQuery, filterBy, sortBy, page, pageSize } = urlParams
 
   const questionParams: QuestionQueryParams = {
     search: searchQuery || undefined,
@@ -55,51 +55,16 @@ export default function QuizEditorPage() {
     isUpdating,
   } = useQuestions(quizSetId, questionParams)
 
-  // Update URL params when filters change
-  const updateUrlParams = (updates: Partial<QuestionQueryParams>) => {
-    const urlParams = new URLSearchParams(searchParams.toString())
-    
-    if (updates.search !== undefined) {
-      if (updates.search) {
-        urlParams.set('search', updates.search)
-      } else {
-        urlParams.delete('search')
-      }
-    }
-    
-    if (updates.filterBy && updates.filterBy !== 'all') {
-      urlParams.set('filterBy', updates.filterBy)
-    } else {
-      urlParams.delete('filterBy')
-    }
-    
-    if (updates.sortBy) urlParams.set('sortBy', updates.sortBy)
-    
-    if (updates.page && updates.page > 1) {
-      urlParams.set('page', updates.page.toString())
-    } else {
-      urlParams.delete('page')
-    }
-    
-    if (updates.pageSize && updates.pageSize !== 50) {
-      urlParams.set('pageSize', updates.pageSize.toString())
-    } else {
-      urlParams.delete('pageSize')
-    }
-
-    router.push(`?${urlParams.toString()}`, { scroll: false })
-  }
-
   const handleSearchChange = (query: string) => {
-    updateUrlParams({ search: query, page: 1 })
+    updateParams({ search: query, page: 1 })
   }
 
   const handleFilterChange = (filter: string) => {
-    updateUrlParams({ filterBy: filter, page: 1 })
+    updateParams({ filterBy: filter, page: 1 })
   }
 
   const handlePageChange = (newPage: number) => {
-    updateUrlParams({ page: newPage })
+    updateParams({ page: newPage })
   }
 
   const handleBack = () => {
@@ -197,51 +162,14 @@ export default function QuizEditorPage() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <Card className="p-6">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-4 flex-1 min-w-0">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={handleBack}
-                className="shrink-0"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground break-words">
-                    {quizSet.title}
-                  </h1>
-                  {quizSet.isPublished ? (
-                    <Badge variant="default" className="shrink-0">
-                      Đã xuất bản
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="shrink-0">
-                      Bản nháp
-                    </Badge>
-                  )}
-                </div>
-                {quizSet.description && (
-                  <p className="text-sm sm:text-base text-muted-foreground break-words">
-                    {quizSet.description}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-              <Button variant="outline" size="icon" onClick={handleSettings} className="shrink-0">
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" onClick={handlePreview} className="shrink-0">
-                <Eye className="h-4 w-4" />
-                Xem trước
-              </Button>
-            </div>
-          </div>
-        </Card>
+        <QuizEditorHeader
+          title={quizSet.title}
+          description={quizSet.description}
+          isPublished={quizSet.isPublished}
+          onBack={handleBack}
+          onSettings={handleSettings}
+          onPreview={handlePreview}
+        />
 
         {/* Questions Section */}
         <QuestionList

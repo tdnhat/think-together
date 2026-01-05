@@ -1,10 +1,13 @@
 /**
  * Game Player Constants
+ * 
+ * Note: Validation constants (PIN_LENGTH, PIN_PATTERN, NICKNAME_MIN/MAX_LENGTH) are now available
+ * in shared constants. Import from '@/shared' (SHARED_CONSTANTS.VALIDATION) for consistency.
  */
 
 export const GAME_PLAYER_CONSTANTS = {
   LOCAL_STORAGE_KEY: 'player_game_session',
-  
+
   MESSAGES: {
     JOINING: 'Đang tham gia trò chơi...',
     JOINED: 'Đã tham gia thành công!',
@@ -37,24 +40,12 @@ export const GAME_PLAYER_CONSTANTS = {
   },
 
   VALIDATION: {
-    PIN_LENGTH: 6,
-    PIN_PATTERN: /^\d{6}$/,
-    NICKNAME_MIN_LENGTH: 2,
-    NICKNAME_MAX_LENGTH: 20,
+    PIN_LENGTH: 6, // Also in SHARED_CONSTANTS.VALIDATION.PIN_LENGTH
+    PIN_PATTERN: /^\d{6}$/, // Also in SHARED_CONSTANTS.VALIDATION.PIN_PATTERN
+    NICKNAME_MIN_LENGTH: 2, // Also in SHARED_CONSTANTS.VALIDATION.NICKNAME_MIN_LENGTH
+    NICKNAME_MAX_LENGTH: 20, // Note: Differs from shared (100), keep for backward compatibility
   },
 
-  TIMER: {
-    WARNING_THRESHOLD: 5, // seconds
-    DANGER_THRESHOLD: 3, // seconds
-  },
-
-  ANSWER_COLORS: [
-    { bg: 'bg-red-500', hover: 'hover:bg-red-600', active: 'bg-red-600', text: 'text-white', ring: 'ring-red-300' },
-    { bg: 'bg-blue-500', hover: 'hover:bg-blue-600', active: 'bg-blue-600', text: 'text-white', ring: 'ring-blue-300' },
-    { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-600', active: 'bg-yellow-600', text: 'text-black', ring: 'ring-yellow-300' },
-    { bg: 'bg-green-500', hover: 'hover:bg-green-600', active: 'bg-green-600', text: 'text-white', ring: 'ring-green-300' },
-    { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', active: 'bg-purple-600', text: 'text-white', ring: 'ring-purple-300' },
-    { bg: 'bg-orange-500', hover: 'hover:bg-orange-600', active: 'bg-orange-600', text: 'text-white', ring: 'ring-orange-300' },
-  ],
 } as const
+
 

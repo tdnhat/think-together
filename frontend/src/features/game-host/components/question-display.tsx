@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Timer, Users, HelpCircle } from 'lucide-react'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
-import { GAME_HOST_CONSTANTS } from '../constants'
+import { GAME_CONSTANTS } from '@/features/game'
 import type { GameQuestion, QuestionStartedMessage } from '../types'
 
 interface QuestionDisplayProps {
@@ -78,10 +78,10 @@ export function QuestionDisplay({
   }, [showTimer, timerActive, calculateRemainingTime, handleTimeEnd, timeRemaining])
 
   const getTimerColor = () => {
-    if (timeRemaining <= GAME_HOST_CONSTANTS.TIMER.DANGER_THRESHOLD) {
+    if (timeRemaining <= GAME_CONSTANTS.TIMER.DANGER_THRESHOLD) {
       return 'text-destructive'
     }
-    if (timeRemaining <= GAME_HOST_CONSTANTS.TIMER.WARNING_THRESHOLD) {
+    if (timeRemaining <= GAME_CONSTANTS.TIMER.WARNING_THRESHOLD) {
       return 'text-secondary'
     }
     return 'text-foreground'
@@ -129,8 +129,8 @@ export function QuestionDisplay({
       {showOptions && options.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {options.map((option, index) => {
-            const colorScheme = GAME_HOST_CONSTANTS.ANSWER_COLORS[index] || GAME_HOST_CONSTANTS.ANSWER_COLORS[0]
-            
+            const colorScheme = GAME_CONSTANTS.ANSWER_COLORS[index] || GAME_CONSTANTS.ANSWER_COLORS[0]
+
             return (
               <Card
                 key={option.index}

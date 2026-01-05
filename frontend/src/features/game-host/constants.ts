@@ -1,5 +1,8 @@
 /**
  * Game Host Constants
+ * 
+ * Note: PIN validation constants (PIN_LENGTH, PIN_PATTERN) are now in shared constants
+ * Import from '@/shared' for consistency across game-host, game-player, and challenge features
  */
 
 export const GAME_HOST_CONSTANTS = {
@@ -7,7 +10,7 @@ export const GAME_HOST_CONSTANTS = {
     HOST_SESSION_KEY: 'host_game_session',
     SESSION_EXPIRY_MS: 2 * 60 * 60 * 1000, // 2 hours
   },
-  
+
   MESSAGES: {
     CREATING_SESSION: 'Đang tạo phiên trò chơi...',
     SESSION_CREATED: 'Phiên trò chơi đã được tạo!',
@@ -55,23 +58,9 @@ export const GAME_HOST_CONSTANTS = {
   PIN_DISPLAY: {
     COPY_SUCCESS: 'Đã sao chép mã PIN!',
     COPY_FAILED: 'Không thể sao chép mã PIN',
-    PIN_LENGTH: 6,
+    PIN_LENGTH: 6, // Also available in SHARED_CONSTANTS.VALIDATION.PIN_LENGTH
   },
 
-  TIMER: {
-    WARNING_THRESHOLD: 5, // seconds
-    DANGER_THRESHOLD: 3, // seconds
-  },
-
-  ANSWER_COLORS: [
-    { bg: 'bg-red-500', hover: 'hover:bg-red-600', text: 'text-white' },
-    { bg: 'bg-blue-500', hover: 'hover:bg-blue-600', text: 'text-white' },
-    { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-600', text: 'text-black' },
-    { bg: 'bg-green-500', hover: 'hover:bg-green-600', text: 'text-white' },
-    { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', text: 'text-white' },
-    { bg: 'bg-orange-500', hover: 'hover:bg-orange-600', text: 'text-white' },
-  ],
-
-  ANSWER_SHAPES: ['triangle', 'diamond', 'circle', 'square', 'pentagon', 'hexagon'],
 } as const
+
 

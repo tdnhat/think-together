@@ -14,3 +14,5 @@ export type {
   QuestionType,
 } from '../game-host/types'
 
+// ============= Constants =============
+export { GAME_CONSTANTS } from './constants'

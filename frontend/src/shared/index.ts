@@ -22,8 +22,14 @@ export {
 export * as components from './components'
 
 // Hooks
+// Note: Import hooks from '@/shared/hooks' instead of '@/shared' to use in client components
 export { useLocalStorage } from './hooks/use-local-storage'
 
 // Utils
 export { cn } from './utils/cn'
+export * from './utils/time'
+export * from './utils/question'
+
+// Constants
+export * from './constants'
 

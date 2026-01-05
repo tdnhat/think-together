@@ -73,6 +73,7 @@ export const CHALLENGE_CONSTANTS = {
   },
 } as const
 
+
 // Challenge status labels in Vietnamese
 export const CHALLENGE_STATUS_LABELS: Record<string, string> = {
   Active: 'Đang hoạt động',

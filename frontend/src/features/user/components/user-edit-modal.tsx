@@ -94,9 +94,9 @@ export function UserEditModal({ open, onOpenChange, user, onSuccess }: UserEditM
                                 <SelectValue placeholder="Chọn vai trò" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="User">{ROLE_LABELS.User}</SelectItem>
-                                <SelectItem value="Creator">{ROLE_LABELS.Creator}</SelectItem>
-                                <SelectItem value="Administrator">{ROLE_LABELS.Administrator}</SelectItem>
+                                <SelectItem value="Người dùng">{ROLE_LABELS.User}</SelectItem>
+                                <SelectItem value="Người tạo nội dung">{ROLE_LABELS.Creator}</SelectItem>
+                                <SelectItem value="Quản trị viên">{ROLE_LABELS.Administrator}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

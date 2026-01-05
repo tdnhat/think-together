@@ -20,3 +20,7 @@ export * from './use-async';
 // UI hooks
 export * from './use-media-query';
 
+// Question & Challenge hooks
+export * from './use-timer';
+export * from './use-answer-state';
+export * from './use-question-navigation';
