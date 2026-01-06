@@ -14,7 +14,7 @@ public sealed class UploadCoverImageCommandHandler : IRequestHandler<UploadCover
 {
     private readonly IQuizSetRepository _repository;
     private readonly IUserRepository _userRepository;
-    private readonly IImageUploadService _imageUploadService;
+    private readonly IFileUploadService _imageUploadService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<UploadCoverImageCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -22,7 +22,7 @@ public sealed class UploadCoverImageCommandHandler : IRequestHandler<UploadCover
     public UploadCoverImageCommandHandler(
         IQuizSetRepository repository,
         IUserRepository userRepository,
-        IImageUploadService imageUploadService,
+        IFileUploadService imageUploadService,
         ICurrentUserService currentUserService,
         ILogger<UploadCoverImageCommandHandler> logger,
         IUnitOfWork unitOfWork)

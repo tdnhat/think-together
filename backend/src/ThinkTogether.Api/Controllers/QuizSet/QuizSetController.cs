@@ -11,12 +11,12 @@ namespace ThinkTogether.Api.Controllers.QuizSet;
 public partial class QuizSetController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IImageUploadService _imageUploadService;
+    private readonly IFileUploadService _imageUploadService;
     private readonly IPdfExportService _pdfExportService;
 
     public QuizSetController(
         IMediator mediator, 
-        IImageUploadService imageUploadService,
+        IFileUploadService imageUploadService,
         IPdfExportService pdfExportService)
     {
         _mediator = mediator;

@@ -10,11 +10,11 @@ namespace ThinkTogether.Api.Controllers;
 [Authorize]
 public class UploadController : ControllerBase
 {
-    private readonly IImageUploadService _uploadService;
+    private readonly IFileUploadService _uploadService;
     private readonly ILogger<UploadController> _logger;
 
     public UploadController(
-        IImageUploadService uploadService,
+        IFileUploadService uploadService,
         ILogger<UploadController> logger)
     {
         _uploadService = uploadService;

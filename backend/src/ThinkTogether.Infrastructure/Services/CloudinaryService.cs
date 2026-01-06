@@ -8,7 +8,7 @@ using ThinkTogether.Application.Interfaces;
 
 namespace ThinkTogether.Infrastructure.Services;
 
-public sealed class CloudinaryService : IImageUploadService
+public sealed class CloudinaryService : IFileUploadService
 {
     private readonly Cloudinary _cloudinary;
     private readonly CloudinaryOptions _options;
@@ -157,19 +157,44 @@ public sealed class CloudinaryService : IImageUploadService
         try
         {
             // Cloudinary URLs typically look like:
-            // https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.{ext}
+            // https://res.cloudinary.com/{cloud_name}/image/upload/v{version}/{folder}/{public_id}.{ext}
+            // OR
+            // https://res.cloudinary.com/{cloud_name}/raw/upload/v{version}/{folder}/{public_id}.{ext}
             
             var uri = new Uri(url);
             var path = uri.AbsolutePath;
             
-            // Extract the last segment and remove the extension
-            var lastSegment = path.Split('/').LastOrDefault();
-            if (string.IsNullOrEmpty(lastSegment))
+            // Split the path and find the 'upload' segment
+            var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            var uploadIndex = Array.FindIndex(segments, s => s.Equals("upload", StringComparison.OrdinalIgnoreCase));
+            
+            if (uploadIndex == -1 || uploadIndex == segments.Length - 1)
                 return null;
-
-            // Remove file extension
-            var publicId = Path.GetFileNameWithoutExtension(lastSegment);
-            return string.IsNullOrEmpty(publicId) ? null : publicId;
+            
+            // Get all segments after 'upload', skipping version if present
+            var startIndex = uploadIndex + 1;
+            if (segments[startIndex].StartsWith("v", StringComparison.OrdinalIgnoreCase) && 
+                segments[startIndex].Length > 1 && 
+                char.IsDigit(segments[startIndex][1]))
+            {
+                startIndex++; // Skip version number
+            }
+            
+            if (startIndex >= segments.Length)
+                return null;
+            
+            // Join remaining segments to form the public ID (folder/filename)
+            var publicIdSegments = segments[startIndex..];
+            var fullPath = string.Join("/", publicIdSegments);
+            
+            // Remove file extension from the last segment
+            var lastDotIndex = fullPath.LastIndexOf('.');
+            if (lastDotIndex > 0)
+            {
+                fullPath = fullPath[..lastDotIndex];
+            }
+            
+            return string.IsNullOrEmpty(fullPath) ? null : fullPath;
         }
         catch
         {
@@ -296,6 +321,129 @@ public sealed class CloudinaryService : IImageUploadService
         {
             _logger.LogError(ex, "Unexpected error deleting audio from URL: {AudioUrl}",
                 audioUrl);
+            // Don't throw - deletion failure shouldn't break the application
+        }
+    }
+
+    public async Task<string> UploadVideoAsync(
+        IFormFile file,
+        string folder = "quiz-sets/video",
+        CancellationToken cancellationToken = default)
+    {
+        if (file == null || file.Length == 0)
+        {
+            throw new ArgumentException("File không được trống", nameof(file));
+        }
+
+        // Validate file size (videos can be larger, so we use a multiplier)
+        var maxSizeBytes = _options.MaxFileSizeMb * 1024 * 1024 * 5; // 5x theregular limit for videos
+        if (file.Length > maxSizeBytes)
+        {
+            throw new ArgumentException(
+                $"Kích thước file không được vượt quá {_options.MaxFileSizeMb * 5}MB",
+                nameof(file));
+        }
+
+        // Validate file type for video
+        var allowedMimeTypes = new[] { "video/mp4", "video/webm", "video/ogg", "video/quicktime", "video/x-msvideo" };
+        if (!allowedMimeTypes.Contains(file.ContentType.ToLower()))
+        {
+            throw new ArgumentException(
+                "Chỉ hỗ trợ các định dạng video: MP4, WebM, OGG, MOV, AVI",
+                nameof(file));
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream();
+
+            var uploadParams = new VideoUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = folder,
+                PublicId = $"{Guid.NewGuid()}_{Path.GetFileNameWithoutExtension(file.FileName)}",
+                Overwrite = false
+            };
+
+            _logger.LogInformation("Uploading video {FileName} to Cloudinary folder {Folder}",
+                file.FileName, folder);
+
+            var uploadResult = await _cloudinary.UploadLargeAsync(uploadParams, 20971520, cancellationToken);
+
+            if (uploadResult.Error != null)
+            {
+                _logger.LogError("Cloudinary video upload failed: {Error}",
+                    uploadResult.Error.Message);
+                throw new InvalidOperationException(
+                    $"Tải video lên thất bại: {uploadResult.Error.Message}");
+            }
+
+            _logger.LogInformation("Video uploaded successfully: {PublicId}",
+                uploadResult.PublicId);
+
+            return uploadResult.SecureUrl.ToString();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Video upload was cancelled for file {FileName}",
+                file.FileName);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error uploading video {FileName}",
+                file.FileName);
+            throw new InvalidOperationException(
+                "Tải video lên thất bại", ex);
+        }
+    }
+
+    public async Task DeleteVideoAsync(
+        string videoUrl,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(videoUrl))
+        {
+            throw new ArgumentException("URL video không được trống", nameof(videoUrl));
+        }
+
+        try
+        {
+            // Extract public ID from URL
+            var publicId = ExtractPublicIdFromUrl(videoUrl);
+            if (string.IsNullOrEmpty(publicId))
+            {
+                _logger.LogWarning("Could not extract public ID from URL: {VideoUrl}",
+                    videoUrl);
+                return;
+            }
+
+            var deleteParams = new DeletionParams(publicId) { ResourceType = ResourceType.Video };
+
+            _logger.LogInformation("Deleting video with public ID: {PublicId}", publicId);
+
+            var deleteResult = await _cloudinary.DestroyAsync(deleteParams);
+
+            if (deleteResult.Error != null)
+            {
+                _logger.LogWarning("Cloudinary video deletion warning: {Error}",
+                    deleteResult.Error.Message);
+            }
+            else
+            {
+                _logger.LogInformation("Video deleted successfully: {PublicId}", publicId);
+            }
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Video deletion was cancelled for URL: {VideoUrl}",
+                videoUrl);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error deleting video from URL: {VideoUrl}",
+                videoUrl);
             // Don't throw - deletion failure shouldn't break the application
         }
     }

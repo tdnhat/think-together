@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ThinkTogether.Application.Interfaces;
 
-public interface IImageUploadService
+public interface IFileUploadService
 {
     Task<string> UploadImageAsync(
         IFormFile file,
@@ -17,4 +17,11 @@ public interface IImageUploadService
         CancellationToken cancellationToken = default);
 
     Task DeleteAudioAsync(string audioUrl, CancellationToken cancellationToken = default);
+
+    Task<string> UploadVideoAsync(
+        IFormFile file,
+        string folder = "quiz-sets/video",
+        CancellationToken cancellationToken = default);
+
+    Task DeleteVideoAsync(string videoUrl, CancellationToken cancellationToken = default);
 }

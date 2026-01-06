@@ -162,7 +162,7 @@ public static class DependencyInjection
         services.AddSingleton<IGameSessionStateService, RedisGameSessionStateService>();
         
         // Cloud Services
-        services.AddScoped<IImageUploadService, CloudinaryService>();
+        services.AddScoped<IFileUploadService, CloudinaryService>();
         
         // PDF Export Services
         services.AddScoped<IPdfExportService, PdfExportService>();

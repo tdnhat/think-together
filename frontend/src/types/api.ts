@@ -78,6 +78,14 @@ export interface UpdateUserRequest {
   bio?: string
 }
 
+export interface UpdateProfileRequest {
+  firstName: string
+  lastName: string
+  avatarUrl?: string | null
+  bio?: string | null
+}
+
+
 // Request DTOs
 export interface LoginRequest {
   email: string
