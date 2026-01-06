@@ -18,6 +18,25 @@ interface SidebarNavigationProps {
   groups?: NavigationGroup[];
 }
 
+/**
+ * Check if a menu item is active based on the current pathname
+ * Handles both exact matches and nested routes
+ */
+function isMenuItemActive(pathname: string, itemUrl: string): boolean {
+  // Exact match
+  if (pathname === itemUrl) {
+    return true;
+  }
+
+  // Nested route match (e.g., /my-quizzes/123 matches /my-quizzes)
+  // But /home should not match /homeworks
+  if (pathname.startsWith(itemUrl + "/")) {
+    return true;
+  }
+
+  return false;
+}
+
 export function SidebarNavigation({
   groups = SIDEBAR_NAVIGATION,
 }: SidebarNavigationProps) {
@@ -31,7 +50,7 @@ export function SidebarNavigation({
           <SidebarGroupContent>
             <SidebarMenu>
               {group.items.map((item) => {
-                const isActive = pathname === item.url;
+                const isActive = isMenuItemActive(pathname, item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
@@ -58,4 +77,3 @@ export function SidebarNavigation({
     </SidebarContent>
   );
 }
-

@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { TrendingUp } from 'lucide-react'
 import { Card, CardContent } from '@/shared/ui/card'
-import { LoadingSpinner } from '@/shared/ui/loading-spinner'
-import { Skeleton } from '@/shared/ui/skeleton'
 import { PaginationControls } from '@/shared/components/pagination-controls'
 import { DashboardLayout } from '@/widgets/dashboard'
+import { PageHeader, PageContainer, LoadingState, EmptyState, ErrorState } from '@/shared/components/page'
 import {
   LeaderboardTable,
   LeaderboardFilters,
@@ -79,40 +78,22 @@ export default function LeaderboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header Section */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary p-2">
-              <TrendingUp className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="font-heading text-3xl sm:text-4xl text-foreground">
-                Bảng xếp hạng
-              </h1>
-              <p className="mt-1 text-muted-foreground">
-                {isCreator
-                  ? 'Theo dõi hiệu suất và phân tích dữ liệu người chơi'
-                  : 'Xem thứ hạng của bạn và các người chơi khác'}
-              </p>
-            </div>
-          </div>
-        </section>
+      <PageContainer>
+        <PageHeader
+          icon={TrendingUp}
+          title="Bảng xếp hạng"
+          description={
+            isCreator
+              ? 'Theo dõi hiệu suất và phân tích dữ liệu người chơi'
+              : 'Xem thứ hạng của bạn và các người chơi khác'
+          }
+        />
 
         {/* Stats Overview - Only for creators */}
         {isCreator && (
           <section>
             {isLoadingStats ? (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-4">
-                      <Skeleton className="h-10 w-full mb-2" />
-                      <Skeleton className="h-4 w-2/3" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <LoadingState variant="skeleton" skeletonLines={1} className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6" />
             ) : (
               stats && (
                 <LeaderboardStatsOverview stats={stats} className="mb-4" />
@@ -121,87 +102,73 @@ export default function LeaderboardPage() {
           </section>
         )}
 
-        {/* Main Content */}
-        <div className="space-y-6">
-          {/* Filters Section */}
-          <section>
-            <LeaderboardFilters
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              showQuizSetFilter={isCreator}
-              quizSetSelector={
-                isCreator && quizSets.length > 0 ? (
-                  <QuizSetSelector
-                    quizSets={quizSets}
-                    selectedQuizSetId={filters.quizSetId}
-                    onQuizSetChange={handleQuizSetChange}
-                  />
-                ) : undefined
-              }
-              classes={classes}
-              homeworks={homeworks}
-            />
-          </section>
-
-          {/* Leaderboard Table */}
-          <section>
-            {isLoading && (
-              <div className="flex h-40 items-center justify-center">
-                <LoadingSpinner size="md" />
-              </div>
-            )}
-
-            {error && (
-              <Card className="border-red-200 bg-red-50">
-                <CardContent className="py-8 text-center">
-                  <p className="text-red-600">{error}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {!isLoading && !error && data && (
-              <>
-                <LeaderboardTable
-                  entries={data.entries}
-                  showQuizSet={isCreator && !filters.quizSetId}
-                  className="mb-6"
+        {/* Filters Section */}
+        <section>
+          <LeaderboardFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            showQuizSetFilter={isCreator}
+            quizSetSelector={
+              isCreator && quizSets.length > 0 ? (
+                <QuizSetSelector
+                  quizSets={quizSets}
+                  selectedQuizSetId={filters.quizSetId}
+                  onQuizSetChange={handleQuizSetChange}
                 />
+              ) : undefined
+            }
+            classes={classes}
+            homeworks={homeworks}
+          />
+        </section>
 
-                {/* Pagination */}
-                {data.totalPages > 1 && (
-                  <div className="flex flex-col items-center gap-2">
-                    <PaginationControls
-                      page={data.page}
-                      pageSize={data.pageSize}
-                      total={data.totalEntries}
-                      onPageChange={handlePageChange}
-                    />
-                  </div>
-                )}
+        {/* Leaderboard Table */}
+        <section>
+          {isLoading && <LoadingState />}
 
-                {/* Results Info */}
-                <div className="mt-4 text-center text-sm text-muted-foreground">
-                  Hiển thị {data.entries.length} / {data.totalEntries} kết quả
+          {error && (
+            <ErrorState
+              title="Đã xảy ra lỗi"
+              description={error}
+            />
+          )}
+
+          {!isLoading && !error && data && (
+            <>
+              <LeaderboardTable
+                entries={data.entries}
+                showQuizSet={isCreator && !filters.quizSetId}
+                className="mb-6"
+              />
+
+              {/* Pagination */}
+              {data.totalPages > 1 && (
+                <div className="flex flex-col items-center gap-2">
+                  <PaginationControls
+                    page={data.page}
+                    pageSize={data.pageSize}
+                    total={data.totalEntries}
+                    onPageChange={handlePageChange}
+                  />
                 </div>
-              </>
-            )}
+              )}
 
-            {!isLoading && !error && data && data.entries.length === 0 && (
-              <Card className="flex flex-col items-center justify-center border-dashed border-border bg-muted py-20 px-6 text-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <TrendingUp className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="mb-2 font-heading text-xl text-foreground">
-                  {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD}
-                </h3>
-                <p className="text-muted-foreground">
-                  {LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD_DESCRIPTION}
-                </p>
-              </Card>
-            )}
-          </section>
-        </div>
-      </div>
-    </DashboardLayout>
+              {/* Results Info */}
+              <div className="mt-4 text-center text-sm text-muted-foreground">
+                Hiển thị {data.entries.length} / {data.totalEntries} kết quả
+              </div>
+            </>
+          )}
+
+          {!isLoading && !error && data && data.entries.length === 0 && (
+            <EmptyState
+              icon={TrendingUp}
+              title={LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD}
+              description={LEADERBOARD_CONSTANTS.MESSAGES.EMPTY_LEADERBOARD_DESCRIPTION}
+            />
+          )}
+        </section>
+      </PageContainer>
+    </DashboardLayout >
   )
 }

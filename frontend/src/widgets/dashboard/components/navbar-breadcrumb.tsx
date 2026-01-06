@@ -1,5 +1,7 @@
 "use client";
 
+import { Home } from "lucide-react";
+import Link from "next/link";
 import { SidebarTrigger } from "@/shared/ui/sidebar";
 import { Separator } from "@/shared/ui/separator";
 import {
@@ -21,22 +23,28 @@ export function NavbarBreadcrumb() {
       <Separator orientation="vertical" className="mr-2 h-4" />
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink href="#">ThinkTogether</BreadcrumbLink>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/home" className="flex items-center">
+                <Home className="h-4 w-4" />
+              </Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
-          {breadcrumbs.length > 0 && (
-            <BreadcrumbSeparator className="hidden md:block" />
-          )}
-          {breadcrumbs.map((item) => (
+
+          {breadcrumbs.length > 0 && <BreadcrumbSeparator />}
+
+          {breadcrumbs.map((item, index) => (
             <BreadcrumbItem key={item.href}>
               {item.isLast ? (
                 <BreadcrumbPage>{item.title}</BreadcrumbPage>
               ) : (
-                <BreadcrumbLink href={item.href} className="hidden md:block">
-                  {item.title}
-                </BreadcrumbLink>
+                <>
+                  <BreadcrumbLink asChild>
+                    <Link href={item.href}>{item.title}</Link>
+                  </BreadcrumbLink>
+                  {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                </>
               )}
-              {!item.isLast && <BreadcrumbSeparator className="hidden md:block" />}
             </BreadcrumbItem>
           ))}
         </BreadcrumbList>
@@ -44,4 +52,3 @@ export function NavbarBreadcrumb() {
     </div>
   );
 }
-

@@ -5,4 +5,4 @@ export { NavbarBreadcrumb } from "./navbar-breadcrumb";
 export { NavbarSearch } from "./navbar-search";
 export { NavbarActions } from "./navbar-actions";
 export { NavbarIconButton } from "./navbar-icon-button";
-
+export { ExpandableSearch } from "./expandable-search";

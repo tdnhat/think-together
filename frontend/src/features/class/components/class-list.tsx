@@ -4,6 +4,7 @@ import { Plus, Search } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent } from '@/shared/ui/card'
 import { SearchInput } from '@/shared/components'
+import { EmptyState } from '@/shared/components/page'
 import { Skeleton } from '@/shared/ui/skeleton'
 import { PaginationControls } from '@/shared/components/pagination-controls'
 import { ClassCard } from './class-card'
@@ -125,27 +126,19 @@ export function ClassList({
 
       {/* Empty State */}
       {!isLoading && classes.length === 0 && (
-        <Card className="flex flex-col items-center justify-center border-dashed border-border bg-muted py-20 px-6 text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <Search className="h-8 w-8 text-primary" />
-          </div>
-          <h3 className="mb-2 font-heading text-xl text-foreground">
-            {searchQuery
-              ? 'Không tìm thấy lớp học'
-              : CLASS_CONSTANTS.MESSAGES.NO_CLASSES}
-          </h3>
-          <p className="text-muted-foreground">
-            {searchQuery
-              ? 'Thử tìm kiếm với từ khóa khác'
-              : CLASS_CONSTANTS.MESSAGES.NO_CLASSES_DESCRIPTION}
-          </p>
-          {onCreateNew && !searchQuery && (
-            <Button onClick={onCreateNew} className="mt-4 gap-2">
-              <Plus className="h-4 w-4" />
-              Tạo lớp học đầu tiên
-            </Button>
-          )}
-        </Card>
+        <EmptyState
+          icon={Search}
+          title={searchQuery
+            ? 'Không tìm thấy lớp học'
+            : CLASS_CONSTANTS.MESSAGES.NO_CLASSES}
+          description={searchQuery
+            ? 'Thử tìm kiếm với từ khóa khác'
+            : CLASS_CONSTANTS.MESSAGES.NO_CLASSES_DESCRIPTION}
+          action={onCreateNew && !searchQuery ? {
+            label: 'Tạo lớp học đầu tiên',
+            onClick: onCreateNew
+          } : undefined}
+        />
       )}
     </div>
   )

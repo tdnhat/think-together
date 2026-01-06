@@ -4,7 +4,7 @@ import { Suspense, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
-import { LoadingSpinner } from '@/shared/ui/loading-spinner'
+import { LoadingState } from '@/shared/components/page'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
 import {
@@ -112,9 +112,7 @@ function HostPageContent() {
   // Session not ready
   if (!session) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <LoadingState size="lg" />
     )
   }
 
@@ -150,9 +148,7 @@ export default function HostPage() {
     <DashboardLayout>
       <CreatorRouteGuard>
         <Suspense fallback={
-          <div className="flex items-center justify-center py-16">
-            <LoadingSpinner size="lg" />
-          </div>
+          <LoadingState size="lg" />
         }>
           <HostPageContent />
         </Suspense>

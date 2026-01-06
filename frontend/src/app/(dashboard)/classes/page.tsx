@@ -1,9 +1,11 @@
 'use client'
 
+import { GraduationCap } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/shared/ui/dialog'
 import { DashboardLayout } from '@/widgets/dashboard'
+import { PageHeader, PageContainer } from '@/shared/components/page'
 import {
   ClassList,
   ClassForm,
@@ -64,17 +66,12 @@ export default function ClassesPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto space-y-6 py-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-foreground">
-              Lớp học của tôi
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Quản lý các lớp học và bài tập về nhà
-            </p>
-          </div>
-        </div>
+      <PageContainer>
+        <PageHeader
+          icon={GraduationCap}
+          title="Lớp học của tôi"
+          description="Quản lý các lớp học và bài tập về nhà"
+        />
 
         <ClassList
           classes={data?.data || []}
@@ -138,7 +135,7 @@ export default function ClassesPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageContainer>
     </DashboardLayout>
   )
 }

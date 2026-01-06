@@ -1,9 +1,13 @@
 'use client'
 
+import { FolderTree, Plus, Edit2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import { CategoryList, CategoryFilters, CategoryModal, useCategories } from '@/features/category'
+import { CategoryModal, useCategories } from '@/features/category'
 import { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest } from '@/types/api'
+import { DashboardLayout } from '@/widgets/dashboard'
+import { PageHeader, PageContainer, ContentCard, FilterBar, EmptyState, DataTable } from '@/shared/components/page'
+import { Badge } from '@/shared/ui/badge'
+import { Button } from '@/shared/ui/button'
 
 export default function CategoriesAdminPage() {
   const { categories, isLoading, createCategory, updateCategory, deleteCategory, isCreating, isUpdating, isDeleting } = useCategories()
@@ -46,51 +50,117 @@ export default function CategoriesAdminPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">
-          Quản Lý Danh Mục
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Tạo, cập nhật, và quản lý các danh mục chủ đề cho quiz.
-        </p>
-      </div>
+    <DashboardLayout>
+      <PageContainer>
+        <PageHeader
+          icon={FolderTree}
+          title="Quản Lý Danh Mục"
+          description="Tạo, cập nhật, và quản lý các danh mục chủ đề cho quiz."
+        />
 
-      {/* Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh Sách Danh Mục</CardTitle>
-          <CardDescription>
-            Xem và quản lý tất cả danh mục trong hệ thống
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <CategoryFilters
-            searchTerm={searchTerm}
+        <ContentCard
+          title="Danh Sách Danh Mục"
+          description="Xem và quản lý tất cả danh mục trong hệ thống"
+        >
+          <FilterBar
+            searchPlaceholder="Tìm kiếm danh mục..."
+            searchValue={searchTerm}
             onSearchChange={setSearchTerm}
-            onCreateClick={handleCreateNew}
+            action={{
+              label: "Thêm Danh Mục",
+              onClick: handleCreateNew,
+              icon: <Plus className="mr-2 h-4 w-4" />
+            }}
           />
 
-          <CategoryList
-            categories={filteredCategories}
+          <DataTable
+            data={filteredCategories}
+            columns={[
+              {
+                key: 'name',
+                header: 'Tên danh mục',
+                cell: (category) => (
+                  <span className="font-medium">{category.name}</span>
+                ),
+              },
+              {
+                key: 'description',
+                header: 'Mô tả',
+                cell: (category) => category.description,
+              },
+              {
+                key: 'status',
+                header: 'Trạng thái',
+                cell: (category) => (
+                  <Badge variant={category.isActive ? 'default' : 'secondary'}>
+                    {category.isActive ? 'Hoạt động' : 'Không hoạt động'}
+                  </Badge>
+                ),
+                headerClassName: 'w-[150px] text-center',
+                cellClassName: 'text-center',
+              },
+              {
+                key: 'actions',
+                header: 'Hành động',
+                cell: (category) => (
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(category)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                      <span className="sr-only">Sửa</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDelete(category)}
+                      disabled={isDeleting}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Xóa</span>
+                    </Button>
+                  </div>
+                ),
+                headerClassName: 'text-right',
+                cellClassName: 'text-right',
+              },
+            ]}
+            getRowKey={(category) => category.id}
             isLoading={isLoading}
-            isDeleting={isDeleting}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+            emptyState={
+              searchTerm === '' ? (
+                <EmptyState
+                  icon={FolderTree}
+                  title="Chưa có danh mục nào"
+                  description="Bắt đầu bằng cách tạo danh mục đầu tiên để tổ chức quiz của bạn"
+                  action={{
+                    label: "Thêm Danh Mục",
+                    onClick: handleCreateNew
+                  }}
+                />
+              ) : (
+                <EmptyState
+                  icon={FolderTree}
+                  title="Không tìm thấy kết quả"
+                  description={`Không tìm thấy danh mục nào phù hợp với "${searchTerm}"`}
+                />
+              )
+            }
           />
-        </CardContent>
-      </Card>
+        </ContentCard>
 
-      {/* Category Modal */}
-      <CategoryModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        category={editingCategory}
-        onSubmit={handleSubmit}
-        isSubmitting={isCreating || isUpdating}
-      />
-    </div>
+        {/* Category Modal */}
+        <CategoryModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          category={editingCategory}
+          onSubmit={handleSubmit}
+          isSubmitting={isCreating || isUpdating}
+        />
+      </PageContainer>
+    </DashboardLayout>
   )
 }
-

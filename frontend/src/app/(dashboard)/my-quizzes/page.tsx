@@ -3,13 +3,13 @@
 import { Suspense, useCallback } from 'react'
 import { toastSuccess } from '@/lib/utils/toast'
 import { toast } from '@/lib/utils/toast'
-import { LoadingSpinner } from '@/shared/ui/loading-spinner'
 import { QuizSetList, QuizSetModal, useQuizSets } from '@/features/quiz'
 import { useCreateChallenge, type ChallengeDto } from '@/features/challenge'
 import { DashboardLayout } from '@/widgets/dashboard'
 import { CreatorRouteGuard } from '@/shared/components/creator-route-guard'
 import type { QuizSetDto } from '@/types/api'
 import type { CreateQuizSetFormData, UpdateQuizSetFormData } from '@/lib/validators'
+import { PageContainer, LoadingState } from '@/shared/components/page'
 import {
   useQuizUrlParams,
   useQuizActions,
@@ -169,7 +169,7 @@ function CreatorQuizzesContent() {
   return (
     <DashboardLayout>
       <CreatorRouteGuard>
-        <div className="space-y-6">
+        <PageContainer>
           <QuizSetList
             quizSets={quizSets}
             pagination={pagination}
@@ -217,7 +217,7 @@ function CreatorQuizzesContent() {
             quizSet={selectedQuizSet}
             onConfirm={handlePublishConfirm}
           />
-        </div>
+        </PageContainer>
       </CreatorRouteGuard>
     </DashboardLayout>
   )
@@ -227,11 +227,10 @@ export default function CreatorQuizzesPage() {
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <LoadingState size="lg" />
       </div>
     }>
       <CreatorQuizzesContent />
     </Suspense>
   )
 }
-

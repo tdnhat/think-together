@@ -1,56 +1,116 @@
 'use client'
 
+import { BookOpen, Eye } from 'lucide-react'
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import { QuizList } from '@/features/quiz/components/quiz-list'
-import { QuizFilters } from '@/features/quiz/components/quiz-filters'
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/shared/ui/pagination'
+import { DashboardLayout } from '@/widgets/dashboard'
+import { PageHeader, PageContainer, ContentCard, FilterBar, EmptyState, DataTable } from '@/shared/components/page'
+import { Badge } from '@/shared/ui/badge'
+import { Button } from '@/shared/ui/button'
+
+// Mock type until we have real QuizDto
+interface QuizDto {
+  id: string
+  title: string
+  category: string
+  author: string
+  questionsCount: number
+  status: 'published' | 'draft'
+  createdAt: string
+}
 
 export default function QuizzesAdminPage() {
   const [searchTerm, setSearchTerm] = useState('')
-  const [page, setPage] = useState(1)
 
   // Mock data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const quizzes = [] as any[]
+  const quizzes: QuizDto[] = []
   const isLoading = false
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">
-          Quản Lý Quiz
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Xem, chỉnh sửa, và quản lý tất cả quiz trên hệ thống.
-        </p>
-      </div>
+    <DashboardLayout>
+      <PageContainer>
+        <PageHeader
+          icon={BookOpen}
+          title="Quản Lý Quiz"
+          description="Xem, chỉnh sửa, và quản lý tất cả quiz trên hệ thống."
+        />
 
-      {/* Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh Sách Quiz</CardTitle>
-          <CardDescription>
-            Xem và quản lý tất cả quiz trong hệ thống
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <QuizFilters
-            searchTerm={searchTerm}
+        <ContentCard
+          title="Danh Sách Quiz"
+          description="Xem và quản lý tất cả quiz trong hệ thống"
+        >
+          <FilterBar
+            searchPlaceholder="Tìm kiếm quiz..."
+            searchValue={searchTerm}
             onSearchChange={setSearchTerm}
           />
 
-          <QuizList
-            quizzes={quizzes}
+          <DataTable<QuizDto>
+            data={quizzes}
+            columns={[
+              {
+                key: 'title',
+                header: 'Tên Quiz',
+                cell: (quiz) => <span className="font-medium">{quiz.title}</span>,
+              },
+              {
+                key: 'category',
+                header: 'Danh mục',
+                cell: (quiz) => quiz.category,
+              },
+              {
+                key: 'author',
+                header: 'Tác giả',
+                cell: (quiz) => quiz.author,
+              },
+              {
+                key: 'questions',
+                header: 'Số câu hỏi',
+                cell: (quiz) => quiz.questionsCount,
+                headerClassName: 'text-center',
+                cellClassName: 'text-center',
+              },
+              {
+                key: 'status',
+                header: 'Trạng thái',
+                cell: (quiz) => (
+                  <Badge variant={quiz.status === 'published' ? 'default' : 'secondary'}>
+                    {quiz.status === 'published' ? 'Công khai' : 'Nháp'}
+                  </Badge>
+                ),
+                headerClassName: 'text-center',
+                cellClassName: 'text-center',
+              },
+              {
+                key: 'actions',
+                header: 'Hành động',
+                cell: (quiz) => (
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => console.log('View quiz', quiz)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span className="sr-only">Xem</span>
+                    </Button>
+                  </div>
+                ),
+                headerClassName: 'text-right',
+                cellClassName: 'text-right',
+              },
+            ]}
+            getRowKey={(quiz) => quiz.id}
             isLoading={isLoading}
-            onView={(quiz) => console.log('View quiz', quiz)}
+            emptyState={
+              <EmptyState
+                icon={BookOpen}
+                title="Chưa có quiz nào"
+                description="Hệ thống chưa có quiz nào. Quiz sẽ xuất hiện ở đây khi được tạo."
+              />
+            }
           />
-
-          {/* Pagination Placeholder */}
-          {/* <Pagination>...</Pagination> */}
-        </CardContent>
-      </Card>
-    </div>
+        </ContentCard>
+      </PageContainer>
+    </DashboardLayout>
   )
 }

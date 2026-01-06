@@ -1,14 +1,15 @@
 import {
-  Activity,
   BookOpen,
   Clock,
   Crown,
+  Gamepad2,
   GraduationCap,
   Home,
   Settings,
   Star,
   Target,
   TrendingUp,
+  User,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -32,19 +33,25 @@ export const SIDEBAR_NAVIGATION: NavigationGroup[] = [
       { title: "Trang chủ", url: ROUTES.dashboard.home, icon: Home },
       { title: "Bộ câu hỏi", url: ROUTES.quiz.list, icon: BookOpen },
       { title: "Lớp học", url: ROUTES.classes.list, icon: GraduationCap },
+      { title: "Trò chơi", url: ROUTES.game.host, icon: Gamepad2 },
       { title: "Bảng xếp hạng", url: ROUTES.leaderboard, icon: TrendingUp },
-      { title: "Tiến trình", url: "/progress", icon: Activity }, // TODO: Add to routes when implemented
     ],
   },
   {
-    title: "Khác",
+    title: "Cá nhân",
     items: [
-      { title: "Bài đã lưu", url: "/saved", icon: Star }, // TODO: Add to routes when implemented
-      { title: "Lịch sử", url: "/history", icon: Clock }, // TODO: Add to routes when implemented
-      { title: "Cộng đồng", url: "/community", icon: Users }, // TODO: Add to routes when implemented
+      { title: "Hồ sơ", url: ROUTES.dashboard.profile, icon: User },
       { title: "Cài đặt", url: ROUTES.dashboard.settings, icon: Settings },
     ],
   },
+  // {
+  //   title: "Khác",
+  //   items: [
+  //     { title: "Bài đã lưu", url: "/saved", icon: Star },
+  //     { title: "Lịch sử", url: "/history", icon: Clock },
+  //     { title: "Cộng đồng", url: "/community", icon: Users },
+  //   ],
+  // },
 ] as const;
 
 export const QUICK_ACTIONS = [
@@ -100,4 +107,3 @@ export const MOCK_WEEKLY_GOALS = [
   "Chia sẻ 1 bộ câu hỏi với bạn học",
   "Duy trì điểm trung bình trên 90%",
 ] as const;
-

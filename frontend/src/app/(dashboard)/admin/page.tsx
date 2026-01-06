@@ -2,7 +2,7 @@
 
 import { dashboardService } from '@/features/dashboard/services/dashboard-service'
 import { useQuery } from '@tanstack/react-query'
-import { LoadingSpinner } from '@/shared/ui/loading-spinner'
+import { LoadingState } from '@/shared/components/page'
 import { DashboardStats } from '@/features/dashboard/components/dashboard-stats'
 import { DashboardCharts } from '@/features/dashboard/components/dashboard-charts'
 import { RecentActivityList } from '@/features/dashboard/components/recent-activity-list'
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
   // Helper to render recent activity
   const renderRecent = () => {
-    if (recentActivityQuery.isLoading) return <LoadingSpinner />
+    if (recentActivityQuery.isLoading) return <LoadingState />
     if (recentActivityQuery.error || !recentActivityQuery.data) return <p className="text-red-500">Lỗi tải hoạt động</p>
 
     return <RecentActivityList quizzes={recentActivityQuery.data} />
