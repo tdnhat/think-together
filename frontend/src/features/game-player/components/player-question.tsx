@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Timer, CheckCircle, HelpCircle } from 'lucide-react'
-import { Card, CardContent } from '@/shared/ui/card'
+import { Timer, CheckCircle } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { GAME_PLAYER_CONSTANTS } from '../constants'
@@ -10,9 +10,10 @@ import { GAME_CONSTANTS } from '@/features/game'
 import type { QuestionStartedMessage } from '@/features/game-host/types'
 import { VideoPlayer } from '@/shared/components/video-player'
 import { AudioPlayer } from '@/shared/components/audio-player'
+import { QuestionNumberBadge } from '@/shared/components/question-number-badge'
 import { OrderingAnswer } from './ordering-answer'
 import { MatchingAnswer } from './matching-answer'
-import { AnswerOption } from './answer-option'
+import { ChoiceAnswer } from './choice-answer'
 
 interface PlayerQuestionProps {
   question: QuestionStartedMessage
@@ -85,29 +86,33 @@ export function PlayerQuestion({
   const canSubmit = selectedAnswers.length > 0 && !hasAnswered && !isSubmitting
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {/* Timer and Question Number */}
-      <div className="flex items-center justify-between">
-        <Badge variant="default" className="gap-1">
-          <HelpCircle className="h-4 w-4" />
-          Câu {question.positionInGame + 1}/{question.totalQuestions}
-        </Badge>
+    <div className={`space-y-4 max-w-3xl mx-auto ${className}`}>
 
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold ${getTimerColor()}`}>
-          <Timer className="h-5 w-5" />
-          <span className="text-xl tabular-nums">{timeRemaining}s</span>
-        </div>
-      </div>
+      {/* Question Card modeled after QuestionDisplay */}
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-4 bg-muted/20">
+          <div className="flex items-start gap-4 justify-between">
+            <div className="flex items-start gap-3 flex-1">
+              <QuestionNumberBadge number={question.positionInGame + 1} variant="default" />
+              <div className="min-w-0 flex-1 pt-1">
+                <CardTitle className="text-xl leading-snug font-heading">
+                  {question.content}
+                </CardTitle>
+              </div>
+            </div>
 
-      {/* Question Content */}
-      <Card>
-        <CardContent className="p-6">
-          <h2 className="text-xl md:text-2xl font-heading font-bold text-center text-foreground leading-relaxed mb-4">
-            {question.content}
-          </h2>
+            {/* Timer */}
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-bold text-sm shrink-0 border ${getTimerColor()}`}>
+              <Timer className="h-4 w-4" />
+              <span className="tabular-nums">{timeRemaining}s</span>
+            </div>
+          </div>
+        </CardHeader>
 
+        <CardContent className="p-6 space-y-6">
+          {/* Media */}
           {question.videoUrl && (
-            <div className="mb-4 rounded-lg overflow-hidden border bg-black aspect-video max-w-3xl mx-auto">
+            <div className="rounded-lg overflow-hidden border bg-black aspect-video max-w-2xl mx-auto shadow-sm">
               <VideoPlayer
                 url={question.videoUrl}
                 autoPlay={true}
@@ -117,7 +122,7 @@ export function PlayerQuestion({
           )}
 
           {question.audioUrl && (
-            <div className="mb-4 max-w-xl mx-auto">
+            <div className="max-w-xl mx-auto p-4 bg-muted/30 rounded-lg border">
               <AudioPlayer
                 src={question.audioUrl}
                 autoPlay={true}
@@ -127,41 +132,40 @@ export function PlayerQuestion({
           )}
 
           {isMultipleChoice && (
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              (Chọn nhiều đáp án)
-            </p>
+            <div className="text-center">
+              <Badge variant="outline" className="text-muted-foreground font-normal">
+                Chọn nhiều đáp án
+              </Badge>
+            </div>
           )}
+
+          {/* Answer Components */}
+          <div className="mt-4">
+            {isMatching ? (
+              <MatchingAnswer
+                leftItems={question.matchingLeft || []}
+                rightItems={question.matchingRight || []}
+                hasAnswered={hasAnswered}
+                onAnswersChange={onSetSelectedAnswers}
+              />
+            ) : isOrdering ? (
+              <OrderingAnswer
+                items={question.orderingItems || []}
+                hasAnswered={hasAnswered}
+                onAnswersChange={onSetSelectedAnswers}
+              />
+            ) : (
+              <ChoiceAnswer
+                options={question.options || []}
+                selectedIndexes={selectedAnswers}
+                isMultiple={isMultipleChoice}
+                hasAnswered={hasAnswered}
+                onAnswerChange={onSelectAnswer}
+              />
+            )}
+          </div>
         </CardContent>
       </Card>
-
-      {/* Answer Options */}
-      {isMatching ? (
-        <MatchingAnswer
-          leftItems={question.matchingLeft || []}
-          rightItems={question.matchingRight || []}
-          hasAnswered={hasAnswered}
-          onAnswersChange={onSetSelectedAnswers}
-        />
-      ) : isOrdering ? (
-        <OrderingAnswer
-          items={question.orderingItems || []}
-          hasAnswered={hasAnswered}
-          onAnswersChange={onSetSelectedAnswers}
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {question.options.map((option, index) => (
-            <AnswerOption
-              key={option.index}
-              index={index}
-              content={option.content}
-              isSelected={selectedAnswers.includes(option.index)}
-              hasAnswered={hasAnswered}
-              onSelect={() => !hasAnswered && onSelectAnswer(option.index)}
-            />
-          ))}
-        </div>
-      )}
 
       {/* Submit Button */}
       {!hasAnswered && (
@@ -170,7 +174,7 @@ export function PlayerQuestion({
           size="lg"
           onClick={onSubmit}
           disabled={!canSubmit}
-          className="w-full"
+          className="w-full h-12 text-lg font-bold shadow-md hover:shadow-lg transition-all"
         >
           {isSubmitting ? GAME_PLAYER_CONSTANTS.MESSAGES.SUBMITTING : 'Xác nhận câu trả lời'}
         </Button>
@@ -178,15 +182,17 @@ export function PlayerQuestion({
 
       {/* Answered State */}
       {hasAnswered && (
-        <div className="text-center py-4">
-          <Badge variant="default" className="text-lg py-2 px-4 gap-2">
-            <CheckCircle className="h-5 w-5" />
-            Đã gửi câu trả lời
-          </Badge>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {GAME_PLAYER_CONSTANTS.MESSAGES.WAITING_FOR_RESULT}
-          </p>
-        </div>
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-6 text-center">
+            <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-3">
+              <CheckCircle className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold text-foreground mb-1">Đã gửi câu trả lời</h3>
+            <p className="text-muted-foreground">
+              {GAME_PLAYER_CONSTANTS.MESSAGES.WAITING_FOR_RESULT}
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

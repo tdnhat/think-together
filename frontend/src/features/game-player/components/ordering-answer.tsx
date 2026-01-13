@@ -1,9 +1,26 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { ArrowUp, ArrowDown, GripVertical } from 'lucide-react'
-import { Button } from '@/shared/ui/button'
-import { cn } from '@/lib/utils'
+import { useState, useEffect } from 'react'
+import {
+    DndContext,
+    DragOverlay,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+    type DragStartEvent,
+} from '@dnd-kit/core'
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    horizontalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { Card } from '@/shared/ui/card'
 import { OrderingItemInfo } from '@/features/game-host/types'
 
 interface OrderingAnswerProps {
@@ -12,92 +29,151 @@ interface OrderingAnswerProps {
     onAnswersChange: (answers: number[]) => void
 }
 
+/**
+ * Render options for Ordering questions: vertical list drag and drop items (optimized for mobile)
+ * NOTE: Challenge uses Horizontal, but Mobile might prefer Vertical?
+ * The user said "Take challenge as reference". Challenge uses horizontal.
+ * However, long text items in horizontal list form "cards".
+ * Let's stick to Horizontal `horizontalListSortingStrategy` with `flex-wrap` like Challenge.
+ */
 export function OrderingAnswer({
     items,
     hasAnswered,
     onAnswersChange,
 }: OrderingAnswerProps) {
+
+    // Store items with a generic unique DND ID, but keep track of original ID.
+    // items: { id: number, content: string }
+
     const [orderedItems, setOrderedItems] = useState<OrderingItemInfo[]>([])
 
-    // Shuffle items on mount
+    // Shuffle on mount
     useEffect(() => {
-        if (orderedItems.length === 0 && items.length > 0) {
+        if (items.length > 0 && orderedItems.length === 0) {
             const shuffled = [...items].sort(() => Math.random() - 0.5)
             setOrderedItems(shuffled)
-            // Initial report
             onAnswersChange(shuffled.map(i => i.id))
         }
     }, [items, orderedItems.length, onAnswersChange])
 
-    const moveItem = (index: number, direction: 'up' | 'down') => {
+    const [activeId, setActiveId] = useState<number | null>(null)
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+    const handleDragStart = (event: DragStartEvent) => {
+        if (hasAnswered) return
+        setActiveId(event.active.id as number)
+    }
+
+    const handleDragEnd = (event: DragEndEvent) => {
         if (hasAnswered) return
 
-        const newItems = [...orderedItems]
-        if (direction === 'up') {
-            if (index === 0) return
-            [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]]
-        } else {
-            if (index === newItems.length - 1) return
-            [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]]
-        }
+        const { active, over } = event
+        setActiveId(null)
 
-        setOrderedItems(newItems)
-        onAnswersChange(newItems.map(i => i.id))
+        if (!over || active.id === over.id) return
+
+        // active.id is the ITEM ID (number)
+        const oldIndex = orderedItems.findIndex((item) => item.id === active.id)
+        const newIndex = orderedItems.findIndex((item) => item.id === over.id)
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+            const newItems = arrayMove(orderedItems, oldIndex, newIndex)
+            setOrderedItems(newItems)
+            onAnswersChange(newItems.map(i => i.id))
+        }
+    }
+
+    // We use item.id as the key. Dnd-kit expects string or number.
+
+    return (
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+        >
+            <div className="space-y-3">
+                <SortableContext items={orderedItems.map(i => i.id)} strategy={horizontalListSortingStrategy}>
+                    <div className="flex flex-wrap gap-3 justify-center">
+                        {orderedItems.map((item) => (
+                            <SortableOrderingItem
+                                key={item.id}
+                                id={item.id}
+                                content={item.content}
+                                isDragging={activeId === item.id}
+                                disabled={hasAnswered}
+                            />
+                        ))}
+                    </div>
+                </SortableContext>
+            </div>
+
+            <DragOverlay>
+                {activeId !== null ? (
+                    <Card className="p-4 shadow-lg opacity-90 cursor-grabbing bg-primary/5 border-primary">
+                        <p className="text-sm font-medium text-foreground">
+                            {orderedItems.find((item) => item.id === activeId)?.content}
+                        </p>
+                    </Card>
+                ) : null}
+            </DragOverlay>
+        </DndContext>
+    )
+}
+
+function SortableOrderingItem({
+    id,
+    content,
+    isDragging,
+    disabled
+}: {
+    id: number
+    content: string
+    isDragging: boolean
+    disabled: boolean
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging: isDndDragging,
+    } = useSortable({
+        id,
+        disabled
+    })
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDndDragging ? 0.5 : 1,
     }
 
     return (
-        <div className="space-y-3 max-w-2xl mx-auto">
-            <p className="text-center text-sm text-muted-foreground mb-4">
-                Sắp xếp các mục theo đúng thứ tự
-            </p>
-
-            {orderedItems.map((item, index) => (
-                <div
-                    key={item.id}
-                    className={cn(
-                        "flex items-center gap-3 p-3 bg-card border rounded-xl transition-all",
-                        hasAnswered && "opacity-80"
-                    )}
-                >
-                    {/* Position indicator */}
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground flex-shrink-0">
-                        {index + 1}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 font-medium text-base break-words">
-                        {item.content}
-                    </div>
-
-                    {/* Controls */}
-                    <div className="flex flex-col gap-1 flex-shrink-0">
-                        {!hasAnswered && (
-                            <>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-secondary"
-                                    disabled={index === 0}
-                                    onClick={() => moveItem(index, 'up')}
-                                >
-                                    <ArrowUp className="h-5 w-5" />
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-secondary"
-                                    disabled={index === orderedItems.length - 1}
-                                    onClick={() => moveItem(index, 'down')}
-                                >
-                                    <ArrowDown className="h-5 w-5" />
-                                </Button>
-                            </>
-                        )}
-                    </div>
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="touch-none">
+            <Card
+                className={`p-4 min-w-[120px] max-w-[200px] transition-all
+                     ${disabled ? 'opacity-80 cursor-default' : 'cursor-grab active:cursor-grabbing hover:border-primary/50'}
+                     ${isDragging ? 'bg-primary/5 border-primary ring-2 ring-primary/20' : 'bg-card'}
+                `}
+            >
+                <div className="text-center">
+                    <p className="text-sm font-medium text-foreground break-words select-none">
+                        {content}
+                    </p>
                 </div>
-            ))}
+            </Card>
         </div>
     )
 }
