@@ -81,7 +81,12 @@ export interface QuestionStartedEvent {
   totalQuestions: number
   videoUrl: string | null
   videoTimestamp: number | null
+  audioUrl: string | null
+  audioTimestamp: number | null
   options: Array<{ index: number; content: string; imageUrl: string | null }>
+  matchingLeft: Array<{ id: number; content: string }>
+  matchingRight: Array<{ id: number; content: string }>
+  orderingItems: Array<{ id: number; content: string }>
 }
 
 export interface QuestionEndedEvent {
@@ -247,9 +252,9 @@ class GameSignalRService {
     if (this.isConnected()) {
       return
     }
-    
+
     await this.connect()
-    
+
     // Verify connection was actually established
     if (!this.connection || !this.isConnected()) {
       throw new Error('Failed to establish SignalR connection')
@@ -441,10 +446,10 @@ class GameSignalRService {
         this.events.onError?.(message as ErrorEvent)
       } else {
         // Fallback for unexpected error formats
-        const errorMessage = message instanceof Error 
-          ? message.message 
-          : typeof message === 'string' 
-            ? message 
+        const errorMessage = message instanceof Error
+          ? message.message
+          : typeof message === 'string'
+            ? message
             : 'An unknown SignalR error occurred'
         this.events.onError?.({
           code: 'UNKNOWN_ERROR',
@@ -475,7 +480,7 @@ class GameSignalRService {
 
     this.connection.onclose((error?: Error) => {
       this.updateState('disconnected')
-      
+
       // Handle connection errors (network failures, etc.)
       if (error) {
         const errorMessage = error.message || 'Connection closed unexpectedly'

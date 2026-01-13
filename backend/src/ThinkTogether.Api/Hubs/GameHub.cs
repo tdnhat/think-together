@@ -116,7 +116,12 @@ public class GameHub : Hub<IGameHubClient>
                     result.GameSession?.TotalQuestions ?? 0,
                     result.CurrentQuestion.VideoUrl,
                     result.CurrentQuestion.VideoTimestamp,
-                    result.CurrentQuestion.Options.Select(o => new QuestionOptionInfo(o.Index, o.Content, o.ImageUrl)).ToList()));
+                    result.CurrentQuestion.AudioUrl,
+                    result.CurrentQuestion.AudioTimestamp,
+                    result.CurrentQuestion.Options.Select(o => new QuestionOptionInfo(o.Index, o.Content, o.ImageUrl)).ToList(),
+                    result.CurrentQuestion.MatchingLeft.Select(m => new MatchingItemInfo(m.Id, m.Content)).ToList(),
+                    result.CurrentQuestion.MatchingRight.Select(m => new MatchingItemInfo(m.Id, m.Content)).ToList(),
+                    result.CurrentQuestion.OrderingItems.Select(o => new OrderingItemInfo(o.Id, o.Content)).ToList()));
             }
 
             if (result.Leaderboard != null && result.Leaderboard.Count > 0)

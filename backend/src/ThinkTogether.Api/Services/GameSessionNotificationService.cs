@@ -102,7 +102,12 @@ public class GameSessionNotificationService : IGameSessionNotificationService
             totalQuestions,
             question.VideoUrl,
             question.VideoTimestamp,
-            question.Options.Select(o => new QuestionOptionInfo(o.Index, o.Content, o.ImageUrl)).ToList()));
+            question.AudioUrl,
+            question.AudioTimestamp,
+            question.Options.Select(o => new QuestionOptionInfo(o.Index, o.Content, o.ImageUrl)).ToList(),
+            question.MatchingLeft.Select(m => new MatchingItemInfo(m.Id, m.Content)).ToList(),
+            question.MatchingRight.Select(m => new MatchingItemInfo(m.Id, m.Content)).ToList(),
+            question.OrderingItems.Select(o => new OrderingItemInfo(o.Id, o.Content)).ToList()));
     }
 
     public async Task NotifyAnswerReceivedAsync(string pin, Guid playerId, int answeredCount, int totalPlayers)

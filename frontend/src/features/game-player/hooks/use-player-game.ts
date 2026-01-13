@@ -61,6 +61,7 @@ export interface UsePlayerGameReturn {
 
   // Actions
   selectAnswer: (index: number) => void
+  setSelectedAnswers: (indices: number[]) => void
   submitAnswer: () => Promise<void>
 }
 
@@ -224,7 +225,12 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
             totalQuestions: syncData.totalQuestions,
             videoUrl: syncData.currentQuestion.videoUrl,
             videoTimestamp: syncData.currentQuestion.videoTimestamp,
+            audioUrl: syncData.currentQuestion.audioUrl,
+            audioTimestamp: syncData.currentQuestion.audioTimestamp,
             options: syncData.currentQuestion.options,
+            matchingLeft: syncData.currentQuestion.matchingLeft,
+            matchingRight: syncData.currentQuestion.matchingRight,
+            orderingItems: syncData.currentQuestion.orderingItems,
           })
         } else if (syncData.status === 'FINISHED') {
           actions.setPhase('ended')
@@ -361,6 +367,7 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
 
     // Actions
     selectAnswer,
+    setSelectedAnswers: actions.setSelectedAnswers,
     submitAnswer,
   }
 }

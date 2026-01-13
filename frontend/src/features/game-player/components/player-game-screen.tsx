@@ -40,6 +40,7 @@ export function PlayerGameScreen({
     totalQuestions,
     isSubmitting,
     selectAnswer,
+    setSelectedAnswers,
     submitAnswer,
   } = usePlayerGame({ pin, playerId, nickname, sessionId })
 
@@ -83,7 +84,12 @@ export function PlayerGameScreen({
       totalQuestions: currentQuestion.totalQuestions,
       videoUrl: currentQuestion.videoUrl,
       videoTimestamp: currentQuestion.videoTimestamp,
+      audioUrl: currentQuestion.audioUrl,
+      audioTimestamp: currentQuestion.audioTimestamp,
       options: currentQuestion.options,
+      matchingLeft: currentQuestion.matchingLeft,
+      matchingRight: currentQuestion.matchingRight,
+      orderingItems: currentQuestion.orderingItems,
     }
 
     return (
@@ -93,6 +99,7 @@ export function PlayerGameScreen({
           selectedAnswers={selectedAnswers}
           hasAnswered={hasAnswered}
           onSelectAnswer={selectAnswer}
+          onSetSelectedAnswers={setSelectedAnswers}
           onSubmit={submitAnswer}
           isSubmitting={isSubmitting}
         />

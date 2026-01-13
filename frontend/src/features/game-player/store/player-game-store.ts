@@ -51,7 +51,12 @@ export interface PlayerQuestion {
   totalQuestions: number
   videoUrl: string | null
   videoTimestamp: number | null
+  audioUrl: string | null
+  audioTimestamp: number | null
   options: Array<{ index: number; content: string; imageUrl: string | null }>
+  matchingLeft: Array<{ id: number; content: string }>
+  matchingRight: Array<{ id: number; content: string }>
+  orderingItems: Array<{ id: number; content: string }>
 }
 
 export interface PlayerGameState {
@@ -96,6 +101,7 @@ interface PlayerGameActions {
 
   // Answer
   selectAnswer: (index: number) => void
+  setSelectedAnswers: (indices: number[]) => void
   clearAnswers: () => void
   setHasAnswered: (answered: boolean) => void
   getResponseTimeMs: () => number
@@ -184,11 +190,11 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
             // Determine if single choice
             const questionType = currentQuestion.questionType
             const isSingleChoice = questionType === '1' ||
-                                   questionType === 'SingleChoice' ||
-                                   questionType === '6' || // Video
-                                   questionType === '7' || // Audio
-                                   questionType === '3' ||
-                                   questionType === 'TrueFalse'
+              questionType === 'SingleChoice' ||
+              questionType === '6' || // Video
+              questionType === '7' || // Audio
+              questionType === '3' ||
+              questionType === 'TrueFalse'
 
             if (isSingleChoice) {
               // Single choice - replace selection
@@ -200,6 +206,12 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
                 : [...selectedAnswers, index]
               set({ selectedAnswers: newAnswers }, false, 'player/selectAnswer')
             }
+          },
+
+          setSelectedAnswers: (indices) => {
+            const { hasAnswered } = get()
+            if (hasAnswered) return
+            set({ selectedAnswers: indices }, false, 'player/setSelectedAnswers')
           },
 
           clearAnswers: () => {
@@ -241,7 +253,12 @@ export const usePlayerGameStore = create<PlayerGameStore>()(
               totalQuestions: event.totalQuestions,
               videoUrl: event.videoUrl,
               videoTimestamp: event.videoTimestamp,
+              audioUrl: event.audioUrl,
+              audioTimestamp: event.audioTimestamp,
               options: event.options,
+              matchingLeft: event.matchingLeft,
+              matchingRight: event.matchingRight,
+              orderingItems: event.orderingItems,
             }
 
             set({

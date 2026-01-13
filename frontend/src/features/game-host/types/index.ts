@@ -194,6 +194,22 @@ export interface GameStartedMessage {
   totalPlayers: number
 }
 
+export interface QuestionOptionInfo {
+  index: number
+  content: string
+  imageUrl: string | null
+}
+
+export interface MatchingItemInfo {
+  id: number
+  content: string
+}
+
+export interface OrderingItemInfo {
+  id: number
+  content: string
+}
+
 export interface QuestionStartedMessage {
   gameQuestionId: string
   questionId: string
@@ -205,7 +221,12 @@ export interface QuestionStartedMessage {
   totalQuestions: number
   videoUrl: string | null
   videoTimestamp: number | null
-  options: Array<{ index: number; content: string; imageUrl: string | null }>
+  audioUrl: string | null
+  audioTimestamp: number | null
+  options: QuestionOptionInfo[]
+  matchingLeft: MatchingItemInfo[]
+  matchingRight: MatchingItemInfo[]
+  orderingItems: OrderingItemInfo[]
 }
 
 export interface QuestionEndedMessage {
@@ -243,7 +264,7 @@ export interface ErrorMessage {
 // GAME STATE TYPES
 // =============================================================================
 
-export type GamePhase = 
+export type GamePhase =
   | 'idle'
   | 'creating'
   | 'lobby'
@@ -307,7 +328,12 @@ export interface SyncCurrentQuestion {
   positionInGame: number
   videoUrl: string | null
   videoTimestamp: number | null
-  options: Array<{ index: number; content: string; imageUrl: string | null }>
+  audioUrl: string | null
+  audioTimestamp: number | null
+  options: QuestionOptionInfo[]
+  matchingLeft: MatchingItemInfo[]
+  matchingRight: MatchingItemInfo[]
+  orderingItems: OrderingItemInfo[]
 }
 
 export interface SyncPlayer {

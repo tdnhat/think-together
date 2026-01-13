@@ -1,13 +1,17 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Timer, CheckCircle, Circle, HelpCircle } from 'lucide-react'
+import { Timer, CheckCircle, HelpCircle } from 'lucide-react'
 import { Card, CardContent } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { GAME_PLAYER_CONSTANTS } from '../constants'
 import { GAME_CONSTANTS } from '@/features/game'
 import type { QuestionStartedMessage } from '@/features/game-host/types'
+import { VideoPlayer } from '@/shared/components/video-player'
+import { AudioPlayer } from '@/shared/components/audio-player'
+import { OrderingAnswer } from './ordering-answer'
+import { MatchingAnswer } from './matching-answer'
 import { AnswerOption } from './answer-option'
 
 interface PlayerQuestionProps {
@@ -15,6 +19,7 @@ interface PlayerQuestionProps {
   selectedAnswers: number[]
   hasAnswered: boolean
   onSelectAnswer: (index: number) => void
+  onSetSelectedAnswers: (indices: number[]) => void
   onSubmit: () => void
   isSubmitting?: boolean
   className?: string
@@ -25,6 +30,7 @@ export function PlayerQuestion({
   selectedAnswers,
   hasAnswered,
   onSelectAnswer,
+  onSetSelectedAnswers,
   onSubmit,
   isSubmitting = false,
   className = '',
@@ -72,6 +78,10 @@ export function PlayerQuestion({
   }
 
   const isMultipleChoice = question.questionType === '2' || question.questionType === 'MultipleChoice'
+  const isMatching = question.questionType === '4' || question.questionType === 'Matching'
+  const isOrdering = question.questionType === '5' || question.questionType === 'Ordering'
+
+  // For Matching/Ordering, validation depends on if we have valid answers
   const canSubmit = selectedAnswers.length > 0 && !hasAnswered && !isSubmitting
 
   return (
@@ -92,9 +102,30 @@ export function PlayerQuestion({
       {/* Question Content */}
       <Card>
         <CardContent className="p-6">
-          <h2 className="text-xl md:text-2xl font-heading font-bold text-center text-foreground leading-relaxed">
+          <h2 className="text-xl md:text-2xl font-heading font-bold text-center text-foreground leading-relaxed mb-4">
             {question.content}
           </h2>
+
+          {question.videoUrl && (
+            <div className="mb-4 rounded-lg overflow-hidden border bg-black aspect-video max-w-3xl mx-auto">
+              <VideoPlayer
+                url={question.videoUrl}
+                autoPlay={true}
+                startTime={question.videoTimestamp || 0}
+              />
+            </div>
+          )}
+
+          {question.audioUrl && (
+            <div className="mb-4 max-w-xl mx-auto">
+              <AudioPlayer
+                src={question.audioUrl}
+                autoPlay={true}
+                startTime={question.audioTimestamp || 0}
+              />
+            </div>
+          )}
+
           {isMultipleChoice && (
             <p className="mt-2 text-center text-sm text-muted-foreground">
               (Chọn nhiều đáp án)
@@ -104,18 +135,33 @@ export function PlayerQuestion({
       </Card>
 
       {/* Answer Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {question.options.map((option, index) => (
-          <AnswerOption
-            key={option.index}
-            index={index}
-            content={option.content}
-            isSelected={selectedAnswers.includes(option.index)}
-            hasAnswered={hasAnswered}
-            onSelect={() => !hasAnswered && onSelectAnswer(option.index)}
-          />
-        ))}
-      </div>
+      {isMatching ? (
+        <MatchingAnswer
+          leftItems={question.matchingLeft || []}
+          rightItems={question.matchingRight || []}
+          hasAnswered={hasAnswered}
+          onAnswersChange={onSetSelectedAnswers}
+        />
+      ) : isOrdering ? (
+        <OrderingAnswer
+          items={question.orderingItems || []}
+          hasAnswered={hasAnswered}
+          onAnswersChange={onSetSelectedAnswers}
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {question.options.map((option, index) => (
+            <AnswerOption
+              key={option.index}
+              index={index}
+              content={option.content}
+              isSelected={selectedAnswers.includes(option.index)}
+              hasAnswered={hasAnswered}
+              onSelect={() => !hasAnswered && onSelectAnswer(option.index)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Submit Button */}
       {!hasAnswered && (
@@ -145,4 +191,3 @@ export function PlayerQuestion({
     </div>
   )
 }
-

@@ -61,12 +61,25 @@ public record QuestionStartedMessage(
     int TotalQuestions,
     string? VideoUrl,
     int? VideoTimestamp,
-    List<QuestionOptionInfo> Options);
+    string? AudioUrl,
+    int? AudioTimestamp,
+    List<QuestionOptionInfo> Options,
+    List<MatchingItemInfo> MatchingLeft,
+    List<MatchingItemInfo> MatchingRight,
+    List<OrderingItemInfo> OrderingItems);
 
 public record QuestionOptionInfo(
     int Index,
     string Content,
     string? ImageUrl);
+
+public record MatchingItemInfo(
+    int Id,
+    string Content);
+
+public record OrderingItemInfo(
+    int Id,
+    string Content);
 
 public record QuestionEndedMessage(
     Guid GameQuestionId,

@@ -36,7 +36,12 @@ public record GameQuestionDto
     public int PositionInGame { get; init; }
     public string? VideoUrl { get; init; }
     public int? VideoTimestamp { get; init; }
+    public string? AudioUrl { get; init; }
+    public int? AudioTimestamp { get; init; }
     public List<GameQuestionOptionDto> Options { get; init; } = new();
+    public List<GameMatchingItemDto> MatchingLeft { get; init; } = new();
+    public List<GameMatchingItemDto> MatchingRight { get; init; } = new();
+    public List<GameOrderingItemDto> OrderingItems { get; init; } = new();
 }
 
 public record GameQuestionOptionDto
@@ -44,6 +49,18 @@ public record GameQuestionOptionDto
     public int Index { get; init; }
     public string Content { get; init; } = string.Empty;
     public string? ImageUrl { get; init; }
+}
+
+public record GameMatchingItemDto
+{
+    public int Id { get; init; }
+    public string Content { get; init; } = string.Empty;
+}
+
+public record GameOrderingItemDto
+{
+    public int Id { get; init; }
+    public string Content { get; init; } = string.Empty;
 }
 
 public record GameQuestionWithAnswerDto : GameQuestionDto
