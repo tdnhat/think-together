@@ -23,11 +23,11 @@ export function ChallengeResultsLeaderboard({
 
   return (
     <>
-      <Separator />
+      <Separator className="my-8" />
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          <h2 className="text-2xl font-heading font-bold text-foreground">
+          <h2 className="text-2xl font-heading font-bold">
             Bảng xếp hạng
           </h2>
         </div>

@@ -29,55 +29,43 @@ export function PinDisplay({ pin, className = '' }: Readonly<PinDisplayProps>) {
   const formattedPin = pin.match(/.{1,3}/g)?.join(' ') || pin
 
   return (
-    <Card className={`relative overflow-hidden ${className}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/80 opacity-10" />
-      <CardContent className="relative p-8 text-center">
+    <Card className={className}>
+      <CardContent className="p-8 text-center">
         <div className="mb-4">
-          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="text-sm text-muted-foreground uppercase tracking-wider">
             Mã tham gia
           </span>
         </div>
         
         <div className="mb-6">
-          <span className="font-heading text-6xl md:text-7xl font-bold tracking-[0.3em] text-primary">
+          <span className="font-heading text-5xl md:text-6xl font-bold tracking-[0.3em] text-primary">
             {formattedPin}
           </span>
         </div>
 
         <div className="flex items-center justify-center gap-3">
-          <Button
-            variant="default"
-            size="lg"
-            onClick={handleCopy}
-            className="gap-2"
-          >
+          <Button variant="default" size="lg" onClick={handleCopy}>
             {copied ? (
               <>
-                <Check className="h-5 w-5" />
+                <Check />
                 Đã sao chép
               </>
             ) : (
               <>
-                <Copy className="h-5 w-5" />
+                <Copy />
                 Sao chép mã
               </>
             )}
           </Button>
           
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2"
-            disabled
-            title="Tính năng QR code sẽ sớm ra mắt"
-          >
-            <QrCode className="h-5 w-5" />
+          <Button variant="outline" size="lg" disabled title="Tính năng QR code sẽ sớm ra mắt">
+            <QrCode />
             QR Code
           </Button>
         </div>
 
         <div className="mt-6 text-sm text-muted-foreground">
-          Truy cập <span className="font-semibold text-foreground">thinktogether.vn/join</span> và nhập mã trên
+          Truy cập <span className="font-semibold">thinktogether.vn/join</span> và nhập mã trên
         </div>
       </CardContent>
     </Card>

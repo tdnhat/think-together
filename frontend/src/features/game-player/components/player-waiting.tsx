@@ -26,49 +26,43 @@ export function PlayerWaiting({
     <div className={`flex flex-col items-center justify-center min-h-[60vh] ${className}`}>
       <Card className="max-w-md w-full text-center">
         <CardContent className="p-8 space-y-6">
-          {/* Animated Icon */}
-          <div className="relative mx-auto w-24 h-24">
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
-            <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
-              <Gamepad2 className="h-12 w-12 text-primary animate-pulse" />
-            </div>
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
+            <Gamepad2 className="h-8 w-8 text-primary" />
           </div>
 
-          {/* Welcome Message */}
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">Xin chào</p>
-            <h2 className="font-heading text-3xl font-bold text-foreground">
+            <h2 className="font-heading text-2xl font-bold">
               {nickname}
             </h2>
           </div>
 
-          {/* Game Info */}
           <div className="flex items-center justify-center gap-4">
-            <Badge variant="default" className="gap-1.5">
-              <Gamepad2 className="h-4 w-4" />
+            <Badge variant="default">
+              <Gamepad2 />
               {formattedPin}
             </Badge>
             {playerCount > 0 && (
-              <Badge variant="outline" className="gap-1.5">
-                <Users className="h-4 w-4" />
+              <Badge variant="outline">
+                <Users />
                 {playerCount} người
               </Badge>
             )}
           </div>
 
-          {/* Waiting Status */}
-          <div className="flex flex-col items-center gap-3 pt-4 border-t border-border">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-muted-foreground">{message}</p>
+          <div className="flex flex-col items-center gap-3 pt-4 border-t">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">{message}</p>
           </div>
 
-          {/* Tips */}
-          <div className="text-sm text-muted-foreground bg-muted rounded-lg p-4">
-            <div className="flex items-start gap-2">
-              <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <p>Giữ màn hình sáng và đảm bảo kết nối internet ổn định để không bỏ lỡ câu hỏi!</p>
-            </div>
-          </div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <p>Giữ màn hình sáng và đảm bảo kết nối internet ổn định để không bỏ lỡ câu hỏi!</p>
+              </div>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
     </div>

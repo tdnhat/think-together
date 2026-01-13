@@ -92,16 +92,15 @@ export function HostLobby({
                 size="lg"
                 onClick={handleStartGame}
                 disabled={!canStart}
-                className="gap-2 min-w-40"
               >
                 {isStarting ? (
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="animate-spin" />
                     Đang bắt đầu...
                   </>
                 ) : (
                   <>
-                    <Play className="h-5 w-5" />
+                    <Play />
                     Bắt đầu
                   </>
                 )}
@@ -112,9 +111,8 @@ export function HostLobby({
                 size="lg"
                 onClick={handleEndGame}
                 disabled={isStarting}
-                className="gap-2"
               >
-                <StopCircle className="h-5 w-5" />
+                <StopCircle />
                 Hủy
               </Button>
             </div>

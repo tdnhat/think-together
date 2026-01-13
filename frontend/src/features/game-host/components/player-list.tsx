@@ -29,32 +29,15 @@ export function PlayerList({
     return status === ConnectionStatus.Connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />
   }
 
-  // Generate avatar colors based on player index
-  const getAvatarColor = (index: number) => {
-    const colors = [
-      'bg-red-500',
-      'bg-blue-500',
-      'bg-green-500',
-      'bg-yellow-500',
-      'bg-purple-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-cyan-500',
-      'bg-orange-500',
-      'bg-teal-500',
-    ]
-    return colors[index % colors.length]
-  }
-
   return (
     <Card className={className}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
+          <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Người chơi
           </CardTitle>
-          <Badge variant="default" className="text-sm">
+          <Badge variant="default">
             {players.length}
           </Badge>
         </div>
@@ -70,29 +53,28 @@ export function PlayerList({
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="grid gap-2 max-h-96 overflow-y-auto pr-2">
-              {displayedPlayers.map((player, index) => (
-                <div
-                  key={player.id}
-                  className="flex items-center justify-between rounded-lg border-2 border-border bg-muted p-3 transition-all hover:border-primary"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${getAvatarColor(index)} text-white text-sm font-bold`}
-                    >
-                      {player.nickname.charAt(0).toUpperCase()}
+            <div className="grid gap-2 max-h-96 overflow-y-auto">
+              {displayedPlayers.map((player) => (
+                <Card key={player.id}>
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-bold">
+                          {player.nickname.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-medium">
+                          {player.nickname}
+                        </span>
+                      </div>
+                      
+                      {showConnectionStatus && (
+                        <span className={getConnectionStatusColor(player.connectionStatus)}>
+                          {getConnectionStatusIcon(player.connectionStatus)}
+                        </span>
+                      )}
                     </div>
-                    <span className="font-medium text-foreground">
-                      {player.nickname}
-                    </span>
-                  </div>
-                  
-                  {showConnectionStatus && (
-                    <span className={getConnectionStatusColor(player.connectionStatus)}>
-                      {getConnectionStatusIcon(player.connectionStatus)}
-                    </span>
-                  )}
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
             

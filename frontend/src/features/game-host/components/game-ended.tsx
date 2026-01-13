@@ -1,8 +1,8 @@
 'use client'
 
-import { Trophy, Clock, Users, Home, RotateCcw, Download } from 'lucide-react'
+import { Trophy, Clock, Users, Home, RotateCcw, Download, Medal, Award } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { Card, CardContent } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
 import { Leaderboard } from './leaderboard'
@@ -32,24 +32,23 @@ export function GameEnded({
 
   return (
     <div className={`space-y-8 ${className}`}>
-      {/* Winner Announcement */}
       {winner && (
-        <Card className="overflow-hidden bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-300">
-          <CardContent className="p-8 text-center">
-            <div className="mb-4">
-              <Trophy className="mx-auto h-16 w-16 text-yellow-500 animate-bounce" />
+        <Card>
+          <CardContent className="p-8 md:p-10 text-center">
+            <div className="mb-6">
+              <Trophy className="mx-auto h-16 w-16 text-yellow-500" />
             </div>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-2">
-              🎉 Người chiến thắng 🎉
+            <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
+              Người chiến thắng
             </h2>
-            <div className="font-heading text-4xl md:text-5xl font-bold text-primary mb-4">
+            <div className="font-heading text-3xl md:text-4xl font-bold text-primary mb-6">
               {winner.nickname}
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <Badge variant="default" className="text-lg py-2 px-4">
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <Badge variant="default" className="text-base py-2 px-4">
                 {winner.totalPoints.toLocaleString('vi-VN')} điểm
               </Badge>
-              <Badge variant="outline" className="text-lg py-2 px-4">
+              <Badge variant="outline" className="text-base py-2 px-4">
                 {winner.correctAnswers}/{result.totalQuestions} đúng
               </Badge>
             </div>
@@ -57,69 +56,72 @@ export function GameEnded({
         </Card>
       )}
 
-      {/* Podium */}
       {result.finalLeaderboard.length >= 3 && (
-        <div className="flex items-end justify-center gap-4 h-64">
-          {/* 2nd Place */}
+        <div className="flex items-end justify-center gap-4 md:gap-6 h-64 md:h-72">
           {runnerUp && (
             <div className="flex flex-col items-center">
-              <div className="mb-2 text-center">
-                <div className="font-medium text-foreground truncate max-w-24">
+              <div className="mb-3 text-center">
+                <Medal className="mx-auto h-5 w-5 text-gray-400 mb-1" />
+                <div className="font-semibold truncate max-w-24 md:max-w-28 text-sm">
                   {runnerUp.nickname}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm font-bold text-muted-foreground mt-1">
                   {runnerUp.totalPoints.toLocaleString('vi-VN')}
                 </div>
               </div>
-              <div className="w-24 h-32 bg-gradient-to-t from-gray-300 to-gray-100 rounded-t-lg border-2 border-gray-400 flex items-center justify-center">
-                <span className="font-heading text-4xl font-bold text-gray-600">2</span>
-              </div>
+              <Card className="w-24 md:w-28 h-32 md:h-36 rounded-t-xl">
+                <CardContent className="p-0 h-full flex items-center justify-center">
+                  <span className="font-heading text-4xl md:text-5xl font-bold">2</span>
+                </CardContent>
+              </Card>
             </div>
           )}
 
-          {/* 1st Place */}
           {winner && (
             <div className="flex flex-col items-center">
-              <Trophy className="h-8 w-8 text-yellow-500 mb-2" />
-              <div className="mb-2 text-center">
-                <div className="font-semibold text-foreground truncate max-w-28">
+              <Trophy className="h-8 w-8 md:h-10 md:w-10 text-yellow-500 mb-2" />
+              <div className="mb-3 text-center">
+                <div className="font-bold truncate max-w-28 md:max-w-32 text-base">
                   {winner.nickname}
                 </div>
-                <div className="text-sm text-primary font-medium">
+                <div className="text-base text-primary font-bold mt-1">
                   {winner.totalPoints.toLocaleString('vi-VN')}
                 </div>
               </div>
-              <div className="w-28 h-44 bg-gradient-to-t from-yellow-400 to-yellow-100 rounded-t-lg border-2 border-yellow-500 flex items-center justify-center">
-                <span className="font-heading text-5xl font-bold text-yellow-600">1</span>
-              </div>
+              <Card className="w-28 md:w-32 h-40 md:h-48 rounded-t-xl border-yellow-500">
+                <CardContent className="p-0 h-full flex items-center justify-center">
+                  <span className="font-heading text-5xl md:text-6xl font-bold text-yellow-600">1</span>
+                </CardContent>
+              </Card>
             </div>
           )}
 
-          {/* 3rd Place */}
           {thirdPlace && (
             <div className="flex flex-col items-center">
-              <div className="mb-2 text-center">
-                <div className="font-medium text-foreground truncate max-w-24">
+              <div className="mb-3 text-center">
+                <Medal className="mx-auto h-5 w-5 text-amber-600 mb-1" />
+                <div className="font-semibold truncate max-w-24 md:max-w-28 text-sm">
                   {thirdPlace.nickname}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm font-bold text-muted-foreground mt-1">
                   {thirdPlace.totalPoints.toLocaleString('vi-VN')}
                 </div>
               </div>
-              <div className="w-24 h-24 bg-gradient-to-t from-amber-600 to-amber-200 rounded-t-lg border-2 border-amber-700 flex items-center justify-center">
-                <span className="font-heading text-4xl font-bold text-amber-700">3</span>
-              </div>
+              <Card className="w-24 md:w-28 h-24 md:h-28 rounded-t-xl">
+                <CardContent className="p-0 h-full flex items-center justify-center">
+                  <span className="font-heading text-4xl md:text-5xl font-bold">3</span>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>
       )}
 
-      {/* Game Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="mx-auto h-8 w-8 text-primary mb-2" />
-            <div className="font-heading text-2xl font-bold text-foreground">
+          <CardContent className="p-6 text-center">
+            <Users className="mx-auto h-8 w-8 text-primary mb-3" />
+            <div className="font-heading text-3xl font-bold mb-1">
               {result.totalPlayers}
             </div>
             <div className="text-sm text-muted-foreground">Người chơi</div>
@@ -127,11 +129,9 @@ export function GameEnded({
         </Card>
 
         <Card>
-          <CardContent className="p-4 text-center">
-            <Badge className="mx-auto mb-2 h-8 w-8 rounded-full p-2" variant="default">
-              Q
-            </Badge>
-            <div className="font-heading text-2xl font-bold text-foreground">
+          <CardContent className="p-6 text-center">
+            <Award className="mx-auto h-8 w-8 text-primary mb-3" />
+            <div className="font-heading text-3xl font-bold mb-1">
               {result.totalQuestions}
             </div>
             <div className="text-sm text-muted-foreground">Câu hỏi</div>
@@ -139,9 +139,9 @@ export function GameEnded({
         </Card>
 
         <Card>
-          <CardContent className="p-4 text-center">
-            <Clock className="mx-auto h-8 w-8 text-secondary mb-2" />
-            <div className="font-heading text-2xl font-bold text-foreground">
+          <CardContent className="p-6 text-center">
+            <Clock className="mx-auto h-8 w-8 text-primary mb-3" />
+            <div className="font-heading text-3xl font-bold mb-1">
               {result.duration}
             </div>
             <div className="text-sm text-muted-foreground">Thời gian</div>
@@ -149,7 +149,6 @@ export function GameEnded({
         </Card>
       </div>
 
-      {/* Full Leaderboard */}
       <Leaderboard
         entries={result.finalLeaderboard}
         title="Bảng xếp hạng cuối cùng"
@@ -157,22 +156,21 @@ export function GameEnded({
         maxDisplay={20}
       />
 
-      {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         {onPlayAgain && (
           <Button variant="default" size="lg" onClick={onPlayAgain} className="gap-2 w-full sm:w-auto">
-            <RotateCcw className="h-5 w-5" />
+            <RotateCcw />
             Chơi lại
           </Button>
         )}
         
         <Button variant="outline" size="lg" onClick={handleGoHome} className="gap-2 w-full sm:w-auto">
-          <Home className="h-5 w-5" />
+          <Home />
           Về trang chủ
         </Button>
 
         <Button variant="outline" size="lg" disabled className="gap-2 w-full sm:w-auto" title="Tính năng sẽ sớm ra mắt">
-          <Download className="h-5 w-5" />
+          <Download />
           Xuất kết quả
         </Button>
       </div>

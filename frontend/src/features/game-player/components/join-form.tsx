@@ -105,10 +105,10 @@ export function JoinForm({
   return (
     <Card className={`max-w-md w-full mx-auto ${className}`}>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <Gamepad2 className="h-8 w-8 text-primary" />
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <Gamepad2 className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle className="text-2xl">Tham gia trò chơi</CardTitle>
+        <CardTitle>Tham gia trò chơi</CardTitle>
         <CardDescription>
           Nhập mã PIN và tên của bạn để tham gia
         </CardDescription>
@@ -116,7 +116,6 @@ export function JoinForm({
       
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* PIN Input */}
           <div className="space-y-2">
             <Label htmlFor="pin" className="flex items-center gap-2">
               <Gamepad2 className="h-4 w-4" />
@@ -132,7 +131,7 @@ export function JoinForm({
               value={pin}
               onChange={handlePinChange}
               placeholder="000000"
-              className={`text-center text-3xl tracking-[0.5em] font-heading font-bold h-16 ${
+              className={`text-center text-2xl tracking-wider font-bold ${
                 pinError ? 'border-destructive' : ''
               }`}
               disabled={isLoading}
@@ -142,7 +141,6 @@ export function JoinForm({
             )}
           </div>
 
-          {/* Nickname Input */}
           <div className="space-y-2">
             <Label htmlFor="nickname" className="flex items-center gap-2">
               <User className="h-4 w-4" />
@@ -155,9 +153,7 @@ export function JoinForm({
               value={nickname}
               onChange={handleNicknameChange}
               placeholder="Nhập tên hiển thị..."
-              className={`h-12 text-lg ${
-                nicknameError ? 'border-destructive' : ''
-              }`}
+              className={nicknameError ? 'border-destructive' : ''}
               maxLength={GAME_PLAYER_CONSTANTS.VALIDATION.NICKNAME_MAX_LENGTH}
               disabled={isLoading}
             />
@@ -166,30 +162,28 @@ export function JoinForm({
             )}
           </div>
 
-          {/* Error from server */}
           {error && (
-            <div className="rounded-lg bg-red-50 dark:bg-red-950/30 p-3 text-sm text-destructive">
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
           )}
 
-          {/* Submit Button */}
           <Button
             type="submit"
             variant="default"
             size="lg"
-            className="w-full gap-2"
+            className="w-full"
             disabled={isLoading || !pin || !nickname.trim()}
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="animate-spin" />
                 {GAME_PLAYER_CONSTANTS.MESSAGES.JOINING}
               </>
             ) : (
               <>
                 Tham gia
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight />
               </>
             )}
           </Button>

@@ -125,30 +125,22 @@ export function QuestionDisplay({
         </CardContent>
       </Card>
 
-      {/* Options Grid */}
       {showOptions && options.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {options.map((option, index) => {
-            const colorScheme = GAME_CONSTANTS.ANSWER_COLORS[index] || GAME_CONSTANTS.ANSWER_COLORS[0]
-
-            return (
-              <Card
-                key={option.index}
-                className={`${colorScheme.bg} border-0 overflow-hidden transition-transform hover:scale-[1.02]`}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 font-bold text-lg">
-                      {String.fromCharCode(65 + index)}
-                    </div>
-                    <span className={`text-lg font-medium ${colorScheme.text}`}>
-                      {option.content}
-                    </span>
+          {options.map((option, index) => (
+            <Card key={option.index}>
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 font-bold">
+                    {String.fromCharCode(65 + index)}
                   </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+                  <span className="text-lg font-medium">
+                    {option.content}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

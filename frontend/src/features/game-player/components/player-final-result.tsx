@@ -1,10 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Trophy, Medal, Home, RotateCcw, Share2, Target, TrendingUp, Clock } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { Trophy, Medal, Home, RotateCcw, Share2, Target, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Card, CardContent } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
+import { useCountUp } from '@/shared/hooks/use-count-up'
 import { Leaderboard } from '@/features/game-host'
 import type { LeaderboardEntry } from '@/features/game-host/types'
 import { ROUTES } from '@/config/routes'
@@ -29,8 +30,13 @@ export function PlayerFinalResult({
 
   const myResult = leaderboard.find(entry => entry.playerId === playerId)
   const myRank = myResult?.rank || leaderboard.length + 1
-  const isWinner = myRank === 1
-  const isTopThree = myRank <= 3
+  const accuracy = myResult?.accuracyPercentage ?? 0
+  const incorrectAnswers = totalQuestions - (myResult?.correctAnswers ?? 0)
+
+  const pointsCount = useCountUp({ end: myResult?.totalPoints ?? 0, duration: 1500 })
+  const correctCount = useCountUp({ end: myResult?.correctAnswers ?? 0, duration: 1500 })
+  const incorrectCount = useCountUp({ end: incorrectAnswers, duration: 1500 })
+  const accuracyCount = useCountUp({ end: accuracy, duration: 1500, decimals: 0 })
 
   const handlePlayAgain = () => {
     router.push(ROUTES.game.join)
@@ -41,6 +47,7 @@ export function PlayerFinalResult({
   }
 
   const handleShare = async () => {
+    const isWinner = myRank === 1
     const shareText = isWinner
       ? `Tôi đã giành chiến thắng với ${myResult?.totalPoints.toLocaleString('vi-VN')} điểm trên ThinkTogether!`
       : `Tôi đạt hạng ${myRank} với ${myResult?.totalPoints.toLocaleString('vi-VN')} điểm trên ThinkTogether!`
@@ -80,19 +87,6 @@ export function PlayerFinalResult({
     }
   }
 
-  const getRankGradient = () => {
-    switch (myRank) {
-      case 1:
-        return 'from-yellow-50 to-amber-100 border-yellow-300'
-      case 2:
-        return 'from-gray-50 to-gray-100 border-gray-300'
-      case 3:
-        return 'from-amber-50 to-orange-100 border-amber-400'
-      default:
-        return 'from-background to-muted border-border'
-    }
-  }
-
   const formatDuration = (ms: number | undefined | null) => {
     if (ms == null || Number.isNaN(ms)) {
       return '0s'
@@ -108,109 +102,93 @@ export function PlayerFinalResult({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Personal Result Card */}
-      <Card className={`overflow-hidden bg-gradient-to-br ${getRankGradient()}`}>
-        <CardContent className="p-8 text-center">
-          {/* Rank Icon */}
-          <div className="mb-4 flex justify-center">
-            {isWinner && (
-              <div className="absolute animate-bounce">
-                <Trophy className="h-6 w-6 text-yellow-500 -mt-8" />
-              </div>
-            )}
+      <Card>
+        <CardContent className="p-8 md:p-10 text-center">
+          <div className="mb-6 flex justify-center">
             {getRankIcon()}
           </div>
 
-          {/* Congratulations */}
-          <h2 className="font-heading text-2xl font-bold text-foreground mb-2">
-            {isWinner ? 'Chúc mừng!' : isTopThree ? 'Tuyệt vời!' : 'Kết quả của bạn'}
+          <h2 className="font-heading text-2xl md:text-3xl font-bold mb-2">
+            Kết quả của bạn
           </h2>
-          <p className="text-lg text-muted-foreground mb-4">
+          <p className="text-lg text-muted-foreground mb-6">
             {nickname}
           </p>
 
-          {/* Stats */}
           {myResult && (
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="text-center">
-                <Badge variant="default" className="mb-2">#{myRank}</Badge>
-                <div className="text-sm text-muted-foreground">Xếp hạng</div>
+            <div className="mb-8">
+              <div className="text-5xl md:text-6xl font-heading font-bold text-primary mb-2">
+                {pointsCount.toLocaleString('vi-VN')}
               </div>
-              <div className="text-center">
-                <div className="font-heading text-2xl font-bold text-primary">
-                  {myResult.totalPoints.toLocaleString('vi-VN')}
-                </div>
-                <div className="text-sm text-muted-foreground">Điểm</div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1">
-                  <Target className="h-5 w-5 text-green-600" />
-                  <span className="font-heading text-xl font-bold text-green-600">
-                    {myResult.correctAnswers}
-                  </span>
-                  <span className="text-muted-foreground">/{totalQuestions}</span>
-                </div>
-                <div className="text-sm text-muted-foreground">Đúng</div>
-              </div>
+              <p className="text-sm text-muted-foreground">Tổng điểm</p>
             </div>
           )}
 
-          {/* Stats Section */}
           {myResult && (
-            <div className="mt-6 pt-4 border-t border-border/30 space-y-3">
-              <div className="flex items-center justify-center gap-2">
-                <TrendingUp className="h-5 w-5 text-secondary" />
-                <span className="text-muted-foreground">Độ chính xác:</span>
-                <span className="font-bold text-foreground">
-                  {(myResult.accuracyPercentage ?? 0).toFixed(0)}%
-                </span>
-              </div>
-              {myResult.totalTimeSpentMs != null && (
-                <div className="flex items-center justify-center gap-2">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  <span className="text-muted-foreground">Thời gian:</span>
-                  <span className="font-bold text-foreground">
-                    {formatDuration(myResult.totalTimeSpentMs)}
-                  </span>
-                </div>
-              )}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <CheckCircle className="mx-auto h-6 w-6 text-green-600 mb-2" />
+                  <div className="text-2xl font-heading font-bold text-green-600">
+                    {correctCount.toLocaleString('vi-VN')}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Đúng</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <XCircle className="mx-auto h-6 w-6 text-red-600 mb-2" />
+                  <div className="text-2xl font-heading font-bold text-red-600">
+                    {incorrectCount.toLocaleString('vi-VN')}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Sai</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Target className="mx-auto h-6 w-6 text-blue-600 mb-2" />
+                  <div className="text-2xl font-heading font-bold text-blue-600">
+                    {accuracyCount.toFixed(0)}%
+                  </div>
+                  <p className="text-xs text-muted-foreground">Chính xác</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Clock className="mx-auto h-6 w-6 text-purple-600 mb-2" />
+                  <div className="text-lg font-heading font-bold text-purple-600">
+                    {myResult.totalTimeSpentMs != null ? formatDuration(myResult.totalTimeSpentMs) : '-'}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Thời gian</p>
+                </CardContent>
+              </Card>
             </div>
           )}
+
+          <Badge variant="default" className="text-base px-4 py-1.5">
+            Xếp hạng #{myRank}
+          </Badge>
         </CardContent>
       </Card>
 
-      {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <Button 
-          variant="default" 
-          size="lg" 
-          onClick={handlePlayAgain}
-          className="flex-1 gap-2"
-        >
-          <RotateCcw className="h-5 w-5" />
+        <Button variant="default" size="lg" onClick={handlePlayAgain} className="flex-1">
+          <RotateCcw />
           Chơi tiếp
         </Button>
-        <Button 
-          variant="outline" 
-          size="lg" 
-          onClick={handleShare}
-          className="flex-1 gap-2"
-        >
-          <Share2 className="h-5 w-5" />
+        <Button variant="outline" size="lg" onClick={handleShare} className="flex-1">
+          <Share2 />
           Chia sẻ
         </Button>
-        <Button 
-          variant="outline" 
-          size="lg" 
-          onClick={handleGoHome}
-          className="flex-1 gap-2"
-        >
-          <Home className="h-5 w-5" />
+        <Button variant="outline" size="lg" onClick={handleGoHome} className="flex-1">
+          <Home />
           Trang chủ
         </Button>
       </div>
 
-      {/* Full Leaderboard */}
       <Leaderboard
         entries={leaderboard}
         title="Bảng xếp hạng"

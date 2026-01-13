@@ -107,12 +107,11 @@ export function PlayerGameScreen({
     )
   }
 
-  // Render: Starting (brief transition)
   if (phase === 'starting') {
     return (
       <div className={`flex flex-col items-center justify-center py-16 ${className}`}>
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <p className="text-lg text-muted-foreground">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">
           {GAME_PLAYER_CONSTANTS.MESSAGES.GAME_STARTED}
         </p>
       </div>

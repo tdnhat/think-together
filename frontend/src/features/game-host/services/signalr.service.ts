@@ -81,12 +81,7 @@ export interface QuestionStartedEvent {
   totalQuestions: number
   videoUrl: string | null
   videoTimestamp: number | null
-  audioUrl: string | null
-  audioTimestamp: number | null
   options: Array<{ index: number; content: string; imageUrl: string | null }>
-  matchingLeft: Array<{ id: number; content: string }>
-  matchingRight: Array<{ id: number; content: string }>
-  orderingItems: Array<{ id: number; content: string }>
 }
 
 export interface QuestionEndedEvent {
@@ -216,21 +211,34 @@ class GameSignalRService {
     // Wait if connecting/reconnecting
     if (this.connection.state === signalR.HubConnectionState.Connecting ||
       this.connection.state === signalR.HubConnectionState.Reconnecting) {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      if (this.isConnected()) {
+      // Wait for connection with timeout
+      const maxWaitTime = 10000 // 10 seconds
+      const startTime = Date.now()
+      while (this.connection && 
+             (this.connection.state === signalR.HubConnectionState.Connecting ||
+              this.connection.state === signalR.HubConnectionState.Reconnecting) &&
+             Date.now() - startTime < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+      if (this.isConnected() && this.connection) {
         this.updateState('connected')
         return
       }
     }
 
     // Start connection
-    if (this.connection.state === signalR.HubConnectionState.Disconnected) {
+    if (this.connection && this.connection.state === signalR.HubConnectionState.Disconnected) {
       this.updateState('connecting')
       try {
         this.startPromise = this.connection.start()
         await this.startPromise
-        this.updateState('connected')
-        console.log('[SignalR] Connected successfully')
+        // Verify connection is still valid after start
+        if (this.connection && this.isConnected()) {
+          this.updateState('connected')
+          console.log('[SignalR] Connected successfully')
+        } else {
+          throw new Error('Connection failed to establish')
+        }
       } catch (error) {
         // Ignore "stopped during negotiation" errors (React strict mode)
         if (error instanceof Error && error.message.includes('stopped during negotiation')) {
@@ -249,13 +257,12 @@ class GameSignalRService {
    * Ensure connection is established, connecting if necessary
    */
   async ensureConnection(): Promise<void> {
-    if (this.isConnected()) {
+    if (this.isConnected() && this.connection) {
       return
     }
-
     await this.connect()
-
-    // Verify connection was actually established
+    
+    // Verify connection is still valid after connecting
     if (!this.connection || !this.isConnected()) {
       throw new Error('Failed to establish SignalR connection')
     }
@@ -439,23 +446,8 @@ class GameSignalRService {
       this.events.onGameEnded?.(message)
     })
 
-    this.connection.on('Error', (message: ErrorEvent | unknown) => {
-      // Handle different error formats
-      if (message && typeof message === 'object' && 'code' in message && 'message' in message) {
-        // Standard ErrorEvent format
-        this.events.onError?.(message as ErrorEvent)
-      } else {
-        // Fallback for unexpected error formats
-        const errorMessage = message instanceof Error
-          ? message.message
-          : typeof message === 'string'
-            ? message
-            : 'An unknown SignalR error occurred'
-        this.events.onError?.({
-          code: 'UNKNOWN_ERROR',
-          message: errorMessage,
-        })
-      }
+    this.connection.on('Error', (message: ErrorEvent) => {
+      this.events.onError?.(message)
     })
 
     this.connection.on('StateSynced', (message: GameStateSyncEvent) => {
@@ -478,17 +470,8 @@ class GameSignalRService {
       this.updateState('connected')
     })
 
-    this.connection.onclose((error?: Error) => {
+    this.connection.onclose(() => {
       this.updateState('disconnected')
-
-      // Handle connection errors (network failures, etc.)
-      if (error) {
-        const errorMessage = error.message || 'Connection closed unexpectedly'
-        this.events.onError?.({
-          code: 'CONNECTION_ERROR',
-          message: errorMessage,
-        })
-      }
     })
   }
 

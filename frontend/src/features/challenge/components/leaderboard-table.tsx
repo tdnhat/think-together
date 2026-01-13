@@ -1,7 +1,7 @@
 'use client'
 
 import { Trophy, Clock } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { Card, CardContent, CardHeader } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { LEADERBOARD_HEADERS } from '@/features/challenge/constants'
 import type { ChallengeLeaderboardEntryDto } from '@/features/challenge/types'
@@ -72,9 +72,9 @@ export function LeaderboardTable({
               return (
               <tr
                 key={entry.attemptId}
-                className={`border-b border-border transition-colors ${
+                className={`border-b ${
                   isHighlighted
-                    ? 'bg-primary/10 border-primary/30'
+                    ? 'bg-primary/10'
                     : 'hover:bg-accent'
                 }`}
               >
@@ -82,11 +82,11 @@ export function LeaderboardTable({
                   <div className="flex items-center gap-2">
                     {entry.rank === 1 && <Trophy className="h-4 w-4 text-yellow-500" />}
                     {entry.rank === 2 && <Trophy className="h-4 w-4 text-gray-400" />}
-                    {entry.rank === 3 && <Trophy className="h-4 w-4 text-orange-600" />}
+                    {entry.rank === 3 && <Trophy className="h-4 w-4 text-amber-600" />}
                     <span className="font-semibold">{entry.rank}</span>
                   </div>
                 </td>
-                <td className="py-3 px-4 font-medium text-foreground">
+                <td className="py-3 px-4 font-medium">
                   <div className="flex items-center gap-2">
                     {entry.nickname}
                     {isHighlighted && (
@@ -96,7 +96,7 @@ export function LeaderboardTable({
                     )}
                   </div>
                 </td>
-                <td className="py-3 px-4 text-center font-bold text-blue-600">
+                <td className="py-3 px-4 text-center font-bold text-primary">
                   {entry.score}
                 </td>
                 <td className="py-3 px-4 text-center">
@@ -115,28 +115,23 @@ export function LeaderboardTable({
         </table>
       </div>
 
-      {/* Mobile Cards */}
       <div className="md:hidden space-y-3">
         {entries.map((entry) => {
           const isHighlighted = highlightAttemptId === entry.attemptId
           return (
           <Card 
             key={entry.attemptId} 
-            className={`overflow-hidden ${
-              isHighlighted
-                ? 'border-primary bg-primary/5'
-                : ''
-            }`}
+            className={isHighlighted ? 'border-primary bg-primary/10' : ''}
           >
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {entry.rank === 1 && <Trophy className="h-5 w-5 text-yellow-500" />}
                   {entry.rank === 2 && <Trophy className="h-5 w-5 text-gray-400" />}
-                  {entry.rank === 3 && <Trophy className="h-5 w-5 text-orange-600" />}
+                  {entry.rank === 3 && <Trophy className="h-5 w-5 text-amber-600" />}
                   <div>
-                    <p className="font-semibold text-foreground">#{entry.rank}</p>
-                    <div className="flex items-center gap-2">
+                    <p className="font-semibold">#{entry.rank}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-sm text-muted-foreground">{entry.nickname}</p>
                       {isHighlighted && (
                         <Badge variant="default" className="text-xs">
@@ -154,24 +149,24 @@ export function LeaderboardTable({
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground text-xs">Câu đúng</p>
-                  <p className="font-semibold text-foreground">
+                  <p className="text-muted-foreground text-xs mb-1">Câu đúng</p>
+                  <p className="font-semibold">
                     {entry.correctAnswers}/{entry.totalQuestions}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs">Độ chính xác</p>
-                  <p className="font-semibold text-foreground">
+                  <p className="text-muted-foreground text-xs mb-1">Độ chính xác</p>
+                  <p className="font-semibold">
                     {calculateAccuracy(entry.correctAnswers, entry.totalQuestions)}
                   </p>
                 </div>
                 {entry.completionTimeMs && (
                   <div className="col-span-2">
-                    <p className="text-muted-foreground text-xs flex items-center gap-1">
+                    <p className="text-muted-foreground text-xs flex items-center gap-1 mb-1">
                       <Clock className="h-3 w-3" />
                       Thời gian
                     </p>
-                    <p className="font-semibold text-foreground">
+                    <p className="font-semibold">
                       {formatTime(entry.completionTimeMs)}
                     </p>
                   </div>

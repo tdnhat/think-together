@@ -106,17 +106,16 @@ export function HostGameScreen({
             size="lg"
             onClick={handleNextQuestion}
             disabled={isLoadingNext}
-            className="gap-2 min-w-48"
           >
             {isLoadingNext ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="animate-spin" />
                 Đang tải...
               </>
             ) : (
               <>
                 Tiếp tục
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight />
               </>
             )}
           </Button>
@@ -145,17 +144,16 @@ export function HostGameScreen({
             size="lg"
             onClick={handleNextQuestion}
             disabled={isLoadingNext}
-            className="gap-2 min-w-48"
           >
             {isLoadingNext ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="animate-spin" />
                 Đang tải...
               </>
             ) : (
               <>
                 Xem kết quả
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight />
               </>
             )}
           </Button>
@@ -164,11 +162,10 @@ export function HostGameScreen({
     )
   }
 
-  // Render: Waiting state
   return (
     <div className={`flex flex-col items-center justify-center py-16 ${className}`}>
-      <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-      <p className="text-lg text-muted-foreground">
+      <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+      <p className="text-muted-foreground">
         {GAME_HOST_CONSTANTS.MESSAGES.WAITING_FOR_HOST}
       </p>
     </div>

@@ -136,29 +136,15 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
     onError: (event) => {
       console.error('[Player] SignalR error:', event)
 
-      // Handle cases where event might be malformed
-      if (!event || typeof event !== 'object') {
-        console.error('[Player] Invalid error event format:', event)
-        const errorMessage = 'An unknown connection error occurred'
-        actions.setError(errorMessage)
-        toastError(errorMessage)
-        return
-      }
-
       // Handle reconnect failure specially
-      if ('code' in event && event.code === 'RECONNECT_FAILED') {
+      if (event.code === 'RECONNECT_FAILED') {
         console.log('[Player] Reconnect failed, will try joining as new player')
         // Don't show error - we'll handle it in the connection logic
         return
       }
 
-      // Extract error message safely
-      const errorMessage = 'message' in event && typeof event.message === 'string'
-        ? event.message
-        : 'An unknown SignalR error occurred'
-
-      actions.setError(errorMessage)
-      toastError(errorMessage)
+      actions.setError(event.message)
+      toastError(event.message)
     },
   }), [actions])
 
@@ -225,12 +211,7 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
             totalQuestions: syncData.totalQuestions,
             videoUrl: syncData.currentQuestion.videoUrl,
             videoTimestamp: syncData.currentQuestion.videoTimestamp,
-            audioUrl: syncData.currentQuestion.audioUrl,
-            audioTimestamp: syncData.currentQuestion.audioTimestamp,
             options: syncData.currentQuestion.options,
-            matchingLeft: syncData.currentQuestion.matchingLeft,
-            matchingRight: syncData.currentQuestion.matchingRight,
-            orderingItems: syncData.currentQuestion.orderingItems,
           })
         } else if (syncData.status === 'FINISHED') {
           actions.setPhase('ended')

@@ -16,14 +16,12 @@ import {
     arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
-    useSortable,
     horizontalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { Card } from '@/shared/ui/card'
-import { Badge } from '@/shared/ui/badge'
 import { useChallengeStore } from '@/features/challenge/store/challenge.store'
 import type { ChallengeQuestionDto } from '@/features/challenge/types'
+import { OrderingSortableItem } from '@/shared/components/question/ordering-sortable-item'
 
 interface OrderingQuestionProps {
     question: ChallengeQuestionDto
@@ -111,9 +109,8 @@ export function OrderingQuestion({
     }
 
     const getItemStatus = (item: { content: string; correctPosition: number; originalIndex: number }, currentPosition: number) => {
-        if (!isCompleted) return null
-        const isCorrect = item.correctPosition === currentPosition
-        return { isCorrect }
+        if (!isCompleted) return undefined
+        return item.correctPosition === currentPosition // boolean
     }
 
     const itemIds = orderedItems.map((item) => item.id)
@@ -133,17 +130,17 @@ export function OrderingQuestion({
                 <SortableContext items={itemIds} strategy={horizontalListSortingStrategy}>
                     <div className="flex flex-wrap gap-3">
                         {orderedItems.map((item, index) => {
-                            const status = getItemStatus(item, index)
+                            const isCorrect = getItemStatus(item, index)
 
                             return (
-                                <SortableOrderingItem
+                                <OrderingSortableItem
                                     key={item.id}
                                     id={item.id}
-                                    item={item}
-                                    index={index}
-                                    status={status}
-                                    isCompleted={isCompleted}
+                                    content={item.content}
                                     isDragging={activeId === item.id}
+                                    disabled={isCompleted}
+                                    isCompleted={isCompleted}
+                                    isCorrect={isCorrect}
                                 />
                             )
                         })}
@@ -161,80 +158,5 @@ export function OrderingQuestion({
                 ) : null}
             </DragOverlay>
         </DndContext>
-    )
-}
-
-// Sortable Ordering Item Component (Horizontal)
-function SortableOrderingItem({
-    id,
-    item,
-    index,
-    status,
-    isCompleted,
-    isDragging,
-}: {
-    id: string
-    item: { content: string; correctPosition: number; originalIndex: number }
-    index: number
-    status: { isCorrect: boolean } | null
-    isCompleted: boolean
-    isDragging: boolean
-}) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging: isDndDragging,
-    } = useSortable({
-        id,
-        disabled: isCompleted,
-    })
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDndDragging ? 0.5 : 1,
-    }
-
-    return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            <Card
-                className={`p-4 cursor-grab active:cursor-grabbing min-w-[120px] transition-colors ${isCompleted
-                        ? status?.isCorrect
-                            ? 'bg-green-50 border-green-500'
-                            : 'bg-red-50 border-red-500'
-                        : isDragging
-                            ? 'bg-blue-50 border-blue-500 ring-2 ring-blue-500'
-                            : 'bg-muted border-border hover:bg-background'
-                    }`}
-            >
-                {/* Content */}
-                <div className="text-center">
-                    <p
-                        className={`text-sm font-medium ${isCompleted
-                                ? status?.isCorrect
-                                    ? 'text-green-700'
-                                    : 'text-red-700'
-                                : 'text-foreground'
-                            }`}
-                    >
-                        {item.content}
-                    </p>
-                </div>
-
-                {/* Status Indicator */}
-                {isCompleted && (
-                    <div className="mt-2 flex justify-center">
-                        {status?.isCorrect ? (
-                            <Badge variant="default" className="bg-green-500 text-white">✓</Badge>
-                        ) : (
-                            <Badge variant="default" className="bg-red-500 text-white">✗</Badge>
-                        )}
-                    </div>
-                )}
-            </Card>
-        </div>
     )
 }

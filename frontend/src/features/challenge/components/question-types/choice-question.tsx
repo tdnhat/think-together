@@ -1,9 +1,8 @@
 'use client'
 
-import { Button } from '@/shared/ui/button'
-import { Checkbox } from '@/shared/ui/checkbox'
 import { useChallengeStore } from '@/features/challenge/store/challenge.store'
 import type { ChallengeQuestionDto } from '@/features/challenge/types'
+import { AnswerChoiceList } from '@/shared/components/question/answer-choice-list'
 
 interface ChoiceQuestionProps {
     question: ChallengeQuestionDto
@@ -26,28 +25,29 @@ export function ChoiceQuestion({
     const currentAttempt = useChallengeStore((s) => s.currentAttempt)
     const isCompleted = currentAttempt?.status === 'Completed'
 
-    const handleChange = (index: number, checked: boolean | 'indeterminate') => {
+    const handleChange = (index: number) => {
         // Don't allow changes when completed
         if (isCompleted) return
 
-        const isChecked = checked === true
-
         let newIndexes: number[]
         if (isMultiple) {
+            const isChecked = !selectedIndexes.includes(index)
             newIndexes = isChecked ? [...selectedIndexes, index] : selectedIndexes.filter((i) => i !== index)
         } else {
-            newIndexes = isChecked ? [index] : []
+            // Radio behavior: selecting one deselects others.
+            // But if clicking the *same* one? Usually stays selected.
+            // Logic says "isChecked = true".
+            newIndexes = [index]
         }
         onAnswerChange?.(newIndexes)
     }
 
-    const getVariant = (index: number) => {
-        const isSelected = selectedIndexes.includes(index)
+    // Custom styling callbacks for AnswerChoiceList to match Challenge logic
+    const getVariant = (index: number, isSelected: boolean) => {
         return isSelected ? 'default' : 'outline'
     }
 
-    const getClassName = (index: number) => {
-        const isSelected = selectedIndexes.includes(index)
+    const getClassName = (index: number, isSelected: boolean) => {
         const isCorrect = question.options?.[index]?.isCorrect
 
         if (isCompleted) {
@@ -59,102 +59,38 @@ export function ChoiceQuestion({
             }
             return 'opacity-70'
         }
-
-        if (isSelected) {
-            return ''
-        }
         return ''
     }
 
-    const getCheckboxStyle = (index: number) => {
-        const isSelected = selectedIndexes.includes(index)
+    const getIndicatorStyle = (index: number, isSelected: boolean) => {
         const isCorrect = question.options?.[index]?.isCorrect
 
         if (isCompleted) {
             if (isCorrect) {
-                return 'border-green-500 data-[state=checked]:bg-green-500'
+                return isMultiple ? 'border-green-500 data-[state=checked]:bg-green-500' : 'border-green-500 bg-green-500' // Radio needs bg for solid
             }
             if (isSelected && !isCorrect) {
-                return 'border-red-500 data-[state=checked]:bg-red-500'
+                return isMultiple ? 'border-red-500 data-[state=checked]:bg-red-500' : 'border-red-500 bg-red-500'
             }
             return ''
-        }
-
-        if (isSelected) {
-            return 'border-blue-500 data-[state=checked]:bg-blue-500'
+        } else {
+            // Default colors
+            if (isSelected) return isMultiple ? 'border-blue-500 data-[state=checked]:bg-blue-500' : 'border-blue-500 bg-blue-500'
         }
         return ''
     }
 
+
     return (
-        <div className="space-y-3">
-            {isMultiple ? (
-                question.options?.map((option, index) => (
-                    <Button
-                        key={index}
-                        type="button"
-                        variant={getVariant(index)}
-                        className={`w-full justify-start h-auto py-4 whitespace-normal ${getClassName(index)}`}
-                        onClick={() => handleChange(index, !selectedIndexes.includes(index))}
-                        disabled={isCompleted}
-                    >
-                        <Checkbox
-                            checked={selectedIndexes.includes(index)}
-                            onCheckedChange={(checked) => handleChange(index, checked)}
-                            className={getCheckboxStyle(index)}
-                            disabled={isCompleted}
-                        />
-                        <span className="flex-1">{option.content}</span>
-                    </Button>
-                ))
-            ) : (
-                question.options?.map((option, index) => {
-                    const isSelected = selectedIndexes.includes(index)
-                    const isCorrect = question.options?.[index]?.isCorrect
-
-                    const getRadioStyle = () => {
-                        if (isCompleted) {
-                            if (isCorrect) return 'border-green-500'
-                            if (isSelected && !isCorrect) return 'border-red-500'
-                            return 'border-border opacity-70'
-                        }
-                        if (isSelected) return 'border-blue-500'
-                        return 'border-border'
-                    }
-
-                    const getDotStyle = () => {
-                        if (isCompleted) {
-                            if (isCorrect) return 'bg-green-500'
-                            if (isSelected && !isCorrect) return 'bg-red-500'
-                            return 'bg-muted-foreground'
-                        }
-                        if (isSelected) return 'bg-blue-500'
-                        return 'bg-main'
-                    }
-
-                    return (
-                        <Button
-                            key={index}
-                            type="button"
-                            variant={getVariant(index)}
-                            className={`w-full justify-start h-auto py-4 whitespace-normal ${getClassName(index)}`}
-                            onClick={() => {
-                                if (isCompleted) return
-                                onAnswerChange?.([index])
-                            }}
-                            disabled={isCompleted}
-                        >
-                            <span
-                                className={`size-4 shrink-0 rounded-full border-2 bg-background inline-flex items-center justify-center ${getRadioStyle()}`}
-                                aria-hidden="true"
-                            >
-                                {isSelected && <span className={`size-2 rounded-full ${getDotStyle()}`} />}
-                            </span>
-                            <span className="flex-1">{option.content}</span>
-                        </Button>
-                    )
-                })
-            )}
-        </div>
+        <AnswerChoiceList
+            options={question.options?.map((opt, idx) => ({ index: idx, content: opt.content })) || []}
+            selectedIndexes={selectedIndexes}
+            isMultiple={isMultiple}
+            disabled={isCompleted}
+            onSelect={handleChange}
+            getVariant={getVariant}
+            getClassName={getClassName}
+            getIndicatorStyle={getIndicatorStyle}
+        />
     )
 }

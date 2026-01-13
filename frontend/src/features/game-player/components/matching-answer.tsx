@@ -6,64 +6,17 @@ import {
     Node,
     Edge,
     Connection,
-    Handle,
-    Position,
-    type NodeProps,
     ReactFlowProvider,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Card } from '@/shared/ui/card'
 import { MatchingItemInfo } from '@/features/game-host/types'
+import { MatchingNode } from '@/shared/components/question/matching-node'
 
 interface MatchingAnswerProps {
     leftItems: MatchingItemInfo[]
     rightItems: MatchingItemInfo[]
     hasAnswered: boolean
     onAnswersChange: (answers: number[]) => void
-}
-
-/**
- * Custom Node Component for React Flow
- */
-function MatchingNode({ data, id }: NodeProps) {
-    const { content, isMatched } = data as {
-        content: string;
-        isMatched: boolean;
-    }
-
-    // Determine if this is a left or right node
-    const isLeftNode = id.startsWith('left-')
-
-    return (
-        <div className="px-4 py-2">
-            <Card
-                className={`p-4 transition-colors ${isMatched
-                    ? 'bg-blue-50 border-blue-300'
-                    : 'hover:bg-muted'
-                    }`}
-            >
-                <div className="flex items-center gap-2">
-                    {isLeftNode && (
-                        <Handle
-                            id="source"
-                            type="source"
-                            position={Position.Right}
-                            className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
-                        />
-                    )}
-                    <span className="flex-1 text-sm font-medium text-foreground">{content}</span>
-                    {!isLeftNode && (
-                        <Handle
-                            id="target"
-                            type="target"
-                            position={Position.Left}
-                            className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
-                        />
-                    )}
-                </div>
-            </Card>
-        </div>
-    )
 }
 
 const nodeTypes = {
@@ -76,16 +29,6 @@ function MatchingAnswerInternal({
     hasAnswered,
     onAnswersChange,
 }: MatchingAnswerProps) {
-    // We need to map left indices to right IDs (which we know are same as indices in the source, BUT shuffled in display)
-    // The previous implementation assumed IDs 0..N.
-    // Let's verify if rightItems passed here are already shuffled or not. 
-    // In PlayerQuestion, we pass `question.matchingRight`.
-    // The backend `QuestionStartedMessage` sends `MatchingRight` which are the items.
-    // NOTE: In `GameQuestionMappingService`, we likely sent them in original order?
-    // Wait, `MatchingRight` is a list. The backend sends `RightItem`.
-    // We should shuffle them here for display, but keep track of their original ID.
-    // Effectively, `MatchingItemInfo` has `id` and `content`.
-
     // State for matches: Left Item ID -> Right Item ID
     const [matches, setMatches] = useState<Map<number, number>>(new Map())
 
@@ -100,54 +43,13 @@ function MatchingAnswerInternal({
 
     // Propagate changes
     useEffect(() => {
-        // Backend expects array of size LeftItems.length.
-        // value at [i] is the Right Item ID matched to Left Item i.
-        const result: number[] = new Array(leftItems.length).fill(-1)
+        if (typeof onAnswersChange !== 'function') return
 
+        const result: number[] = new Array(leftItems.length).fill(-1)
         matches.forEach((rightId, leftId) => {
-            // Find index of left item with this leftId (if leftItems is not sorted by ID? Assumed sorted 0..N)
-            // Backend sends "MatchingLeft" list. We assume Left ID 0 is at index 0.
-            // If `MatchingItemInfo` IDs are reliable 0..N indices:
             result[leftId] = rightId
         })
 
-        // Only propagate if we have matches?
-        // Parent component logic handles "canSubmit" based on non-empty/complete.
-        // Note: previous implementation filtered -1? No, it pushed -1.
-
-        // We probably want to submit mostly complete answers.
-        // Let's send the result array as is.
-        // Wait, if result contains -1, can we submit? 
-        // Backend check: `if (selectedOptionIndexes.Count != question.MatchingPairs.Count) return false;`
-        // So we must have a value for every left item.
-        // `selectedOptionIndexes[i] != i` is check for correctness.
-        // If we send -1, it won't match i (0..N). So it's counted as wrong.
-        // But we need to ensure we don't submit `null` or missing entries to backend via SignalR if it expects strict Int32.
-        // -1 is fine as integer.
-
-        // Only trigger change if we have at least one match?
-        // Actually parent checks `selectedAnswers.length > 0`.
-        // If we pass an array of -1s, length > 0.
-        // But we want `canSubmit` to be true only if ALL are matched?
-        // Or partial?
-        // Backend checks `Count`. It doesn't say "All must be valid IDs".
-        // But conventionally, usually we force user to complete all matches.
-        // But let's allow partial for now or check parent logic.
-        // Parent: `canSubmit = selectedAnswers.length > 0`.
-        // If we return `[-1, -1, ...]`, length is N. So user can submit empty!
-        // We should probably filter out -1s in parent? No, parent stores `number[]`.
-        // We should effectively return EMPTY array if not fully matched?
-        // OR, better: We only populate `selectedAnswers` with valid connections.
-        // But `selectedAnswers` equates to `selectedOptionIndexes` in SignalR.
-        // SignalR sends `int[]`.
-        // If we send `[-1, 0, -1]`, backend receives `[-1, 0, -1]`. count is 3. Matches count is 3.
-        // Correctness check: `selectedOptionIndexes[0] == -1 != 0` -> Write.
-        // So submitting partials is interpreted as wrong answers.
-        // That is acceptable behavior: unanswered pairs are wrong.
-
-        // HOWEVER, to prevent accidental submission of empty/partial, maybe we should only call onAnswersChange with valid stuff?
-        // But `selectedAnswers` in parent is used for "canSubmit".
-        // If I want to prevent submit until AT LEAST ONE match:
         const hasAnyMatch = matches.size > 0
         if (hasAnyMatch) {
             onAnswersChange(result)
@@ -176,9 +78,7 @@ function MatchingAnswerInternal({
                     isMatched
                 },
                 draggable: false,
-                connectable: !hasAnswered && !isMatched // Can't connect if already matched (must disconnect first? Or just allow overwrite?)
-                // Actually MatchingQuestion allowed overwrite via onConnect logic, but `nodesConnectable` prop on Handle handles UI.
-                // Using `connectable` here on Node might disable handles.
+                connectable: !hasAnswered && !isMatched
             })
         })
 
@@ -240,10 +140,7 @@ function MatchingAnswerInternal({
             // Remove any existing match for this leftId (overwrite)
             next.set(leftId, rightId)
 
-            // Should we support 1-to-1 only? Yes.
-            // If rightId is already matched to another leftId, remove that match?
-            // "Bijective" matching usually implies unique pairs.
-            // Check if rightId is used
+            // Check if rightId is used, remove old match
             for (const [l, r] of prev.entries()) {
                 if (r === rightId && l !== leftId) {
                     next.delete(l)
@@ -254,7 +151,7 @@ function MatchingAnswerInternal({
 
     }, [hasAnswered])
 
-    // Disconnect on edge click? Or double click?
+    // Disconnect on edge click
     const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
         if (hasAnswered) return
 

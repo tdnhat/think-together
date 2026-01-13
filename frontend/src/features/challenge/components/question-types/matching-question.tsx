@@ -6,70 +6,16 @@ import {
     Node,
     Edge,
     Connection,
-    Handle,
-    Position,
     type NodeProps,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Card } from '@/shared/ui/card'
 import { useChallengeStore } from '@/features/challenge/store/challenge.store'
 import type { ChallengeQuestionDto } from '@/features/challenge/types'
+import { MatchingNode } from '@/shared/components/question/matching-node'
 
 interface MatchingQuestionProps {
     question: ChallengeQuestionDto
     onAnswerChange?: (answer: Array<{ leftContent: string; rightContent: string }>) => void
-}
-
-/**
- * Custom Node Component for React Flow
- */
-function MatchingNode({ data, id }: NodeProps) {
-    const { content, isMatched, matchStatus, isCompleted } = data as {
-        content: string;
-        isMatched: boolean;
-        matchStatus: { isCorrect: boolean; isIncorrect: boolean } | null;
-        isCompleted: boolean;
-    }
-
-    // Determine if this is a left or right node
-    const isLeftNode = id.startsWith('left-')
-
-    return (
-        <div className="px-4 py-2">
-            <Card
-                className={`p-4 transition-colors ${isCompleted
-                        ? matchStatus?.isCorrect
-                            ? 'bg-green-50 border-green-500'
-                            : matchStatus?.isIncorrect
-                                ? 'bg-red-50 border-red-500'
-                                : 'opacity-70'
-                        : isMatched
-                            ? 'bg-blue-50 border-blue-300'
-                            : 'hover:bg-muted'
-                    }`}
-            >
-                <div className="flex items-center gap-2">
-                    {isLeftNode && (
-                        <Handle
-                            id="source"
-                            type="source"
-                            position={Position.Right}
-                            className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
-                        />
-                    )}
-                    <span className="flex-1 text-sm font-medium text-foreground">{content}</span>
-                    {!isLeftNode && (
-                        <Handle
-                            id="target"
-                            type="target"
-                            position={Position.Left}
-                            className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
-                        />
-                    )}
-                </div>
-            </Card>
-        </div>
-    )
 }
 
 const nodeTypes: { [key: string]: React.ComponentType<NodeProps> } = {
@@ -114,26 +60,26 @@ export function MatchingQuestion({
             .sort(() => Math.random() - 0.5)
     })
 
-    const getRightItemMatch = (rightOriginalIndex: number) => {
+    const getRightItemMatch = useCallback((rightOriginalIndex: number) => {
         for (const [leftIdx, rightIdx] of matches.entries()) {
             if (rightIdx === rightOriginalIndex) {
                 return leftIdx
             }
         }
         return null
-    }
+    }, [matches])
 
-    const isRightItemMatched = (rightOriginalIndex: number) => {
+    const isRightItemMatched = useCallback((rightOriginalIndex: number) => {
         return getRightItemMatch(rightOriginalIndex) !== null
-    }
+    }, [getRightItemMatch])
 
-    const getMatchStatus = (leftIndex: number, rightOriginalIndex: number) => {
+    const getMatchStatus = useCallback((leftIndex: number, rightOriginalIndex: number) => {
         if (!isCompleted) return null
         const matchedLeft = matches.get(leftIndex)
         const correctMatch = leftIndex === rightOriginalIndex
         const isMatched = matchedLeft === rightOriginalIndex
         return { isCorrect: correctMatch && isMatched, isIncorrect: isMatched && !correctMatch }
-    }
+    }, [isCompleted, matches])
 
 
     // Create initial nodes for React Flow
@@ -320,17 +266,12 @@ export function MatchingQuestion({
         const leftIndex = parseInt(leftMatch[1])
         const rightDisplayIndex = parseInt(rightMatch[1])
 
-        // Get the original right index from shuffled items
         const rightItem = rightItems[rightDisplayIndex]
         const rightOriginalIndex = rightItem.originalIndex
 
-        // Check if left item is already matched
         if (matches.has(leftIndex)) return
-
-        // Check if right item is already matched
         if (isRightItemMatched(rightOriginalIndex)) return
 
-        // Create new match
         const newMatches = new Map(matches)
         newMatches.set(leftIndex, rightOriginalIndex)
         setMatches(newMatches)
@@ -344,7 +285,6 @@ export function MatchingQuestion({
             })
         })
 
-        // Call onAnswerChange with the matching pairs
         onAnswerChange?.(matchingPairsAnswer)
     }, [isCompleted, rightItems, matches, matchingPairs, onAnswerChange])
 
@@ -370,6 +310,7 @@ export function MatchingQuestion({
                     fitView
                     fitViewOptions={{ padding: 0.2 }}
                     onDoubleClick={(e) => e.preventDefault()}
+                    proOptions={{ hideAttribution: true }}
                 >
                 </ReactFlow>
             </div>
