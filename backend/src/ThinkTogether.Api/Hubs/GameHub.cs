@@ -13,17 +13,20 @@ public class GameHub : Hub<IGameHubClient>
     private readonly ILogger<GameHub> _logger;
     private readonly IGameSessionStateService _stateService;
     private readonly IQuestionTimerService _questionTimerService;
+    private readonly IDistributedLockService _lockService;
 
     public GameHub(
         IMediator mediator,
         ILogger<GameHub> logger,
         IGameSessionStateService stateService,
-        IQuestionTimerService questionTimerService)
+        IQuestionTimerService questionTimerService,
+        IDistributedLockService lockService)
     {
         _mediator = mediator;
         _logger = logger;
         _stateService = stateService;
         _questionTimerService = questionTimerService;
+        _lockService = lockService;
     }
 
     public async Task JoinGame(string pin, string nickname)
@@ -138,6 +141,17 @@ public class GameHub : Hub<IGameHubClient>
 
     public async Task SubmitAnswer(Guid gameSessionId, Guid playerId, Guid gameQuestionId, List<int> selectedOptionIndexes, int responseTimeMs)
     {
+        // Acquire lock to prevent duplicate submissions
+        var lockKey = $"game:{gameSessionId}:answer:{playerId}:{gameQuestionId}";
+        await using var @lock = await _lockService.TryAcquireLockAsync(lockKey, TimeSpan.FromSeconds(10));
+        
+        if (@lock?.IsAcquired != true)
+        {
+            _logger.LogWarning("Player {PlayerId} duplicate answer submission detected for question {QuestionId}", playerId, gameQuestionId);
+            await Clients.Caller.Error(new ErrorMessage("SUBMISSION_IN_PROGRESS", "Đang xử lý câu trả lời..."));
+            return;
+        }
+
         try
         {
             _logger.LogInformation("Player {PlayerId} submitting answer for question {QuestionId}", playerId, gameQuestionId);
@@ -205,9 +219,13 @@ public class GameHub : Hub<IGameHubClient>
             
             if (removed)
             {
+                // Mark player as disconnected (not left) so they can reconnect
+                await _stateService.SetPlayerStateAsync(playerInfo.Pin, playerInfo.PlayerId, Domain.Enums.ConnectionStatus.Disconnected);
+                
                 var playerCount = await _stateService.GetConnectedPlayerCountAsync(playerInfo.Pin);
                 
-                await Clients.Group(GetGameGroup(playerInfo.Pin)).PlayerLeft(new PlayerLeftMessage(
+                // Notify other players that this player is temporarily disconnected
+                await Clients.Group(GetGameGroup(playerInfo.Pin)).PlayerDisconnected(new PlayerDisconnectedMessage(
                     playerInfo.PlayerId,
                     playerInfo.Nickname,
                     playerCount));

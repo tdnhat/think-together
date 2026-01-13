@@ -160,6 +160,7 @@ public static class DependencyInjection
         services.AddScoped<ILeaderboardService, LeaderboardService>();
         services.AddScoped<IGameQuestionMappingService, GameQuestionMappingService>();
         services.AddSingleton<IGameSessionStateService, RedisGameSessionStateService>();
+        services.AddSingleton<IDistributedLockService, RedisDistributedLockService>();
         
         // Cloud Services
         services.AddScoped<IFileUploadService, CloudinaryService>();

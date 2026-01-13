@@ -33,6 +33,7 @@ public sealed partial class GamePlayer
     {
         ConnectionStatus = ConnectionStatus.Connected;
         ConnectionId = connectionId;
+        DisconnectedAt = null;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -40,6 +41,26 @@ public sealed partial class GamePlayer
     {
         ConnectionStatus = ConnectionStatus.Disconnected;
         ConnectionId = null;
+        DisconnectedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkLeft()
+    {
+        ConnectionStatus = ConnectionStatus.Left;
+        ConnectionId = null;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkKicked()
+    {
+        ConnectionStatus = ConnectionStatus.Kicked;
+        ConnectionId = null;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool CanReconnect()
+    {
+        return ConnectionStatus == ConnectionStatus.Disconnected;
     }
 }

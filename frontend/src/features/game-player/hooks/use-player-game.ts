@@ -26,6 +26,7 @@ import {
 } from '../store/player-game-store'
 import { toastError, toastSuccess, toastInfo } from '@/lib/utils/toast'
 import { GAME_PLAYER_CONSTANTS } from '../constants'
+import { savePlayerSession, clearPlayerSession } from '../lib/player-session-storage'
 
 // =============================================================================
 // TYPES
@@ -121,18 +122,42 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
       actions.handleGameEnded(event)
       toastInfo(GAME_PLAYER_CONSTANTS.MESSAGES.GAME_ENDED)
     },
+    onStateSynced: (event) => {
+      console.log('[Player] State synced from server:', event.status)
+      // Full state sync after reconnect
+      if (event.currentQuestion) {
+        actions.handleQuestionStarted(event.currentQuestion)
+      }
+      if (event.leaderboard?.length > 0) {
+        actions.handleLeaderboardUpdated({ leaderboard: event.leaderboard })
+      }
+    },
     onError: (event) => {
       console.error('[Player] SignalR error:', event)
 
+      // Handle cases where event might be malformed
+      if (!event || typeof event !== 'object') {
+        console.error('[Player] Invalid error event format:', event)
+        const errorMessage = 'An unknown connection error occurred'
+        actions.setError(errorMessage)
+        toastError(errorMessage)
+        return
+      }
+
       // Handle reconnect failure specially
-      if (event.code === 'RECONNECT_FAILED') {
+      if ('code' in event && event.code === 'RECONNECT_FAILED') {
         console.log('[Player] Reconnect failed, will try joining as new player')
         // Don't show error - we'll handle it in the connection logic
         return
       }
 
-      actions.setError(event.message)
-      toastError(event.message)
+      // Extract error message safely
+      const errorMessage = 'message' in event && typeof event.message === 'string'
+        ? event.message
+        : 'An unknown SignalR error occurred'
+
+      actions.setError(errorMessage)
+      toastError(errorMessage)
     },
   }), [actions])
 
@@ -148,6 +173,16 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
       // Service will ensure connection before invoking
       await gameSignalR.joinGame(pin, nickname)
       console.log('[Player] Joined game successfully')
+
+      // Save session to localStorage for reconnect
+      savePlayerSession({
+        pin,
+        playerId,
+        nickname,
+        sessionId,
+        joinedAt: new Date().toISOString(),
+      })
+
       actions.setPhase('lobby')
     } catch (err) {
       console.error('[Player] Failed to join game:', err)
@@ -155,7 +190,7 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
     } finally {
       isJoiningRef.current = false
     }
-  }, [pin, nickname, actions])
+  }, [pin, playerId, nickname, sessionId, actions])
 
   const connectAndJoin = useCallback(async () => {
     console.log('[Player] Initializing connection...')
@@ -283,6 +318,26 @@ export function usePlayerGame(options: UsePlayerGameOptions): UsePlayerGameRetur
       gameSignalR.updateEvents(setupSignalREvents())
     }
   }, [setupSignalREvents])
+
+  // Handle visibility change (tab switching)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && connectionState === 'disconnected') {
+        console.log('[Player] Tab became visible, attempting reconnect...')
+        connectAndJoin()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [connectionState, connectAndJoin])
+
+  // Cleanup session on game end
+  useEffect(() => {
+    if (phase === 'ended') {
+      clearPlayerSession()
+    }
+  }, [phase])
 
   // =============================================================================
   // RETURN

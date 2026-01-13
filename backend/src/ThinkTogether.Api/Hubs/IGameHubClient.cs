@@ -4,6 +4,8 @@ public interface IGameHubClient
 {
     Task PlayerJoined(PlayerJoinedMessage message);
     Task PlayerLeft(PlayerLeftMessage message);
+    Task PlayerDisconnected(PlayerDisconnectedMessage message);
+    Task PlayerReconnected(PlayerReconnectedMessage message);
     Task LobbyUpdated(LobbyUpdatedMessage message);
     Task GameStarted(GameStartedMessage message);
     Task QuestionStarted(QuestionStartedMessage message);
@@ -12,6 +14,8 @@ public interface IGameHubClient
     Task AnswerReceived(AnswerReceivedMessage message);
     Task LeaderboardUpdated(LeaderboardUpdatedMessage message);
     Task Error(ErrorMessage message);
+    Task Ping();
+    Task StateSynced(GameStateSyncMessage message);
 }
 
 public record PlayerJoinedMessage(
@@ -20,6 +24,16 @@ public record PlayerJoinedMessage(
     int TotalPlayers);
 
 public record PlayerLeftMessage(
+    Guid PlayerId,
+    string Nickname,
+    int TotalPlayers);
+
+public record PlayerDisconnectedMessage(
+    Guid PlayerId,
+    string Nickname,
+    int TotalPlayers);
+
+public record PlayerReconnectedMessage(
     Guid PlayerId,
     string Nickname,
     int TotalPlayers);
@@ -42,7 +56,7 @@ public record QuestionStartedMessage(
     string Content,
     string QuestionType,
     int TimeLimit,
-    DateTime EndTime, // Absolute UTC end time for time synchronization
+    DateTime EndTime,
     int PositionInGame,
     int TotalQuestions,
     string? VideoUrl,
@@ -87,3 +101,11 @@ public record ErrorMessage(
     string Code,
     string Message);
 
+public record GameStateSyncMessage(
+    string Status,
+    int CurrentQuestionIndex,
+    int TotalQuestions,
+    QuestionStartedMessage? CurrentQuestion,
+    List<LeaderboardEntry> Leaderboard,
+    int TotalPlayers,
+    DateTime? QuestionEndTime);

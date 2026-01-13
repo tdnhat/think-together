@@ -8,6 +8,13 @@ public enum ConnectionStatus
     Connected = 1,
 
     [Description("Đã ngắt kết nối")]
-    Disconnected = 2
+    Disconnected = 2,
+
+    [Description("Đã rời khỏi")]
+    Left = 3,
+
+    [Description("Đã bị đuổi")]
+    Kicked = 4
 }
+
 

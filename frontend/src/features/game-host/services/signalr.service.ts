@@ -27,6 +27,8 @@ export interface SignalREvents {
   onStateChange?: (state: ConnectionState) => void
   onPlayerJoined?: (message: PlayerJoinedEvent) => void
   onPlayerLeft?: (message: PlayerLeftEvent) => void
+  onPlayerDisconnected?: (message: PlayerDisconnectedEvent) => void
+  onPlayerReconnected?: (message: PlayerReconnectedEvent) => void
   onGameStarted?: (message: GameStartedEvent) => void
   onQuestionStarted?: (message: QuestionStartedEvent) => void
   onQuestionEnded?: (message: QuestionEndedEvent) => void
@@ -34,6 +36,7 @@ export interface SignalREvents {
   onLeaderboardUpdated?: (message: LeaderboardUpdatedEvent) => void
   onGameEnded?: (message: GameEndedEvent) => void
   onError?: (message: ErrorEvent) => void
+  onStateSynced?: (message: GameStateSyncEvent) => void
 }
 
 // Event types matching backend IGameHubClient
@@ -44,6 +47,18 @@ export interface PlayerJoinedEvent {
 }
 
 export interface PlayerLeftEvent {
+  playerId: string
+  nickname: string
+  totalPlayers: number
+}
+
+export interface PlayerDisconnectedEvent {
+  playerId: string
+  nickname: string
+  totalPlayers: number
+}
+
+export interface PlayerReconnectedEvent {
   playerId: string
   nickname: string
   totalPlayers: number
@@ -118,6 +133,16 @@ export interface ErrorEvent {
   message: string
 }
 
+export interface GameStateSyncEvent {
+  status: string
+  currentQuestionIndex: number
+  totalQuestions: number
+  currentQuestion: QuestionStartedEvent | null
+  leaderboard: LeaderboardUpdatedEvent['leaderboard']
+  totalPlayers: number
+  questionEndTime: string | null
+}
+
 // =============================================================================
 // SIGNALR SERVICE CLASS
 // =============================================================================
@@ -185,7 +210,7 @@ class GameSignalRService {
 
     // Wait if connecting/reconnecting
     if (this.connection.state === signalR.HubConnectionState.Connecting ||
-        this.connection.state === signalR.HubConnectionState.Reconnecting) {
+      this.connection.state === signalR.HubConnectionState.Reconnecting) {
       await new Promise(resolve => setTimeout(resolve, 500))
       if (this.isConnected()) {
         this.updateState('connected')
@@ -222,7 +247,13 @@ class GameSignalRService {
     if (this.isConnected()) {
       return
     }
+    
     await this.connect()
+    
+    // Verify connection was actually established
+    if (!this.connection || !this.isConnected()) {
+      throw new Error('Failed to establish SignalR connection')
+    }
   }
 
   /**
@@ -263,7 +294,10 @@ class GameSignalRService {
    */
   async joinAsHost(gameSessionId: string, pin: string): Promise<void> {
     await this.ensureConnection()
-    await this.connection!.invoke('JoinAsHost', gameSessionId, pin)
+    if (!this.connection) {
+      throw new Error('SignalR connection is not available')
+    }
+    await this.connection.invoke('JoinAsHost', gameSessionId, pin)
   }
 
   // =============================================================================
@@ -275,7 +309,10 @@ class GameSignalRService {
    */
   async joinGame(pin: string, nickname: string): Promise<void> {
     await this.ensureConnection()
-    await this.connection!.invoke('JoinGame', pin, nickname)
+    if (!this.connection) {
+      throw new Error('SignalR connection is not available')
+    }
+    await this.connection.invoke('JoinGame', pin, nickname)
   }
 
   /**
@@ -283,7 +320,10 @@ class GameSignalRService {
    */
   async reconnect(pin: string, playerId: string): Promise<void> {
     await this.ensureConnection()
-    await this.connection!.invoke('Reconnect', pin, playerId)
+    if (!this.connection) {
+      throw new Error('SignalR connection is not available')
+    }
+    await this.connection.invoke('Reconnect', pin, playerId)
   }
 
   /**
@@ -297,7 +337,10 @@ class GameSignalRService {
     responseTimeMs: number
   ): Promise<void> {
     await this.ensureConnection()
-    await this.connection!.invoke(
+    if (!this.connection) {
+      throw new Error('SignalR connection is not available')
+    }
+    await this.connection.invoke(
       'SubmitAnswer',
       gameSessionId,
       playerId,
@@ -312,7 +355,10 @@ class GameSignalRService {
    */
   async leaveGame(pin: string, playerId: string): Promise<void> {
     await this.ensureConnection()
-    await this.connection!.invoke('LeaveGame', pin, playerId)
+    if (!this.connection) {
+      throw new Error('SignalR connection is not available')
+    }
+    await this.connection.invoke('LeaveGame', pin, playerId)
   }
 
   // =============================================================================
@@ -356,6 +402,14 @@ class GameSignalRService {
       this.events.onPlayerLeft?.(message)
     })
 
+    this.connection.on('PlayerDisconnected', (message: PlayerDisconnectedEvent) => {
+      this.events.onPlayerDisconnected?.(message)
+    })
+
+    this.connection.on('PlayerReconnected', (message: PlayerReconnectedEvent) => {
+      this.events.onPlayerReconnected?.(message)
+    })
+
     this.connection.on('GameStarted', (message: GameStartedEvent) => {
       this.events.onGameStarted?.(message)
     })
@@ -380,8 +434,31 @@ class GameSignalRService {
       this.events.onGameEnded?.(message)
     })
 
-    this.connection.on('Error', (message: ErrorEvent) => {
-      this.events.onError?.(message)
+    this.connection.on('Error', (message: ErrorEvent | unknown) => {
+      // Handle different error formats
+      if (message && typeof message === 'object' && 'code' in message && 'message' in message) {
+        // Standard ErrorEvent format
+        this.events.onError?.(message as ErrorEvent)
+      } else {
+        // Fallback for unexpected error formats
+        const errorMessage = message instanceof Error 
+          ? message.message 
+          : typeof message === 'string' 
+            ? message 
+            : 'An unknown SignalR error occurred'
+        this.events.onError?.({
+          code: 'UNKNOWN_ERROR',
+          message: errorMessage,
+        })
+      }
+    })
+
+    this.connection.on('StateSynced', (message: GameStateSyncEvent) => {
+      this.events.onStateSynced?.(message)
+    })
+
+    this.connection.on('Ping', () => {
+      // Heartbeat received from server - connection is alive
     })
   }
 
@@ -396,8 +473,17 @@ class GameSignalRService {
       this.updateState('connected')
     })
 
-    this.connection.onclose(() => {
+    this.connection.onclose((error?: Error) => {
       this.updateState('disconnected')
+      
+      // Handle connection errors (network failures, etc.)
+      if (error) {
+        const errorMessage = error.message || 'Connection closed unexpectedly'
+        this.events.onError?.({
+          code: 'CONNECTION_ERROR',
+          message: errorMessage,
+        })
+      }
     })
   }
 

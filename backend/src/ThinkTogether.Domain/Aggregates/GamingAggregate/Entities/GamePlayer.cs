@@ -22,9 +22,13 @@ public sealed partial class GamePlayer : Entity
 
     public string? ConnectionId { get; private set; }
 
+    public Guid? UserId { get; private set; }
+
+    public DateTime? DisconnectedAt { get; private set; }
+
     public IReadOnlyList<PlayerAnswer> Answers => _answers.AsReadOnly();
 
-    public static GamePlayer Create(Guid gameSessionId, string nickname)
+    public static GamePlayer Create(Guid gameSessionId, string nickname, Guid? userId = null)
     {
         if (gameSessionId == Guid.Empty)
             throw new ValidationException("ID phiên trò chơi không được trống");
@@ -40,6 +44,7 @@ public sealed partial class GamePlayer : Entity
             Id = Guid.NewGuid(),
             GameSessionId = gameSessionId,
             Nickname = nickname.Trim(),
+            UserId = userId,
             ConnectionStatus = ConnectionStatus.Connected,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

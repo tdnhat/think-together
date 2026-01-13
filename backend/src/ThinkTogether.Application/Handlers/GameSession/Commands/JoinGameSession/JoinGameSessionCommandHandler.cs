@@ -52,7 +52,7 @@ public sealed class JoinGameSessionCommandHandler : IRequestHandler<JoinGameSess
             };
         }
 
-        var player = GamePlayer.Create(gameSession.Id, request.Nickname);
+        var player = GamePlayer.Create(gameSession.Id, request.Nickname, request.UserId);
         gameSession.AddPlayer(player);
 
         await _gameSessionRepository.UpdateAsync(gameSession, cancellationToken);

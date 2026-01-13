@@ -117,6 +117,14 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
     onPlayerLeft: (event) => {
       actions.handlePlayerLeft(event)
     },
+    onPlayerDisconnected: (event) => {
+      // Player temporarily disconnected - can still reconnect
+      toastInfo(`${event.nickname} đã mất kết nối`)
+    },
+    onPlayerReconnected: (event) => {
+      // Player reconnected
+      toastSuccess(`${event.nickname} đã kết nối lại`)
+    },
     onGameStarted: (event) => {
       actions.handleGameStarted(event)
     },
@@ -244,7 +252,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
 
     // Set module-level guard IMMEDIATELY before any async work
     activeOperations.resumingSessionId = resumeSessionId
-    
+
     // Then update store state
     actions.setIsLoading(true)
     actions.setError(null)
@@ -332,7 +340,7 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
         .then(response => {
           actions.setLeaderboard(response)
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   }, [session, actions])
 
@@ -417,14 +425,14 @@ export function useHostGame(options: UseHostGameOptions = {}): UseHostGameReturn
       if (activeOperations.resumingSessionId === sessionId) {
         return
       }
-      
+
       // Check if session already loaded in store
       const currentSession = useHostGameStore.getState().session
       if (currentSession?.id === sessionId) {
         return
       }
 
-      resumeSession(sessionId).catch(() => {})
+      resumeSession(sessionId).catch(() => { })
     }
 
     return () => {

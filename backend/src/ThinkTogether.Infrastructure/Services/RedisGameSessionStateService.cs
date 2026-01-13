@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using ThinkTogether.Application.Interfaces;
+using ThinkTogether.Domain.Enums;
 
 namespace ThinkTogether.Infrastructure.Services;
 
@@ -135,7 +136,8 @@ public class RedisGameSessionStateService : IGameSessionStateService
             connectionData.Pin,
             connectionData.PlayerId,
             connectionData.Nickname,
-            connectionId);
+            connectionId,
+            connectionData.State);
     }
 
     public async Task<string?> GetPlayerConnectionAsync(string pin, Guid playerId)
@@ -192,6 +194,36 @@ public class RedisGameSessionStateService : IGameSessionStateService
 
     // Business state methods removed - use domain aggregates instead
 
+    public async Task<ConnectionStatus> GetPlayerStateAsync(string pin, Guid playerId)
+    {
+        var db = GetDatabase();
+        var stateKey = GetPlayerStateKey(pin);
+        var stateValue = await db.HashGetAsync(stateKey, playerId.ToString());
+
+        if (!stateValue.HasValue)
+            return ConnectionStatus.Disconnected;
+
+        return Enum.TryParse<ConnectionStatus>(stateValue.ToString(), out var status)
+            ? status
+            : ConnectionStatus.Disconnected;
+    }
+
+    public async Task SetPlayerStateAsync(string pin, Guid playerId, ConnectionStatus state)
+    {
+        var db = GetDatabase();
+        var stateKey = GetPlayerStateKey(pin);
+        await db.HashSetAsync(stateKey, playerId.ToString(), state.ToString());
+        await db.KeyExpireAsync(stateKey, TimeSpan.FromHours(ExpirationHours));
+
+        _logger.LogDebug("Set player {PlayerId} state to {State} in game {Pin}", playerId, state, pin);
+    }
+
+    public async Task<bool> IsPlayerReconnectableAsync(string pin, Guid playerId)
+    {
+        var state = await GetPlayerStateAsync(pin, playerId);
+        return state == ConnectionStatus.Connected || state == ConnectionStatus.Disconnected;
+    }
+
     public async Task CleanupGameSessionAsync(string pin)
     {
         var db = GetDatabase();
@@ -212,7 +244,8 @@ public class RedisGameSessionStateService : IGameSessionStateService
     private static string GetHostKey(string pin) => $"{KeyPrefix}{pin}:host";
     private static string GetConnectionKey(string connectionId) => $"{KeyPrefix}conn:{connectionId}";
     private static string GetSessionMappingKey(Guid sessionId) => $"{KeyPrefix}session:{sessionId}";
+    private static string GetPlayerStateKey(string pin) => $"{KeyPrefix}{pin}:player-states";
 
     private sealed record PlayerData(Guid PlayerId, string ConnectionId, DateTime JoinedAt);
-    private sealed record ConnectionData(string Pin, Guid PlayerId, string Nickname);
+    private sealed record ConnectionData(string Pin, Guid PlayerId, string Nickname, ConnectionStatus State = ConnectionStatus.Connected);
 }
